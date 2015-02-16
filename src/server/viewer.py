@@ -1,19 +1,42 @@
+#encoding=utf-8
 import socket
+import time
+from xml.dom import minidom
 
 def main():
-	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    send_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	print "HELLO"
+	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-	sock.sendto("<View/>\n" ,("127.0.0.1", 6000))
+	simulator_s.sendto("<View/>\n" ,("127.0.0.1", 6000))
+	# Ler o valor do tempo de simulação e obter as portas
+	data, (host, port) = simulator_s.recvfrom(1024)
+	parametersXML = minidom.parseString(data.replace("\x00", ""))
+	itemlist = parametersXML.getElementsByTagName('Parameters') 
+	simTime = itemlist[0].attributes['SimTime'].value
+	print "SimTime: ", simTime
 
-    send_socket.connect(("127.0.0.1", TCP_PORT))
-	while 1:
-		data, (host, port) = sock.recvfrom(1024)
-		print data
-        send_socket.send(data)
+	starter_tcp.bind(("127.0.0.1", 7000))
+	starter_tcp.listen(1)
+	starter_s, starter_s_addr = starter_tcp.accept()
 
-    send_socket.close()
-    sock.close()
+	# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
+	data = starter_s.recv(4096)
+	while data != "<StartedAgents/>":
+		data = starter_s.recv(4096)
+	simulator_s.sendto("<Start/>\n" ,(host, port))
+
+	robotTime = 0
+	while simTime != robotTime:
+		data = simulator_s.recv(4096)
+		robotXML = minidom.parseString(data.replace("\x00", ""))
+		itemlist = robotXML.getElementsByTagName('Robot') 
+		robotTime = itemlist[0].attributes['Time'].value
+	starter_s.send("<EndedSimulation/>")
+
+	starter_s.close()
+	starter_tcp.close()
+	simulator_s.close()
 
 if __name__ == "__main__":
 	main()
