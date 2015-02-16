@@ -41,7 +41,7 @@ def main():
 		#django_s.send(data)
 
 	starter_s.send("<EndedSimulation/>")
-
+	
 	starter_s.close()
 	starter_tcp.close()
 	simulator_s.close()
