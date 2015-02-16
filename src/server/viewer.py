@@ -4,7 +4,6 @@ import time
 from xml.dom import minidom
 
 def main():
-	print "HELLO"
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -27,11 +26,20 @@ def main():
 	simulator_s.sendto("<Start/>\n" ,(host, port))
 
 	robotTime = 0
+	#django_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	#django_tcp.bind(("127.0.0.1", 7000))
+	#django_tcp.listen(1)
+	#django_s, django_addr = django_tcp.accept()
 	while simTime != robotTime:
 		data = simulator_s.recv(4096)
-		robotXML = minidom.parseString(data.replace("\x00", ""))
+		# Actualizar o tempo do robot
+		data = data.replace("\x00", "")
+		robotXML = minidom.parseString(data)
 		itemlist = robotXML.getElementsByTagName('Robot') 
 		robotTime = itemlist[0].attributes['Time'].value
+		# Enviar os dados da simulação para o exterior
+		#django_s.send(data)
+
 	starter_s.send("<EndedSimulation/>")
 
 	starter_s.close()
