@@ -5,7 +5,13 @@ from xml.dom import minidom
 
 def main():
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+	starter_tcp.bind(("127.0.0.1", 7000))
+	starter_tcp.listen(1)
+	starter_s, starter_s_addr = starter_tcp.accept()
 
 	simulator_s.sendto("<View/>\n" ,("127.0.0.1", 6000))
 	# Ler o valor do tempo de simulação e obter as portas
@@ -14,10 +20,6 @@ def main():
 	itemlist = parametersXML.getElementsByTagName('Parameters') 
 	simTime = itemlist[0].attributes['SimTime'].value
 	print "SimTime: ", simTime
-
-	starter_tcp.bind(("127.0.0.1", 7000))
-	starter_tcp.listen(1)
-	starter_s, starter_s_addr = starter_tcp.accept()
 
 	# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
 	data = starter_s.recv(4096)
@@ -41,7 +43,7 @@ def main():
 		#django_s.send(data)
 
 	starter_s.send("<EndedSimulation/>")
-	
+
 	starter_s.close()
 	starter_tcp.close()
 	simulator_s.close()
