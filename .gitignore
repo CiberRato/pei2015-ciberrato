@@ -3,6 +3,7 @@ src/web/db.sqlite3
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*.o
 
 
 # OSX Finder turds
@@ -10,7 +11,6 @@ __pycache__/
 
 # C extensions
 *.so
-
 # Distribution / packaging
 bin/
 build/
@@ -56,3 +56,46 @@ coverage.xml
 docs/_build/
 
 .idea/
+
+# Cibertools generated source code
+src/server/cibertools-v2.2/GUISample/moc_robview.cpp
+src/server/cibertools-v2.2/GUISample/moc_sampapp.cpp
+src/server/cibertools-v2.2/Viewer/moc_crqcomm.cpp
+src/server/cibertools-v2.2/Viewer/moc_crqdataview.cpp
+src/server/cibertools-v2.2/Viewer/moc_crqlabview.cpp
+src/server/cibertools-v2.2/Viewer/moc_crqrobotinfo.cpp
+src/server/cibertools-v2.2/Viewer/moc_crqscene.cpp
+src/server/cibertools-v2.2/Viewer/qrc_default.cpp
+src/server/cibertools-v2.2/Viewer/ui_crqdataview.h
+src/server/cibertools-v2.2/Viewer/ui_crqlabview.h
+src/server/cibertools-v2.2/Viewer/ui_crqrobotinfo.h
+src/server/cibertools-v2.2/libRobSock/moc_croblink.cpp
+src/server/cibertools-v2.2/logplayer/moc_cblogplayer.cpp
+src/server/cibertools-v2.2/logplayer/ui_logplayerGUI.h
+src/server/cibertools-v2.2/simulator/moc_cbcontrolpanel.cpp
+src/server/cibertools-v2.2/simulator/moc_cblabdialog.cpp
+src/server/cibertools-v2.2/simulator/moc_cbmanagerobots.cpp
+src/server/cibertools-v2.2/simulator/moc_cbparamdialog.cpp
+src/server/cibertools-v2.2/simulator/moc_cbrobot.cpp
+src/server/cibertools-v2.2/simulator/moc_cbrobotinfo.cpp
+src/server/cibertools-v2.2/simulator/moc_cbsimulator.cpp
+src/server/cibertools-v2.2/simulator/moc_cbsimulatorGUI.cpp
+src/server/cibertools-v2.2/simulator/qrc_default.cpp
+src/server/cibertools-v2.2/simulator/ui_cbcontrolpanel.h
+src/server/cibertools-v2.2/simulator/ui_cblabdialog.h
+src/server/cibertools-v2.2/simulator/ui_cbmanagerobots.h
+src/server/cibertools-v2.2/simulator/ui_cbparamdialogbase.h
+src/server/cibertools-v2.2/simulator/ui_cbrobotinfo.h
+src/server/cibertools-v2.2/simulator/ui_cbsimulatorGUI.h
+src/server/cibertools-v2.2/GUISample/GUISample
+src/server/cibertools-v2.2/GUISample/Makefile
+src/server/cibertools-v2.2/Viewer/Makefile
+src/server/cibertools-v2.2/Viewer/Viewer
+src/server/cibertools-v2.2/libRobSock/Makefile
+src/server/cibertools-v2.2/libRobSock/libRobSock.so.1.0.0
+src/server/cibertools-v2.2/logplayer/Makefile
+src/server/cibertools-v2.2/logplayer/logplayer
+src/server/cibertools-v2.2/robsample/Makefile
+src/server/cibertools-v2.2/robsample/robsample
+src/server/cibertools-v2.2/simulator/Makefile
+src/server/cibertools-v2.2/simulator/simulator
