@@ -11,7 +11,7 @@ def main():
 	time.sleep(1)
 
 	print "Opening process for viewer"
-	viewer = subprocess.Popen("python viewer.py", shell=True, stdout=subprocess.PIPE)
+	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
 	time.sleep(1)
 
 
@@ -20,7 +20,7 @@ def main():
 	viewer_c.connect(("127.0.0.1", 7000))
 
 	print "Opening process for agent"
-	agent = subprocess.Popen("python iia-myrob/cibertools/myrob.py", shell=True, stdout=subprocess.PIPE)
+	agent = subprocess.Popen(["python", "iia-myrob/cibertools/myrob.py"], stdout=subprocess.PIPE)
 	time.sleep(1)
 
 	print "Sends a message to Viewer telling that agents are ready"
@@ -30,13 +30,14 @@ def main():
 		data = viewer_c.recv(4096)
 	print "Simulation ended, killing simulator and running agents"
 	viewer_c.close()
+	
+	# Debug purposes
 	#print "Viewer ID: ", viewer.pid()
 	#print "Sim ID: ", simulator.pid()
 	#print "Agent ID: ", agent.pid()
 
 	viewer.wait()
-	#agent.terminate()
-	#agent.kill()
+	agent.terminate()
 	agent.wait()
 	simulator.terminate()
 
