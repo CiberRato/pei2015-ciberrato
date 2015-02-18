@@ -6,40 +6,39 @@ import os
 
 def main():
 	print "Process ID: ", os.getpid()
-	print "Opening process for simulator"
-	simulator = subprocess.Popen("./iia-myrob/cibertools/simulator-adapted/simulator", stdout=subprocess.PIPE)
+	print "Creating process for simulator.."
+	simulator = subprocess.Popen("./cibertools-v2.2/simulator/simulator", stdout=subprocess.PIPE)
+	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
 
-	print "Opening process for viewer"
+	print "Creating process for viewer.."
 	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
+	print "Successfully opened process with process id: ", viewer.pid
 	time.sleep(1)
-
 
 	viewer_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	viewer_c.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	viewer_c.connect(("127.0.0.1", 7000))
 
-	print "Opening process for agent"
-	agent = subprocess.Popen(["python", "iia-myrob/cibertools/myrob.py"], stdout=subprocess.PIPE)
+	print "Creating process for agent.."
+	agent = subprocess.Popen(["python", "cibertools-v2.2/robsample/robsample_python.py"], stdout=subprocess.PIPE)
+	print "Successfully opened process with process id: ", agent.pid
 	time.sleep(1)
 
-	print "Sends a message to Viewer telling that agents are ready"
+	print "Sending message to Viewer (everything is ready to start)"
 	viewer_c.send("<StartedAgents/>")
+	print "Waiting for simulation to end.."
 	data = viewer_c.recv(4096)
 	while data != "<EndedSimulation/>":
 		data = viewer_c.recv(4096)
 	print "Simulation ended, killing simulator and running agents"
 	viewer_c.close()
-	
-	# Debug purposes
-	#print "Viewer ID: ", viewer.pid()
-	#print "Sim ID: ", simulator.pid()
-	#print "Agent ID: ", agent.pid()
 
 	viewer.wait()
 	agent.terminate()
 	agent.wait()
 	simulator.terminate()
+	simulator.wait()
 
 if __name__ == "__main__":
     main()
