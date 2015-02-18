@@ -1,3 +1,6 @@
 from django.db import models
 
-# Create your models here.
+"""
+See the Group models in authentication/models.py
+The Group models has dependencies with Account model
+"""
