@@ -25,10 +25,15 @@
 		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png">
 		
 		<!-- JS Libs -->
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
 		<script src="js/libs/modernizr.js"></script>
 		<script src="js/libs/selectivizr.js"></script>
+
+        <script data-require="angular.js@1.2.x" src="http://code.angularjs.org/1.2.7/angular.js" data-semver="1.2.7"></script>
+        <script type='text/javascript' src='https://code.jquery.com/jquery-git.js'></script>
+        <script type='text/javascript' src="https://x2js.googlecode.com/hg/xml2json.js"></script>
+        <script src ="js/webviewer.js"></script>
 		
 		<script>
 			$(document).ready(function(){
@@ -121,14 +126,39 @@
 				
 				<!-- Grid row -->
 				<div class="row">
-				
-					<!-- Data block -->
 					<article class="span12 data-block">
-						<div class="data-container">
-                            OK
+						<div class="data-container" ng-controller="ctrl">
+                            <section>
+                                <div class="row">
+                                    <div class="span12" style="text-align: center; vertical-align: middle">
+                                        <svg width="{{28*zoom}}" height="{{14*zoom}}" style="background-color: black">
+                                            <g transform="translate(0,{{14*zoom}})">
+                                                <g transform="scale(1,-1)" ng-repeat="(key, value) in map">
+                                                    <g ng-if="key == 'Beacon'">
+                                                        <circle ng-cx="{{value._X*zoom}}" ng-cy="{{value._Y*zoom}}" r="{{zoom}}" stroke="#00ffff" stroke-width="1" />
+                                                        <image ng-x="{{value._X*zoom-30}}" ng-y="{{value._Y*zoom-30}}" width="{{zoom*2}}" height="{{zoom*2}}" xlink:href="img/svg/cheese.svg" />
+                                                    </g>
+
+                                                    <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
+                                                        <polygon ng-if="v._Height>=beacon_height" ng-points="'{{v.str}}'" style=" fill:#008000" />
+                                                        <polygon ng-if="v._Height<beacon_height" ng-points="'{{v.str}}'" style=" fill:#0000ff" />
+                                                    </g>
+                                                    <g>
+                                                        <circle ng-cx="{{420}}" ng-cy="{{210}}" r="15" stroke="#00ffff" stroke-width="1" />
+                                                        <image ng-x="{{420-15}}" ng-y="{{210-15}}" width="{{zoom}}" height="{{zoom}}" xlink:href="img/svg/mickey_red_smile.svg"  transform = "rotate(-90 420 210)" />
+                                                        <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height  -->
+                                                    </g>
+                                                </g>
+                                            </g>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                </div>
+
+
+                            </section>
 						</div>
 					</article>
-					<!-- /Data block -->
 					
 				</div>
 				<!-- /Grid row -->
@@ -217,9 +247,91 @@
 			<a href="#top" class="btn btn-primary btn-flat pull-right">Top &uarr;</a>
 		</footer>
 		<!-- /Main page footer -->
-		
+
+
+
+        <textarea id="labXML" cols="55" rows="15" style="visibility: hidden; display: none">
+                                            <Lab Name="lab de teste" Height="14.00" Width="28.00">
+                                                <Beacon X="22.00" Y="7.00" Height="2.00"/>
+                                                <Target X="22.00" Y="7.00" Radius="2.00"/>
+                                                <Wall Height="3.00">
+                                                    <Corner X="5.50" Y="12.00"/>
+                                                    <Corner X="0.00" Y="12.00"/>
+                                                    <Corner X="0.00" Y="11.50"/>
+                                                    <Corner X="5.00" Y="11.50"/>
+                                                    <Corner X="5.00" Y="8.50"/>
+                                                    <Corner X="5.50" Y="8.50"/>
+                                                </Wall>
+                                                <Wall Height="3.00">
+                                                    <Corner X="5.50" Y="2.00"/>
+                                                    <Corner X="0.00" Y="2.00"/>
+                                                    <Corner X="0.00" Y="2.50"/>
+                                                    <Corner X="5.00" Y="2.50"/>
+                                                    <Corner X="5.00" Y="5.50"/>
+                                                    <Corner X="5.50" Y="5.50"/>
+                                                </Wall>
+                                                <Wall Height="1.00">
+                                                    <Corner X="25.50" Y="9.50"/>
+                                                    <Corner X="25.50" Y="4.50"/>
+                                                    <Corner X="26.00" Y="4.50"/>
+                                                    <Corner X="26.00" Y="9.50"/>
+                                                </Wall>
+                                                <Wall Height="1.00">
+                                                    <Corner X="20.00" Y="2.00"/>
+                                                    <Corner X="24.50" Y="2.00"/>
+                                                    <Corner X="24.50" Y="2.50"/>
+                                                    <Corner X="20.00" Y="2.50"/>
+                                                </Wall>
+                                                <Wall Height="1.00">
+                                                    <Corner X="20.00" Y="11.50"/>
+                                                    <Corner X="24.50" Y="11.50"/>
+                                                    <Corner X="24.50" Y="12.00"/>
+                                                    <Corner X="20.00" Y="12.00"/>
+                                                </Wall>
+                                                <Wall Height="3.00">
+                                                    <Corner X="11.50" Y="11.60"/>
+                                                    <Corner X="16.50" Y="11.60"/>
+                                                    <Corner X="16.50" Y="12.10"/>
+                                                    <Corner X="11.50" Y="12.10"/>
+                                                </Wall>
+                                                <Wall Height="3.00">
+                                                    <Corner X="8.50" Y="12.00"/>
+                                                    <Corner X="8.50" Y="2.00"/>
+                                                    <Corner X="9.00" Y="2.00"/>
+                                                    <Corner X="9.00" Y="12.00"/>
+                                                </Wall>
+                                                <Wall Height="3.00">
+                                                    <Corner X="11.50" Y="2.00"/>
+                                                    <Corner X="16.50" Y="2.00"/>
+                                                    <Corner X="16.50" Y="2.50"/>
+                                                    <Corner X="11.50" Y="2.50"/>
+                                                </Wall>
+                                                <Wall Height="1.00">
+                                                    <Corner X="18.00" Y="9.50"/>
+                                                    <Corner X="18.00" Y="4.50"/>
+                                                    <Corner X="18.50" Y="4.50"/>
+                                                    <Corner X="18.50" Y="9.50"/>
+                                                </Wall>
+                                                <Wall Height="3.00">
+                                                    <Corner X="13.00" Y="5.00"/>
+                                                    <Corner X="18.00" Y="5.00"/>
+                                                    <Corner X="18.00" Y="5.50"/>
+                                                    <Corner X="13.00" Y="5.50"/>
+                                                </Wall>
+                                                <Wall Height="3.00">
+                                                    <Corner X="13.00" Y="8.50"/>
+                                                    <Corner X="18.00" Y="8.50"/>
+                                                    <Corner X="18.00" Y="9.00"/>
+                                                    <Corner X="13.00" Y="9.00"/>
+                                                </Wall>
+                                            </Lab>
+
+
+                                        </textarea>
+
+
+
 		<!-- Scripts -->
-		<script src="js/navigation.js"></script>
 		<script src="js/bootstrap/bootstrap-affix.js"></script>
 		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
 		<script src="js/bootstrap/bootstrap-collapse.js"></script>
