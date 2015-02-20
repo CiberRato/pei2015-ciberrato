@@ -2,7 +2,6 @@
 from rest_framework import permissions
 
 from authentication.models import Group, GroupMember
-from django.shortcuts import get_object_or_404
 
 
 class IsAdminOfGroup(permissions.BasePermission):
@@ -21,8 +20,15 @@ class IsAdminOfGroup(permissions.BasePermission):
         @rtype:   Boolean
         @return:  True if the user has permission else False
         """
-        group_name = request.path.split("/")[-2:-1][0]
-        group = get_object_or_404(Group.objects.all(), name=group_name)
+        try:
+            group_name = request.path.split("/")[-2:-1][0]
+        except ValueError:
+            return False
+
+        group = Group.objects.filter(name=group_name)
+        if len(group) == 0:
+            return False
+
         group_member = GroupMember.objects.filter(account=request.user, group=group)
         if len(group_member) >= 1:
             return group_member[0].is_admin
