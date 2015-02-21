@@ -33,26 +33,3 @@ class IsAdminOfGroup(permissions.BasePermission):
         if len(group_member) >= 1:
             return group_member[0].is_admin
         return False
-
-    def has_object_permission(self, request, view, obj):
-        """
-        Note: The instance-level has_object_permission method will only be called if the view-level
-        has_permission checks have already passed.
-
-        @type  request: WSGIRequest
-        @param request: Above ^
-
-        @type  view: ViewSets
-        @param view: Above ^
-
-        @type  obj: GroupMember
-        @param obj: authentication.GroupMember
-
-        @rtype:   Boolean
-        @return:  True if the object has permissions else False
-        """
-        if isinstance(obj, GroupMember):
-            user = GroupMember.objects.filter(account=request.user, group=obj.group)
-            if len(user) >= 1:
-                return user[0].is_admin
-        return False
