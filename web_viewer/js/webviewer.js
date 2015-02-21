@@ -1,7 +1,11 @@
 var x2js = new X2JS();
-function convertXml2JSon() {
+function labConvertXml2JSon() {
     return JSON.stringify(x2js.xml_str2json($("#labXML").val()));
 }
+function gridConvertXml2JSon() {
+    return JSON.stringify(x2js.xml_str2json($("#gridXML").val()));
+}
+
 function convertToStringPoints(cornerList, zoom){
     var out = "";
     var b = 0;
@@ -14,15 +18,19 @@ angular.module('myapp', [])
     .controller('ctrl', ['$scope', function($scope){
         $scope.zoom = 30;
 
+        var grid_json_object = gridConvertXml2JSon();
+        var grid_obj = angular.fromJson(grid_json_object);
+        var lab_json_object = labConvertXml2JSon();
+        var lab_obj = angular.fromJson(lab_json_object);
 
-        var json_object = convertXml2JSon();
-        var obj = angular.fromJson(json_object);
-        for(i=0; i<obj.Lab.Wall.length; i++){
-            obj.Lab.Wall[i].str = convertToStringPoints(obj.Lab.Wall[i], $scope.zoom);
+        for(i=0; i<lab_obj.Lab.Wall.length; i++){
+            lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
-        console.log(obj.Lab);
+        console.log(lab_obj.Lab);
         $scope.beacon_height = 2;
-        $scope.map = obj.Lab;
+        $scope.map = lab_obj.Lab;
+        console.log(grid_obj.Grid);
+        $scope.grid = grid_obj.Grid;
     }])
 
     .directive('ngCx', function() {
@@ -60,6 +68,7 @@ angular.module('myapp', [])
             });
         };
     });
+
 
 angular.element(document).ready(function(){
     angular.bootstrap(document, ['myapp']);
