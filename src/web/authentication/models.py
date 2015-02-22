@@ -72,7 +72,7 @@ class Account(AbstractBaseUser):
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(max_length=128, unique=True, blank=False)
     max_members = models.IntegerField(default=5)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -86,8 +86,8 @@ class Group(models.Model):
 
 
 class GroupMember(models.Model):
-    account = models.ForeignKey(Account)
-    group = models.ForeignKey(Group)
+    account = models.ForeignKey(Account, blank=False)
+    group = models.ForeignKey(Group, blank=False)
     is_admin = models.BooleanField(default=False)
 
     def __unicode__(self):
