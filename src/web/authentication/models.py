@@ -3,7 +3,11 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class AccountManager(BaseUserManager):
+
     def create_user(self, email, password=None, **kwargs):
+        """
+        Create an user, with email, username, teaching institution, first name, last name and password
+        """
         if not email:
             raise ValueError("User must be have a valid Email Address")
         if not kwargs.get('username'):
@@ -28,6 +32,9 @@ class AccountManager(BaseUserManager):
         return account
 
     def create_superuser(self, email, password, **kwargs):
+        """
+        Create a superuser, with email, username, teaching institution, first name, last name, password and is_admin == True
+        """
         account = self.create_user(email, password, **kwargs)
         account.is_admin = True
         account.save()

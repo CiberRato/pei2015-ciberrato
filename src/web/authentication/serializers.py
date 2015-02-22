@@ -2,6 +2,11 @@ from rest_framework import serializers
 from authentication.models import Account
 
 class AccountSerializer(serializers.ModelSerializer):
+    """
+    This Account Serializer allow to CRUD the fields: id, email, username, teaching instituition, first name, 
+    last name, password, confirm_password.
+    Create a new user and update user information.
+    """
     password = serializers.CharField(write_only=True, required=False)
     confirm_password = serializers.CharField(write_only=True, required=False)
 
@@ -15,7 +20,6 @@ class AccountSerializer(serializers.ModelSerializer):
 
         def update(self, instance, validated_data):
             instance.email = validated_data.get('email', instance.email)
-            instance.username = validated_data.get('username', instance.username)
             instance.teaching_institution = validated_data.get('teaching_institution', instance.teaching_institution)
             instance.first_name = validated_data.get('first_name', instance.first_name)
             instance.last_name = validated_data.get('last_name', instance.last_name)
