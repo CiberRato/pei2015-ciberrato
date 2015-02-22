@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 class SimulationSerializer(serializers.BaseSerializer):
     """
     This serializer is only to retrieve and list methods.

@@ -13,9 +13,15 @@ class GetSimulation(mixins.ListModelMixin,
     def get_queryset(self):
         return [Simulation.objects.first()]
 
+    # missing change the attribute sent = True
     @api_view(['GET'])
-    def get_simulation(self):
+    def get_simulation(self, request):
+        """
+        B{Retrieve}: the first simulation
+        B{URL:} ../api/v1/get_simulation/
+        """
         queryset = self.get_queryset()
+        print >> sys.stderr, request.build_absolute_url()
 
         if not queryset:
             return Response({'status': 'Without simulation',
