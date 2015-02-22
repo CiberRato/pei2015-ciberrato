@@ -1,107 +1,132 @@
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 
-from rest_framework import permissions, viewsets, status, views, mixins
+from rest_framework import permissions, viewsets, status, mixins
 from rest_framework.response import Response
 
 from authentication.models import Group, GroupMember, Account
 from authentication.serializers import AccountSerializer
 
 from groups.permissions import IsAdminOfGroup
-from groups.serializers import GroupSerializer, UsernameSerializer, Member2GroupSerializer, MemberSerializer
+from groups.serializers import GroupSerializer, Member2GroupSerializer, MemberSerializer
 
-import sys
 
-"""
-CREATE:
->> Create a group and the GroupMember adimin by the user that requested the 
-group create method
-URL: ../api/v1/group/
-Params: name and max_members
-
-RETRIEVE:
->> Retrieve the group attributes by group name
-URL: ../api/v1/group/<group_name>/
-
-DESTROY:
->> Destroy the group by a group admin user and delete all the group members
-URL: ../api/v1/group/<group_name>/
-"""
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.order_by('-name')
     serializer_class = GroupSerializer
 
     def get_permissions(self):
+        """
+        Any operation is permitted only if the user is Authenticated.
+        The create method is permitted only too if the user is Authenticated.
+        Note: The create method isn't a SAFE_METHOD
+        The others actions (Destroy) is only permitted if the user IsAdminOfGroup
+        :return:
+        :rtype:
+        """
         if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.IsAuthenticated(),)
+            return permissions.IsAuthenticated(),
         if self.request.method == 'POST':
-            return (permissions.IsAuthenticated(),)
-        return (permissions.IsAuthenticated(), IsAdminOfGroup(),)
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
-    def create(self, request):
+    def create(self, request, **kwargs):
+        """
+        B{Create} a group and the GroupMember admin by the user that requested the group create method
+        B{URL:} ../api/v1/group/
+
+        @type  name: str
+        @param name: The group name
+        @type  max_members: number
+        @param max_members: max group members
+        """
         serializer = self.serializer_class(data=request.data)
+
         if serializer.is_valid():
             g = Group.objects.create(**serializer.validated_data)
             GroupMember.objects.create(group=g, account=self.request.user, is_admin=True)
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
-        return Response({
-            'status':'Bad request',
-            'message': 'The group could not be created with received data.'
-        }, status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk):
-    	queryset = Group.objects.all()
+        return Response({'status': 'Bad request',
+                         'message': 'The group could not be created with received data.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the group attributes by group name
+        B{URL:} ../api/v1/group/<group_name>/
+
+        @type  pk: str
+        @param pk: The group name
+        """
+        queryset = Group.objects.all()
         group = get_object_or_404(queryset, name=pk)
         serializer = self.serializer_class(group)
         return Response(serializer.data)
 
-    def destroy(self, request, pk):
-    	queryset = Group.objects.all()
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} the group by a group admin user and delete all the group members
+        B{URL:} ../api/v1/group/<group_name>/
+
+        @type  pk: str
+        @param pk: The group name
+        """
+        queryset = Group.objects.all()
         group = get_object_or_404(queryset, name=pk)
+
         group_members = GroupMember.objects.filter(group=group)
         for member in group_members:
-        	member.delete()
-    	group.delete()
-    	return Response({
-            'status':'Deleted',
-            'message': 'The group has been deleted and the group members too.'
-        }, status=status.HTTP_200_OK)
+            member.delete()
 
-    #update? falta acho...
+        group.delete()
+        return Response({'status': 'Deleted',
+                         'message': 'The group has been deleted and the group members too.'},
+                        status=status.HTTP_200_OK)
 
-"""
-ONLY RETRIEVE
->> Retrieve the groups of an Account
-URL: ../api/v1/user_groups/<username>/
-"""
+        # update? missing I think...
+
+
 class AccountGroupsViewSet(mixins.RetrieveModelMixin,
-                                viewsets.GenericViewSet):
+                           viewsets.GenericViewSet):
     queryset = Account.objects.all()
     serializer_class = GroupSerializer
 
     def get_permissions(self):
-        return (permissions.IsAuthenticated(),)
+        """
+        If an user wants to see the groups of another user it must be Authenticated.
+        :return: True if Authenticated or False if not
+        :rtype: permissions.isAuthenticated()
+        """
+        return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk):
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the groups of an Account
+        B{URL:} ../api/v1/user_groups/<username>/
+        """
         self.queryset = self.queryset.get(username=pk)
         serializer = self.serializer_class(self.queryset.groups, many=True)
         return Response(serializer.data)
 
 
-"""
-ONLY Retrieve
->> Retrieve the Group members list
-URL: ../api/v1/group_members/<group_name>/
-"""
 class GroupMembersViewSet(mixins.RetrieveModelMixin,
-                                viewsets.GenericViewSet):
+                          viewsets.GenericViewSet):
     queryset = GroupMember.objects.all()
     serializer_class = AccountSerializer
 
     def get_permissions(self):
-        return (permissions.IsAuthenticated(),)
+        """
+        If one user wants to see the group members list of one group it must be Authenticated.
+        :return: True if Authenticated or False if not
+        :rtype: permissions.isAuthenticated()
+        """
+        return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk):
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the Group members list
+        B{URL:} ../api/v1/group_members/<group_name>/
+        """
         group = get_object_or_404(Group.objects.all(), name=pk)
 
         queryset = self.queryset.filter(group=group)
@@ -111,32 +136,33 @@ class GroupMembersViewSet(mixins.RetrieveModelMixin,
         return Response(serializer.data)
 
 
-"""
-CREATE:
->> Create a GroupMember to a Group
-URL: ../api/v1/group_member/
-Params: user_name and group_name
-
-DESTROY:
->> Destroy a GroupMember from a Group
-URL: ../api/v1/group_member/<group_name>/?username=<user_name>
-
-Retrieve:
->> Retrieve the GroupMember of a Group
-URL: ../api/v1/group_member/<group_name>/?username=<user_name>
-"""
 class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                        mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+                           mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Group.objects.all()
     serializer_class = Member2GroupSerializer
 
     def get_permissions(self):
+        """
+        If one user wants to add one user to the group it must be a Admin of the group.
+        If one user wants to remove other user from the group it must be a admin of the group.
+        The others methods: retrieve it must be only Authenticated.
+        """
         if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.IsAuthenticated(),)
-        return (permissions.IsAuthenticated(), IsAdminOfGroup(),)
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
-    def create(self,request):
+    def create(self, request, **kwargs):
+        """
+        B{Create} a GroupMember to a Group
+        B{URL:} ../api/v1/group_member/
+
+        @type  user_name: str
+        @param user_name: The user name
+        @type  group_name: str
+        @param group_name: The group name
+        """
         serializer = self.serializer_class(data=request.data)
+
         if serializer.is_valid():
             group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
             user = get_object_or_404(Account.objects.all(), username=serializer.validated_data['user_name'])
@@ -144,35 +170,40 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             already_member = (len(GroupMember.objects.filter(group=group, account=user)) >= 1)
 
             if already_member:
-                return Response({
-                    'status':'Bad request',
-                    'message': 'The user is already in the group'
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'status': 'Bad request',
+                                'message': 'The user is already in the group'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             number_of_members = len(GroupMember.objects.filter(group=group))
 
             if number_of_members >= group.max_members:
-                return Response({
-                    'status':'Bad request',
-                    'message': 'The group reached the number max of members:'+str(number_of_members)
-                }, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'status': 'Bad request',
+                                'message': 'The group reached the number max of members:' + str(number_of_members)},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             group_member = GroupMember.objects.create(group=group, account=user)
             group_member_serializer = MemberSerializer(group_member)
 
             return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
-        return Response({
-            'status':'Bad request',
-            'message': 'The group member could not be created with received data.'
-        }, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response({'status': 'Bad request',
+                        'message': 'The group member could not be created with received data.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, pk):
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} a GroupMember from a Group
+        B{URL:} ../api/v1/group_member/<group_name>/?username=<user_name>
+
+        @type  user_name: str
+        @param user_name: The user name
+        @type  group_name: str
+        @param group_name: The group name
+        """
         if 'username' not in request.GET:
-            return Response({
-                'status':'Bad request',
-                'message': 'Please provide the ?username=*username*'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                            'message': 'Please provide the ?username=*username*'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         group = get_object_or_404(Group.objects.all(), name=pk)
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
@@ -180,22 +211,29 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
 
         if member_not_in_group:
-            return Response({
-                'status':'Bad request',
-                'message': 'The user is not in the group'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                            'message': 'The user is not in the group'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         group_member = GroupMember.objects.get(group=group, account=user)
         group_member.delete()
 
         return Response(status=status.HTTP_200_OK)
-    
-    def retrieve(self, request, pk):
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the GroupMember of a Group
+        B{URL:} ../api/v1/group_member/<group_name>/?username=<user_name>
+
+        @type  user_name: str
+        @param user_name: The user name
+        @type  group_name: str
+        @param group_name: The group name
+        """
         if 'username' not in request.GET:
-            return Response({
-                'status':'Bad request',
-                'message': 'Please provide the ?username=*username*'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                            'message': 'Please provide the ?username=*username*'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         group = get_object_or_404(Group.objects.all(), name=pk)
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
@@ -203,35 +241,43 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
 
         if member_not_in_group:
-            return Response({
-                'status':'Bad request',
-                'message': 'The user is not in the group'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                            'message': 'The user is not in the group'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         group_member = GroupMember.objects.get(group=group, account=user)
         group_member_serializer = MemberSerializer(group_member)
 
         return Response(group_member_serializer.data, status=status.HTTP_200_OK)
 
-"""
-UPDATE
->> Make admin of the Group
-URL: ../api/v1/make_group_admin/<group_name>/?username=<user_name>
-"""
+
 class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
-                                viewsets.GenericViewSet):
+                             viewsets.GenericViewSet):
     queryset = Group.objects.all()
     serializer_class = MemberSerializer
 
     def get_permissions(self):
-        return (permissions.IsAuthenticated(), IsAdminOfGroup(),)
+        """
+        If one user wants to add one user to the admin list of the group it must be a Admin of the group.
+        If one user wants to remove other user from the admin list of group it must be a admin of the group.
+        The others methods: retrieve it must be only Authenticated.
+        """
+        return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
-    def update(self, request, pk):
+    def update(self, request, pk, **kwargs):
+        """
+        B{Update}: make admin of the Group
+        B{URL:} ../api/v1/make_group_admin/<group_name>/?username=<user_name>
+
+        @type  username: str
+        @param username: The user name
+        @type  pk: str
+        @param pk: The group name
+        """
         if 'username' not in request.GET:
-            return Response({
-                'status':'Bad request',
-                'message': 'Please provide the ?username=*username*'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                            'message': 'Please provide the ?username=*username*'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         group = get_object_or_404(Group.objects.all(), name=pk)
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
@@ -239,10 +285,9 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
         member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
 
         if member_not_in_group:
-            return Response({
-                'status':'Bad request',
-                'message': 'The user is not in the group'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                            'message': 'The user is not in the group'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         group_member = GroupMember.objects.get(group=group, account=user)
         group_member.is_admin = True
