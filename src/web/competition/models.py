@@ -14,10 +14,10 @@ class Simulation(models.Model):
 
     sent = models.BooleanField(default=False)
 
-    param_list_path = models.CharField(max_length=128)
-    grid_path = models.CharField(max_length=128)
-    lab_path = models.CharField(max_length=128)
-    agent_path = models.CharField(max_length=128)
+    param_list_path = models.URLField(max_length=128)
+    grid_path = models.URLField(max_length=128)
+    lab_path = models.URLField(max_length=128)
+    agent_path = models.URLField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -26,4 +26,4 @@ class Simulation(models.Model):
         ordering = ['created_at']
 
     def __unicode__(self):
-        return self.user + ":" + self.agent_path
+        return self.agent_path
