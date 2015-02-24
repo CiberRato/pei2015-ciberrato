@@ -4,7 +4,7 @@
 <!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 	<head>
 		<meta charset="utf-8">
-		<title>Dashboard | Bootstrap Admin Template</title>
+		<title>Main Page | Bootstrap Admin Template</title>
 		<meta name="description" content="">|
 		<meta name="robots" content="index, follow">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,8 +55,9 @@
 			<!-- Alternative navigation -->
 			<nav>
 				<ul>
-					<li><a href="#">Settings account</a></li>
-					<li><a href="#">Logout</a></li>
+
+					<li><a href="gestaoUtilizador.html">Settings</a></li>
+					<li><a href="login.html">Logout</a></li>
 				</ul>
 			</nav>
 			<!-- /Alternative navigation -->
@@ -85,7 +86,14 @@
 				
 				<!-- Main navigation -->
 				<nav class="main-navigation" role="navigation">
+					<h2> Administration Menu </h2>
 					<ul>
+						<li class="current"><a href="manageUsers.html" class="no-submenu"><span class="awe-home"></span>Manage Users</a></li>
+						<li><a href="submissionsList.html" class="no-submenu"><span class="awe-tasks"></span>Submissions List</a></li>
+						<li><a href="ciberscores.html" class="no-submenu"><span class="awe-table"></span>Table Ciber Scores <span class="badge">7</span></a></li>
+						<li><a href="beginCompetition.html" class="no-submenu"><span class="awe-picture"></span>Begin competition <span class="badge">23</span></a></li>
+					</ul> -->
+					<!-- <ul>
 						<li class="current"><a href="index.html" class="no-submenu"><span class="awe-home"></span>Dashboard</a></li>
 						<li><a href="forms.html" class="no-submenu"><span class="awe-tasks"></span>Forms</a></li>
 						<li><a href="charts.html" class="no-submenu"><span class="awe-signal"></span>Charts <span class="badge">7</span></a></li>
@@ -116,7 +124,7 @@
 								<li><a href="503.html">Error 503</a></li>
 							</ul>
 						</li>
-					</ul>
+					</ul> -->
 				</nav>
 				<!-- /Main navigation -->
 				
@@ -139,7 +147,8 @@
 				<!-- Page header -->
 				<article class="page-header">
 					<h1>Welcome to CiberOnline</h1>
-					<p>CiberOnline is a project developed by a group of students of University of the Aveiro. <strong>(Escrever mais cenas depois</strong></p>
+					<p>CiberOnline is a project developed by a group of students of University of the Aveiro. </p>
+					<p>In this page you can go to competition page clicking on "CiberOnline Competition" label, read the rules, how to submit code, and much more.</p>
 				</article>
 				<!-- /Page header -->
 				
@@ -150,12 +159,7 @@
 					<article class="span12 data-block">
 						<div class="data-container">
 							<header>
-								<h2><span class="awe-star"></span> Ciber Responsive Admin Template</h2>
-								<ul class="data-header-actions">
-									<li>
-										<a class="btn btn-alt btn-inverse" href="#">Export</a>
-									</li>
-								</ul>
+								<h2><span class="awe-star"></span> <a href="waitingCompetition.html"> CiberOnline Competition</a></h2>
 							</header>
 							<section>
 								<div id="demo-1" class="flot"></div>
@@ -235,7 +239,7 @@
 					<article class="span6 data-block">
 						<div class="data-container">
 							<header>
-								<h2><a href="#">Ciber Scores</a></h2>
+								<h2><a href="ciberscores.html">Ciber Scores</a></h2>
 								<ul class="data-header-actions">
 									<li><span class="loading" title="Loading, please wait&hellip;">Loading&hellip;</span></li>
 								</ul>
@@ -288,34 +292,21 @@
 					<article class="span6 data-block">
 						<div class="data-container">
 							<header>
-								<h2>Testing report</h2>
-								<form class="header-search">
-									<input type="text" placeholder="Search&hellip;">
-								</form>
+								<h2>Submit your code</h2>	
 							</header>
 							<section>
 								<form>
 									<fieldset>
-										<div class="control-group">
-											<label class="control-label" for="subject">Subject</label>
-											<div class="controls">
-												<input id="subject" type="text">
-											</div>
-										</div>
-										<div class="control-group">
-											<label class="control-label" for="message">Message</label>
-											<div class="controls">
-												<textarea id="message" rows="5"></textarea>
-											</div>
-										</div>
+
 										<div class="form-actions">
-											<button class="btn btn-primary" type="submit">Submit report</button>
+											<a class="btn btn-primary" type="submit" href="SubmeterCodigo.html">Submit report</a>
 										</div>
 									</fieldset>
 								</form>
 							</section>
 							<footer class="info">
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. </p>
+								<p>	To submit your code to to participate in CiberOnline, click on button <strong> Submit Code Page </strong> 
+								and you will redirected to the page that is possible to do this function</p>
 							</footer>
 						</div>
 					</article>
@@ -326,63 +317,14 @@
 				
 				<div class="alert alert-inverse">
 					<button class="close" type="button" data-dismiss="alert">×</button>
-					<strong>Black alert box!</strong> Come to the dark side, we have cookies.
+					<strong>Some curiosities of this project</strong>
 				</div>
 				
 				<!-- Grid row -->
 				<div class="row">
 					
 					<!-- Data block -->
-					<article class="span4 data-block todo-block">
-						<div class="data-container">
-							<header>
-								<h2><span class="awe-edit"></span> My TODO list</h2>
-							</header>
-							<section>
-								<form>
-									<table class="table">
-										<tbody>
-											<tr class="done">
-												<td><input type="checkbox" value="done" checked></td>
-												<td>
-													<p>doItNow(); does not work as expected</p>
-													<span>completed <time>Apr 12</time></span>
-												</td>
-											</tr>
-											<tr>
-												<td><input type="checkbox" value="done"></td>
-												<td>
-													<p>buy some more socks</p>
-													<span>due <time>Apr 12</time></span>
-												</td>
-											</tr>
-											<tr>
-												<td><input type="checkbox" value="done"></td>
-												<td>
-													<p><span class="label label-important">Important</span> meeting at 10:30 am</p>
-													<span>due <time>Apr 12</time></span>
-												</td>
-											</tr>
-											<tr>
-												<td><input type="checkbox" value="done"></td>
-												<td>
-													<p>take out the trash</p>
-													<span>due <time>Apr 17</time></span>
-												</td>
-											</tr>
-											<tr>
-												<td><input type="checkbox" value="done"></td>
-												<td>
-													<p><span class="label label-success">Party</span> Erick birthday</p>
-													<span>due <time>Apr 22</time></span>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</form>
-							</section>
-						</div>
-					</article>
+					
 					<!-- /Data block -->
 					
 					<!-- Data block -->

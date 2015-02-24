@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<title>Edit Profile | Bootstrap Admin Template</title>
+		<meta name="description" content="">|
+		<meta name="robots" content="index, follow">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<!-- jQuery TagsInput Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.tagsinput.css'>
+		
+		<!-- jQuery jWYSIWYG Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.jwysiwyg.css'>
+		
+		<!-- Bootstrap wysihtml5 Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/bootstrap-wysihtml5.css'>
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/ciberonline-green.css'>
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png">
+		
+		<!-- JS Libs -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Tooltips
+				$('[title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+				// Tabs
+				$('.demoTabs a').click(function (e) {
+					e.preventDefault();
+					$(this).tab('show');
+				})
+				
+			});
+		</script>
+	<!-- Shared on MafiaShare.net  --><!-- Shared on MafiaShare.net  --></head>
+	<body>
+		
+		<!-- Main page header -->
+		<header class="container">
+		
+			<!-- Main page logo -->
+			<h1><a href="login.html" class="brand">Ciber</a></h1>
+			
+			<!-- Alternative navigation -->
+			<nav>
+				<ul>
+					<li>
+					<li><a href="login.html">Logout</a></li>
+				</ul>
+			</nav>
+			<!-- /Alternative navigation -->
+			
+		</header>
+		<!-- /Main page header -->
+		
+		<!-- Main page container -->
+		<section class="container" role="main">
+		
+			<!-- Left (navigation) side -->
+			<div class="navigation-block">
+			
+				<!-- User profile -->
+				<section class="user-profile">
+						<strong>User:</strong> <a href="#" class="User">John Pixel</a><p></p>
+						<strong>Educacional institution</strong>: <a href="http://www.ua.pt/">University of Aveiro</a>
+				</section>
+				<!-- /User profile -->
+	
+			</div>
+			<!-- Left (navigation) side -->
+			
+			<!-- Right (content) side -->
+			<div class="content-block" role="main">
+			
+				<!-- Page header -->
+				<article class="page-header">
+				</article>
+				<!-- /Page header -->
+				
+				<!-- Grid row -->
+				<div class="row">
+				
+					<!-- Data block -->
+					<article class="span12 data-block">
+						<div class="data-container">
+							<header>
+								<h2>Edit Profile</h2>
+							<section class="tab-content">
+								<br></br>
+								<!-- Tab #basic -->
+								<div class="tab-pane active" id="basic">
+								
+									<!-- Example vertical forms -->
+									<div class="row-fluid">
+										<div class="span4">
+											<p>In this page you can edit your profile. Please edit your <strong>first name</strong>, 
+												<strong>last name</strong>,<strong>email</strong> and <strong>educacional institution</strong>.
+											</p>
+											<br></br>
+											<p> When you complete your editions, please click on button <strong>Save changes</strong> to save your profile with new information.</p>
+
+											<p class="help-block"> The password is edited in other page</p>
+										</div>
+										<div class="span8">
+											<form>
+												<fieldset>
+													<div class="control-group">
+														<label class="control-label" for="input">First Name</label>
+														<div class="controls">
+															<input id="firstname" class="input-xlarge" type="text" placeholder="your first name" name="name">
+															<!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
+														</div>
+													</div>
+
+													<div class="control-group">
+														<label class="control-label" for="input">Last Name</label>
+														<div class="controls">
+															<input id="lastname" class="input-xlarge" type="text" placeholder="your last name" name="name">
+															<!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
+														</div>
+													</div>
+
+													<div class="control-group">
+														<label class="control-label" for="input">Email</label>
+														<div class="controls">
+															<input id="email" class="input-xlarge" type="text" placeholder="your email address" name="name">
+															<!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
+														</div>
+													</div>
+													
+													<div class="control-group">
+														<label class="control-label" for="select">Educacional Institution</label>
+														<div class="controls">
+															<select id="select">
+																<option>Universidade de Aveiro</option>
+																<option>Universidade de Coimbra</option>
+																<option>Intituto Politécnico de Leiria</option>
+																<option>Universidade do Minho</option>
+																<option>Universidade de Trás-os-Montes e Alto Douro</option>
+																<option>Universidade da Beira Interior</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-actions">
+														<a class="btn btn-alt btn-large btn-primary" href="SucessEdit.html" type="submit">Save changes</a>
+													</div>
+
+													<div class="form-actions">
+														<a class="btn btn-large btn-inverse btn-alt" href="PassOrProfile.html"><span class="pull-left"> </span> Back </a>
+													</div>		
+
+													<!-- info abaixo -->	
+													<footer class="info">
+														<p>After you click on "Save Changes", the profile information will be saved in a database.</p>
+														<p>If you want to cancel this operation, please click on "Back".</p>
+
+													</footer>
+												</fieldset>
+											</form>
+										</div>
+									</div>
+								</div>
+							</section>	
+						</div>
+					</article>
+				</div>
+			</div>			
+		</section>
+		<!-- /Main page container -->
+		
+		<!-- Main page footer -->
+		<footer class="container">
+			<p>Built with love on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a> by <a href="http://www.ciberonline.com">CiberOnline</a>.</p>
+			<ul>
+				<li><a href="#" class="">Support</a></li>
+				<li><a href="#" class="">Documentation</a></li>
+				<li><a href="#" class="">API</a></li>
+			</ul>
+			<a href="#top" class="btn btn-primary btn-flat pull-right">Top &uarr;</a>
+		</footer>
+		<!-- /Main page footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navigation.js"></script>
+		<script src="js/bootstrap/bootstrap-affix.js"></script>
+		<script src="js/bootstrap/bootstrap-alert.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-tab.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		<script src="js/bootstrap/bootstrap-fileupload.js"></script>
+		<script src="js/bootstrap/bootstrap-inputmask.js"></script>
+
+		<!-- jQuery TagsInput -->
+		<script src="js/plugins/tagsInput/jquery.tagsinput.min.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				$('.tagsinput').tagsInput();
+			
+			});
+		</script>
+		
+		<!-- jQuery jWYSIWYG -->
+		<script src="js/plugins/jWYSIWYG/jquery.wysiwyg.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.wysiwyg').wysiwyg({
+					controls: {
+						bold          : { visible : true },
+						italic        : { visible : true },
+						underline     : { visible : true },
+						strikeThrough : { visible : true },
+						
+						justifyLeft   : { visible : true },
+						justifyCenter : { visible : true },
+						justifyRight  : { visible : true },
+						justifyFull   : { visible : true },
+			
+						indent  : { visible : true },
+						outdent : { visible : true },
+			
+						subscript   : { visible : true },
+						superscript : { visible : true },
+						
+						undo : { visible : true },
+						redo : { visible : true },
+						
+						insertOrderedList    : { visible : true },
+						insertUnorderedList  : { visible : true },
+						insertHorizontalRule : { visible : true },
+						
+						cut   : { visible : true },
+						copy  : { visible : true },
+						paste : { visible : true }
+					},
+					events: {
+						click: function(event) {
+							if ($("#click-inform:checked").length > 0) {
+								event.preventDefault();
+								alert("You have clicked jWysiwyg content!");
+							}
+						}
+					}
+				});
+				
+			});
+		</script>
+		
+		<!-- Wysihtml5 -->
+		<script src="js/plugins/wysihtml5/wysihtml5-0.3.0.js"></script>
+		<script src="js/plugins/wysihtml5/bootstrap-wysihtml5.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.wysihtml5').wysihtml5();
+				
+			});
+		</script>
+		
+		<!-- Colorpicker -->
+		<script src="js/plugins/colorpicker/bootstrap-colorpicker.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				var preview = $('.colorpicker-preview')[0].style;
+				$('.colorpicker').colorpicker().on('changeColor', function(ev){
+					preview.backgroundColor = ev.color.toHex();
+				});
+				
+			});
+		</script>
+		
+		<!-- Colorpicker -->
+		<script src="js/plugins/datepicker/bootstrap-datepicker.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.datepicker').datepicker();
+				
+			});
+		</script>
+		
+	</body>
+</html>
