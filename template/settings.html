@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<title>Settings | Bootstrap Admin Template</title>
+		<meta name="description" content="">|
+		<meta name="robots" content="index, follow">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<!-- jQuery TagsInput Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.tagsinput.css'>
+		
+		<!-- jQuery jWYSIWYG Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/jquery.jwysiwyg.css'>
+		
+		<!-- Bootstrap wysihtml5 Styles -->
+		<link rel='stylesheet' type='text/css' href='css/plugins/bootstrap-wysihtml5.css'>
+		
+		<!-- CSS styles -->
+		<link rel='stylesheet' type='text/css' href='css/ciberonline-green.css'>
+		
+		<!-- Fav and touch icons -->
+		<link rel="shortcut icon" href="img/icons/favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png">
+		
+		<!-- JS Libs -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+		<script src="js/libs/modernizr.js"></script>
+		<script src="js/libs/selectivizr.js"></script>
+		
+		<script>
+			$(document).ready(function(){
+				
+				// Tooltips
+				$('[title]').tooltip({
+					placement: 'top'
+				});
+				
+				// Dropdowns
+				$('.dropdown-toggle').dropdown();
+				
+				// Tabs
+				$('.demoTabs a').click(function (e) {
+					e.preventDefault();
+					$(this).tab('show');
+				})
+				
+			});
+		</script>
+	<!-- Shared on MafiaShare.net  --><!-- Shared on MafiaShare.net  --></head>
+	<body>
+		
+		<!-- Main page header -->
+		<header class="container">
+		
+			<!-- Main page logo -->
+			<h1><a href="login.html" class="brand">Ciber</a></h1>
+			
+			<!-- Alternative navigation -->
+			<nav>
+				<ul>
+					<li><a href="login.html">Logout</a></li>
+				</ul>
+			</nav>
+			<!-- /Alternative navigation -->
+			
+		</header>
+		<!-- /Main page header -->
+		
+		<!-- Main page container -->
+		<section class="container" role="main">
+		
+			<!-- Left (navigation) side -->
+			<div class="navigation-block">
+			
+				<!-- User profile -->
+				<section class="user-profile">
+						<strong>User:</strong> <a href="#" class="User">John Pixel</a><p></p>
+						<strong>Educacional institution</strong>: <a href="http://www.ua.pt/">University of Aveiro</a>
+				</section>
+				<!-- /User profile -->
+				
+				<!-- Main navigation -->
+				<nav class="main-navigation" role="navigation">
+					<h2> Settings Menu </h2>
+					<ul>
+						<li>
+							<a href="#"><span class="awe-home"></span><strong>User Management</strong></a>
+							<ul>
+								<li><a href="changePassword.html">Change Password</a></li>
+								<li><a href="editProfile.html">Edit Profile</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="#"><span class="awe-home"></span><strong>Team Management</strong></a>
+							<ul>
+								<li><a href="createGroup.html">Create Team</a></li>
+								<li><a href="editGroup.html">Edit Team</a></li>
+								<li><a href="eliminateGroup.html">Eliminate Team</a></li>
+								<li><a href="seeGroups.html">See Teams</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+				<!-- /Main navigation -->
+				
+				<!-- Sample side note -->
+				<section class="side-note">
+					<div class="side-note-container">
+						<h2>Sample Side Note</h2>
+						<p>If you want to return to Main Menu page, click on the bottom button <strong>Back</strong>.</p>
+					</div>
+					<div class="side-note-bottom"></div>
+				</section>
+				<!-- /Sample side note -->
+				
+			</div>
+			<!-- Left (navigation) side -->
+			
+			<!-- Right (content) side -->
+			<div class="content-block" role="main">
+			
+				<!-- Page header -->
+				<article class="page-header">
+					<h1>Settings</h1>
+					<p>In this page is explained below how to use it.</p>
+					<p>Here you are able to Edit your Profile, Change Password in the section of the left menu <strong>User Management</strong>, and in the section <strong>Team Management</strong> you are able to Create Team, Edit Team, Eliminate Team and finally See Teams.</p>
+
+				</article>
+				<!-- /Page header -->
+				
+				<!-- Grid row -->
+				<div class="row">
+				
+					<!-- Data block -->
+					<article class="span12 data-block">
+						<div class="data-container">
+							<header>
+								<h2>A little explanation of User Management and Team Management pages</h2>
+							</header>
+							<section class="tab-content">
+							
+								<!-- Tab #basic -->
+								<div class="tab-pane active" id="basic">
+								
+									<!-- Example vertical forms -->
+									<div class="row-fluid">
+										<div class="span4">
+											<h3>User Management page</h3>
+											<p>In these pages, the user can change your password and edir your profile. The aspects of the pages will be as it is explained in rigth side</p>
+											<br></br>
+											<p>But for do these 2 operations, please go to the  <strong>Settings Menu</strong> click on User Management and choose one of those options</p>
+										</div>
+										<div class="span8">
+											<form>
+												<fieldset>
+													<div class="control-group">
+														<h3>Edit Profile</h3>
+														<label class="control-label" for="disabledInput">First Name</label>
+														<div class="form-controls">
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="e.g: Gabriel" disabled>
+															<p class="help-block">Here you can input your first name</p>
+														</div>
+													</div>	
+													<!-- </div>
+														
+														<label class="control-label" for="input">First Name</label>
+														<div class="controls">
+															<input id="input" class="input-xlarge" type="text">
+															
+														</div>
+													</div> -->
+													<div class="control-group">
+														<label class="control-label" for="disabledInput">Last Name</label>
+														<div class="form-controls">
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="e.g: Vieira" disabled>
+															<p class="help-block">Here you can input your last name</p>
+														</div>
+													</div>
+
+													<div class="control-group">
+														<label class="control-label" for="disabledInput">Email</label>
+														<div class="form-controls">
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="e.g: gabvieira1994@hotmail.com" disabled>
+															<p class="help-block">Here you can input your educational institution</p>
+														</div>
+													</div>
+
+													<div class="control-group">
+														<label class="control-label" for="disabledInput">Educational Institution</label>
+														<div class="form-controls">
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="Universidade de Aveiro" disabled>
+															<p class="help-block">Here you can input your educational institution</p>
+														</div>
+													</div>
+													
+													<br></br>	
+													<div class="control-group">
+														<h3>Change Password</h3>
+														<label class="control-label" for="disabledInput">Password</label>
+														<div class="form-controls">
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="*******" disabled>
+															<p class="help-block">Here you can input your password</p>
+														</div>
+													</div>
+
+													<div class="control-group">
+														<label class="control-label" for="disabledInput">Confirm Password</label>
+														<div class="form-controls">
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="*******" disabled>
+															<p class="help-block">After input password, you must confirm it</p>
+														</div>
+													</div>
+													<!-- <div class="form-actions">
+														<button class="btn btn-alt btn-large btn-primary" type="submit">Save changes</button>
+													</div> -->
+												</fieldset>
+											</form>
+										</div>
+									</div>
+									
+									<!-- Example horizontal forms -->
+									<div class="row-fluid">
+										<div class="span4">
+											<h3>Team Management</h3>
+											<p>In these pages, the user can Create Team, Edit Team, Eliminate Team and See Teams. The aspects of the pages will be as it is explained in rigth side</p>
+											<p>The page <strong>Edit Team</strong> presents the same aspect of the page <strong>Create Team</strong></p>
+											<p>The page <strong>Eliminate Team</strong> presents a table like ciber scores and if you click over the name of the team you can delete it</p>
+											<p><strong>See Teams</strong> page presents a table like Ciber Scores table with the information of all teams</p>
+											<br></br>
+											<p>But for do these 4 operations, please go to the  <strong>Settings Menu</strong> click on Team Management and choose one of those options</p>
+
+										</div>
+										<div class="span8">
+											<form class="form-horizontal">
+												<fieldset>
+													<div class="control-group">
+														<h3>Create Team</h3>
+														<label class="control-label" for="disabledInput">Team Name</label>
+														<div class="form-controls">
+															<br></br>
+															<input id="disabledInput" class="input-xlarge" type="text" placeholder="e.g: rabanozes" disabled>
+															<p class="help-block">Here you can input your team name</p>
+														</div>
+													</div>	
+													
+
+													<div class="control-group">
+														<label class="control-label" for="disabledInput">Number of elements</label>
+														<div class="form-controls">
+															<br></br>
+															<select id="disabledInput" disabled>
+																<option>1</option>
+																<option>2</option>
+																<option>3</option>
+																<option>4</option>
+																<option>5</option>
+																<option>6</option>
+																<option>7</option>
+															</select>
+															<p class="help-block">Here you can edit the number of the elements team</p>
+														</div>
+													</div>
+
+													<div class="control-group">
+														<h3>See Teams</h3>
+														<table class="table table-stripped table-hover">
+															<thead>
+																<tr>
+																	<th>Team </th>
+																	<th>Number of elements</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td>Trinity</td>
+																	<td>5</td>
+																</tr>
+																<tr>
+																	<td>Standard</td>
+																	<td>3</td>
+																</tr>
+																<tr>
+																	<td>Serial</td>
+																	<td>4</td>
+																</tr>
+																<tr>
+																	<td>Farka</td>
+																	<td>2</td>
+																</tr>
+															</tbody>
+														</table>														
+													</div>	
+												</fieldset>
+											</form>
+											<div class="form-actions">
+												<a class="btn btn-large btn-inverse btn-alt" href="index.html"><span class="pull-left"> </span> Back </a>
+											</div>	
+										</div>
+									</div>									
+								</div>
+							</section>
+						</div>		
+					</article>			
+				</div>
+			</div>	
+		</section>
+		<!-- /Main page container -->
+		
+		<!-- Main page footer -->
+		<footer class="container">
+			<p>Built with love on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a> by <a href="http://www.ciberonline.com">CiberOnline</a>.</p>
+			<ul>
+				<li><a href="#" class="">Support</a></li>
+				<li><a href="#" class="">Documentation</a></li>
+				<li><a href="#" class="">API</a></li>
+			</ul>
+			<a href="#top" class="btn btn-primary btn-flat pull-right">Top &uarr;</a>
+		</footer>
+		<!-- /Main page footer -->
+		
+		<!-- Scripts -->
+		<script src="js/navigation.js"></script>
+		<script src="js/bootstrap/bootstrap-affix.js"></script>
+		<script src="js/bootstrap/bootstrap-alert.js"></script>
+		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+		<script src="js/bootstrap/bootstrap-tab.js"></script>
+		<script src="js/bootstrap/bootstrap-collapse.js"></script>
+		<script src="js/bootstrap/bootstrap-fileupload.js"></script>
+		<script src="js/bootstrap/bootstrap-inputmask.js"></script>
+
+		<!-- jQuery TagsInput -->
+		<script src="js/plugins/tagsInput/jquery.tagsinput.min.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+			
+				$('.tagsinput').tagsInput();
+			
+			});
+		</script>
+		
+		<!-- jQuery jWYSIWYG -->
+		<script src="js/plugins/jWYSIWYG/jquery.wysiwyg.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.wysiwyg').wysiwyg({
+					controls: {
+						bold          : { visible : true },
+						italic        : { visible : true },
+						underline     : { visible : true },
+						strikeThrough : { visible : true },
+						
+						justifyLeft   : { visible : true },
+						justifyCenter : { visible : true },
+						justifyRight  : { visible : true },
+						justifyFull   : { visible : true },
+			
+						indent  : { visible : true },
+						outdent : { visible : true },
+			
+						subscript   : { visible : true },
+						superscript : { visible : true },
+						
+						undo : { visible : true },
+						redo : { visible : true },
+						
+						insertOrderedList    : { visible : true },
+						insertUnorderedList  : { visible : true },
+						insertHorizontalRule : { visible : true },
+						
+						cut   : { visible : true },
+						copy  : { visible : true },
+						paste : { visible : true }
+					},
+					events: {
+						click: function(event) {
+							if ($("#click-inform:checked").length > 0) {
+								event.preventDefault();
+								alert("You have clicked jWysiwyg content!");
+							}
+						}
+					}
+				});
+				
+			});
+		</script>
+		
+		<!-- Wysihtml5 -->
+		<script src="js/plugins/wysihtml5/wysihtml5-0.3.0.js"></script>
+		<script src="js/plugins/wysihtml5/bootstrap-wysihtml5.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.wysihtml5').wysihtml5();
+				
+			});
+		</script>
+		
+		<!-- Colorpicker -->
+		<script src="js/plugins/colorpicker/bootstrap-colorpicker.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				var preview = $('.colorpicker-preview')[0].style;
+				$('.colorpicker').colorpicker().on('changeColor', function(ev){
+					preview.backgroundColor = ev.color.toHex();
+				});
+				
+			});
+		</script>
+		
+		<!-- Colorpicker -->
+		<script src="js/plugins/datepicker/bootstrap-datepicker.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				
+				$('.datepicker').datepicker();
+				
+			});
+		</script>
+		
+	</body>
+</html>
