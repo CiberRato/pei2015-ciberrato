@@ -5,7 +5,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Main Page | Bootstrap Admin Template</title>
-		<meta name="description" content="">|
+		<meta name="description" content="">
 		<meta name="robots" content="index, follow">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
@@ -40,7 +40,7 @@
 				
 			});
 		</script>
-	<!-- Shared on MafiaShare.net  --><!-- Shared on MafiaShare.net  --></head>
+	</head>
 	<body>
 		
 		<!-- Main page header -->
@@ -52,13 +52,10 @@
 			<!-- Alternative navigation -->
 			<nav>
 				<ul>
-
-					<li><a href="settings.html">Settings</a></li>
-					<li><a href="login.html">Logout</a></li>
+					<li><a href="login.html">Universidade de Aveiro</a></li>
+					<li><a href="login.html">Ciber Rato</a></li>
 				</ul>
 			</nav>
-			<!-- /Alternative navigation -->
-			
 		</header>
 		<!-- /Main page header -->
 		
@@ -69,9 +66,22 @@
 			<div class="navigation-block">
 			
 				<!-- User profile -->
-				<section class="user-profile">
+				<!-- <section class="user-profile">
 						<strong>User:</strong> <a href="#" class="User">John Pixel</a><p></p>
 						<strong>Educacional institution</strong>: <a href="http://www.ua.pt/">University of Aveiro</a>
+				</section>
+ -->
+				<section class="user-profile">
+					<figure>
+						<img alt="John Pixel avatar" src="http://www.gravatar.com/avatar/306e22d51e339755ae9ff3daf0e9858e?s=60">
+						<figcaption>
+							<strong><a href="#" class="">Gabriel Vieira</a></strong>
+							<em>Universidade de Aveiro</em>
+							<ul>
+								<li><a class="btn btn-primary btn-flat" href="#" title="Account settings">Logout</a></li>
+							</ul>
+						</figcaption>
+					</figure>
 				</section>
 				<!-- /User profile -->
 				
@@ -83,45 +93,41 @@
 				
 				<!-- Main navigation -->
 				<nav class="main-navigation" role="navigation">
-					<h2> Administration Menu </h2>
 					<ul>
-						<li class="current"><a href="manageUsers.html" class="no-submenu"><span class="awe-home"></span>Manage Users</a></li>
-						<li><a href="submissionsList.html" class="no-submenu"><span class="awe-tasks"></span>Submissions List</a></li>
-						<li><a href="ciberscores.html" class="no-submenu"><span class="awe-table"></span>Table Ciber Scores <span class="badge">7</span></a></li>
-						<li><a href="beginCompetition.html" class="no-submenu"><span class="awe-picture"></span>Begin competition <span class="badge">23</span></a></li>
-					</ul> -->
-					<!-- <ul>
-						<li class="current"><a href="index.html" class="no-submenu"><span class="awe-home"></span>Dashboard</a></li>
-						<li><a href="forms.html" class="no-submenu"><span class="awe-tasks"></span>Forms</a></li>
-						<li><a href="charts.html" class="no-submenu"><span class="awe-signal"></span>Charts <span class="badge">7</span></a></li>
-						<li><a href="tables.html" class="no-submenu"><span class="awe-table"></span>Tables <span class="badge">23</span></a></li>
+
 						<li>
-							<a href="#"><span class="awe-picture"></span>Gallery</a>
+							<a href="index.html"><span class="awe-home"></span><strong>Home Page</strong></a>
+						</li>
+						<li>
+							<a href="#"><span class="awe-user"></span><strong>User Management</strong></a>
 							<ul>
-								<li><a href="gallery.html">Car Gallery</a></li>
-								<li><a href="gallery.html">Food Gallery</a></li>
-								<li><a href="gallery.html">Art Gallery</a></li>
-								<li><a href="gallery.html">Animal Gallery</a></li>
-								<li><a href="gallery.html">Super long name to see how it collapse</a></li>
+								<li><a href="changePass.html">Change Password</a></li>
+								<li><a href="editProfile.html">Edit Profile</a></li>
 							</ul>
 						</li>
-						<li><a href="file-explorer.html" class="no-submenu"><span class="awe-file"></span>File explorer</a></li>
-						<li><a href="calendar.html" class="no-submenu"><span class="awe-calendar"></span>Calendar</a></li>
-						<li><a href="ui-buttons.html" class="no-submenu"><span class="awe-magic"></span>UI & Buttons</a></li>
-						<li><a href="typo.html" class="no-submenu"><span class="awe-font"></span>Typography</a></li>
-						<li><a href="grid.html" class="no-submenu"><span class="awe-th"></span>Grid</a></li>
 						<li>
-							<a href="#"><span class="awe-heart"></span>Goodies</a>
+							<a href="#"><span class="awe-group"></span><strong>Team Management</strong></a>
 							<ul>
-								<li><a href="goodies.html">Goodies</a></li>
-								<li><a href="401.html">Error 401</a></li>
-								<li><a href="403.html">Error 403</a></li>
-								<li><a href="404.html">Error 404</a></li>
-								<li><a href="500.html">Error 500</a></li>
-								<li><a href="503.html">Error 503</a></li>
+								<li><a href="myteams.html">My Teams</a></li>
+								<li><a href="createTeam.html">Create Team</a></li>
+								<li><a href="seeGroups.html">All Teams</a></li>
 							</ul>
 						</li>
-					</ul> -->
+
+						<li>
+							<a href="#"><span class="awe-trophy"></span><strong>Competition</strong></a>
+							<ul>
+								<li><a href="SubmeterCodigo.html">Submit</a></li>
+								<li><a href="#">Join competition</a></li>
+
+								<li><a href="seelogs.html">See logs</a></li>
+								<li><a href="#">Past Competitions</a></li>
+								<li><a href="#">My teams submissions</a></li>
+								<li><a href="#">Current competition</a></li>
+							</ul>
+						</li>
+					</ul>
+					
 				</nav>
 				<!-- /Main navigation -->
 				
@@ -141,33 +147,11 @@
 			<!-- Right (content) side -->
 			<div class="content-block" role="main">
 			
-				<!-- Page header -->
-				<article class="page-header">
+			<div class="hero-unit">
 					<h1>Welcome to CiberOnline</h1>
-					<p>CiberOnline is a project developed by a group of students of University of the Aveiro. </p>
-					<p>In this page you can go to competition page clicking on "CiberOnline Competition" label, read the rules, how to submit code, and much more.</p>
-				</article>
-				<!-- /Page header -->
-				
-				<!-- Grid row -->
-				<div class="row">
-				
-					<!-- Data block -->
-					<article class="span12 data-block">
-						<div class="data-container">
-							<header>
-								<h2><span class="awe-star"></span> <a href="waitingCompetition.html"> CiberOnline Competition</a></h2>
-							</header>
-							<section>
-								<div id="demo-1" class="flot"></div>
-							</section>
-						</div>
-					</article>
-					<!-- /Data block -->
-					
-				</div>
-				<!-- /Grid row -->
-					
+					<p>Support on the competition, wherein in the day of the competition, all users registered will have the opportunity to submit their code to be reproduced at the right time by monitor responsible by the competition.</p>
+					<p><a class="btn btn-alt btn-info btn-large">See Competitions</a></p>
+				</div>						
 				<!-- Grid row -->
 				<div class="row">
 					
@@ -529,66 +513,7 @@
 		</script>
 		
 		<!-- jQuery jGrowl -->
-		<script type="text/javascript" src="js/plugins/jGrowl/jquery.jgrowl.js"></script>
 		
-		<script type="text/javascript">
-			$(document).ready(function(){
-				
-				// This value can be true, false or a function to be used as a callback when the closer is clciked
-				$.jGrowl.defaults.closer = function() {
-					console.log("Closing everything!", this);
-				};
-				
-				$.jGrowl("Hello stranger!", { 
-					theme: 'success'
-				});
-				
-				$.jGrowl("This notification will live a little longer. This is default style.", {
-					life: 2500,
-					theme: 'danger'
-				});
-				$.jGrowl("Sticky notification with a header", {
-					header: 'Ernest Lawrence',
-					sticky: true
-				});
-				$.jGrowl("Chromatron theme, and a whole bunch of callbacks...", { 
-					theme: 'primary',
-					speed: 'slow',
-					beforeOpen: function(e,m,o) {
-						console.log("I am going to be opened!", this);
-					},
-					open: function(e,m,o) {
-						console.log("I have been opened!", this);
-					},
-					beforeClose: function(e,m,o) {
-						console.log("I am going to be closed!", this);
-					},
-					close: function(e,m,o) {
-						console.log("I have been closed!", this);
-					}
-				});
-				
-				$.jGrowl("Custom animation test...", { 
-					speed: 'slow',
-					animateOpen: { 
-						height: "show"
-					},
-					animateClose: { 
-						height: "hide"
-					}
-				});
-				
-				$.jGrowl("This message will not close because we have a callback that returns false.", {
-					beforeClose: function() {
-						return false;
-					}
-				});
-				
-				$.jGrowl.defaults.closerTemplate = '<div>hide all notifications</div>';
-				
-			});
-			
-		</script>
 		
 	</body>
 </html>
