@@ -1,6 +1,9 @@
 from django.test import TestCase
 from authentication.models import Group, GroupMember, Account
 
+from rest_framework.test import APIClient
+from collections import OrderedDict
+
 
 class GroupsModelsTestCase(TestCase):
     def setUp(self):
@@ -42,3 +45,40 @@ class GroupsModelsTestCase(TestCase):
 
         self.assertEqual(str(gm1), str(a1)+" is in group XPTO (as False)")
         self.assertEqual(str(gm2), str(a2)+" is in group XPTO (as False)")
+
+    def test_create_group(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        url = "/api/v1/group/"
+
+        # only one group is stored
+        response = client.get(url)
+        self.assertEqual(response.data, [{'name': u'XPTO', 'max_members': 10}])
+
+        # create a group
+        data = {'name': 'TestGroup', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
+
+        # only two groups must be stored
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO'), ('max_members', 10)]), OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
+
+        # the user must be administrator of the group
+        url = "/api/v1/group_member/TestGroup/?username=gipmon"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+
+        # only one member in the group
+        url = "/api/v1/group_members/TestGroup/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+        client.force_authenticate(user=None)
