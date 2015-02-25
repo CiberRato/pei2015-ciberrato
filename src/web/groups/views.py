@@ -290,7 +290,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
                             status=status.HTTP_400_BAD_REQUEST)
 
         group_member = GroupMember.objects.get(group=group, account=user)
-        group_member.is_admin = True
+        group_member.is_admin = not group_member.is_admin
         group_member.save()
 
         group_member_serializer = MemberSerializer(group_member)
