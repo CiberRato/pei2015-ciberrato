@@ -27,7 +27,15 @@ class IsAdminOfGroup(permissions.BasePermission):
 
         group = Group.objects.filter(name=group_name)
         if len(group) == 0:
-            return False
+            if view.__class__.__name__ == 'MemberInGroupViewSet' and request.method == 'POST':
+                try:
+                    data = dict(request.data)
+                    group_name = data['group_name']
+                    group = Group.objects.filter(name=group_name)
+                except AttributeError:
+                    return False
+            else:
+                return False
 
         group_member = GroupMember.objects.filter(account=request.user, group=group)
         if len(group_member) >= 1:
