@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+from django.core.validators import MinValueValidator
 
 class AccountManager(BaseUserManager):
 
@@ -80,7 +81,7 @@ class Account(AbstractBaseUser):
 
 class Group(models.Model):
     name = models.CharField(max_length=128, unique=True, blank=False)
-    max_members = models.IntegerField(default=5)
+    max_members = models.IntegerField(default=5, validators=[MinValueValidator(1)])
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
