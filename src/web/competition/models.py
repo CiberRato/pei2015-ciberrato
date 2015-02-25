@@ -5,7 +5,6 @@ from authentication.models import Account, Group
 
 class Competition(models.Model):
     name = models.CharField(max_length=128, blank=False)
-    rounds = models.ManyToManyField('Round')
 
     COLABORATIVA = 'CB'
     COMPETITIVA = 'CP'
