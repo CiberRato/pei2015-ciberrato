@@ -5,7 +5,7 @@ from authentication.models import Account, Group
 
 class Competition(models.Model):
     name = models.CharField(max_length=128, blank=False)
-    rounds = models.ManyToManyField('Round', through='Round', related_name="competition")
+    rounds = models.ManyToManyField('Round')
 
     COLABORATIVA = 'CB'
     COMPETITIVA = 'CP'
@@ -30,7 +30,7 @@ class Competition(models.Model):
 class Round(models.Model):
     name = models.CharField(max_length=128, blank=False)
 
-    competition = models.ForeignKey(Competition, blank=False)
+    parent_competition = models.ForeignKey(Competition, blank=False)
 
     param_list_path = models.FileField(max_length=128)
     grid_path = models.FileField(max_length=128)
