@@ -12,6 +12,8 @@ class GroupsModelsTestCase(TestCase):
                                     teaching_institution="Universidade de Aveiro")
         a2 = Account.objects.create(email="ey@rf.pt", username="eypo", first_name="Costa", last_name="Ferreira",
                                     teaching_institution="Universidade de Aveiro")
+        Account.objects.create(email="af@rf.pt", username="eypo94", first_name="Antonio", last_name="Ferreira",
+                                    teaching_institution="Universidade de Aveiro")
         GroupMember.objects.create(account=a1, group=g)
         GroupMember.objects.create(account=a2, group=g)
 
@@ -46,7 +48,7 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(str(gm1), str(a1) + " is in group XPTO (as False)")
         self.assertEqual(str(gm2), str(a2) + " is in group XPTO (as False)")
 
-    def test_create_group(self):
+    def test_groups(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
         client.force_authenticate(user=user)
@@ -168,5 +170,159 @@ class GroupsModelsTestCase(TestCase):
         # no GroupMembers instances
         # two from the SetUp
         self.assertEqual(len(GroupMember.objects.all()), 2)
+
+        client.force_authenticate(user=None)
+
+    def test_groups_unauthenticated(self):
+        client = APIClient()
+
+        # create a group
+        url = "/api/v1/group/"
+        data = {'name': 'TestGroup', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # get group details
+        url = "/api/v1/group/XPTO/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # destroy group
+        url = "/api/v1/group/XPTO/"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # user groups
+        url = "/api/v1/user_groups/gipmon/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # user groups
+        url = "/api/v1/group_members/gipmon/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # Add user to a group
+        url = "/api/v1/group_member/"
+        response = client.post(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # Delete an user from a group
+        url = "/api/v1/group_member/"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # Get member data
+        url = "/api/v1/group_member/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+        # Make a user admin
+        url = "/api/v1/make_group_admin/XPTO/?username=gipmon"
+        response = client.put(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
+
+    def test_groups_errors_duplicated_groups(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        # create a group
+        url = "/api/v1/group/"
+        data = {'name': 'TestGroup', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
+
+        # can not create a group
+        url = "/api/v1/group/"
+        data = {'name': 'TestGroup', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+
+        client.force_authenticate(user=None)
+
+    def test_groups_errors_max_members(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        # create a group
+        url = "/api/v1/group/"
+        data = {'name': 'TestGroup', 'max_members': 0}
+        response = client.post(path=url, data=data, format='json')
+
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data,
+                         {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+
+        client.force_authenticate(user=None)
+
+    def test_groups_errors_cant_add_members(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        # create a group
+        url = "/api/v1/group/"
+        data = {'name': 'TestGroup', 'max_members': 2}
+        response = client.post(path=url, data=data, format='json')
+
+        # add one member to the group
+        url = "/api/v1/group_member/"
+        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        response = client.post(path=url, data=data, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
+
+        # verify if the user is in the group and is not an admin
+        url = "/api/v1/group_member/TestGroup/?username=eypo"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
+
+        # can't add another member
+        url = "/api/v1/group_member/"
+        data = {'group_name': 'TestGroup', 'user_name': 'eypo94'}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': 'The group reached the number max of members:2'})
+
+        client.force_authenticate(user=None)
+        user = Account.objects.get(username="eypo")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        # add one member to the group
+        url = "/api/v1/group_member/"
+        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
+
+        # delete the group
+        url = "/api/v1/group/TestGroup/"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
 
         client.force_authenticate(user=None)
