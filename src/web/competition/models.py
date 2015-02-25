@@ -70,6 +70,7 @@ class CompetitionAgent(models.Model):
     competition = models.ForeignKey(Competition, blank=False)
     round = models.ForeignKey(Round, blank=False)
     agent = models.ForeignKey(Agent, blank=False)
+    group = models.ForeignKey(Group, blank=False)
 
     eligible = models.BooleanField(default=True)
 
