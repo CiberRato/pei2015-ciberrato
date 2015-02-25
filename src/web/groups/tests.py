@@ -43,8 +43,8 @@ class GroupsModelsTestCase(TestCase):
         gm1 = GroupMember.objects.get(account=a1)
         gm2 = GroupMember.objects.get(account=a2)
 
-        self.assertEqual(str(gm1), str(a1)+" is in group XPTO (as False)")
-        self.assertEqual(str(gm2), str(a2)+" is in group XPTO (as False)")
+        self.assertEqual(str(gm1), str(a1) + " is in group XPTO (as False)")
+        self.assertEqual(str(gm2), str(a2) + " is in group XPTO (as False)")
 
     def test_create_group(self):
         user = Account.objects.get(username="gipmon")
@@ -67,18 +67,106 @@ class GroupsModelsTestCase(TestCase):
         # only two groups must be stored
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO'), ('max_members', 10)]), OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO'), ('max_members', 10)]),
+                                         OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
 
         # the user must be administrator of the group
         url = "/api/v1/group_member/TestGroup/?username=gipmon"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+        self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict(
+            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # only one member in the group
         url = "/api/v1/group_members/TestGroup/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
+
+        # add one member to the group
+        url = "/api/v1/group_member/"
+        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        response = client.post(path=url, data=data, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+
+        # verify if the user is in the group and is not an admin
+        url = "/api/v1/group_member/TestGroup/?username=eypo"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+
+        # only two members in the group
+        url = "/api/v1/group_members/TestGroup/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        # make the user a group admin
+        url = "/api/v1/make_group_admin/TestGroup/?username=eypo"
+        response = client.put(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+
+        # delete the user from the admins list
+        url = "/api/v1/make_group_admin/TestGroup/?username=eypo"
+        response = client.put(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+
+        # delete the user from the grou
+        url = "/api/v1/group_member/TestGroup/?username=eypo"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+
+        # only one member in the group
+        url = "/api/v1/group_members/TestGroup/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+        # add the user again
+        url = "/api/v1/group_member/"
+        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        response = client.post(path=url, data=data, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
+            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+
+        # delete the group
+        url = "/api/v1/group/TestGroup/"
+        response = client.delete(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         {'status': 'Deleted', 'message': 'The group has been deleted and the group members too.'})
+
+        # the group not found
+        url = "/api/v1/group_members/TestGroup/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data, {u'detail': u'Not found'})
+
+        # no GroupMembers instances
+        # two from the SetUp
+        self.assertEqual(len(GroupMember.objects.all()), 2)
 
         client.force_authenticate(user=None)
