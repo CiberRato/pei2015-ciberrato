@@ -7,15 +7,15 @@ class Competition(models.Model):
     name = models.CharField(max_length=128, blank=False)
     rounds = models.ManyToManyField('Round', through='Round', related_name="competition")
 
-    COBOLORATIVA = 'CB'
+    COLABORATIVA = 'CB'
     COMPETITIVA = 'CP'
 
     TYPE_OF_COMPETITIONS = (
-        (COBOLORATIVA, 'Cobolorativa'),
+        (COLABORATIVA, 'Colaborativa'),
         (COMPETITIVA, 'Competitiva'),
     )
 
-    type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Cobolorativa', max_length=100)
+    type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
