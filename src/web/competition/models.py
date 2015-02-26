@@ -14,6 +14,8 @@ class Competition(models.Model):
         (COMPETITIVA, 'Competitiva'),
     )
 
+    current_round = models.OneToOneField('Round')
+
     type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -51,7 +51,6 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('agent', models.ForeignKey(to='competition.Agent')),
                 ('competition', models.ForeignKey(to='competition.Competition')),
-                ('group', models.ForeignKey(to='authentication.Group')),
             ],
             options={
                 'ordering': ['created_at'],
@@ -84,8 +83,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='competition',
-            name='rounds',
-            field=models.ManyToManyField(to='competition.Round'),
+            name='current_round',
+            field=models.OneToOneField(to='competition.Round'),
             preserve_default=True,
         ),
         migrations.AddField(
