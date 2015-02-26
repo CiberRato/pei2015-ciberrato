@@ -26,10 +26,8 @@ angular.module('myapp', [])
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
             lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
-        console.log(lab_obj.Lab);
-        $scope.beacon_height = 2;
+        $scope.beacon_height = lab_obj.Lab.Beacon._Height;
         $scope.map = lab_obj.Lab;
-        console.log(grid_obj.Grid);
         $scope.grid = grid_obj.Grid;
     }])
 
@@ -58,6 +56,27 @@ angular.module('myapp', [])
         return function(scope, element, attrs) {
             scope.$watch(attrs.ngY, function(value) {
                 element.attr('y', value);
+            });
+        };
+    })
+    .directive('ngR', function() {
+        return function(scope, element, attrs) {
+            scope.$watch(attrs.ngR, function(value) {
+                element.attr('r', value);
+            });
+        };
+    })
+    .directive('ngH', function() {
+        return function(scope, element, attrs) {
+            scope.$watch(attrs.ngH, function(value) {
+                element.attr('height', value);
+            });
+        };
+    })
+    .directive('ngW', function() {
+        return function(scope, element, attrs) {
+            scope.$watch(attrs.ngW, function(value) {
+                element.attr('width', value);
             });
         };
     })
