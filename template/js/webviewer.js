@@ -48,6 +48,7 @@ angular.module('myapp', [])
         $scope.grid = grid_obj.Grid;
         $scope.timeline = turn90(robot_obj.PosList);
         $scope.robot = $scope.timeline.Robot[0].Position;
+        $scope.stats = $scope.timeline.Robot[0];
 
         $scope.idx = 1;
         var refresh_rate = 50;
@@ -56,6 +57,8 @@ angular.module('myapp', [])
         var tick = function() {
             try{
                 $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
+                $scope.stats = $scope.timeline.Robot[$scope.idx];
+                console.log($scope.timeline.Robot[$scope.idx]);
                 $(".leftGrip").css("left", ($scope.idx*820)/1800);
                 $scope.idx++;
             }catch(TypeError){
