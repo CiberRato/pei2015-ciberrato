@@ -58,7 +58,9 @@ angular.module('myapp', [])
                 $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
                 $(".leftGrip").css("left", ($scope.idx*820)/1800);
                 $scope.idx++;
-            }catch(TypeError){}
+            }catch(TypeError){
+                $scope.pause();
+            }
             if(!pause){
                 $timeout(tick, refresh_rate);
             }
@@ -67,12 +69,11 @@ angular.module('myapp', [])
         $scope.play = function() {
             pause = 0;
             $timeout(tick, refresh_rate);
-        }
+        };
 
         $scope.pause = function(){
             pause = 1;
-        }
-
+        };
     }])
 
     .directive('ngCx', function() {
