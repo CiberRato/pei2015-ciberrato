@@ -17,6 +17,7 @@
 		
 		<!-- CSS styles -->
 		<link rel='stylesheet' type='text/css' href='css/ciberonline-red.css'>
+        <link type="text/css" rel="stylesheet" href="css/jquery.nstSlider.css">
 		
 		<!-- Fav and touch icons -->
 		<link rel="shortcut icon" href="img/icons/favicon.ico">
@@ -25,7 +26,6 @@
 		<link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png">
 		
 		<!-- JS Libs -->
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
 		<script src="js/libs/modernizr.js"></script>
 		<script src="js/libs/selectivizr.js"></script>
@@ -131,9 +131,10 @@
                             <section>
                                 <div class="row">
                                     <div class="span12" style="text-align: center; vertical-align: middle">
-                                        <svg ng-w="{{28*zoom}}" ng-h="{{14*zoom}}" style="background-color: black">
+                                        <svg ng-w="{{28*zoom}}" ng-h="{{14*zoom}}" style="background-color: black" >
                                             <g ng-t="translate(0,{{14*zoom}})">
                                                 <g transform="scale(1,-1)">
+                                                    <g><rect width="{{28*zoom}}" height="{{14*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
                                                     <g ng-repeat="(key, value) in map">
                                                         <g ng-if="key == 'Beacon'">
                                                             <circle ng-cx="{{value._X*zoom}}" ng-cy="{{value._Y*zoom}}" ng-r="{{zoom}}" stroke="#00ffff" stroke-width="2" />
@@ -151,13 +152,17 @@
                                                         </g>
                                                     </g>
                                                     <g>
-                                                        <circle cx="{{robot._X*zoom}}" cy="{{robot._Y*zoom}}" ng-r="{{zoom/2}}" stroke="#00ffff" stroke-width="2" />
                                                         <image x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_red_smile.svg"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
+                                                        <circle cx="{{robot._X*zoom}}" cy="{{robot._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="#00ffff" stroke-width="1" />
                                                         <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height  -->
                                                     </g>
                                                 </g>
                                             </g>
                                         </svg>
+                                        <div class="nstSlider" data-range_min="0" data-range_max="1800"
+                                             data-cur_min="0" style="width: {{28*zoom}}px; margin-left: 20px; margin-top: -5px">
+                                            <div class="leftGrip"></div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -7523,6 +7528,25 @@
 		<script src="js/bootstrap/bootstrap-tooltip.js"></script>
 		<script src="js/bootstrap/bootstrap-collapse.js"></script>
 		<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+        <script src="js/jquery.nstSlider.js"></script>
+
+        <script>
+            $('.nstSlider').nstSlider({
+                "left_grip_selector": ".leftGrip",
+                "value_changed_callback": function(cause, leftValue, rightValue) {
+                    try{
+                        angular.element('[ng-controller=ctrl]').scope().idx = leftValue;
+                    }catch(TypeError){
+
+                    }
+                }
+            });
+
+            // Call methods and such...
+            var highlightMin = Math.random() * 20,
+                    highlightMax = highlightMin + Math.random() * 80;
+            $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+        </script>
 		
 		<!-- Block TODO list -->
 		<script>

@@ -19,8 +19,11 @@ function convertToStringPoints(cornerList, zoom){
 }
 
 
-function timeline($scope){
-
+function turn90(PosList){
+    for(i=0; i<PosList.Robot.length; i++){
+        PosList.Robot[i].Position._Dir = parseInt(PosList.Robot[i].Position._Dir)+90;
+    }
+    return PosList;
 }
 
 
@@ -38,23 +41,28 @@ angular.module('myapp', [])
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
             lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
+        console.log(robot_obj);
 
         $scope.beacon_height = lab_obj.Lab.Beacon._Height;
         $scope.map = lab_obj.Lab;
         $scope.grid = grid_obj.Grid;
-        robot_obj.PosList.Robot[0].Position._Dir = parseInt(robot_obj.PosList.Robot[0].Position._Dir)+90;
-        $scope.timeline = robot_obj.PosList;
-        $scope.robot = robot_obj.PosList.Robot[0].Position;
+        $scope.timeline = turn90(robot_obj.PosList);
+        $scope.robot = $scope.timeline.Robot[0].Position;
 
-        var idx = 1;
+        $scope.idx = 1;
+        var refresh_rate = 50;
 
         var tick = function() {
-            robot_obj.PosList.Robot[idx].Position._Dir = parseInt(robot_obj.PosList.Robot[idx].Position._Dir)+90;
-            $scope.robot = robot_obj.PosList.Robot[idx].Position;
-            idx++;
-            $timeout(tick, 50);
+            try{
+                $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
+                $(".leftGrip").css("left", ($scope.idx*820)/1800);
+                $scope.idx++;
+            }catch(TypeError){}
+            $timeout(tick, refresh_rate);
         };
-        $timeout(tick, 1000);
+
+        $scope.cancel_timeout = $timeout.cancel(tick);
+        $timeout(tick, refresh_rate);
     }])
 
     .directive('ngCx', function() {
