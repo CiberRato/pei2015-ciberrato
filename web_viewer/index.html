@@ -163,6 +163,7 @@
                                              data-cur_min="0" style="width: {{28*zoom}}px; margin-left: 20px; margin-top: -5px">
                                             <div class="leftGrip"></div>
                                         </div>
+                                        <a href="#" id="playpause"><img src="img/play.png"></a>
                                     </div>
                                 </div>
 
@@ -176,69 +177,88 @@
 					
 				<!-- Grid row -->
 				<div class="row">
+                    <article class="span12 data-block accordion-block decent">
+                    <div class="data-container">
+                    <div class="accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse">Stats</a>
+                            </div>
+                            <div id="stats" class="accordion-body collapse">
+                                <!-- Data block -->
+                                    <article class="span6 data-block">
+                                        <div class="data-container">
+                                            <header>
+                                                <h2>Status</h2>
+                                            </header>
+                                            <section>
+                                                <div class="row-fluid demo">
+                                                    <div class="span3">Time</div>
+                                                    <div class="span3">Collisions</div>
+                                                    <div class="span3">Stopped</div>
+                                                    <div class="span3">Score</div>
+                                                </div>
+                                                <div class="row-fluid" style="text-align: center">
+                                                    <div class="span3"><h2>0</h2></div>
+                                                    <div class="span3"><h2>0</h2></div>
+                                                    <div class="span3"><h2 style="color: #6b9b20">True</h2><h2 style="color: #e74949">False</h2></div>
+                                                    <div class="span3"><h2>0</h2></div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </article>
+                                    <!-- /Data block -->
 
-					<!-- Data block -->
-					<article class="span6 data-block">
-						<div class="data-container">
-							<header>
-								<h2>Status</h2>
-							</header>
-							<section>
-								<div class="row-fluid demo">
-									<div class="span3">Time</div>
-									<div class="span3">Collisions</div>
-									<div class="span3">Stopped</div>
-									<div class="span3">Score</div>
-								</div>
-								<div class="row-fluid" style="text-align: center">
-									<div class="span3"><h2>0</h2></div>
-									<div class="span3"><h2>0</h2></div>
-									<div class="span3"><h2 style="color: #6b9b20">True</h2><h2 style="color: #e74949">False</h2></div>
-									<div class="span3"><h2>0</h2></div>
-								</div>
-							</section>
-						</div>
-					</article>
-					<!-- /Data block -->
+                                    <!-- Data block -->
+                                    <article class="span4 data-block">
+                                        <div class="data-container">
+                                            <header>
+                                                <h2>Mouse</h2>
+                                            </header>
+                                            <section>
+                                                <div class="row-fluid demo">
+                                                    <div class="span4">Name</div>
+                                                    <div class="span4">Position</div>
+                                                    <div class="span4">Mouse</div>
+                                                </div>
+                                                <div class="row-fluid" style="text-align: center">
+                                                    <div class="span4"><h2>AA</h2></div>
+                                                    <div class="span4"><h2>3</h2></div>
+                                                    <div class="span4">SVG</div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </article>
+                                    <!-- /Data block -->
 
-					<!-- Data block -->
-					<article class="span4 data-block">
-						<div class="data-container">
-							<header>
-								<h2>Mouse</h2>
-							</header>
-							<section>
-								<div class="row-fluid demo">
-									<div class="span4">Name</div>
-									<div class="span4">Position</div>
-									<div class="span4">Mouse</div>
-								</div>
-								<div class="row-fluid" style="text-align: center">
-									<div class="span4"><h2>AA</h2></div>
-									<div class="span4"><h2>3</h2></div>
-									<div class="span4">SVG</div>
-								</div>
-							</section>
-						</div>
-					</article>
-					<!-- /Data block -->
+                                    <!-- Data block -->
+                                    <article class="span2 data-block">
+                                        <div class="data-container">
+                                            <header>
+                                                <h2>Remaining…</h2>
+                                            </header>
+                                            <section style="text-align: center">
+                                                <div class="row-fluid">
+                                                    <div class="span2"><h1>1800</h1></div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </article>
+                                    <!-- /Data block -->
+                            </div>
+                        </div>
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" href="#debug" data-parent="#icons" data-toggle="collapse">Debug tools</a>
+                            </div>
+                            <div id="debug" class="accordion-body collapse">
 
-					<!-- Data block -->
-					<article class="span2 data-block">
-						<div class="data-container">
-							<header>
-								<h2>Remaining…</h2>
-							</header>
-							<section style="text-align: center">
-                                <div class="row-fluid">
-									<div class="span2"><h1>1800</h1></div>
-								</div>
-							</section>
-						</div>
-					</article>
-					<!-- /Data block -->
-					
-				</div>
+                            </div>
+                        </div>
+				    </div>
+                    </div>
+                    </article>
+                </div>
 				<!-- /Grid row -->
 				
 			</div>
@@ -7536,9 +7556,7 @@
                 "value_changed_callback": function(cause, leftValue, rightValue) {
                     try{
                         angular.element('[ng-controller=ctrl]').scope().idx = leftValue;
-                    }catch(TypeError){
-
-                    }
+                    }catch(TypeError){}
                 }
             });
 
@@ -7547,7 +7565,20 @@
                     highlightMax = highlightMin + Math.random() * 80;
             $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
         </script>
-		
+
+
+        <script>
+            $( "#playpause").click(function() {
+                if($("#playpause > img").attr("src")=='img/play.png'){
+                    $("#playpause > img").attr("src", "img/pause.png");
+                    angular.element('[ng-controller=ctrl]').scope().play();
+                }else{
+                    $("#playpause > img").attr("src", "img/play.png")
+                    angular.element('[ng-controller=ctrl]').scope().pause();
+                }
+                return false;
+            });
+        </script>
 		<!-- Block TODO list -->
 		<script>
 			$(document).ready(function() {
