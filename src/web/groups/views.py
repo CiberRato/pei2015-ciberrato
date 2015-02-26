@@ -32,7 +32,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     def create(self, request, **kwargs):
         """
         B{Create} a group and the GroupMember admin by the user that requested the group create method
-        B{URL:} ../api/v1/group/
+        B{URL:} ../api/v1/groups/crud/
 
         @type  name: str
         @param name: The group name
@@ -53,7 +53,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk, **kwargs):
         """
         B{Retrieve} the group attributes by group name
-        B{URL:} ../api/v1/group/<group_name>/
+        B{URL:} ../api/v1/groups/crud/<group_name>/
 
         @type  pk: str
         @param pk: The group name
@@ -66,7 +66,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk, **kwargs):
         """
         B{Destroy} the group by a group admin user and delete all the group members
-        B{URL:} ../api/v1/group/<group_name>/
+        B{URL:} ../api/v1/groups/crud/<group_name>/
 
         @type  pk: str
         @param pk: The group name
@@ -102,7 +102,7 @@ class AccountGroupsViewSet(mixins.RetrieveModelMixin,
     def retrieve(self, request, pk, **kwargs):
         """
         B{Retrieve} the groups of an Account
-        B{URL:} ../api/v1/user_groups/<username>/
+        B{URL:} ../api/v1/groups/user/<username>/
         """
         self.queryset = self.queryset.get(username=pk)
         serializer = self.serializer_class(self.queryset.groups, many=True)
@@ -125,7 +125,7 @@ class GroupMembersViewSet(mixins.RetrieveModelMixin,
     def retrieve(self, request, pk, **kwargs):
         """
         B{Retrieve} the Group members list
-        B{URL:} ../api/v1/group_members/<group_name>/
+        B{URL:} ../api/v1/groups/members/<group_name>/
         """
         group = get_object_or_404(Group.objects.all(), name=pk)
 
@@ -154,7 +154,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def create(self, request, **kwargs):
         """
         B{Create} a GroupMember to a Group
-        B{URL:} ../api/v1/group_member/
+        B{URL:} ../api/v1/groups/member/
 
         @type  user_name: str
         @param user_name: The user name
@@ -193,7 +193,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def destroy(self, request, pk, **kwargs):
         """
         B{Destroy} a GroupMember from a Group
-        B{URL:} ../api/v1/group_member/<group_name>/?username=<user_name>
+        B{URL:} ../api/v1/groups/member/<group_name>/?username=<user_name>
 
         @type  user_name: str
         @param user_name: The user name
@@ -223,7 +223,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def retrieve(self, request, pk, **kwargs):
         """
         B{Retrieve} the GroupMember of a Group
-        B{URL:} ../api/v1/group_member/<group_name>/?username=<user_name>
+        B{URL:} ../api/v1/groups/member/<group_name>/?username=<user_name>
 
         @type  user_name: str
         @param user_name: The user name
@@ -267,7 +267,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
     def update(self, request, pk, **kwargs):
         """
         B{Update}: make admin of the Group
-        B{URL:} ../api/v1/make_group_admin/<group_name>/?username=<user_name>
+        B{URL:} ../api/v1/groups/admin/<group_name>/?username=<user_name>
 
         @type  username: str
         @param username: The user name

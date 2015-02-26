@@ -45,7 +45,7 @@ class GroupsModelsTestCase(TestCase):
         gm1 = GroupMember.objects.get(account=a1)
         gm2 = GroupMember.objects.get(account=a2)
 
-        self.assertEqual(str(gm1), str(a1) + " is in group XPTO (as False)")
+        self.equal = self.assertEqual(str(gm1), str(a1) + " is in group XPTO (as False)")
         self.assertEqual(str(gm2), str(a2) + " is in group XPTO (as False)")
 
     def test_groups(self):
@@ -53,7 +53,7 @@ class GroupsModelsTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=user)
 
-        url = "/api/v1/group/"
+        url = "/api/v1/groups/crud/"
 
         # only one group is stored
         response = client.get(url)
@@ -73,7 +73,7 @@ class GroupsModelsTestCase(TestCase):
                                          OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
 
         # the user must be administrator of the group
-        url = "/api/v1/group_member/TestGroup/?username=gipmon"
+        url = "/api/v1/groups/member/TestGroup/?username=gipmon"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict(
@@ -82,13 +82,13 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # only one member in the group
-        url = "/api/v1/group_members/TestGroup/"
+        url = "/api/v1/groups/members/TestGroup/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
         # add one member to the group
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
 
@@ -99,7 +99,7 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # verify if the user is in the group and is not an admin
-        url = "/api/v1/group_member/TestGroup/?username=eypo"
+        url = "/api/v1/groups/member/TestGroup/?username=eypo"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
@@ -108,13 +108,13 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # only two members in the group
-        url = "/api/v1/group_members/TestGroup/"
+        url = "/api/v1/groups/members/TestGroup/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
         # make the user a group admin
-        url = "/api/v1/make_group_admin/TestGroup/?username=eypo"
+        url = "/api/v1/groups/admin/TestGroup/?username=eypo"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict(
@@ -123,7 +123,7 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # delete the user from the admins list
-        url = "/api/v1/make_group_admin/TestGroup/?username=eypo"
+        url = "/api/v1/groups/admin/TestGroup/?username=eypo"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
@@ -132,18 +132,18 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # delete the user from the grou
-        url = "/api/v1/group_member/TestGroup/?username=eypo"
+        url = "/api/v1/groups/member/TestGroup/?username=eypo"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
 
         # only one member in the group
-        url = "/api/v1/group_members/TestGroup/"
+        url = "/api/v1/groups/members/TestGroup/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
         # add the user again
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
 
@@ -154,7 +154,7 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
         # delete the group
-        url = "/api/v1/group/TestGroup/"
+        url = "/api/v1/groups/crud/TestGroup/"
         response = client.delete(url)
 
         self.assertEqual(response.status_code, 200)
@@ -162,7 +162,7 @@ class GroupsModelsTestCase(TestCase):
                          {'status': 'Deleted', 'message': 'The group has been deleted and the group members too.'})
 
         # the group not found
-        url = "/api/v1/group_members/TestGroup/"
+        url = "/api/v1/groups/members/TestGroup/"
         response = client.get(url)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data, {u'detail': u'Not found'})
@@ -177,56 +177,56 @@ class GroupsModelsTestCase(TestCase):
         client = APIClient()
 
         # create a group
-        url = "/api/v1/group/"
+        url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # get group details
-        url = "/api/v1/group/XPTO/"
+        url = "/api/v1/groups/crud/XPTO/"
         response = client.get(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # destroy group
-        url = "/api/v1/group/XPTO/"
+        url = "/api/v1/groups/crud/XPTO/"
         response = client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # user groups
-        url = "/api/v1/user_groups/gipmon/"
+        url = "/api/v1/groups/user/gipmon/"
         response = client.get(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # user groups
-        url = "/api/v1/group_members/gipmon/"
+        url = "/api/v1/groups/members/gipmon/"
         response = client.get(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # Add user to a group
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         response = client.post(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # Delete an user from a group
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         response = client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # Get member data
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         response = client.get(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
 
         # Make a user admin
-        url = "/api/v1/make_group_admin/XPTO/?username=gipmon"
+        url = "/api/v1/groups/admin/XPTO/?username=gipmon"
         response = client.put(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
@@ -237,7 +237,7 @@ class GroupsModelsTestCase(TestCase):
         client.force_authenticate(user=user)
 
         # create a group
-        url = "/api/v1/group/"
+        url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
 
@@ -245,7 +245,7 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
 
         # can not create a group
-        url = "/api/v1/group/"
+        url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -259,7 +259,7 @@ class GroupsModelsTestCase(TestCase):
         client.force_authenticate(user=user)
 
         # create a group
-        url = "/api/v1/group/"
+        url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 0}
         response = client.post(path=url, data=data, format='json')
 
@@ -276,12 +276,12 @@ class GroupsModelsTestCase(TestCase):
         client.force_authenticate(user=user)
 
         # create a group
-        url = "/api/v1/group/"
+        url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 2}
         response = client.post(path=url, data=data, format='json')
 
         # add one member to the group
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
 
@@ -292,7 +292,7 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
 
         # verify if the user is in the group and is not an admin
-        url = "/api/v1/group_member/TestGroup/?username=eypo"
+        url = "/api/v1/groups/member/TestGroup/?username=eypo"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
@@ -301,7 +301,7 @@ class GroupsModelsTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
 
         # can't add another member
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         data = {'group_name': 'TestGroup', 'user_name': 'eypo94'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
@@ -313,14 +313,14 @@ class GroupsModelsTestCase(TestCase):
         client.force_authenticate(user=user)
 
         # add one member to the group
-        url = "/api/v1/group_member/"
+        url = "/api/v1/groups/member/"
         data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
 
         # delete the group
-        url = "/api/v1/group/TestGroup/"
+        url = "/api/v1/groups/crud/TestGroup/"
         response = client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
