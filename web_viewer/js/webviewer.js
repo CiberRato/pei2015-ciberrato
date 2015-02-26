@@ -5,6 +5,9 @@ function labConvertXml2JSon() {
 function gridConvertXml2JSon() {
     return JSON.stringify(x2js.xml_str2json($("#gridXML").val()));
 }
+function robotConvertXml2JSon() {
+    return JSON.stringify(x2js.xml_str2json($("#robotXML").val()));
+}
 
 function convertToStringPoints(cornerList, zoom){
     var out = "";
@@ -14,10 +17,19 @@ function convertToStringPoints(cornerList, zoom){
     }
     return out;
 }
+
+
+function timeline($scope){
+
+}
+
+
 angular.module('myapp', [])
-    .controller('ctrl', ['$scope', function($scope){
+    .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
         $scope.zoom = 30;
 
+        var robot_json_object = robotConvertXml2JSon();
+        var robot_obj = angular.fromJson(robot_json_object);
         var grid_json_object = gridConvertXml2JSon();
         var grid_obj = angular.fromJson(grid_json_object);
         var lab_json_object = labConvertXml2JSon();
@@ -26,9 +38,23 @@ angular.module('myapp', [])
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
             lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
+
         $scope.beacon_height = lab_obj.Lab.Beacon._Height;
         $scope.map = lab_obj.Lab;
         $scope.grid = grid_obj.Grid;
+        robot_obj.PosList.Robot[0].Position._Dir = parseInt(robot_obj.PosList.Robot[0].Position._Dir)+90;
+        $scope.timeline = robot_obj.PosList;
+        $scope.robot = robot_obj.PosList.Robot[0].Position;
+
+        var idx = 1;
+
+        var tick = function() {
+            robot_obj.PosList.Robot[idx].Position._Dir = parseInt(robot_obj.PosList.Robot[idx].Position._Dir)+90;
+            $scope.robot = robot_obj.PosList.Robot[idx].Position;
+            idx++;
+            $timeout(tick, 50);
+        };
+        $timeout(tick, 1000);
     }])
 
     .directive('ngCx', function() {
@@ -80,11 +106,31 @@ angular.module('myapp', [])
             });
         };
     })
+    .directive('ngT', function() {
+        return function(scope, element, attrs) {
+            scope.$watch(attrs.ngT, function() {
+                console.log(attrs.ngT);
+                element.attr('transform', attrs.ngT);
+            });
+        };
+    })
     .directive('ngPoints', function() {
         return function(scope, element, attrs) {
             scope.$watch(attrs.ngPoints, function(value) {
                 element.attr('points', value);
             });
+        };
+    })
+    .directive('conversation', function() {
+        return {
+            restrict: 'E',
+            replace: true,
+            compile: function(tElement, attr) {
+                attr.$observe('typeId', function(data) {
+                    console.log("Updated data ", data);
+                }, true);
+
+            }
         };
     });
 

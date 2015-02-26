@@ -123,7 +123,7 @@
 				<!-- Page header -->
 					<h1>WebViewer</h1>
 				<!-- /Page header -->
-				
+
 				<!-- Grid row -->
 				<div class="row">
 					<article class="span12 data-block">
@@ -132,7 +132,7 @@
                                 <div class="row">
                                     <div class="span12" style="text-align: center; vertical-align: middle">
                                         <svg ng-w="{{28*zoom}}" ng-h="{{14*zoom}}" style="background-color: black">
-                                            <g transform="translate(0,{{14*zoom}})">
+                                            <g ng-t="translate(0,{{14*zoom}})">
                                                 <g transform="scale(1,-1)">
                                                     <g ng-repeat="(key, value) in map">
                                                         <g ng-if="key == 'Beacon'">
@@ -144,16 +144,16 @@
                                                             <polygon ng-if="v._Height>=beacon_height" ng-points="'{{v.str}}'" style=" fill:#008000" />
                                                             <polygon ng-if="v._Height<beacon_height" ng-points="'{{v.str}}'" style=" fill:#0000ff" />
                                                         </g>
-                                                        <g>
-                                                            <circle ng-cx="{{420}}" ng-cy="{{210}}" ng-r="{{zoom/2}}" stroke="#00ffff" stroke-width="2" />
-                                                            <image ng-x="{{420-15}}" ng-y="{{210-15}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_red_smile.svg"  transform = "rotate(-90 420 210)" />
-                                                            <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height  -->
-                                                        </g>
                                                     </g>
                                                     <g ng-repeat="(key, value) in grid">
                                                         <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
                                                             <circle ng-cx="{{v._X*zoom}}" ng-cy="{{v._Y*zoom}}" ng-r="{{zoom/2}}" stroke="#00ffff" stroke-width="2" style=" fill:#cfd4db" />
                                                         </g>
+                                                    </g>
+                                                    <g>
+                                                        <circle cx="{{robot._X*zoom}}" cy="{{robot._Y*zoom}}" ng-r="{{zoom/2}}" stroke="#00ffff" stroke-width="2" />
+                                                        <image x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_red_smile.svg"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
+                                                        <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height  -->
                                                     </g>
                                                 </g>
                                             </g>
@@ -309,6 +309,7 @@
             </textarea>
 
         <textarea id="robotXML" cols="55" rows="15" style="visibility: hidden; display: none">
+            <PosList>
                 <Robot Name="AA" Id="3" Time="0" Score="0" ArrivalTime="0" ReturningTime="0" Collisions="0" Collision="False" VisitedMask="00" State="Stopped">
                     <Position X="6" Y="9" Dir="0"/>
                 </Robot>
@@ -7512,6 +7513,7 @@
                 <Robot Name="AA" Id="3" Time="1800" Score="332" ArrivalTime="1800" ReturningTime="0" Collisions="66" Collision="False" VisitedMask="00" State="Running">
                     <Position X="3.65973" Y="12.7985" Dir="76.2433"/>
                 </Robot>
+                </PosList>
             </textarea>
 
 
