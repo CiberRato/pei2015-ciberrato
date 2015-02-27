@@ -36,7 +36,7 @@ router_accounts.register(r'get_simulation', GetSimulation, 'Get simulation')
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/groups/', include(router_groups.urls)),
-                       #url(r'^api/v1/', include(router_competitions.urls)),
+                       url(r'^api/v1/', include(router_competitions.urls)),
                        url(r'^api/v1/competitions/grid/', FileUploadView.as_view(), name="File upload"),
                        #url(r'^api/v1/', include(router.urls)),
                        url(r"api/v1/auth/login/$", LoginView.as_view(), name="login"),

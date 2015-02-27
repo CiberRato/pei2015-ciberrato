@@ -4,7 +4,7 @@ from authentication.models import Account, Group
 
 
 class Competition(models.Model):
-    name = models.CharField(max_length=128, blank=False)
+    name = models.CharField(max_length=128, blank=False, unique=True)
 
     COLABORATIVA = 'CB'
     COMPETITIVA = 'CP'
@@ -13,8 +13,6 @@ class Competition(models.Model):
         (COLABORATIVA, 'Colaborativa'),
         (COMPETITIVA, 'Competitiva'),
     )
-
-    current_round = models.OneToOneField('Round')
 
     type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
 
@@ -29,7 +27,7 @@ class Competition(models.Model):
 
 
 class Round(models.Model):
-    name = models.CharField(max_length=128, blank=False)
+    name = models.CharField(max_length=128, blank=False, unique=True)
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 

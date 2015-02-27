@@ -15,16 +15,12 @@ from competition.permissions import IsAdmin
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
-    queryset = Competition.objects.order_by('-name')
+    queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-
-        if self.request.method == 'POST':
-            return permissions.IsAuthenticated(),
-
         return permissions.IsAuthenticated, IsAdmin(),
 
     def create(self, request, **kwargs):
