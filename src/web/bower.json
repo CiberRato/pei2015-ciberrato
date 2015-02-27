@@ -1,0 +1,19 @@
+{
+  "name": "ciberonline",
+  "version": "0.0.0",
+  "homepage": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.1",
+    "angular-route": "~1.3.1",
+    "angular-cookies": "~1.3.1",
+    "jquery": "~2.1.1"
+  }
+}
