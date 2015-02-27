@@ -141,7 +141,7 @@
     <!-- Left (navigation) side -->
 
     <!-- Right (content) side -->
-    <div class="content-block" role="main">
+    <div class="content-block" role="main" ng-controller="ctrl">
 
         <!-- Page header -->
         <h1>WebViewer</h1>
@@ -150,7 +150,7 @@
         <!-- Grid row -->
         <div class="row">
             <article class="span12 data-block">
-                <div class="data-container" ng-controller="ctrl">
+                <div class="data-container">
                     <section>
                         <div class="row">
                             <div class="span12" style="text-align: center; vertical-align: middle">
@@ -197,7 +197,65 @@
 
         </div>
         <!-- /Grid row -->
+        <div class="row">
 
+            <!-- Data block -->
+            <article class="span8 data-block">
+                <div class="data-container">
+                    <header>
+                        <h2>Status</h2>
+                    </header>
+                    <section>
+                        <div class="row-fluid demo">
+                            <div class="span2">Time</div>
+                            <div class="span2">Collisions</div>
+                            <div class="span2">State</div>
+                            <div class="span2">Score</div>
+                            <div class="span2">Retur. Time</div>
+                            <div class="span2">Remaining</div>
+
+                        </div>
+                        <div class="row-fluid" style="text-align: center">
+                            <div class="span2"><h2>{{stats._Time}}</h2></div>
+                            <div class="span2"><h2>{{stats._Collisions}}</h2></div>
+                            <div class="span2"><h2>{{stats._State}}</h2></div>
+                            <div class="span2"><h2>{{stats._Score}}</h2></div>
+                            <div class="span2"><h2>{{stats._ReturningTime}}</h2></div>
+                            <div class="span2"><h2>{{1800-stats._Time}}</h2></div>
+
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <!-- /Data block -->
+
+            <!-- Data block -->
+            <article class="span4 data-block">
+                <div class="data-container">
+                    <header>
+                        <h2>Mouse</h2>
+                    </header>
+                    <section>
+                        <div class="row-fluid demo">
+                            <div class="span4">Name</div>
+                            <div class="span4">Position</div>
+                            <div class="span4">Mouse</div>
+                        </div>
+                        <div class="row-fluid" style="text-align: center">
+                            <div class="span4"><h2>{{stats._Name}}</h2></div>
+                            <div class="span4"><h2>{{stats._Id}}</h2></div>
+                            <div class="span4"><h2>SVG</h2></div>
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <!-- /Data block -->
+
+            <!-- Data block -->
+
+            <!-- /Data block -->
+
+        </div>
         <!-- Grid row -->
         <div class="row">
             <article class="span12 data-block accordion-block decent">
@@ -208,74 +266,7 @@
                                 <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse">Stats</a>
                             </div>
                             <div id="stats" class="accordion-body collapse">
-                                <!-- Data block -->
-                                <article class="span6 data-block">
-                                    <div class="data-container">
-                                        <header>
-                                            <h2>Status</h2>
-                                        </header>
-                                        <section>
-                                            <div class="row-fluid demo">
-                                                <div class="span3">Time</div>
-                                                <div class="span3">Collisions</div>
-                                                <div class="span3">Stopped</div>
-                                                <div class="span3">Score</div>
-                                            </div>
-                                            <div class="row-fluid" style="text-align: center">
-                                                <div class="span3"><h2>0</h2></div>
-                                                <div class="span3"><h2>0</h2></div>
-                                                <div class="span3"><h2 style="color: #6b9b20">True</h2><h2 style="color: #e74949">False</h2></div>
-                                                <div class="span3"><h2>0</h2></div>
-                                            </div>
-                                        </section>
-                                    </div>
-                                </article>
-                                <!-- /Data block -->
-
-                                <!-- Data block -->
-                                <article class="span4 data-block">
-                                    <div class="data-container">
-                                        <header>
-                                            <h2>Mouse</h2>
-                                        </header>
-                                        <section>
-                                            <div class="row-fluid demo">
-                                                <div class="span4">Name</div>
-                                                <div class="span4">Position</div>
-                                                <div class="span4">Mouse</div>
-                                            </div>
-                                            <div class="row-fluid" style="text-align: center">
-                                                <div class="span4"><h2>AA</h2></div>
-                                                <div class="span4"><h2>3</h2></div>
-                                                <div class="span4">SVG</div>
-                                            </div>
-                                        </section>
-                                    </div>
-                                </article>
-                                <!-- /Data block -->
-
-                                <!-- Data block -->
-                                <article class="span2 data-block">
-                                    <div class="data-container">
-                                        <header>
-                                            <h2>Remaining…</h2>
-                                        </header>
-                                        <section style="text-align: center">
-                                            <div class="row-fluid">
-                                                <div class="span2"><h1>1800</h1></div>
-                                            </div>
-                                        </section>
-                                    </div>
-                                </article>
-                                <!-- /Data block -->
-                            </div>
-                        </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#debug" data-parent="#icons" data-toggle="collapse">Debug tools</a>
-                            </div>
-                            <div id="debug" class="accordion-body collapse">
-
+                                s
                             </div>
                         </div>
                     </div>
