@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'compressor',
     'rest_framework',
     'authentication',
     'groups',
@@ -106,3 +107,7 @@ STATICFILES_FINDERS = (
 COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
 
 AUTH_USER_MODEL = 'authentication.Account'
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)

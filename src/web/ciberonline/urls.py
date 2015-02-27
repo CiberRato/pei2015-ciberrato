@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.conf import settings
+from django.views.generic.base import TemplateView
 
 from authentication.views import AccountViewSet, LoginView, LogoutView
 
@@ -42,4 +43,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/auth/logout/$', LogoutView.as_view(), name='logout'),
                        url(r'^api-auth/', include('rest_framework.urls',
                                                   namespace='rest_framework')),
+                       url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
+                       url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
+                       url('^.*$', TemplateView.as_view(template_name='index.html'), name='index'),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

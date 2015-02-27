@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-app="ciberonline">
+<head>
+    <title>CiberOnline</title>
+
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <base href="/" />
+
+    {% include 'authentication/stylesheets.html' %}
+</head>
+
+<body>
+    <!-- Main page container -->
+    <section class="container login ng-view" role="main"></section>
+    <!-- /Main page container -->
+
+    <!-- Scripts -->
+    {% include 'authentication/javascripts.html' %}
+</body>
+</html>
