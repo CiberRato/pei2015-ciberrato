@@ -1,5 +1,14 @@
 from rest_framework import serializers
 
+from competition.models import *
+from authentication.serializers import AccountSerializer
+from groups.serializers import *
+
+class CompetitionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Competition
+        fields = ('name', 'type_of_competition')
 
 """
 ---------------------------------------------------------------
