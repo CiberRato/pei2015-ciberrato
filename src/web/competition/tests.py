@@ -10,7 +10,7 @@ class AuthenticationTestCase(TestCase):
 
     def test_uploadFile(self):
         client = APIClient()
-        url = "/api/v1/competitions/grid/"
+        url = "/api/v1/competitions/round/upload/param_list/?round=ok"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml', 'r')
         response = client.post(url, {'file': f})
         print response

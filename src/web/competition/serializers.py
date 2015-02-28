@@ -1,14 +1,22 @@
-from rest_framework import serializers
-
 from competition.models import *
-from authentication.serializers import AccountSerializer
 from groups.serializers import *
+
 
 class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
         fields = ('name', 'type_of_competition')
+
+
+class RoundSerializer(serializers.ModelSerializer):
+    parent_competition_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = Round
+        fields = ('name', 'parent_competition_name', 'param_list_path', 'grid_path', 'lab_path', 'agents_list')
+        read_only_fields = ('param_list_path', 'grid_path', 'lab_path', 'agents_list',)
+
 
 """
 ---------------------------------------------------------------
