@@ -4,7 +4,8 @@
     angular
         .module('ciberonline', [
             'ciberonline.config',
-            'ciberonline.routes'
+            'ciberonline.routes',
+            'ciberonline.authentication'
         ])
         .run(run);
 

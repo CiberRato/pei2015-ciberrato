@@ -1,17 +1,20 @@
 <h1><a href="login.html" class="brand">Ciber</a></h1>
 <div class="data-block">
-    <form method="post" action="index.html">
+    <form role="form" ng-submit="vm.login()">
+
+
         <fieldset>
+            <div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
             <div class="control-group">
-                <label class="control-label" for="login">Username</label>
+                <label class="control-label" for="login__email">Email</label>
                 <div class="controls">
-                    <input id="icon" type="text" placeholder="Your username" name="login">
+                    <input id="login__email" type="email" placeholder="email@email.com" name="login" ng-model="vm.email">
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label" for="password">Password</label>
+                <label class="control-label" for="login__password">Password</label>
                 <div class="controls">
-                    <input id="password" type="password" placeholder="Password" name="password">
+                    <input id="login__password" type="password" placeholder="Password" name="password" ng-model="vm.password">
                     <label class="checkbox">
                         <input id="optionsCheckbox" type="checkbox" value="option1"> Remember me
                     </label>

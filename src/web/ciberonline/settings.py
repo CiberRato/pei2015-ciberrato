@@ -108,6 +108,14 @@ COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
 
 AUTH_USER_MODEL = 'authentication.Account'
 
+ALLOWED_HOSTS = ['*']
+
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}

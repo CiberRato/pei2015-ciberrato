@@ -1,10 +1,68 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
 
-</body>
-</html>
+<h1 href="register.html" class="brand"><strong>Create account</strong></h1>
+<div class="data-block">
+    <form role="form" ng-submit="vm.register()">
+        <fieldset>
+            <!-- first name -->
+            <div class="control-group">
+                <label class="control-label" for="first">First Name</label>
+                <div class="controls">
+                    <input id="first" type="text" placeholder="your first name" name="name">
+                </div>
+            </div>
+
+            <!-- last name -->
+            <div class="control-group">
+                <label class="control-label" for="last">Last name</label>
+                <div class="controls">
+                    <input id="last" type="text" placeholder="your last name" name="name">
+                </div>
+            </div>
+
+            <!-- last name -->
+            <div class="control-group">
+                <label class="control-label" for="email"> Email </label>
+                <div class="controls">
+                    <input id="email" type="text" placeholder="email address" name="email">
+                </div>
+            </div>
+
+            <!-- password -->
+            <div class="control-group">
+                <label class="control-label" for="password"> Password </label>
+                <div class="controls">
+                    <input id="password" type="password" placeholder="password" name="password">
+                </div>
+            </div>
+
+            <!-- Instituição de ensino -->
+            <div class="control-group">
+                <label class="control-label" for="education"> Educational Institution </label>
+                <div class="controls">
+                    <input id="education" type="text" placeholder="your educational institution" name="institution">
+                </div>
+            </div>
+            <!-- <div class="control-group">
+                <label class="control-label" for="select">Educacional Institution</label>
+                <div class="controls">
+                    <select id="select">
+                        <option>Universidade de Aveiro</option>
+                        <option>Universidade de Coimbra</option>
+                        <option>Intituto Politécnico de Leiria</option>
+                        <option>Universidade do Minho</option>
+                        <option>Universidade de Trás-os-Montes e Alto Douro</option>
+                        <option>Universidade da Beira Interior</option>
+                    </select>
+                </div>
+            </div> -->
+
+            <div class="form-actions">
+                <button class="btn btn-large btn-inverse btn-alt" type="submit"><span class="awe-signin"></span> Finish</button>
+            </div>
+
+            <div class="form-actions">
+                <a class="btn btn-large btn-inverse btn-alt" href="login.html"><span class="awe-signin"></span> Back </a>
+            </div>
+        </fieldset>
+    </form>
+</div>
