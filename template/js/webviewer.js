@@ -28,8 +28,8 @@ function turn90(PosList){
 
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
-        $scope.zoom = 30;
 
+        $scope.zoom = 30;
         var robot_json_object = robotConvertXml2JSon();
         var robot_obj = angular.fromJson(robot_json_object);
         var grid_json_object = gridConvertXml2JSon();
@@ -37,6 +37,7 @@ angular.module('myapp', [])
         var lab_json_object = labConvertXml2JSon();
         var lab_obj = angular.fromJson(lab_json_object);
         var b = 0;
+        var play = 0;
 
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
             lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
@@ -48,13 +49,11 @@ angular.module('myapp', [])
         $scope.timeline = turn90(robot_obj.PosList);
         $scope.robot = $scope.timeline.Robot[0].Position;
         $scope.stats = $scope.timeline.Robot[0];
-        //$scope.pline = $scope.timeline.Robot[0].Position._X*$scope.zoom + "," + $scope.timeline.Robot[0].Position._Y*$scope.zoom + " ";
-
         $scope.idx = 1;
-
         $scope.refresh_rate = 50;
-        var play = 0;
-        var show = 0;
+        $scope.pline = "";
+        $scope.last_idx = 0;
+
 
         var refresh = function(refresh_rate){
             $timeout(tick, refresh_rate);
@@ -64,12 +63,17 @@ angular.module('myapp', [])
             try{
                 $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
                 $scope.stats = $scope.timeline.Robot[$scope.idx];
-                $scope.pline ="";
-                for(b=0;b<$scope.idx;b++){
-                    $scope.pline += $scope.timeline.Robot[b].Position._X*$scope.zoom + "," + $scope.timeline.Robot[b].Position._Y*$scope.zoom + " ";
-                }
 
-                //$scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
+                if(($scope.last_idx+1)!=$scope.idx){
+
+                    $scope.pline ="";
+                    for(b=0;b<$scope.idx;b++){
+                        $scope.pline += $scope.timeline.Robot[b].Position._X*$scope.zoom + "," + $scope.timeline.Robot[b].Position._Y*$scope.zoom + " ";
+                    }
+                }else{
+                    $scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
+                }
+                $scope.last_idx = $scope.idx;
 
                 $(".leftGrip").css("left", ($scope.idx*820)/1800);
                 if(play){
