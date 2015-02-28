@@ -7,7 +7,7 @@ from authentication.views import AccountViewSet, LoginView, LogoutView
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet
-from competition.views import CompetitionViewSet, RoundViewSet
+from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
 from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView
 
 from rest_framework import routers
@@ -29,6 +29,7 @@ router_groups.register(r'member', MemberInGroupViewSet)
 router_competitions = routers.SimpleRouter()
 router_competitions.register(r'crud', CompetitionViewSet)
 router_competitions.register(r'round', RoundViewSet)
+router_competitions.register(r'enroll', EnrollGroup)
 
 # COMPETITIONS URLs#
 

@@ -1,6 +1,10 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation
-from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer
+from competition.models import Competition, Round, Simulation, GroupEnrolled
+from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer, \
+    GroupEnrolledSerializer
+from django.db import IntegrityError
+from django.db import transaction
+from authentication.models import Group
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
@@ -72,7 +76,7 @@ class RoundViewSet(viewsets.ModelViewSet):
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def list(self, request, **kwargs):
-        serializer = self.serializer_class([self.Round(r=query) for query in self.queryset], many=True)
+        serializer = self.serializer_class([self.Round(r=query) for query in Round.objects.all()], many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):
@@ -88,7 +92,8 @@ class RoundViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            competition = get_object_or_404(Competition.objects.all(), name=serializer.validated_data['parent_competition_name'])
+            competition = get_object_or_404(Competition.objects.all(),
+                                            name=serializer.validated_data['parent_competition_name'])
 
             Round.objects.create(name=serializer.validated_data['name'], parent_competition=competition)
 
@@ -97,7 +102,61 @@ class RoundViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                        'message': 'The round could not be created with received data.'},
+                         'message': 'The round could not be created with received data.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class EnrollGroup(viewsets.ModelViewSet):
+    queryset = GroupEnrolled.objects.all()
+    serializer_class = GroupEnrolledSerializer
+
+    class GroupEnrolled:
+        def __init__(self, ge):
+            self.competition_name = ge.competition.name
+            self.group_name = ge.group.name
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def list(self, request, **kwargs):
+        list = [self.GroupEnrolled(ge=query) for query in GroupEnrolled.objects.all()]
+        serializer = self.serializer_class(list, many=True)
+        return Response(serializer.data)
+
+    def create(self, request, **kwargs):
+        """
+        B{Create} a Group Enrolled to a competition
+        B{URL:} ../api/v1/competitions/enroll/
+
+        @type  competition_name: str
+        @param competition_name: The Competition name
+        @type  group_name: str
+        @param group_name: The Group name
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            competition = get_object_or_404(Competition.objects.all(),
+                                            name=serializer.validated_data['competition_name'])
+            group = get_object_or_404(Group.objects.all(),
+                                      name=serializer.validated_data['group_name'])
+
+            try:
+                with transaction.atomic():
+                    GroupEnrolled.objects.create(competition=competition, group=group)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The group already enrolled.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'status': 'Created',
+                                 'message': 'The group has enrolled.'},
+                                status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad request',
+                         'message': 'The group can\'t enroll with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -136,14 +195,15 @@ class UploadRoundXMLView(views.APIView):
                              'message': 'You can only upload XML files.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        path = default_storage.save('competition_files/'+self.folder+'/' + file_obj.name, ContentFile(file_obj.read()))
+        path = default_storage.save('competition_files/' + self.folder + '/' + file_obj.name,
+                                    ContentFile(file_obj.read()))
 
         setattr(r, self.file_to_save, path)
         r.save()
 
         return Response({'status': 'Uploaded',
                          'message': 'The file has been uploaded and saved to ' + str(r.name)},
-                        status=status.HTTP_200_OK)
+                        status=status.HTTP_201_CREATED)
 
 
 class UploadParamListView(UploadRoundXMLView):

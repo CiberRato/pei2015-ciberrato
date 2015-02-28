@@ -14,6 +14,8 @@ class Competition(models.Model):
         (COMPETITIVA, 'Competitiva'),
     )
 
+    enrolled_groups = models.ManyToManyField(Group, through='GroupEnrolled', related_name="competition")
+
     type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -24,6 +26,21 @@ class Competition(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class GroupEnrolled(models.Model):
+    competition = models.ForeignKey(Competition, blank=False)
+    group = models.ForeignKey(Group, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('competition', 'group',)
+        ordering = ['created_at']
+
+    def __unicode__(self):
+        return self.group.name
 
 
 class Round(models.Model):
@@ -76,6 +93,7 @@ class CompetitionAgent(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        unique_together = ('competition', 'round', 'agent',)
         ordering = ['created_at']
 
 """
