@@ -41,7 +41,7 @@ class GroupEnrolled(models.Model):
 
     def __unicode__(self):
         return self.group.name
-    
+
 
 class Round(models.Model):
     name = models.CharField(max_length=128, blank=False, unique=True)

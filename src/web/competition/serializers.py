@@ -6,7 +6,8 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition')
+        fields = ('name', 'type_of_competition', 'enrolled_groups')
+        read_only_fields = ('enrolled_groups',)
 
 
 class RoundSerializer(serializers.ModelSerializer):
@@ -17,6 +18,14 @@ class RoundSerializer(serializers.ModelSerializer):
         fields = ('name', 'parent_competition_name', 'param_list_path', 'grid_path', 'lab_path', 'agents_list')
         read_only_fields = ('param_list_path', 'grid_path', 'lab_path', 'agents_list',)
 
+
+class GroupEnrolledSerializer(serializers.ModelSerializer):
+    competition_name = serializers.CharField(max_length=128)
+    group_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = GroupEnrolled
+        fields = ('competition_name', 'group_name',)
 
 """
 ---------------------------------------------------------------
