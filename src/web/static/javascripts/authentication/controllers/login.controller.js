@@ -28,6 +28,10 @@
         function loginError(data){
             if(data){
                 vm.error = data.data.error;
+                $.jGrowl("This notification will live a little longer. This is default style.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
             }
         }
     }

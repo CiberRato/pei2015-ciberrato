@@ -2,9 +2,12 @@
 {% load staticfiles %}
 
 {% compress js %}
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<script type="text/javascript" src="{% static 'bower_components/jquery.browser/test/src/jquery.browser.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
 
-<script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/plugins/jGrowl/jquery.jgrowl.js' %}"></script>
 
 <script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/angular-route/angular-route.js' %}"></script>
@@ -17,19 +20,68 @@
 <script type="text/javascript" src="{% static 'js/libs/modernizr.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/libs/selectivizr.js' %}"></script>
 
-<script>
-    $(document).ready(function(){
-
-        // Tooltips
-        $('[title]').tooltip({
-            placement: 'top'
-        });
-
-    });
-</script>
-
 <script type="text/javascript" src="{% static 'javascripts/authentication/authentication.module.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/authentication/services/authentication.service.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/authentication/controllers/login.controller.js' %}"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        // This value can be true, false or a function to be used as a callback when the closer is clciked
+        $.jGrowl.defaults.closer = function() {
+            console.log("Closing everything!", this);
+        };
+
+        $.jGrowl("Hello stranger!", {
+            theme: 'success'
+        });
+
+        $.jGrowl("This notification will live a little longer. This is default style.", {
+            life: 2500,
+            theme: 'danger'
+        });
+        $.jGrowl("Sticky notification with a header", {
+            header: 'Ernest Lawrence',
+            sticky: true
+        });
+        $.jGrowl("Chromatron theme, and a whole bunch of callbacks...", {
+            theme: 'primary',
+            speed: 'slow',
+            beforeOpen: function(e,m,o) {
+                console.log("I am going to be opened!", this);
+            },
+            open: function(e,m,o) {
+                console.log("I have been opened!", this);
+            },
+            beforeClose: function(e,m,o) {
+                console.log("I am going to be closed!", this);
+            },
+            close: function(e,m,o) {
+                console.log("I have been closed!", this);
+            }
+        });
+
+        $.jGrowl("Custom animation test...", {
+            speed: 'slow',
+            animateOpen: {
+                height: "show"
+            },
+            animateClose: {
+                height: "hide"
+            }
+        });
+
+        $.jGrowl("This message will not close because we have a callback that returns false.", {
+            beforeClose: function() {
+                return false;
+            }
+        });
+
+        $.jGrowl.defaults.closerTemplate = '<div>hide all notifications</div>';
+
+    });
+
+</script>
 
 {% endcompress %}

@@ -106,7 +106,8 @@ class RoundViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class EnrollGroup(viewsets.ModelViewSet):
+class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                  mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = GroupEnrolled.objects.all()
     serializer_class = GroupEnrolledSerializer
 
@@ -121,8 +122,7 @@ class EnrollGroup(viewsets.ModelViewSet):
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def list(self, request, **kwargs):
-        list = [self.GroupEnrolled(ge=query) for query in GroupEnrolled.objects.all()]
-        serializer = self.serializer_class(list, many=True)
+        serializer = self.serializer_class([self.GroupEnrolled(ge=query) for query in GroupEnrolled.objects.all()], many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):
@@ -158,6 +158,8 @@ class EnrollGroup(viewsets.ModelViewSet):
         return Response({'status': 'Bad request',
                          'message': 'The group can\'t enroll with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 class UploadRoundXMLView(views.APIView):
