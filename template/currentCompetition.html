@@ -153,7 +153,7 @@
                     <div class="data-container">
                         <section>
                             <div class="row">
-                                <div class="span12" style="text-align: center; vertical-align: middle">
+                                <div class="span12 viewer" style="text-align: center; vertical-align: middle">
                                     <svg ng-w="{{28*zoom}}" ng-h="{{14*zoom}}" style="background-color: black" >
                                         <g ng-t="translate(0,{{14*zoom}})">
                                             <g transform="scale(1,-1)">
@@ -169,10 +169,14 @@
                                                             <polygon ng-if="v._Height<beacon_height" ng-points="'{{v.str}}'" style=" fill:#0000ff" />
                                                         </g>
                                                     </g>
+
                                                     <g ng-repeat="(key, value) in grid">
                                                         <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
                                                             <circle ng-cx="{{v._X*zoom}}" ng-cy="{{v._Y*zoom}}" ng-r="{{zoom/2}}" stroke="#00ffff" stroke-width="2" style=" fill:#cfd4db" />
                                                         </g>
+                                                    </g>
+                                                    <g id="line" style="visibility: hidden; display: none">
+                                                        <polyline points="{{pline}}" style="fill:none;stroke:yellow;stroke-width:3" />
                                                     </g>
                                                     <g>
                                                         <image x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_red_smile.svg"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
@@ -192,23 +196,23 @@
                                     <div class="row" >
                                         <div class ="span3" style="text-align: left;margin-left: 20px; margin-top: 5px">
                                             <div class="btn-group" data-toggle="buttons-checkbox">
-                                                <button class="btn btn-success">Play</button><button class="btn btn-danger">Pause</button><button class="btn btn-info">Reset</button>
+                                                <button class="btn btn-success" id="play"><span class="awe-play"></span></button>
+                                                <button class="btn btn-danger" id="pause" disabled="true"><span class="awe-pause"></span></button>
+                                                <button class="btn btn-info" id="stop" disabled="true"><span class="awe-stop"></span></button>
                                             </div>
                                         </div>
                                         <div class="span3" style="margin-top: 5px">
 
                                         </div>
 
-                                        <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px">
-                                            <h2>Velocity: </h2>
-                                        </div>
+                                        <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px"></div>
                                         <div class="span3" style="text-align: right; margin-top: 5px">
                                             <div class="btn-group" data-toggle="buttons-checkbox">
-                                                <button class="btn">1/4x</button>
-                                                <button class="btn">1/2x</button>
-                                                <button class="btn active">1x</button>
-                                                <button class="btn">2x</button>
-                                                <button class="btn">4x</button>
+                                                <button class="btn" id="14x">1/4x</button>
+                                                <button class="btn" id="12x">1/2x</button>
+                                                <button class="btn" id="1x" disabled="true">1x</button>
+                                                <button class="btn" id="2x">2x</button>
+                                                <button class="btn" id="4x">4x</button>
                                             </div>
                                         </div>
 
@@ -230,10 +234,7 @@
                 <!-- Data block -->
                 <article class="span8 data-block">
                     <div class="data-container">
-                        <header>
-                            <h2>Status</h2>
-                        </header>
-                        <section>
+                        <section class="viewer">
                             <div class="row-fluid demo">
                                 <div class="span2">Time</div>
                                 <div class="span2">Collisions</div>
@@ -244,12 +245,12 @@
 
                             </div>
                             <div class="row-fluid" style="text-align: center">
-                                <div class="span2"><h2>{{stats._Time}}</h2></div>
-                                <div class="span2"><h2>{{stats._Collisions}}</h2></div>
-                                <div class="span2"><h2>{{stats._State}}</h2></div>
-                                <div class="span2"><h2>{{stats._Score}}</h2></div>
-                                <div class="span2"><h2>{{stats._ReturningTime}}</h2></div>
-                                <div class="span2"><h2>{{1800-stats._Time}}</h2></div>
+                                <div class="span2 viewer"><h2>{{stats._Time}}</h2></div>
+                                <div class="span2 viewer"><h2>{{stats._Collisions}}</h2></div>
+                                <div class="span2 viewer"><h2>{{stats._State}}</h2></div>
+                                <div class="span2 viewer"><h2>{{stats._Score}}</h2></div>
+                                <div class="span2 viewer"><h2>{{stats._ReturningTime}}</h2></div>
+                                <div class="span2 viewer"><h2>{{1800-stats._Time}}</h2></div>
 
                             </div>
                         </section>
@@ -260,19 +261,16 @@
                 <!-- Data block -->
                 <article class="span4 data-block">
                     <div class="data-container">
-                        <header>
-                            <h2>Mouse</h2>
-                        </header>
-                        <section>
+                        <section class="viewer">
                             <div class="row-fluid demo">
                                 <div class="span4">Name</div>
                                 <div class="span4">Position</div>
                                 <div class="span4">Mouse</div>
                             </div>
                             <div class="row-fluid" style="text-align: center">
-                                <div class="span4"><h2>{{stats._Name}}</h2></div>
-                                <div class="span4"><h2>{{stats._Id}}</h2></div>
-                                <div class="span4"><h2>SVG</h2></div>
+                                <div class="span4 viewer"><h2>{{stats._Name}}</h2></div>
+                                <div class="span4 viewer"><h2>{{stats._Id}}</h2></div>
+                                <div class="span4 viewer"><h2>SVG</h2></div>
                             </div>
                         </section>
                     </div>
@@ -291,17 +289,21 @@
                         <div class="accordion">
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse">Debug Tools</a>
+                                    <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse"><h2>Debug Tools</h1></a>
                                 </div>
                                 <div id="stats" class="accordion-body collapse">
-
-                                        <section>
+                                    <div class="row" >
+                                        <div class="span1" style="margin-left: 20px">
+                                            <h3>Line: </h3>
+                                        </div>
+                                        <div class="span1" style="text-align: left">
                                             <div class="btn-group" data-toggle="buttons-checkbox">
-                                                <button class="btn active">Left</button><button class="btn">Middle</button><button class="btn">Right</button>
+                                                <button class="btn btn-success" id="show">Show</button>
+                                                <button class="btn btn-danger" id="hide" disabled="true">Hide</button>
                                             </div>
+                                        </div>
 
-                                        </section>
-
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -7607,7 +7609,8 @@
             "left_grip_selector": ".leftGrip",
             "value_changed_callback": function(cause, leftValue, rightValue) {
                 try{
-                    angular.element('[ng-controller=ctrl]').scope().idx = leftValue;
+                    var scope = angular.element('[ng-controller=ctrl]').scope();
+                    scope.idx = leftValue;
                 }catch(TypeError){}
             }
         });
@@ -7620,14 +7623,89 @@
 
 
     <script>
-        $( "#playpause").click(function() {
-            if($("#playpause > img").attr("src")=='img/play.png'){
-                $("#playpause > img").attr("src", "img/pause.png");
-                angular.element('[ng-controller=ctrl]').scope().play();
-            }else{
-                $("#playpause > img").attr("src", "img/play.png")
-                angular.element('[ng-controller=ctrl]').scope().pause();
-            }
+        $("#play").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().play();
+            $(this).attr("disabled", true);
+            $("#pause").removeAttr("disabled");
+            $("#stop").removeAttr("disabled");
+            return false;
+        });
+        $("#pause").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().pause();
+            $(this).attr("disabled", true);
+            $("#play").removeAttr("disabled");
+            $("#stop").removeAttr("disabled");
+            return false;
+        });
+        $("#stop").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().stop();
+            $(this).attr("disabled", true);
+            $("#pause").attr("disabled", true);
+            $("#play").removeAttr("disabled");
+            return false;
+        });
+    </script>
+
+    <script>
+        $("#show").click(function() {
+            $("#line").css({"visibility":"visible", "display": "initial"});
+            $(this).attr("disabled", true);
+            $("#hide").removeAttr("disabled");
+            return false;
+        });
+        $("#hide").click(function() {
+            $("#line").css({"visibility":"hidden", "display": "none"});
+            $(this).attr("disabled", true);
+            $("#show").removeAttr("disabled");
+            return false;
+        });
+
+    </script>
+
+    <script>
+        $("#1x").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().refresh_rate=50;
+            $(this).attr("disabled", true);
+            $("#12x").removeAttr("disabled");
+            $("#14x").removeAttr("disabled");
+            $("#2x").removeAttr("disabled");
+            $("#4x").removeAttr("disabled");
+            return false;
+        });
+        $("#2x").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().refresh_rate=25;
+            $(this).attr("disabled", true);
+            $("#12x").removeAttr("disabled");
+            $("#14x").removeAttr("disabled");
+            $("#1x").removeAttr("disabled");
+            $("#4x").removeAttr("disabled");
+            return false;
+        });
+        $("#4x").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().refresh_rate=12.5;
+            $(this).attr("disabled", true);
+            $("#12x").removeAttr("disabled");
+            $("#14x").removeAttr("disabled");
+            $("#2x").removeAttr("disabled");
+            $("#1x").removeAttr("disabled");
+            return false;
+        });
+        $("#12x").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().refresh_rate=100;
+            $(this).attr("disabled", true);
+            $("#4x").removeAttr("disabled");
+            $("#14x").removeAttr("disabled");
+            $("#2x").removeAttr("disabled");
+            $("#1x").removeAttr("disabled");
+            return false;
+        });
+        $("#14x").click(function() {
+            angular.element('[ng-controller=ctrl]').scope().refresh_rate=200;
+            $(this).attr("disabled", true);
+            $("#12x").removeAttr("disabled");
+            $("#4x").removeAttr("disabled");
+            $("#2x").removeAttr("disabled");
+            $("#1x").removeAttr("disabled");
             return false;
         });
     </script>

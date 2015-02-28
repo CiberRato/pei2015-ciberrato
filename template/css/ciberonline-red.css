@@ -10107,8 +10107,8 @@ dl.dl-horizontal dd {
   margin-left: 8.522727272727272%;
   *margin-left: 8.416344294003867%;
 }
-[class*="span"] {
-  margin-bottom: 20px;
+[class*="span"]:not(.viewer)  {
+    margin-bottom: 20px;
 }
 .data-block .row .row {
   margin-left: -20px;
@@ -10209,7 +10209,7 @@ dl.dl-horizontal dd {
 .data-block .row > [class*="span"]:first-child {
   margin-left: 0;
 }
-.data-block .data-container > *:last-child {
+.data-block .data-container > *:last-child:not(.viewer) {
   margin-bottom: 20px;
 }
 .data-block .row,

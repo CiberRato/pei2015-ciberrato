@@ -18,7 +18,6 @@ function convertToStringPoints(cornerList, zoom){
     return out;
 }
 
-
 function turn90(PosList){
     for(i=0; i<PosList.Robot.length; i++){
         PosList.Robot[i].Position._Dir = parseInt(PosList.Robot[i].Position._Dir)+90;
@@ -37,11 +36,11 @@ angular.module('myapp', [])
         var grid_obj = angular.fromJson(grid_json_object);
         var lab_json_object = labConvertXml2JSon();
         var lab_obj = angular.fromJson(lab_json_object);
+        var b = 0;
 
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
             lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
-        console.log(robot_obj);
 
         $scope.beacon_height = lab_obj.Lab.Beacon._Height;
         $scope.map = lab_obj.Lab;
@@ -49,33 +48,59 @@ angular.module('myapp', [])
         $scope.timeline = turn90(robot_obj.PosList);
         $scope.robot = $scope.timeline.Robot[0].Position;
         $scope.stats = $scope.timeline.Robot[0];
+        //$scope.pline = $scope.timeline.Robot[0].Position._X*$scope.zoom + "," + $scope.timeline.Robot[0].Position._Y*$scope.zoom + " ";
 
         $scope.idx = 1;
-        var refresh_rate = 50;
-        var pause = 0;
+
+        $scope.refresh_rate = 50;
+        var play = 0;
+        var show = 0;
+
+        var refresh = function(refresh_rate){
+            $timeout(tick, refresh_rate);
+        }
 
         var tick = function() {
             try{
                 $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
                 $scope.stats = $scope.timeline.Robot[$scope.idx];
-                console.log($scope.timeline.Robot[$scope.idx]);
+                $scope.pline ="";
+                for(b=0;b<$scope.idx;b++){
+                    $scope.pline += $scope.timeline.Robot[b].Position._X*$scope.zoom + "," + $scope.timeline.Robot[b].Position._Y*$scope.zoom + " ";
+                }
+
+                //$scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
+
                 $(".leftGrip").css("left", ($scope.idx*820)/1800);
-                $scope.idx++;
+                if(play){
+                    $scope.idx++;
+                }
             }catch(TypeError){
-                $scope.pause();
+                $scope.stop();
             }
-            if(!pause){
-                $timeout(tick, refresh_rate);
+            if(play){
+                refresh($scope.refresh_rate);
             }
         };
 
+
         $scope.play = function() {
-            pause = 0;
-            $timeout(tick, refresh_rate);
+            if(!play){
+                play = 1;
+                refresh($scope.refresh_rate);
+            }
         };
 
         $scope.pause = function(){
-            pause = 1;
+            if(play){
+                play = 0;
+            }
+        };
+
+        $scope.stop = function(){
+            $scope.idx = 0;
+            play = 0;
+            refresh(0);
         };
     }])
 
