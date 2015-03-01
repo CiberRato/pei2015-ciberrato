@@ -49,10 +49,12 @@ angular.module('myapp', [])
         $scope.timeline = turn90(robot_obj.PosList);
         $scope.robot = $scope.timeline.Robot[0].Position;
         $scope.stats = $scope.timeline.Robot[0];
+        console.log($scope.stats);
         $scope.idx = 1;
         $scope.refresh_rate = 50;
         $scope.pline = "";
         $scope.last_idx = 0;
+        $scope.robotColor = 'img/svg/mickey_red_smile.svg';
 
 
         var refresh = function(refresh_rate){
@@ -87,7 +89,18 @@ angular.module('myapp', [])
             }
         };
 
+        $scope.setRobotColor = function(id){
 
+            if(id == 1){
+                $scope.robotColor = 'img/svg/mickey_red_smile.svg';
+            }
+            if(id == 2){
+                $scope.robotColor = 'img/svg/mickey_blue_smile.svg';
+            }
+            if(id == 3){
+                $scope.robotColor = 'img/svg/mickey_green_smile.svg';
+            }
+        };
         $scope.play = function() {
             if(!play){
                 play = 1;

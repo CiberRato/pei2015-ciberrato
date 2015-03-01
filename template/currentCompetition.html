@@ -154,10 +154,10 @@
                         <section>
                             <div class="row">
                                 <div class="span12 viewer" style="text-align: center; vertical-align: middle">
-                                    <svg ng-w="{{28*zoom}}" ng-h="{{14*zoom}}" style="background-color: black" >
-                                        <g ng-t="translate(0,{{14*zoom}})">
+                                    <svg ng-w="{{map._Width*zoom}}" ng-h="{{map._Height*zoom}}" style="background-color: black" >
+                                        <g ng-t="translate(0,{{map._Height*zoom}})">
                                             <g transform="scale(1,-1)">
-                                                <g><rect width="{{28*zoom}}" height="{{14*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
+                                                <g><rect width="{{map._Width*zoom}}" height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
                                                     <g ng-repeat="(key, value) in map">
                                                         <g ng-if="key == 'Beacon'">
                                                             <circle ng-cx="{{value._X*zoom}}" ng-cy="{{value._Y*zoom}}" ng-r="{{zoom}}" stroke="#00ffff" stroke-width="2" />
@@ -179,7 +179,10 @@
                                                         <polyline points="{{pline}}" style="fill:none;stroke:yellow;stroke-width:3" />
                                                     </g>
                                                     <g>
-                                                        <image x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_red_smile.svg"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
+
+                                                        <image ng-if="stats._Collision=='False'" x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor}}"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
+
+                                                        <image ng-if="stats._Collision=='True'" x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
                                                         <circle cx="{{robot._X*zoom}}" cy="{{robot._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="#00ffff" stroke-width="1" />
                                                         <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height  -->
                                                     </g>
@@ -289,20 +292,47 @@
                         <div class="accordion">
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse"><h2>Debug Tools</h1></a>
+                                    <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse"><h2>Debug Tools</h2></a>
                                 </div>
                                 <div id="stats" class="accordion-body collapse">
                                     <div class="row" >
-                                        <div class="span1" style="margin-left: 20px">
-                                            <h3>Line: </h3>
-                                        </div>
-                                        <div class="span1" style="text-align: left">
-                                            <div class="btn-group" data-toggle="buttons-checkbox">
+                                        <div class="span2" style="margin-left: 20px; text-align: center">
+                                            <h2>Line</h2>
+                                            <p class="btn-group" data-toggle="buttons-checkbox">
                                                 <button class="btn btn-success" id="show">Show</button>
                                                 <button class="btn btn-danger" id="hide" disabled="true">Hide</button>
-                                            </div>
+                                            </p>
                                         </div>
 
+                                        <div class="span1" style="text-align: center">
+                                            <h2>X</h2>
+                                            <p>{{robot._X}}</p>
+                                        </div>
+                                        <div class="span1" style="text-align: center">
+                                            <h2>Y</h2>
+                                            <p>{{robot._Y}}</p>
+
+                                        </div>
+                                        <div class="span1" style="text-align: center">
+                                            <h2>Dir</h2>
+                                            <p>{{robot._Dir}}</p>
+
+                                        </div>
+                                        <div class="span2" style="text-align: center">
+                                            <h2>Robot Color</h2>
+                                            <p><select id="robotColor" class="span1">
+                                                <option value="1">Red</option>
+                                                <option value="2">Blue</option>
+                                                <option value="3">Green</option>
+                                            </select></p>
+                                        </div>
+                                        <div class="span2" style="text-align: center">
+                                            <h2>Maze Color</h2>
+                                            <p><select id="mazeColor" class="span2">
+                                                <option value="1">Standard</option>
+                                                <option value="2">Black&White</option>
+                                            </select></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -7657,6 +7687,14 @@
             $("#line").css({"visibility":"hidden", "display": "none"});
             $(this).attr("disabled", true);
             $("#show").removeAttr("disabled");
+            return false;
+        });
+
+    </script>
+
+    <script>
+        $("#robotColor").change(function() {
+            angular.element('[ng-controller=ctrl]').scope().setRobotColor($( "#robotColor" ).val());
             return false;
         });
 
