@@ -92,6 +92,23 @@ angular.module('myapp', [])
             }
         };
 
+        $scope.refreshSVG = function(){
+            $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
+            $scope.stats = $scope.timeline.Robot[$scope.idx];
+
+            if(($scope.last_idx+1)!=$scope.idx){
+
+                $scope.pline ="";
+                for(b=0;b<$scope.idx;b++){
+                    $scope.pline += $scope.timeline.Robot[b].Position._X*$scope.zoom + "," + $scope.timeline.Robot[b].Position._Y*$scope.zoom + " ";
+                }
+            }else{
+                $scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
+            }
+            $scope.last_idx = $scope.idx;
+            $timeout($scope.refreshSVG, 1);
+
+        }
         $scope.setRobotColor = function(id){
 
             if(id == 1){
@@ -138,6 +155,7 @@ angular.module('myapp', [])
         $scope.pause = function(){
             if(play){
                 play = 0;
+                $timeout($scope.refreshSVG, 1);
             }
         };
 
