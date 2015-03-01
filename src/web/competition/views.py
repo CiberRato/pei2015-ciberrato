@@ -20,6 +20,15 @@ from django.core.files.base import ContentFile
 from competition.permissions import IsAdmin
 
 
+class RoundSimplex:
+    def __init__(self, r):
+        self.name = r.name
+        self.parent_competition_name = str(r.parent_competition)
+        self.param_list_path = r.param_list_path
+        self.grid_path = r.grid_path
+        self.lab_path = r.lab_path
+        self.agents_list = r.agents_list
+
 class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
@@ -81,19 +90,60 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = RoundSerializer
+    queryset = Round.objects.all()
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the oldest round competition
+        B{URL:} ../api/v1/competitions/first_round/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition_rounds = Round.objects.filter(parent_competition=competition)
+
+        if len(competition_rounds) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'Not found '},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(RoundSimplex(competition_rounds.reverse()[0]))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = RoundSerializer
+    queryset = Round.objects.all()
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the earliest round competition
+        B{URL:} ../api/v1/competitions/earliest_round/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition_rounds = Round.objects.filter(parent_competition=competition)
+
+        if len(competition_rounds) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'Not found '},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(RoundSimplex(competition_rounds[0]))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                    mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Round.objects.all()
     serializer_class = RoundSerializer
-
-    class Round:
-        def __init__(self, r):
-            self.name = r.name
-            self.parent_competition_name = str(r.parent_competition)
-            self.param_list_path = r.param_list_path
-            self.grid_path = r.grid_path
-            self.lab_path = r.lab_path
-            self.agents_list = r.agents_list
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -101,7 +151,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def list(self, request, **kwargs):
-        serializer = self.serializer_class([self.Round(r=query) for query in Round.objects.all()], many=True)
+        serializer = self.serializer_class([RoundSimplex(r=query) for query in Round.objects.all()], many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):

@@ -58,6 +58,7 @@ class Round(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        get_latest_by = "created_at"
 
     def __unicode__(self):
         return self.name
