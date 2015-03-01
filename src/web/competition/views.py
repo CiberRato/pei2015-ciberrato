@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, GroupEnrolled
+from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer, \
     GroupEnrolledSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group
+
+from groups.serializers import GroupSerializer
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
@@ -17,6 +19,15 @@ from django.core.files.base import ContentFile
 
 from competition.permissions import IsAdmin
 
+
+class RoundSimplex:
+    def __init__(self, r):
+        self.name = r.name
+        self.parent_competition_name = str(r.parent_competition)
+        self.param_list_path = r.param_list_path
+        self.grid_path = r.grid_path
+        self.lab_path = r.lab_path
+        self.agents_list = r.agents_list
 
 class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.all()
@@ -50,6 +61,10 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=pk)
 
+        rounds = Round.objects.filter(parent_competition=competition)
+        for r in rounds:
+            r.delete()
+
         competition.delete()
 
         return Response({'status': 'Deleted',
@@ -57,18 +72,78 @@ class CompetitionViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_200_OK)
 
 
-class RoundViewSet(viewsets.ModelViewSet):
+class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = GroupSerializer
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the list of a Groups enrolled in the Competition
+        B{URL:} ../api/v1/competitions/groups/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        serializer = self.serializer_class(competition.enrolled_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = RoundSerializer
+    queryset = Round.objects.all()
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the oldest round competition
+        B{URL:} ../api/v1/competitions/first_round/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition_rounds = Round.objects.filter(parent_competition=competition)
+
+        if len(competition_rounds) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'Not found '},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(RoundSimplex(competition_rounds.reverse()[0]))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = RoundSerializer
+    queryset = Round.objects.all()
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the earliest round competition
+        B{URL:} ../api/v1/competitions/earliest_round/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition_rounds = Round.objects.filter(parent_competition=competition)
+
+        if len(competition_rounds) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'Not found '},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(RoundSimplex(competition_rounds[0]))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                   mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Round.objects.all()
     serializer_class = RoundSerializer
-
-    class Round:
-        def __init__(self, r):
-            self.name = r.name
-            self.parent_competition_name = str(r.parent_competition)
-            self.param_list_path = r.param_list_path
-            self.grid_path = r.grid_path
-            self.lab_path = r.lab_path
-            self.agents_list = r.agents_list
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -76,7 +151,7 @@ class RoundViewSet(viewsets.ModelViewSet):
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def list(self, request, **kwargs):
-        serializer = self.serializer_class([self.Round(r=query) for query in Round.objects.all()], many=True)
+        serializer = self.serializer_class([RoundSimplex(r=query) for query in Round.objects.all()], many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):
@@ -105,6 +180,23 @@ class RoundViewSet(viewsets.ModelViewSet):
                          'message': 'The round could not be created with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Remove} a round from the competition
+        B{URL:} ../api/v1/competitions/round/<name>/
+
+        @type  name: str
+        @param name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+
+        for c_agent in CompetitionAgent.objects.all():
+            c_agent.delete()
+
+        r.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
 
 class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                   mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -122,7 +214,8 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def list(self, request, **kwargs):
-        serializer = self.serializer_class([self.GroupEnrolled(ge=query) for query in GroupEnrolled.objects.all()], many=True)
+        serializer = self.serializer_class([self.GroupEnrolled(ge=query) for query in GroupEnrolled.objects.all()],
+                                           many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):
@@ -152,14 +245,42 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
 
             return Response({'status': 'Created',
-                                 'message': 'The group has enrolled.'},
-                                status=status.HTTP_201_CREATED)
+                             'message': 'The group has enrolled.'},
+                            status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
                          'message': 'The group can\'t enroll with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Remove} a group from the competition
+        B{URL:} ../api/v1/competitions/enroll/<competition_name>/?group_name=<group_name>
 
+        @type  competition_name: str
+        @param competition_name: The competition name
+        @type  group_name: str
+        @param group_name: The group name
+        """
+        if 'group_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?group_name=*group_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+
+        group_not_enrolled = (len(GroupEnrolled.objects.filter(competition=competition, group=group)) == 0)
+
+        if group_not_enrolled:
+            return Response({'status': 'Bad request',
+                             'message': 'The group is not enrolled in the competition'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        group_enrolled = GroupEnrolled.objects.get(competition=competition, group=group)
+        group_enrolled.delete()
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class UploadRoundXMLView(views.APIView):

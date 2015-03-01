@@ -11,6 +11,7 @@
         var Authentication = {
             getAuthenticatedAccount: getAuthenticatedAccount,
             isAuthenticated: isAuthenticated,
+            register: register,
             login: login,
             setAuthenticatedAccount: setAuthenticatedAccount,
             unauthenticate: unauthenticate
@@ -35,6 +36,28 @@
             console.error("Login Failure!");
             console.error(data.data);
             return data;
+        }
+
+        function register(email,username, first_name, last_name, password, confirm_password, teaching_institution){
+            return $http.post("api/v1/accounts/",{
+                email: email,
+                password: password,
+                confirm_password: confirm_password,
+                username: username,
+                first_name: first_name,
+                last_name: last_name,
+                teaching_institution: teaching_institution
+            }).then(registerSuccessFn, registerErrorFn);
+        }
+
+        function registerSuccessFn(data, status, headers, config){
+            $location.path('idp/login/');
+        }
+
+        function registerErrorFn(data, status, headers, config){
+            console.error("Registration Failure!");
+            console.error(data.data);
+
         }
 
         function setAuthenticatedAccount(account){
