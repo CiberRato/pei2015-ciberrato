@@ -66,19 +66,7 @@ angular.module('myapp', [])
 
         var tick = function() {
             try{
-                $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
-                $scope.stats = $scope.timeline.Robot[$scope.idx];
-
-                if(($scope.last_idx+1)!=$scope.idx){
-
-                    $scope.pline ="";
-                    for(b=0;b<$scope.idx;b++){
-                        $scope.pline += $scope.timeline.Robot[b].Position._X*$scope.zoom + "," + $scope.timeline.Robot[b].Position._Y*$scope.zoom + " ";
-                    }
-                }else{
-                    $scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
-                }
-                $scope.last_idx = $scope.idx;
+                $scope.updateValues();
 
                 $(".leftGrip").css("left", ($scope.idx*820)/1800);
                 if(play){
@@ -92,7 +80,7 @@ angular.module('myapp', [])
             }
         };
 
-        $scope.refreshSVG = function(){
+        $scope.updateValues = function(){
             $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
             $scope.stats = $scope.timeline.Robot[$scope.idx];
 
@@ -106,7 +94,11 @@ angular.module('myapp', [])
                 $scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
             }
             $scope.last_idx = $scope.idx;
-            $timeout($scope.refreshSVG, 1);
+        }
+
+        $scope.refreshSVG = function(){
+            $scope.updateValues();
+            $timeout($scope.refreshSVG, 1000);
 
         }
         $scope.setRobotColor = function(id){
@@ -155,7 +147,7 @@ angular.module('myapp', [])
         $scope.pause = function(){
             if(play){
                 play = 0;
-                $timeout($scope.refreshSVG, 1);
+                $timeout($scope.refreshSVG, 1000);
             }
         };
 
