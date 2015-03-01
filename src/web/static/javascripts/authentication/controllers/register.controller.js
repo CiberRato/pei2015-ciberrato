@@ -23,5 +23,6 @@
         function register() {
             Authentication.register(vm.email, vm.username, vm.first_name, vm.last_name, vm.password, vm.confirm_password, vm.teaching_institution);
         }
+
     }
 })();
