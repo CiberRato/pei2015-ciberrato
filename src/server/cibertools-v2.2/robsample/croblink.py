@@ -17,6 +17,7 @@ class CRobLink:
         self.robName = robName
         self.robId = robId
         self.host = host
+        UDP_IP = host
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
