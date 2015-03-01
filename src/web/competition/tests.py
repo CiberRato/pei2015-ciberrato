@@ -72,7 +72,36 @@ class AuthenticationTestCase(TestCase):
                                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')]),
                                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3')])])
 
+        # list of all groups enrolled in one competition
+        url = "/api/v1/competitions/groups/C1/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO1'), ('max_members', 10)]),
+                                         OrderedDict([('name', u'XPTO2'), ('max_members', 10)]),
+                                         OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
+        url = "/api/v1/competitions/enroll/C1/?group_name=XPTO3"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/competitions/enroll/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1')]),
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')])])
+
+        url = "/api/v1/competitions/round/R1/"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/competitions/round/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
+
         client.force_authenticate(user=None)
+
+    # def test_remove_competiton recursive removeall
 
     def test_uploadFile(self):
         user = Account.objects.get(username="gipmon")
@@ -86,13 +115,17 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         url = "/api/v1/competitions/round/upload/grid/?round=R1"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml', 'r')
+        f = open(
+            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml',
+            'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         url = "/api/v1/competitions/round/upload/lab/?round=R1"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Lab.xml', 'r')
+        f = open(
+            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Lab.xml',
+            'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
@@ -111,6 +144,8 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None), ('lab_path', None), ('agents_list', [])])])
+        self.assertEqual(response.data, [OrderedDict(
+            [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
+             ('lab_path', None), ('agents_list', [])])])
 
         client.force_authenticate(user=None)

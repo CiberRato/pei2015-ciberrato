@@ -18,7 +18,6 @@ function convertToStringPoints(cornerList, zoom){
     return out;
 }
 
-
 function turn90(PosList){
     for(i=0; i<PosList.Robot.length; i++){
         PosList.Robot[i].Position._Dir = parseInt(PosList.Robot[i].Position._Dir)+90;
@@ -26,22 +25,22 @@ function turn90(PosList){
     return PosList;
 }
 
-
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
-        $scope.zoom = 30;
 
+        $scope.zoom = 30;
         var robot_json_object = robotConvertXml2JSon();
         var robot_obj = angular.fromJson(robot_json_object);
         var grid_json_object = gridConvertXml2JSon();
         var grid_obj = angular.fromJson(grid_json_object);
         var lab_json_object = labConvertXml2JSon();
         var lab_obj = angular.fromJson(lab_json_object);
+        var b = 0;
+        var play = 0;
 
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
             lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
-        console.log(robot_obj);
 
         $scope.beacon_height = lab_obj.Lab.Beacon._Height;
         $scope.map = lab_obj.Lab;
@@ -49,33 +48,113 @@ angular.module('myapp', [])
         $scope.timeline = turn90(robot_obj.PosList);
         $scope.robot = $scope.timeline.Robot[0].Position;
         $scope.stats = $scope.timeline.Robot[0];
-
         $scope.idx = 1;
-        var refresh_rate = 50;
-        var pause = 0;
+        $scope.refresh_rate = 50;
+        $scope.pline = "";
+        $scope.last_idx = 0;
+        $scope.robotColor = 'img/svg/mickey_red_smile.svg';
+        $scope.groundColor = 'black';
+        $scope.cheeseColor = 'img/svg/cheese.svg';
+        $scope.circleBorder = '#00ffff';
+        $scope.greatWallColor = '#008000';
+        $scope.smallWallColor = '#0000ff';
+        $scope.gridColor = '#cfd4db';
+
+        var refresh = function(refresh_rate){
+            $timeout(tick, refresh_rate);
+        }
 
         var tick = function() {
             try{
-                $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
-                $scope.stats = $scope.timeline.Robot[$scope.idx];
-                console.log($scope.timeline.Robot[$scope.idx]);
+                $scope.updateValues();
+
                 $(".leftGrip").css("left", ($scope.idx*820)/1800);
-                $scope.idx++;
+                if(play){
+                    $scope.idx++;
+                }
             }catch(TypeError){
-                $scope.pause();
+                $scope.stop();
             }
-            if(!pause){
-                $timeout(tick, refresh_rate);
+            if(play){
+                refresh($scope.refresh_rate);
             }
+        };
+
+        $scope.updateValues = function(){
+            $scope.robot = $scope.timeline.Robot[$scope.idx].Position;
+            $scope.stats = $scope.timeline.Robot[$scope.idx];
+
+            if(($scope.last_idx+1)!=$scope.idx){
+
+                $scope.pline ="";
+                for(b=0;b<$scope.idx;b++){
+                    $scope.pline += $scope.timeline.Robot[b].Position._X*$scope.zoom + "," + $scope.timeline.Robot[b].Position._Y*$scope.zoom + " ";
+                }
+            }else{
+                $scope.pline += $scope.timeline.Robot[$scope.idx].Position._X*$scope.zoom + "," + $scope.timeline.Robot[$scope.idx].Position._Y*$scope.zoom + " ";
+            }
+            $scope.last_idx = $scope.idx;
+        }
+
+        $scope.refreshSVG = function(){
+            $scope.updateValues();
+            $timeout($scope.refreshSVG, 1000);
+
+        }
+        $scope.setRobotColor = function(id){
+
+            if(id == 1){
+                $scope.robotColor = 'img/svg/mickey_red_smile.svg';
+            }
+            if(id == 2){
+                $scope.robotColor = 'img/svg/mickey_blue_smile.svg';
+            }
+            if(id == 3){
+                $scope.robotColor = 'img/svg/mickey_green_smile.svg';
+            }
+        };
+
+        $scope.setMazeColor = function(id){
+
+            if(id == 1){
+                $scope.groundColor = 'black';
+                $scope.cheeseColor = 'img/svg/cheese.svg';
+                $scope.circleBorder = '#00ffff';
+                $scope.greatWallColor = '#008000';
+                $scope.smallWallColor = '#0000ff';
+                $scope.gridColor = '#cfd4db';
+
+            }
+            if(id == 2){
+                $scope.groundColor = 'darkgrey';
+                $scope.cheeseColor = 'img/svg/blackCheese.svg';
+                $scope.circleBorder = '#cfd4db';
+                $scope.greatWallColor = '#353535';
+                $scope.smallWallColor = '#727272';
+                $scope.gridColor = '#cfd4db';
+
+            }
+
         };
 
         $scope.play = function() {
-            pause = 0;
-            $timeout(tick, refresh_rate);
+            if(!play){
+                play = 1;
+                refresh($scope.refresh_rate);
+            }
         };
 
         $scope.pause = function(){
-            pause = 1;
+            if(play){
+                play = 0;
+                $timeout($scope.refreshSVG, 1000);
+            }
+        };
+
+        $scope.stop = function(){
+            $scope.idx = 0;
+            play = 0;
+            refresh(0);
         };
     }])
 
