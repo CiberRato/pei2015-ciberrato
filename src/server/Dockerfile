@@ -7,8 +7,17 @@
 
 FROM ubuntu
 EXPOSE 6000
-RUN apt-get update && apt-get install -y \
-	python
+RUN apt-get update
+RUN apt-get install -y \
+	python 
+#	g++ 
+#	..
+#
 RUN mkdir /code
-WORKDIR /code
+
+# This going to get out of here after...
 ADD ./cibertools-v2.2/robsample/ /code/
+
+RUN groupadd -r lowrights && useradd -r -g lowrights agent
+USER agent
+WORKDIR /code

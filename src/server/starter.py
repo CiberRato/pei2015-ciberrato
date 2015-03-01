@@ -20,9 +20,12 @@ def main():
 	viewer_c.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	viewer_c.connect(("127.0.0.1", 7000))
 
-	print "Creating process for agent.."
-	agent = subprocess.Popen(["python", "cibertools-v2.2/robsample/robsample_python.py"], stdout=subprocess.PIPE)
-	print "Successfully opened process with process id: ", agent.pid
+	print "Creating docker for agent.."
+	docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline", "python", "robsample_python.py", "--host", "172.17.42.1"], stdout=subprocess.PIPE)
+	docker_container = docker.stdout.readline().strip()
+	docker.wait()
+
+	print "Successfully opened container: ", docker_container
 	time.sleep(1)
 
 	print "Sending message to Viewer (everything is ready to start)"
@@ -35,8 +38,13 @@ def main():
 	viewer_c.close()
 
 	viewer.wait()
-	agent.terminate()
-	agent.wait()
+	proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+	proc.wait()
+	proc = subprocess.Popen(["docker", "rm", docker_container])
+	proc.wait()
+
+	#agent.terminate()
+	#agent.wait()
 	simulator.terminate()
 	simulator.wait()
 
