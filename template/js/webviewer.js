@@ -25,7 +25,6 @@ function turn90(PosList){
     return PosList;
 }
 
-
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
 
@@ -49,13 +48,17 @@ angular.module('myapp', [])
         $scope.timeline = turn90(robot_obj.PosList);
         $scope.robot = $scope.timeline.Robot[0].Position;
         $scope.stats = $scope.timeline.Robot[0];
-        console.log($scope.stats);
         $scope.idx = 1;
         $scope.refresh_rate = 50;
         $scope.pline = "";
         $scope.last_idx = 0;
         $scope.robotColor = 'img/svg/mickey_red_smile.svg';
-
+        $scope.groundColor = 'black';
+        $scope.cheeseColor = 'img/svg/cheese.svg';
+        $scope.circleBorder = '#00ffff';
+        $scope.greatWallColor = '#008000';
+        $scope.smallWallColor = '#0000ff';
+        $scope.gridColor = '#cfd4db';
 
         var refresh = function(refresh_rate){
             $timeout(tick, refresh_rate);
@@ -101,6 +104,30 @@ angular.module('myapp', [])
                 $scope.robotColor = 'img/svg/mickey_green_smile.svg';
             }
         };
+
+        $scope.setMazeColor = function(id){
+
+            if(id == 1){
+                $scope.groundColor = 'black';
+                $scope.cheeseColor = 'img/svg/cheese.svg';
+                $scope.circleBorder = '#00ffff';
+                $scope.greatWallColor = '#008000';
+                $scope.smallWallColor = '#0000ff';
+                $scope.gridColor = '#cfd4db';
+
+            }
+            if(id == 2){
+                $scope.groundColor = 'darkgrey';
+                $scope.cheeseColor = 'img/svg/blackCheese.svg';
+                $scope.circleBorder = '#cfd4db';
+                $scope.greatWallColor = '#353535';
+                $scope.smallWallColor = '#727272';
+                $scope.gridColor = '#cfd4db';
+
+            }
+
+        };
+
         $scope.play = function() {
             if(!play){
                 play = 1;

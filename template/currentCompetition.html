@@ -154,25 +154,27 @@
                         <section>
                             <div class="row">
                                 <div class="span12 viewer" style="text-align: center; vertical-align: middle">
-                                    <svg ng-w="{{map._Width*zoom}}" ng-h="{{map._Height*zoom}}" style="background-color: black" >
+                                    <svg ng-w="{{map._Width*zoom}}" ng-h="{{map._Height*zoom}}" style="background-color: {{groundColor}}" >
                                         <g ng-t="translate(0,{{map._Height*zoom}})">
                                             <g transform="scale(1,-1)">
                                                 <g><rect width="{{map._Width*zoom}}" height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
                                                     <g ng-repeat="(key, value) in map">
                                                         <g ng-if="key == 'Beacon'">
-                                                            <circle ng-cx="{{value._X*zoom}}" ng-cy="{{value._Y*zoom}}" ng-r="{{zoom}}" stroke="#00ffff" stroke-width="2" />
-                                                            <image ng-x="{{value._X*zoom-30}}" ng-y="{{value._Y*zoom-30}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="img/svg/cheese.svg" />
+                                                            <circle ng-cx="{{value._X*zoom}}" ng-cy="{{value._Y*zoom}}" ng-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                            <image ng-x="{{value._X*zoom-30}}" ng-y="{{value._Y*zoom-30}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
                                                         </g>
 
                                                         <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
-                                                            <polygon ng-if="v._Height>=beacon_height" ng-points="'{{v.str}}'" style=" fill:#008000" />
-                                                            <polygon ng-if="v._Height<beacon_height" ng-points="'{{v.str}}'" style=" fill:#0000ff" />
+                                                            <!-- Parede grande - original verde-->
+                                                            <polygon ng-if="v._Height>=beacon_height" ng-points="'{{v.str}}'" style=" fill:{{greatWallColor}}" />
+                                                            <!-- Parede grande - original azul-->
+                                                            <polygon ng-if="v._Height<beacon_height" ng-points="'{{v.str}}'" style=" fill:{{smallWallColor}}" />
                                                         </g>
                                                     </g>
 
                                                     <g ng-repeat="(key, value) in grid">
                                                         <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
-                                                            <circle ng-cx="{{v._X*zoom}}" ng-cy="{{v._Y*zoom}}" ng-r="{{zoom/2}}" stroke="#00ffff" stroke-width="2" style=" fill:#cfd4db" />
+                                                            <circle ng-cx="{{v._X*zoom}}" ng-cy="{{v._Y*zoom}}" ng-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
                                                         </g>
                                                     </g>
                                                     <g id="line" style="visibility: hidden; display: none">
@@ -183,7 +185,7 @@
                                                         <image ng-if="stats._Collision=='False'" x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor}}"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
 
                                                         <image ng-if="stats._Collision=='True'" x="{{robot._X*zoom-zoom/2}}" y="{{robot._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{robot._Dir}},{{robot._X*zoom}},{{robot._Y*zoom}})" />
-                                                        <circle cx="{{robot._X*zoom}}" cy="{{robot._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="#00ffff" stroke-width="1" />
+                                                        <circle cx="{{robot._X*zoom}}" cy="{{robot._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
                                                         <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height  -->
                                                     </g>
 
@@ -192,7 +194,7 @@
                                         </g>
                                     </svg>
                                     <div class="nstSlider" data-range_min="0" data-range_max="1800"
-                                         data-cur_min="0" style="width: {{28*zoom}}px; margin-left: 20px; margin-top: -5px">
+                                         data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-left: 20px; margin-top: -5px">
                                         <div class="leftGrip"></div>
                                     </div>
 
@@ -7695,6 +7697,13 @@
     <script>
         $("#robotColor").change(function() {
             angular.element('[ng-controller=ctrl]').scope().setRobotColor($( "#robotColor" ).val());
+            return false;
+        });
+
+    </script>
+    <script>
+        $("#mazeColor").change(function() {
+            angular.element('[ng-controller=ctrl]').scope().setMazeColor($( "#mazeColor" ).val());
             return false;
         });
 
