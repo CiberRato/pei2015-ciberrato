@@ -8,22 +8,20 @@
     config.$inject = ['$routeProvider'];
 
     function config($routeProvider){
-        $routeProvider.when('/idp/register',{
+        $routeProvider.when('/idp/register/',{
             controller: 'RegisterController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/authentication/register.html'
-        }).when('/idp/login',{
+        }).when('/idp/login/',{
             controller: 'LoginController',
             controllerAs: 'vm',
             templateUrl: 'static/templates/authentication/login.html'
-        }).when('/idp/panel', {
+        }).when('/idp/panel/', {
             controller: 'ProfileController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/profiles/profile.html'
         }).when('/',{
-            controller: 'IndexController',
-            controllerAs: 'vm',
-            templateUrl: 'static/templates/layout/index.html'
+            templateUrl: '/templates/index.html'
         }).otherwise('/');
     }
 })();

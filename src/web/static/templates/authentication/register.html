@@ -7,7 +7,7 @@
             <div class="control-group">
                 <label class="control-label" for="first">First Name</label>
                 <div class="controls">
-                    <input id="first" type="text" placeholder="your first name" name="name">
+                    <input id="first" type="text" placeholder="your first name" name="name" ng-model="vm.first_name">
                 </div>
             </div>
 
@@ -15,15 +15,23 @@
             <div class="control-group">
                 <label class="control-label" for="last">Last name</label>
                 <div class="controls">
-                    <input id="last" type="text" placeholder="your last name" name="name">
+                    <input id="last" type="text" placeholder="your last name" name="name" ng-model="vm.last_name">
                 </div>
             </div>
 
-            <!-- last name -->
+            <!-- email -->
             <div class="control-group">
                 <label class="control-label" for="email"> Email </label>
                 <div class="controls">
-                    <input id="email" type="text" placeholder="email address" name="email">
+                    <input id="email" type="text" placeholder="email address" name="email" ng-model="vm.email">
+                </div>
+            </div>
+
+            <!-- username -->
+            <div class="control-group">
+                <label class="control-label" for="username"> Username </label>
+                <div class="controls">
+                    <input id="username" type="text" placeholder="username" name="username" ng-model="vm.username">
                 </div>
             </div>
 
@@ -31,15 +39,24 @@
             <div class="control-group">
                 <label class="control-label" for="password"> Password </label>
                 <div class="controls">
-                    <input id="password" type="password" placeholder="password" name="password">
+                    <input id="password" type="password" placeholder="password" name="password" ng-model="vm.password">
                 </div>
             </div>
+
+            <!-- confirm_password -->
+            <div class="control-group">
+                <label class="control-label" for="confirm_password"> Confirm Password </label>
+                <div class="controls">
+                    <input id="confirm_password" type="password" placeholder="confirm password" name="confirm password" ng-model="vm.confirm_password">
+                </div>
+            </div>
+
 
             <!-- Instituição de ensino -->
             <div class="control-group">
                 <label class="control-label" for="education"> Educational Institution </label>
                 <div class="controls">
-                    <input id="education" type="text" placeholder="your educational institution" name="institution">
+                    <input id="education" type="text" placeholder="your educational institution" name="institution" ng-model="vm.teaching_institution">
                 </div>
             </div>
             <!-- <div class="control-group">
@@ -61,7 +78,7 @@
             </div>
 
             <div class="form-actions">
-                <a class="btn btn-large btn-inverse btn-alt" href="login.html"><span class="awe-signin"></span> Back </a>
+                <a class="btn btn-large btn-inverse btn-alt" ng-href="../../"><span class="awe-signin"></span> Back </a>
             </div>
         </fieldset>
     </form>
