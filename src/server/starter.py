@@ -1,10 +1,14 @@
 #encoding=utf-8
 import subprocess
+import requests
 import socket
 import time
 import os
 
 def main():
+	result = requests.get("http://127.0.0.1:8000/api/v1/get_simulation/")
+	print result.text
+
 	print "Process ID: ", os.getpid()
 	print "Creating process for simulator.."
 	simulator = subprocess.Popen("./cibertools-v2.2/simulator/simulator", stdout=subprocess.PIPE)
