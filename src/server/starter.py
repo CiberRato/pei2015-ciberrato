@@ -22,11 +22,19 @@ def main():
 	print "Process ID: ", os.getpid()
 	print "Creating process for simulator.."
 	##		CHECK ./simulator --help 				##
-	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator",
-					"-param", tempFilesList["param_list_path"].name,
-					"-lab", tempFilesList["lab_path"].name,
-					"-grid", tempFilesList["grid_path"].name],
+	# Run simulator for LINUX
+	# simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator",\
+	# 				"-param", tempFilesList["param_list_path"].name,\
+	# 				"-lab", tempFilesList["lab_path"].name,\
+	# 				"-grid", tempFilesList["grid_path"].name],\
+	# 				stdout=subprocess.PIPE)
+	#run simulator for MAC_OSX
+	simulator = subprocess.Popen(["../../../cibertools_OSX/simulator-adapted/simulator",\
+					"-param", tempFilesList["param_list_path"].name,\
+					"-lab", tempFilesList["lab_path"].name,\
+					"-grid", tempFilesList["grid_path"].name],\
 					stdout=subprocess.PIPE)
+
 	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
 
@@ -40,8 +48,8 @@ def main():
 	viewer_c.connect(("127.0.0.1", 7000))
 
 	print "Creating docker for agent.."
-	docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline", 
-								"python", "robsample_python.py", 
+	docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline",
+								"python", "robsample_python.py",
 								"--host", "172.17.42.1",
 								"--pos", "1"], stdout=subprocess.PIPE)
 	docker_container = docker.stdout.readline().strip()
