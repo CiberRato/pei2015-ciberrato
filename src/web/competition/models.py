@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 from authentication.models import Account, Group
@@ -88,6 +89,8 @@ class CompetitionAgent(models.Model):
     round = models.ForeignKey(Round, blank=False)
     agent = models.ForeignKey(Agent, blank=False)
 
+    simulation = models.ForeignKey('Simulation')
+
     eligible = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -97,26 +100,12 @@ class CompetitionAgent(models.Model):
         unique_together = ('competition', 'round', 'agent',)
         ordering = ['created_at']
 
-"""
----------------------------------------------------------------
-APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
----------------------------------------------------------------
-"""
+
 class Simulation(models.Model):
-    """
-    Each simulation have a User (User that made the simulation request) and the group
-    that this simulation belongs.
-    The "sent" field shows when the simulation was retrieved by the server side.
-    """
-    user = models.ForeignKey(Account, blank=False)
-    group = models.ForeignKey(Group, blank=False)
+    identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
-    sent = models.BooleanField(default=False)
-
-    param_list_path = models.URLField(max_length=128)
-    grid_path = models.URLField(max_length=128)
-    lab_path = models.URLField(max_length=128)
-    agent_path = models.URLField(max_length=128)
+    round = models.ForeignKey(Round, blank=False)
+    log_path = models.FileField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
