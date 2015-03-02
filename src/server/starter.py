@@ -1,10 +1,15 @@
 #encoding=utf-8
 import subprocess
+import requests
 import socket
 import time
 import os
 
 def main():
+	result = requests.get("http://127.0.0.1:8000/api/v1/get_simulation/")
+	print result.text
+	# Assume a execução de 5 robos sempre com o mesmo código e alternar o pos
+
 	print "Process ID: ", os.getpid()
 	print "Creating process for simulator.."
 	simulator = subprocess.Popen("./cibertools-v2.2/simulator/simulator", stdout=subprocess.PIPE)
@@ -20,9 +25,15 @@ def main():
 	viewer_c.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	viewer_c.connect(("127.0.0.1", 7000))
 
-	print "Creating process for agent.."
-	agent = subprocess.Popen(["python", "cibertools-v2.2/robsample/robsample_python.py"], stdout=subprocess.PIPE)
-	print "Successfully opened process with process id: ", agent.pid
+	print "Creating docker for agent.."
+	docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline", 
+								"python", "robsample_python.py", 
+								"--host", "172.17.42.1",
+								"--pos", "1"], stdout=subprocess.PIPE)
+	docker_container = docker.stdout.readline().strip()
+	docker.wait()
+
+	print "Successfully opened container: ", docker_container
 	time.sleep(1)
 
 	print "Sending message to Viewer (everything is ready to start)"
@@ -35,8 +46,13 @@ def main():
 	viewer_c.close()
 
 	viewer.wait()
-	agent.terminate()
-	agent.wait()
+	proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+	proc.wait()
+	proc = subprocess.Popen(["docker", "rm", docker_container])
+	proc.wait()
+
+	#agent.terminate()
+	#agent.wait()
 	simulator.terminate()
 	simulator.wait()
 

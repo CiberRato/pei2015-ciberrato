@@ -30,17 +30,17 @@ int main(int argc, char *argv[])
      /* processing arguments */
     while (argc > 2) /* every option has a value, thus argc must be 1, 3, 5, ... */
     {
-        if (strcmp(argv[1], "-host") == 0)
+        if (strcmp(argv[1], "--host") == 0)
         {
            strncpy(host, argv[2], 99);
            host[99]='\0';
         }
-        else if (strcmp(argv[1], "-robname") == 0)
+        else if (strcmp(argv[1], "--robname") == 0)
         {
            strncpy(rob_name, argv[2], 19);
            rob_name[19]='\0';
         }
-        else if (strcmp(argv[1], "-pos") == 0)
+        else if (strcmp(argv[1], "--pos") == 0)
         {
             if(sscanf(argv[2], "%d", &rob_id)!=1)
                argc=0; /* error message will be printed */
