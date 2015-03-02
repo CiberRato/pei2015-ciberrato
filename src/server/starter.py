@@ -1,23 +1,37 @@
 #encoding=utf-8
 import subprocess
+import tempfile
 import requests
 import socket
 import time
+import json
 import os
 
 def main():
-	result = requests.get("http://127.0.0.1:8000/api/v1/get_simulation/")
-	print result.text
-	# Assume a execução de 5 robos sempre com o mesmo código e alternar o pos
+	HOST = "http://127.0.0.1:8000/"
+	result = requests.get(HOST + "api/v1/get_simulation/")
+	simJson = json.loads(result.text)[0]
+
+	tempFilesList = {}
+	for key in simJson:
+		fp = tempfile.NamedTemporaryFile()
+		fp.write(requests.get(HOST + simJson[key]).text)
+		fp.seek(0)
+		tempFilesList[key] = fp
 
 	print "Process ID: ", os.getpid()
 	print "Creating process for simulator.."
-	simulator = subprocess.Popen("./cibertools-v2.2/simulator/simulator", stdout=subprocess.PIPE)
+	##		CHECK ./simulator --help 				##
+	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator",
+					"-param", tempFilesList["param_list_path"].name,
+					"-lab", tempFilesList["lab_path"].name,
+					"-grid", tempFilesList["grid_path"].name],
+					stdout=subprocess.PIPE)
 	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
 
 	print "Creating process for viewer.."
-	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
+	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE,)
 	print "Successfully opened process with process id: ", viewer.pid
 	time.sleep(1)
 
@@ -55,6 +69,9 @@ def main():
 	#agent.wait()
 	simulator.terminate()
 	simulator.wait()
+
+	for f in tempFilesList:
+		f.close()
 
 if __name__ == "__main__":
     main()
