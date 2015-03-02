@@ -8,7 +8,8 @@ from authentication.views import AccountViewSet, LoginView, LogoutView
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet
 from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
-from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet
+from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, \
+    CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet
 
 from rest_framework import routers
 
@@ -36,7 +37,7 @@ router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
 
 # COMPETITIONS URLs#
 
-#melhorar isto
+# melhorar isto
 router_accounts.register(r'get_simulation', GetSimulation, 'Get simulation')
 
 urlpatterns = patterns('',
@@ -59,5 +60,6 @@ urlpatterns = patterns('',
                                                   namespace='rest_framework')),
                        url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
-                       url('^.*$', TemplateView.as_view(template_name='index.html'), name='index'),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                       url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')
+)
+urlpatterns[:0] = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
