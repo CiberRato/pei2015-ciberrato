@@ -8,6 +8,7 @@ import os
 def main():
 	result = requests.get("http://127.0.0.1:8000/api/v1/get_simulation/")
 	print result.text
+	# Assume a execução de 5 robos sempre com o mesmo código e alternar o pos
 
 	print "Process ID: ", os.getpid()
 	print "Creating process for simulator.."
@@ -25,7 +26,10 @@ def main():
 	viewer_c.connect(("127.0.0.1", 7000))
 
 	print "Creating docker for agent.."
-	docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline", "python", "robsample_python.py", "--host", "172.17.42.1"], stdout=subprocess.PIPE)
+	docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline", 
+								"python", "robsample_python.py", 
+								"--host", "172.17.42.1",
+								"--pos", "1"], stdout=subprocess.PIPE)
 	docker_container = docker.stdout.readline().strip()
 	docker.wait()
 

@@ -153,11 +153,13 @@ def dist(p,q):
     return sqrt((px-qx)**2 + (py-qy)**2)
 
 host = "localhost"
-
+pos = 3
 for i in range(0, len(sys.argv)):
   if sys.argv[i] == "--host" and i != len(sys.argv)-1:
     host = sys.argv[i+1]
+  if sys.argv[i] == "--pos" and i != len(sys.argv)-1:
+    pos = int(sys.argv[i+1])
 
-rob = MyRob("AA", 3, host)
+rob = MyRob("AA", pos, host)
 rob.run()
 
