@@ -82,7 +82,7 @@ class Agent(models.Model):
     agent_name = models.CharField(max_length=128, blank=False)
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
-    location = models.CharField(max_length=128, unique=True, blank=False)
+    location = models.CharField(max_length=128, unique=True)
 
     code_valid = models.BooleanField(default=False, blank=False)
 

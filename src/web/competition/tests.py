@@ -120,6 +120,38 @@ class AuthenticationTestCase(TestCase):
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
 
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {"agent_name": "KAMIKAZE", "group_name": "XPTO3"})
+
+        # get the agent information
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'group_name': u'XPTO3', 'user': OrderedDict(
+            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+             ('last_name', u'Ferreira')])})
+
+        # destroy the agent
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The agent has been deleted"})
+
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data, {"detail": "Not found"})
+
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)

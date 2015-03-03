@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent
+from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer, \
-    GroupEnrolledSerializer
+    GroupEnrolledSerializer, AgentSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group
@@ -35,6 +35,15 @@ class GroupEnrolledSimplex:
     def __init__(self, ge):
         self.competition_name = ge.competition.name
         self.group_name = ge.group.name
+
+
+class AgentSimplex:
+    def __init__(self, ag):
+        self.agent_name = ag.agent_name
+        self.user = ag.user
+        self.group_name = ag.group.name
+        self.created_at = ag.created_at
+        self.updated_at = ag.updated_at
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -346,6 +355,61 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         group_enrolled.delete()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                    mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            user = request.user
+            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            agent_name = serializer.validated_data['agent_name']
+            Agent.objects.create(agent_name=agent_name, user=user, group=group)
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The agent could not be created with received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} information of the agent
+        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        serializer = AgentSerializer(AgentSimplex(agent))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} an agent
+        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        # the file code has been deleted too
+        agent.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The agent has been deleted'},
+                        status=status.HTTP_200_OK)
 
 
 class UploadRoundXMLView(views.APIView):
