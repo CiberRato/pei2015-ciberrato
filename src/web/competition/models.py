@@ -33,6 +33,8 @@ class GroupEnrolled(models.Model):
     competition = models.ForeignKey(Competition, blank=False)
     group = models.ForeignKey(Group, blank=False)
 
+    valid = models.BooleanField(default=False, blank=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -70,6 +72,8 @@ class Agent(models.Model):
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
     location = models.CharField(max_length=128, unique=True, blank=False)
+
+    code_valid = models.BooleanField(default=False, blank=False)
 
     competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
     rounds = models.ManyToManyField('Round', through='CompetitionAgent', related_name="round")
