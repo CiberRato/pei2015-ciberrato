@@ -146,24 +146,32 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob.py', 'r')
         response = client.post(url, {'file': f})
-        print response.data
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        # delete uploaded file
+        url = "/api/v1/competitions/delete_agent_file/KAMIKAZE/?file_name=myrob.py"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.c', 'r')
         response = client.post(url, {'file': f})
-        print response.data
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.cpp', 'r')
         response = client.post(url, {'file': f})
-        print response.data
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.java', 'r')
         response = client.post(url, {'file': f})
-        print response.data
-        agente = Agent.objects.get(agent_name="KAMIKAZE")
-        print agente.locations
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
 
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"

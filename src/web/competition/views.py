@@ -408,12 +408,64 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param agent_name: The agent name
         """
         agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
-        # the file code has been deleted too
+
+        if agent.locations:
+            if len(json.loads(agent.locations)) > 0:
+                for path in json.loads(agent.locations):
+                    default_storage.delete(path)
+
         agent.delete()
 
         return Response({'status': 'Deleted',
                          'message': 'The agent has been deleted'},
                         status=status.HTTP_200_OK)
+
+
+class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} an agent file
+        B{URL:} ../api/v1/competitions/delete_agent_file/<agent_name>/?file_name=<file_name>
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        @type  file_name: str
+        @param file_name: The file name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+
+        if len(group_member) == 0:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if 'file_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?file_name=*file_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if default_storage.exists('competition_files/agents/' + agent.agent_name + '/' + request.GET.get('file_name',
+                                                                                                         '')):
+            load = json.loads(agent.locations)
+            load.remove('competition_files/agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+            agent.locations = json.dumps(load)
+            agent.save()
+            default_storage.delete(
+                'competition_files/agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+            return Response({'status': 'Deleted',
+                             'message': 'The agent file has been deleted'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'Not found',
+                             'message': 'The agent file has not been found!'},
+                            status=status.HTTP_404_NOT_FOUND)
 
 
 class UploadAgent(views.APIView):
@@ -456,21 +508,23 @@ class UploadAgent(views.APIView):
                                  settings.ALLOWED_UPLOAD_SIZE) + "kb."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        path = default_storage.save('competition_files/agents/' + agent.agent_name + '/' + file_obj.name,
-                                    ContentFile(file_obj.read()))
-
         if not agent.locations:
             load = []
         else:
             load = json.loads(agent.locations)
 
             # verify if the code type is the same as uploaded before
-            tmp_file = default_storage.open(load[0])
+            if len(load) > 0:
+                tmp_file = default_storage.open(load[0])
 
-            if os.path.splitext(tmp_file.name)[1] != os.path.splitext(path)[1]:
-                return Response({'status': 'Bad request',
-                                 'message': 'You can only upload files of the same type! Expected: ' + os.path.splitext(tmp_file.name)[1]},
-                                status=status.HTTP_400_BAD_REQUEST)
+                if os.path.splitext(tmp_file.name)[1] != os.path.splitext(file_obj.name)[1]:
+                    return Response({'status': 'Bad request',
+                                     'message': 'You can only upload files of the same type! Expected: ' +
+                                                os.path.splitext(tmp_file.name)[1]},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+        path = default_storage.save('competition_files/agents/' + agent.agent_name + '/' + file_obj.name,
+                                    ContentFile(file_obj.read()))
 
         load += [path]
         agent.locations = json.dumps(load)
