@@ -193,6 +193,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
 
+        # deassociate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, response.status_code)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
+        self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
+
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.delete(path=url)
