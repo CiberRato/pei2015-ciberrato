@@ -10,7 +10,7 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
 from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
 from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, \
     CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet, \
-    CompetitionGetNotValidGroupsViewSet
+    CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet
 
 from rest_framework import routers
 
@@ -34,6 +34,7 @@ router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
 router_competitions.register(r'groups_not_valid', CompetitionGetNotValidGroupsViewSet)
+router_competitions.register(r'group_valid', CompetitionGroupValidViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
 

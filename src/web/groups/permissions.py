@@ -34,6 +34,16 @@ class IsAdminOfGroup(permissions.BasePermission):
                     group = Group.objects.filter(name=group_name)
                 except AttributeError:
                     return False
+            elif view.__class__.__name__ == 'EnrollGroup' and request.method == 'POST':
+                try:
+                    group_name = request.data['group_name']
+                    group = Group.objects.filter(name=group_name)
+                except AttributeError:
+                    return False
+            elif 'group_name' in request.GET:
+                group = Group.objects.filter(name=request.GET.get('group_name', ''))
+                if len(group) == 0:
+                    return False
             else:
                 return False
 

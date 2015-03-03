@@ -18,7 +18,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 from competition.permissions import IsAdmin
-
+from groups.permissions import IsAdminOfGroup
 
 class RoundSimplex:
     def __init__(self, r):
@@ -28,6 +28,13 @@ class RoundSimplex:
         self.grid_path = r.grid_path
         self.lab_path = r.lab_path
         self.agents_list = r.agents_list
+
+
+class GroupEnrolledSimplex:
+    def __init__(self, ge):
+        self.competition_name = ge.competition.name
+        self.group_name = ge.group.name
+
 
 class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.all()
@@ -110,6 +117,42 @@ class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         serializer = self.serializer_class(not_valid_groups, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = GroupEnrolled.objects.all()
+    serializer_class = GroupEnrolledSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def update(self, request, pk, **kwargs):
+        """
+        B{Update} the group enrolled attribute to valid or to false (it's a toggle)
+        B{URL:} ../api/v1/competitions/group_valid/<group_name>/?competition_name=<competition_name>
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        @type  group_name: str
+        @param group_name: The group name
+        """
+        if 'competition_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?competition_name=<competition_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        competition = get_object_or_404(Competition.objects.all(),
+                                        name=request.GET.get('competition_name', ''))
+        group = get_object_or_404(Group.objects.all(),
+                                  name=pk)
+
+        group_enrolled = get_object_or_404(GroupEnrolled.objects.all(), group=group, competition=competition)
+        group_enrolled.valid = not group_enrolled.valid
+        group_enrolled.save()
+
+        return Response({'status': 'Updated',
+                         'message': 'The group inscription has been updated to ' + str(group_enrolled.valid) + ' .'},
+                        status=status.HTTP_200_OK)
 
 
 class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -225,18 +268,13 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     queryset = GroupEnrolled.objects.all()
     serializer_class = GroupEnrolledSerializer
 
-    class GroupEnrolled:
-        def __init__(self, ge):
-            self.competition_name = ge.competition.name
-            self.group_name = ge.group.name
-
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
     def list(self, request, **kwargs):
-        serializer = self.serializer_class([self.GroupEnrolled(ge=query) for query in GroupEnrolled.objects.all()],
+        serializer = self.serializer_class([GroupEnrolledSimplex(ge=query) for query in GroupEnrolled.objects.all()],
                                            many=True)
         return Response(serializer.data)
 
