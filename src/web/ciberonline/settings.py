@@ -92,7 +92,9 @@ STATIC_ROOT = 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-ALLOWED_UPLOAD_LANGUAGES = []
+ALLOWED_UPLOAD_LANGUAGES_CONTENT_TYPE = ['text/x-python', 'text/x-c', 'text/x-java-source']
+ALLOWED_UPLOAD_LANGUAGES_EXTENSIONS = ['.py', '.c', '.cpp', '.java']
+ALLOWED_UPLOAD_SIZE = 5000000  # bytes
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist/static'),

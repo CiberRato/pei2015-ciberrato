@@ -10,7 +10,7 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
 from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
 from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, \
     CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet, \
-    CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet, AgentViewSets
+    CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet, AgentViewSets, UploadAgent
 
 from rest_framework import routers
 
@@ -55,6 +55,9 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round/upload/grid/$', UploadGridView.as_view(),
                            name="Grid Upload"),
                        url(r'^api/v1/competitions/round/upload/lab/$', UploadLabView.as_view(),
+                           name="Lab Upload"),
+                       # upload agent code
+                       url(r'^api/v1/competitions/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
 
                        # url(r'^api/v1/', include(router.urls)),

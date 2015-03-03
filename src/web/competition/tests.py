@@ -141,6 +141,30 @@ class AuthenticationTestCase(TestCase):
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
              ('last_name', u'Ferreira')])})
 
+
+        # upload agent code
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob.py', 'r')
+        response = client.post(url, {'file': f})
+        print response.data
+
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.c', 'r')
+        response = client.post(url, {'file': f})
+        print response.data
+
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.cpp', 'r')
+        response = client.post(url, {'file': f})
+        print response.data
+
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.java', 'r')
+        response = client.post(url, {'file': f})
+        print response.data
+        agente = Agent.objects.get(agent_name="KAMIKAZE")
+        print agente.locations
+
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.delete(path=url)
