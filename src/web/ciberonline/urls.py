@@ -9,7 +9,8 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
     MemberInGroupViewSet
 from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
 from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, \
-    CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet
+    CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet, \
+    CompetitionGetNotValidGroupsViewSet
 
 from rest_framework import routers
 
@@ -32,6 +33,7 @@ router_competitions.register(r'crud', CompetitionViewSet)
 router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
+router_competitions.register(r'groups_not_valid', CompetitionGetNotValidGroupsViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
 
@@ -53,7 +55,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round/upload/lab/$', UploadLabView.as_view(),
                            name="Lab Upload"),
 
-                       #url(r'^api/v1/', include(router.urls)),
+                       # url(r'^api/v1/', include(router.urls)),
                        url(r"api/v1/auth/login/$", LoginView.as_view(), name="login"),
                        url(r'^api/v1/auth/logout/$', LogoutView.as_view(), name='logout'),
                        url(r'^api-auth/', include('rest_framework.urls',

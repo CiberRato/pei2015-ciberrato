@@ -92,6 +92,7 @@ STATIC_ROOT = 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+ALLOWED_UPLOAD_LANGUAGES = []
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist/static'),

@@ -72,13 +72,19 @@ class AuthenticationTestCase(TestCase):
                                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')]),
                                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3')])])
 
-        # list of all groups enrolled in one competition
-        url = "/api/v1/competitions/groups/C1/"
+        # list of all groups enrolled and with inscriptions not valid in one competition
+        url = "/api/v1/competitions/groups_not_valid/C1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO1'), ('max_members', 10)]),
                                          OrderedDict([('name', u'XPTO2'), ('max_members', 10)]),
                                          OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
+        # list of all groups enrolled and with inscriptions valid in one competition
+        url = "/api/v1/competitions/groups/C1/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
 
         url = "/api/v1/competitions/enroll/C1/?group_name=XPTO3"
         response = client.delete(path=url)

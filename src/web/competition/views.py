@@ -78,14 +78,36 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
 
     def retrieve(self, request, pk, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled in the Competition
+        B{Retrieve} the list of a Groups enrolled and with valid inscription in the Competition
         B{URL:} ../api/v1/competitions/groups/<competition_name>/
 
         @type  competition_name: str
         @param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=pk)
-        serializer = self.serializer_class(competition.enrolled_groups, many=True)
+        valid = GroupEnrolled.objects.filter(valid=True, competition=competition)
+        valid_groups = [g.group for g in valid]
+        serializer = self.serializer_class(valid_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = GroupSerializer
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the list of a Groups enrolled with inscription not valid in the Competition
+        B{URL:} ../api/v1/competitions/groups_not_valid/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        not_valid = GroupEnrolled.objects.filter(valid=False, competition=competition)
+        not_valid_groups = [g.group for g in not_valid]
+        serializer = self.serializer_class(not_valid_groups, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
