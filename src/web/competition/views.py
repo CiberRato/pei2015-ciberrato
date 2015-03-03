@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer, \
-    GroupEnrolledSerializer, AgentSerializer
+    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
@@ -419,6 +419,78 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return Response({'status': 'Deleted',
                          'message': 'The agent has been deleted'},
                         status=status.HTTP_200_OK)
+
+
+class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                     viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = CompetitionAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Destroy} an agent
+        B{URL:} ../api/v1/competitions/associate_agent/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            round = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            competition = round.parent_competition
+
+            if competition.state_of_competition != "Register":
+                return Response({'status': 'Not allowed',
+                                 'message': 'The group is not accepting agents.'},
+                                status=status.HTTP_401_UNAUTHORIZED)
+
+            group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+            if len(group_member) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'You must be part of the group.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
+            if len(group_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The group must first enroll in the competition.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            # code valid
+            if not agent.code_valid:
+                return Response({'status': 'The agent code is not valid!',
+                                 'message': 'Please submit a valid code first!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # verify limits
+            groups_agent = Agent.objects.filter(group=agent.group)
+            groups_agents_in_round = [agent for agent in groups_agent if len(CompetitionAgent.objects.filter(agent=agent, round=round)) == 0]
+
+            numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
+
+            if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
+                return Response({'status': 'Reached the limit of agents',
+                                 'message': 'The group must first enroll in the competition.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            CompetitionAgent.objects.create(agent=agent, round=round, competition=competition)
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'We cound not associate the agent to the competition.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        pass
 
 
 class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):

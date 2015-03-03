@@ -12,7 +12,7 @@ class AuthenticationTestCase(TestCase):
         g2 = Group.objects.create(name="XPTO2", max_members=10)
         g3 = Group.objects.create(name="XPTO3", max_members=10)
 
-        c = Competition.objects.create(name="C1", type_of_competition=Competition.COLABORATIVA)
+        c = Competition.objects.create(name="C1", type_of_competition=settings.COLABORATIVA)
         r = Round.objects.create(name="R1", parent_competition=c)
 
         a1 = Account.objects.create(email="rf@rf.pt", username="gipmon", first_name="Rafael", last_name="Ferreira",
@@ -120,6 +120,13 @@ class AuthenticationTestCase(TestCase):
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
 
+        url = "/api/v1/competitions/enroll/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
+
         # create a agent for group
         url = "/api/v1/competitions/agent/"
         data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3'}
@@ -173,6 +180,19 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
 
+        # make the code valid
+        agent = Agent.objects.get(agent_name='KAMIKAZE')
+        agent.code_valid = True
+        agent.save()
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE'})
+        self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
+
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.delete(path=url)
@@ -188,7 +208,8 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1')]),
-                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')])])
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')]),
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3')])])
 
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
