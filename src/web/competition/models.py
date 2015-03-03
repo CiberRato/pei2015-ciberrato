@@ -15,9 +15,20 @@ class Competition(models.Model):
         (COMPETITIVA, 'Competitiva'),
     )
 
+    REGISTER = 'RG'
+    COMPETITION = 'CP'
+    PAST = 'PST'
+
+    STATE = (
+        (REGISTER, 'Register'),
+        (COMPETITION, 'Competition'),
+        (PAST, 'Past'),
+    )
+
     enrolled_groups = models.ManyToManyField(Group, through='GroupEnrolled', related_name="competition")
 
     type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
+    state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

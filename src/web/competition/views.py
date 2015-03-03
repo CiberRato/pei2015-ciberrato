@@ -20,6 +20,7 @@ from django.core.files.base import ContentFile
 from competition.permissions import IsAdmin
 from groups.permissions import IsAdminOfGroup
 
+
 class RoundSimplex:
     def __init__(self, r):
         self.name = r.name
@@ -296,6 +297,10 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             group = get_object_or_404(Group.objects.all(),
                                       name=serializer.validated_data['group_name'])
 
+            if competition.state_of_competition != "Register":
+                return Response({'status': 'Not allowed',
+                                 'message': 'The group can\'t enroll in the competition.'},
+                                status=status.HTTP_401_UNAUTHORIZED)
             try:
                 with transaction.atomic():
                     GroupEnrolled.objects.create(competition=competition, group=group)
