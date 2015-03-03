@@ -1,23 +1,31 @@
 import uuid
 from django.db import models
-
+from django.conf import settings
 from authentication.models import Account, Group
 
 
 class Competition(models.Model):
     name = models.CharField(max_length=128, blank=False, unique=True)
 
-    COLABORATIVA = 'CB'
-    COMPETITIVA = 'CP'
-
     TYPE_OF_COMPETITIONS = (
-        (COLABORATIVA, 'Colaborativa'),
-        (COMPETITIVA, 'Competitiva'),
+        (settings.COLABORATIVA, 'Colaborativa'),
+        (settings.COMPETITIVA, 'Competitiva'),
+    )
+
+    REGISTER = 'RG'
+    COMPETITION = 'CP'
+    PAST = 'PST'
+
+    STATE = (
+        (REGISTER, 'Register'),
+        (COMPETITION, 'Competition'),
+        (PAST, 'Past'),
     )
 
     enrolled_groups = models.ManyToManyField(Group, through='GroupEnrolled', related_name="competition")
 
     type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
+    state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -32,6 +40,8 @@ class Competition(models.Model):
 class GroupEnrolled(models.Model):
     competition = models.ForeignKey(Competition, blank=False)
     group = models.ForeignKey(Group, blank=False)
+
+    valid = models.BooleanField(default=False, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -66,13 +76,14 @@ class Round(models.Model):
 
 
 class Agent(models.Model):
-    agent_name = models.CharField(max_length=128, blank=False)
+    agent_name = models.CharField(max_length=128, blank=False, unique=True)
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
-    location = models.CharField(max_length=128, unique=True, blank=False)
+    locations = models.CharField(max_length=256)
+
+    code_valid = models.BooleanField(default=False)
 
     competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
-    rounds = models.ManyToManyField('Round', through='CompetitionAgent', related_name="round")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -89,8 +100,6 @@ class CompetitionAgent(models.Model):
     round = models.ForeignKey(Round, blank=False)
     agent = models.ForeignKey(Agent, blank=False)
 
-    simulation = models.ForeignKey('Simulation')
-
     eligible = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -99,6 +108,11 @@ class CompetitionAgent(models.Model):
     class Meta:
         unique_together = ('competition', 'round', 'agent',)
         ordering = ['created_at']
+
+
+class LogSimulationAgent(models.Model):
+    competition_agent = models.ForeignKey('CompetitionAgent')
+    simulation = models.ForeignKey('Simulation')
 
 
 class Simulation(models.Model):
