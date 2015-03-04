@@ -1,0 +1,154 @@
+{% load compress %}
+{% load staticfiles %}
+
+{% compress js %}
+<!-- JS Libs -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+
+<script type="text/javascript" src="{% static 'js/libs/modernizr.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/libs/selectivizr.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/angular-route/angular-route.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/angular-cookies/angular-cookies.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/ciberonline.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/ciberonline.config.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/ciberonline.routes.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/authentication/authentication.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/services/authentication.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/controllers/login.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/controllers/register.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/controllers/logout.controller.js' %}"></script>
+
+
+
+
+<script>
+    $(document).ready(function(){
+
+        // Tooltips
+        $('[title]').tooltip({
+            placement: 'top'
+        });
+
+    });
+</script>
+
+<!-- Scripts -->
+<script type="text/javascript" src="{% static 'js/navigation.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-affix.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-collapse.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-dropdown.js' %}"></script>
+
+<!-- Block TODO list -->
+<script>
+    $(document).ready(function() {
+
+        $('.todo-block input[type="checkbox"]').click(function(){
+            $(this).closest('tr').toggleClass('done');
+        });
+        $('.todo-block input[type="checkbox"]:checked').closest('tr').addClass('done');
+
+    });
+</script>
+
+<!-- jQuery Visualize -->
+<!--[if lte IE 8]>
+<script language="javascript" type="text/javascript"
+        src="{% static 'js/plugins/visualize/excanvas.js' %}"></script>
+<![endif]-->
+<script type="text/javascript" src="{% static 'js/plugins/visualize/jquery.visualize.min.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+
+        var chartWidth = $(('.chart')).parent().width()*0.9;
+
+        $('.chart').hide().visualize({
+            type: 'pie',
+            width: chartWidth,
+            height: chartWidth,
+            colors: ['#389abe','#fa9300','#6b9b20','#d43f3f','#8960a7','#33363b','#b29559','#6bd5b1','#66c9ee'],
+            lineDots: 'double',
+            interaction: false
+        });
+
+    });
+</script>
+
+<!-- jQuery Flot Charts -->
+<!--[if lte IE 8]>
+<script language="javascript" type="text/javascript"
+        src="{% static 'js/plugins/flot/excanvas.min.js' %}"></script>
+<![endif]-->
+<script type="text/javascript" src="{% static 'js/plugins/flot/jquery.flot.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+
+        // Demo #1
+        // we use an inline data source in the example, usually data would be fetched from a server
+        var data = [], totalPoints = 300;
+        function getRandomData() {
+            if (data.length > 0)
+                data = data.slice(1);
+
+            // do a random walk
+            while (data.length < totalPoints) {
+                var prev = data.length > 0 ? data[data.length - 1] : 50;
+                var y = prev + Math.random() * 10 - 5;
+                if (y < 0)
+                    y = 0;
+                if (y > 100)
+                    y = 100;
+                data.push(y);
+            }
+
+            // zip the generated y values with the x values
+            var res = [];
+            for (var i = 0; i < data.length; ++i)
+                res.push([i, data[i]])
+            return res;
+        }
+
+        // setup control widget
+        var updateInterval = 30;
+        $("#updateInterval").val(updateInterval).change(function () {
+            var v = $(this).val();
+            if (v && !isNaN(+v)) {
+                updateInterval = +v;
+                if (updateInterval < 1)
+                    updateInterval = 1;
+                if (updateInterval > 2000)
+                    updateInterval = 2000;
+                $(this).val("" + updateInterval);
+            }
+        });
+
+        // setup plot
+        var options = {
+            series: { shadowSize: 0, color: '#389abe' }, // drawing is faster without shadows
+            yaxis: { min: 0, max: 100 },
+            xaxis: { show: false },
+            grid: { backgroundColor: '#ffffff' }
+        };
+        var plot = $.plot($("#demo-1"), [ getRandomData() ], options);
+
+        function update() {
+            plot.setData([ getRandomData() ]);
+            // since the axes don't change, we don't need to call plot.setupGrid()
+            plot.draw();
+            setTimeout(update, updateInterval);
+        }
+
+        update();
+
+    });
+</script>
+
+<!-- jQuery jGrowl -->
+
+{% endcompress %}

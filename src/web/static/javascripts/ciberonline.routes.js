@@ -16,10 +16,8 @@
             controller: 'LoginController',
             controllerAs: 'vm',
             templateUrl: 'static/templates/authentication/login.html'
-        }).when('/idp/panel/', {
-            controller: 'ProfileController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/profiles/profile.html'
+        }).when('/panel/', {
+            templateUrl: '/static/templates/panel/index.html'
         }).when('/',{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

@@ -1,0 +1,84 @@
+<div class="navigation-block">
+
+    <!-- User profile -->
+    <!-- <section class="user-profile">
+            <strong>User:</strong> <a href="#" class="User">John Pixel</a><p></p>
+            <strong>Educacional institution</strong>: <a href="http://www.ua.pt/">University of Aveiro</a>
+    </section>
+-->
+    <section class="user-profile">
+        <figure>
+            <figcaption>
+
+                <strong style="color: black">
+                    {{ user.first_name }}
+                    {{ user.last_name }}
+
+                </strong>
+                <em>{{user.teaching_institution}}</em>
+                <ul>
+                    <li><a ng-controller="LogoutController" class="btn btn-primary btn-flat" href="javascript:void(0)" ng-click="vm.logout()" title="Account settings">Logout</a></li>
+                </ul>
+            </figcaption>
+        </figure>
+    </section>
+    <!-- /User profile -->
+
+    <!-- Sample left search bar -->
+    <!-- <form class="side-search">
+        <input type="text" class="rounded" placeholder="To search type and hit enter">
+    </form> -->
+    <!-- /Sample left search bar -->
+
+    <!-- Main navigation -->
+    <nav class="main-navigation" role="navigation">
+        <ul>
+
+            <li>
+                <a href="../../../../../../../../../.Trash/index.html"><span class="awe-home"></span><strong>Home Page</strong></a>
+            </li>
+            <li>
+                <a href="#"><span class="awe-user"></span><strong>User Management</strong></a>
+                <ul>
+                    <li><a href="changePass.html">Change Password</a></li>
+                    <li><a href="editProfile.html">Edit Profile</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#"><span class="awe-group"></span><strong>Team Management</strong></a>
+                <ul>
+                    <li><a href="myteams.html">My Teams</a></li>
+                    <li><a href="createTeam.html">Create Team</a></li>
+                    <li><a href="seeGroups.html">All Teams</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#"><span class="awe-trophy"></span><strong>Competition</strong></a>
+                <ul>
+                    <li><a href="SubmeterCodigo.html">Submit</a></li>
+                    <li><a href="#">Join competition</a></li>
+
+                    <li><a href="seelogs.html">See logs</a></li>
+                    <li><a href="#">Past Competitions</a></li>
+                    <li><a href="#">My teams submissions</a></li>
+                    <li><a href="currentCompetition.html">Current competition</a></li>
+                </ul>
+            </li>
+        </ul>
+
+    </nav>
+    <!-- /Main navigation -->
+
+    <!-- Sample side note -->
+    <section class="side-note">
+        <div class="side-note-container">
+            <h2>Sample Side Note</h2>
+            <p>This project was developed by a group students of the University of Aveiro.</p>
+        </div>
+        <div class="side-note-bottom"></div>
+    </section>
+    <!-- /Sample side note -->
+
+</div>
+    
