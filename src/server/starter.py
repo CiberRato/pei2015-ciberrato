@@ -37,8 +37,6 @@ def main():
 	#				stdout=subprocess.PIPE)
 
 	print "Successfully opened process with process id: ", simulator.pid
-	time.sleep(1)
-
 	print "Creating process for viewer.."
 	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
 	print "Successfully opened process with process id: ", viewer.pid
@@ -60,7 +58,7 @@ def main():
 	# time.sleep(1)
 
 	n_agents = 5
-	print "sending message telling viewer how many agents there are..."
+	print "Sending message telling viewer how many agents there are..."
 	viewer_c.send('<Robots Amount="'+str(n_agents)+'" />')
 	for i in range(1, n_agents+1, 1):
 		print "Opening Agent - " + str(i)
@@ -87,8 +85,6 @@ def main():
 	# proc = subprocess.Popen(["docker", "rm", docker_container])
 	# proc.wait()
 
-	#agent.terminate()
-	#agent.wait()
 	simulator.terminate()
 	simulator.wait()
 
