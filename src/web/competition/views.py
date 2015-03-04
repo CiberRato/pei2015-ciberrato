@@ -50,6 +50,14 @@ class AgentSimplex:
         self.updated_at = ag.updated_at
 
 
+class CompetitionAgentSimplex:
+    def __init__(self, cas):
+        self.round_name = cas.round.name
+        self.agent_name = cas.agent.agent_name
+        self.created_at = cas.created_at
+        self.updated_at = cas.updated_at
+
+
 class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
@@ -421,7 +429,27 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
+class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = CompetitionAgentSerializer
 
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the agents available to compete in the round
+        B{URL:} ../api/v1/competitions/valid_round_agents/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
+        competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
+        serializer = self.serializer_class(competition_agents, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
