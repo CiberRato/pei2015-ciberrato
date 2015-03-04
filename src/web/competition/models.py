@@ -122,7 +122,7 @@ class Simulation(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
     round = models.ForeignKey(Round, blank=False)
-    log_path = models.FileField(max_length=128)
+    log = models.TextField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

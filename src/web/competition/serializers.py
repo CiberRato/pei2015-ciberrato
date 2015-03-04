@@ -50,6 +50,10 @@ class CompetitionAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at',)
 
 
+class SimulationSerializer(serializers.BaseSerializer):
+    pass
+
+
 """
 ---------------------------------------------------------------
 APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
@@ -57,7 +61,7 @@ APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
 """
 
 
-class SimulationSerializer(serializers.BaseSerializer):
+class SimulationXSerializer(serializers.BaseSerializer):
     """
     This serializer is only to retrieve and list methods.
     """

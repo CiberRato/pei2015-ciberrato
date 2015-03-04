@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent
-from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer, \
-    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer
+from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationXSerializer, \
+    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
@@ -23,7 +23,6 @@ from groups.permissions import IsAdminOfGroup
 
 from django.conf import settings
 import json
-import os.path
 
 
 class RoundSimplex:
@@ -122,7 +121,7 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition = get_object_or_404(self.queryset, name=pk)
         valid = GroupEnrolled.objects.filter(valid=True, competition=competition)
         valid_groups = [g.group for g in valid]
         serializer = self.serializer_class(valid_groups, many=True)
@@ -142,7 +141,7 @@ class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition = get_object_or_404(self.queryset, name=pk)
         not_valid = GroupEnrolled.objects.filter(valid=False, competition=competition)
         not_valid_groups = [g.group for g in not_valid]
         serializer = self.serializer_class(not_valid_groups, many=True)
@@ -177,7 +176,7 @@ class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericView
         group = get_object_or_404(Group.objects.all(),
                                   name=pk)
 
-        group_enrolled = get_object_or_404(GroupEnrolled.objects.all(), group=group, competition=competition)
+        group_enrolled = get_object_or_404(self.queryset, group=group, competition=competition)
         group_enrolled.valid = not group_enrolled.valid
         group_enrolled.save()
 
@@ -284,7 +283,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(self.queryset, name=pk)
 
         serializer = self.serializer_class(RoundSimplex(r))
 
@@ -298,7 +297,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  name: str
         @param name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(self.queryset, name=pk)
 
         for c_agent in CompetitionAgent.objects.all():
             c_agent.delete()
@@ -426,7 +425,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  agent_name: str
         @param agent_name: The agent name
         """
-        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        agent = get_object_or_404(self.queryset, agent_name=pk)
         serializer = AgentSerializer(AgentSimplex(agent))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -439,7 +438,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  agent_name: str
         @param agent_name: The agent name
         """
-        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        agent = get_object_or_404(self.queryset, agent_name=pk)
 
         if agent.locations:
             if len(json.loads(agent.locations)) > 0:
@@ -823,6 +822,70 @@ class UploadAgent(views.APIView):
                         status=status.HTTP_201_CREATED)
 
 
+class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                        mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def create(self, request, *args, **kwargs):
+        pass
+
+    def retrieve(self, request, *args, **kwargs):
+        pass
+
+    def destroy(self, request, *args, **kwargs):
+        pass
+
+
+class SimulationGet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        pass
+
+
+class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        pass
+
+
+class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        pass
+
+
+class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        pass
+
+
 class UploadRoundXMLView(views.APIView):
     parser_classes = (FileUploadParser,)
 
@@ -893,7 +956,7 @@ APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
 
 class GetSimulation(mixins.ListModelMixin,
                     viewsets.GenericViewSet):
-    serializer_class = SimulationSerializer
+    serializer_class = SimulationXSerializer
 
     def get_queryset(self):
         return [Simulation.objects.first()]
