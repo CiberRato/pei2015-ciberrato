@@ -47,6 +47,7 @@ class AgentSimplex:
         self.agent_name = ag.agent_name
         self.user = ag.user
         self.is_virtual = ag.is_virtual
+        self.language = ag.language
         self.group_name = ag.group.name
         self.created_at = ag.created_at
         self.updated_at = ag.updated_at
@@ -749,6 +750,17 @@ class UploadAgent(views.APIView):
                              'message': 'Please provide the ?agent_name=*agent_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        if 'language' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?language=*language*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        allowed_languages = dict(settings.ALLOWED_UPLOAD_LANGUAGES).values()
+        if request.GET.get('language', '') not in allowed_languages:
+            return Response({'status': 'Bad request',
+                             'message': 'The uploaded language is not allowed.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
 
         if agent.is_virtual:
@@ -765,17 +777,8 @@ class UploadAgent(views.APIView):
 
         file_obj = request.data['file']
 
-        if file_obj.content_type not in settings.ALLOWED_UPLOAD_LANGUAGES_CONTENT_TYPE:
-            types = ''.join(str(e) + " " for e in settings.ALLOWED_UPLOAD_LANGUAGES_CONTENT_TYPE)
-            return Response({'status': 'Not allowed file!',
-                             'message': 'The allowed files are: ' + types},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if not file_obj.name.lower().endswith(tuple(settings.ALLOWED_UPLOAD_LANGUAGES_EXTENSIONS)):
-            types = ''.join(str(e) + " " for e in settings.ALLOWED_UPLOAD_LANGUAGES_EXTENSIONS)
-            return Response({'status': 'Not allowed file!',
-                             'message': 'The allowed extensions are: ' + types},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # language agent
+        agent.language = request.GET.get('language', '')
 
         if file_obj.size > settings.ALLOWED_UPLOAD_SIZE:
             return Response({'status': 'Bad request',
@@ -787,16 +790,6 @@ class UploadAgent(views.APIView):
             load = []
         else:
             load = json.loads(agent.locations)
-
-            # verify if the code type is the same as uploaded before
-            if len(load) > 0:
-                tmp_file = default_storage.open(load[0])
-
-                if os.path.splitext(tmp_file.name)[1] != os.path.splitext(file_obj.name)[1]:
-                    return Response({'status': 'Bad request',
-                                     'message': 'You can only upload files of the same type! Expected: ' +
-                                                os.path.splitext(tmp_file.name)[1]},
-                                    status=status.HTTP_400_BAD_REQUEST)
 
         path = default_storage.save('competition_files/agents/' + agent.agent_name + '/' + file_obj.name,
                                     ContentFile(file_obj.read()))

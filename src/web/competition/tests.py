@@ -143,14 +143,15 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
 
-        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'is_virtual': False, 'group_name': u'XPTO3', 'user': OrderedDict(
-            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
-             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-             ('last_name', u'Ferreira')])})
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'is_virtual': False, 'language': u'', 'group_name': u'XPTO3',
+                               'user': OrderedDict(
+                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                    ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                                    ('last_name', u'Ferreira')])})
 
 
         # upload agent code
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
@@ -162,25 +163,35 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=C"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.c', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=cplusplus"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.cpp', 'r')
         response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request',
-                                         'message': u'You can only upload files of the same type! Expected: .c'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Java"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.java', 'r')
         response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request',
-                                         'message': u'You can only upload files of the same type! Expected: .c'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'user': OrderedDict(
+            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+             ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
+                                               'group_name': u'XPTO3'})
 
         # make the code valid
         agent = Agent.objects.get(agent_name='KAMIKAZE')

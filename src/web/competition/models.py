@@ -81,6 +81,7 @@ class Agent(models.Model):
     group = models.ForeignKey(Group, blank=False)
     locations = models.CharField(max_length=256)
 
+    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
     code_valid = models.BooleanField(default=False)
     is_virtual = models.BooleanField(default=False)
 
