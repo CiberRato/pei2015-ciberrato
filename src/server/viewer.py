@@ -52,8 +52,6 @@ def main():
 
 	log.write("All Robots are registered\n")
 
-	starter_s.send("<RobotsRegistered/>")
-
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":
 		data = starter_s.recv(4096)

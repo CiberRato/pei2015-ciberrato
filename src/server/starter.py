@@ -65,11 +65,6 @@ def main():
 		agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "--pos", str(i)], stdout=subprocess.PIPE)
 		print "Successfully opened agent " + str(i) + " with process id: ", agent.pid
 
-	data = viewer_c.recv(4096)
-	while data != "<RobotsRegistered/>":
-		data = viewer_c.recv(4096)
-	print "Received confirmation all robots are registered and ready..."
-
 	print "Sending message to Viewer (everything is ready to start)"
 	viewer_c.send("<StartedAgents/>")
 	print "Waiting for simulation to end.."
