@@ -13,6 +13,7 @@
             isAuthenticated: isAuthenticated,
             register: register,
             login: login,
+            logout: logout,
             setAuthenticatedAccount: setAuthenticatedAccount,
             unauthenticate: unauthenticate
         };
@@ -28,8 +29,7 @@
 
         function loginSuccessFn(data, status, headers, config){
             Authentication.setAuthenticatedAccount(data.data);
-
-            window.location = "/";
+            window.location.assign('/panel/');
         }
 
         function loginErrorFn(data, status, headers, config){
@@ -51,7 +51,7 @@
         }
 
         function registerSuccessFn(data, status, headers, config){
-            $location.path('idp/login/');
+            $location.path('/idp/login/');
         }
 
         function registerErrorFn(data, status, headers, config){
@@ -78,6 +78,21 @@
 
         function unauthenticate() {
             delete $cookies.authenticatedAccount;
+        }
+
+        function logout(){
+            return $http.post("api/v1/auth/logout/")
+                .then(logoutSuccessFn, logoutErrorFn);
+        }
+
+        function logoutSuccessFn(data, status, headers, config){
+            Authentication.unauthenticate();
+
+            window.location.assign("/");
+        }
+
+        function logoutErrorFn(data, status, headers, config){
+            console.error("Logout Failure!");
         }
     }
 })();
