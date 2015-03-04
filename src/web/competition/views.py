@@ -553,6 +553,29 @@ class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class RoundGroupsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = GroupSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the groups available to compete in the round
+        B{URL:} ../api/v1/competitions/not_eligible_round_groups/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        serializer = self.serializer_class(competition_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
     serializer_class = CompetitionAgentSerializer
