@@ -421,8 +421,10 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
-class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                     viewsets.GenericViewSet):
+
+
+
+class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
     serializer_class = CompetitionAgentSerializer
 
