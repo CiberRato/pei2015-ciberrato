@@ -129,10 +129,10 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for group
         url = "/api/v1/competitions/agent/"
-        data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3'}
+        data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {"agent_name": "KAMIKAZE", "group_name": "XPTO3"})
+        self.assertEqual(response.data, {"agent_name": "KAMIKAZE", 'is_virtual': False, "group_name": "XPTO3"})
 
         # get the agent information
         url = "/api/v1/competitions/agent/KAMIKAZE/"
@@ -143,7 +143,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
 
-        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'group_name': u'XPTO3', 'user': OrderedDict(
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'is_virtual': False, 'group_name': u'XPTO3', 'user': OrderedDict(
             [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
              ('last_name', u'Ferreira')])})
