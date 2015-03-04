@@ -22,19 +22,19 @@ def main():
 	print "Creating process for simulator.."
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
-	# simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator",\
-	# 				"-param", tempFilesList["param_list_path"].name,\
-	# 				"-lab", tempFilesList["lab_path"].name,\
-	# 				"-grid", tempFilesList["grid_path"].name],\
-	# 				stdout=subprocess.PIPE)
+	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+	 				"-param", 	tempFilesList["param_list_path"].name, \
+	 				"-lab", 	tempFilesList["lab_path"].name, \
+	 				"-grid", 	tempFilesList["grid_path"].name], \
+	 				stdout = subprocess.PIPE)
 
 
 	#run simulator for MAC_OSX
-	simulator = subprocess.Popen(["../../../cibertools_OSX/simulator-adapted/simulator",\
-					"-param", tempFilesList["param_list_path"].name,\
-					"-lab", tempFilesList["lab_path"].name,\
-					"-grid", tempFilesList["grid_path"].name],\
-					stdout=subprocess.PIPE)
+	#simulator = subprocess.Popen(["../../../cibertools_OSX/simulator-adapted/simulator",\
+	#				"-param", 	tempFilesList["param_list_path"].name,\
+	#				"-lab",	 	tempFilesList["lab_path"].name,\
+	#				"-grid", 	tempFilesList["grid_path"].name],\
+	#				stdout=subprocess.PIPE)
 
 	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
@@ -92,8 +92,8 @@ def main():
 	simulator.terminate()
 	simulator.wait()
 
-	for f in tempFilesList:
-		f.close()
+	for key in tempFilesList:
+		tempFilesList[key].close()
 
 if __name__ == "__main__":
     main()
