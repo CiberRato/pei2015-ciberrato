@@ -236,6 +236,17 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['updated_at']
         self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
 
+        # retrieve the not eligible participantes for one round
+        url = "/api/v1/competitions/not_eligible_round_participants/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
+
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
         response = client.delete(url)
