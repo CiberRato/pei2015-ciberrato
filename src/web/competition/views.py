@@ -480,6 +480,29 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = GroupSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the groups available to compete in the round
+        B{URL:} ../api/v1/competitions/valid_round_groups/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        serializer = self.serializer_class(competition_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
     serializer_class = CompetitionAgentSerializer
@@ -530,7 +553,8 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
             # verify limits
             groups_agent = Agent.objects.filter(group=agent.group)
-            groups_agents_in_round = [agent for agent in groups_agent if len(CompetitionAgent.objects.filter(agent=agent, round=round)) == 0]
+            groups_agents_in_round = [agent for agent in groups_agent if
+                                      len(CompetitionAgent.objects.filter(agent=agent, round=round)) == 0]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
@@ -587,7 +611,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
         competition_agent.delete()
 
         return Response({'status': 'Deleted',
-                        'message': 'The competition agent has been deleted!'},
+                         'message': 'The competition agent has been deleted!'},
                         status=status.HTTP_200_OK)
 
 

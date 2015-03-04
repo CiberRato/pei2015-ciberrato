@@ -215,6 +215,12 @@ class AuthenticationTestCase(TestCase):
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 
+        # test groups for one round
+        url = "/api/v1/competitions/valid_round_groups/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
         response = client.delete(url)
