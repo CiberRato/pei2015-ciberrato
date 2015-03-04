@@ -46,6 +46,7 @@ class AgentSimplex:
     def __init__(self, ag):
         self.agent_name = ag.agent_name
         self.user = ag.user
+        self.is_virtual = ag.is_virtual
         self.group_name = ag.group.name
         self.created_at = ag.created_at
         self.updated_at = ag.updated_at
@@ -387,7 +388,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             user = request.user
             group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
             agent_name = serializer.validated_data['agent_name']
-            Agent.objects.create(agent_name=agent_name, user=user, group=group)
+            Agent.objects.create(agent_name=agent_name, user=user, group=group,
+                                 is_virtual=serializer.validated_data['is_virtual'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -619,7 +621,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                 status=status.HTTP_403_FORBIDDEN)
 
             # code valid
-            if not agent.code_valid:
+            if not agent.is_virtual and not agent.code_valid:
                 return Response({'status': 'The agent code is not valid!',
                                  'message': 'Please submit a valid code first!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -748,6 +750,12 @@ class UploadAgent(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
+
+        if agent.is_virtual:
+            return Response({'status': 'Bad request',
+                             'message': 'You can\'t upload code to a virtual agent!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
 
         if len(group_member) == 0:
