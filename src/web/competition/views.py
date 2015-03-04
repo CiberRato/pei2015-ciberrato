@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent
+from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationSerializer, \
-    GroupEnrolledSerializer
+    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer
 from django.db import IntegrityError
 from django.db import transaction
-from authentication.models import Group
+from authentication.models import Group, GroupMember
+from authentication.serializers import AccountSerializer
 
 from groups.serializers import GroupSerializer
 
@@ -19,6 +20,10 @@ from django.core.files.base import ContentFile
 
 from competition.permissions import IsAdmin
 from groups.permissions import IsAdminOfGroup
+
+from django.conf import settings
+import json
+import os.path
 
 
 class RoundSimplex:
@@ -35,6 +40,23 @@ class GroupEnrolledSimplex:
     def __init__(self, ge):
         self.competition_name = ge.competition.name
         self.group_name = ge.group.name
+
+
+class AgentSimplex:
+    def __init__(self, ag):
+        self.agent_name = ag.agent_name
+        self.user = ag.user
+        self.group_name = ag.group.name
+        self.created_at = ag.created_at
+        self.updated_at = ag.updated_at
+
+
+class CompetitionAgentSimplex:
+    def __init__(self, cas):
+        self.round_name = cas.round.name
+        self.agent_name = cas.agent.agent_name
+        self.created_at = cas.created_at
+        self.updated_at = cas.updated_at
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -348,6 +370,438 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return Response(status=status.HTTP_200_OK)
 
 
+class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                    mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            user = request.user
+            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            agent_name = serializer.validated_data['agent_name']
+            Agent.objects.create(agent_name=agent_name, user=user, group=group)
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The agent could not be created with received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} information of the agent
+        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        serializer = AgentSerializer(AgentSimplex(agent))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} an agent
+        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+
+        if agent.locations:
+            if len(json.loads(agent.locations)) > 0:
+                for path in json.loads(agent.locations):
+                    default_storage.delete(path)
+
+        agent.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The agent has been deleted'},
+                        status=status.HTTP_200_OK)
+
+
+class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = CompetitionAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the agents available to compete in the round
+        B{URL:} ../api/v1/competitions/valid_round_agents/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
+        competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
+        serializer = self.serializer_class(competition_agents, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgentsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = CompetitionAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the agents available to compete in the round
+        B{URL:} ../api/v1/competitions/not_eligible_round_agents/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
+        serializer = self.serializer_class(competition_agents, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the participants available to compete in the round
+        B{URL:} ../api/v1/competitions/valid_round_participants/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        accounts = []
+        for group in competition_groups:
+            group_members = GroupMember.objects.filter(group=group)
+            accounts += [group_member.account for group_member in group_members]
+        serializer = self.serializer_class(accounts, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundParticipantsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the participants available to compete in the round
+        B{URL:} ../api/v1/competitions/not_eligible_round_participants/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        accounts = []
+        for group in competition_groups:
+            group_members = GroupMember.objects.filter(group=group)
+            accounts += [group_member.account for group_member in group_members]
+        serializer = self.serializer_class(accounts, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = GroupSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the groups available to compete in the round
+        B{URL:} ../api/v1/competitions/valid_round_groups/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        serializer = self.serializer_class(competition_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundGroupsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = GroupSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the groups available to compete in the round
+        B{URL:} ../api/v1/competitions/not_eligible_round_groups/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        serializer = self.serializer_class(competition_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = CompetitionAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Associate} an agent
+        B{URL:} ../api/v1/competitions/associate_agent/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            round = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            competition = round.parent_competition
+
+            if competition.state_of_competition != "Register":
+                return Response({'status': 'Not allowed',
+                                 'message': 'The group is not accepting agents.'},
+                                status=status.HTTP_401_UNAUTHORIZED)
+
+            group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+            if len(group_member) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'You must be part of the group.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
+            if len(group_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The group must first enroll in the competition.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            # code valid
+            if not agent.code_valid:
+                return Response({'status': 'The agent code is not valid!',
+                                 'message': 'Please submit a valid code first!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # verify limits
+            groups_agent = Agent.objects.filter(group=agent.group)
+            groups_agents_in_round = [agent for agent in groups_agent if
+                                      len(CompetitionAgent.objects.filter(agent=agent, round=round)) == 0]
+
+            numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
+
+            if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
+                return Response({'status': 'Reached the limit of agents',
+                                 'message': 'The group must first enroll in the competition.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            CompetitionAgent.objects.create(agent=agent, round=round, competition=competition)
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'We cound not associate the agent to the competition.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Associate} an agent
+        B{URL:} ../api/v1/competitions/associate_agent/<agent_name>/?round_name?<round_name>
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        if 'round_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?round_name=*round_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        competition = r.parent_competition
+
+        if competition.state_of_competition != "Register":
+            return Response({'status': 'Not allowed',
+                             'message': 'The group is not accepting agents.'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+        if len(group_member) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
+        if len(group_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'The group must first enroll in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        competition_agent = CompetitionAgent.objects.filter(competition=competition, round=r, agent=agent)
+        competition_agent.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The competition agent has been deleted!'},
+                        status=status.HTTP_200_OK)
+
+
+class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} an agent file
+        B{URL:} ../api/v1/competitions/delete_agent_file/<agent_name>/?file_name=<file_name>
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        @type  file_name: str
+        @param file_name: The file name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+
+        if len(group_member) == 0:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if 'file_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?file_name=*file_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if default_storage.exists('competition_files/agents/' + agent.agent_name + '/' + request.GET.get('file_name',
+                                                                                                         '')):
+            load = json.loads(agent.locations)
+            load.remove('competition_files/agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+            agent.locations = json.dumps(load)
+            agent.save()
+            default_storage.delete(
+                'competition_files/agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+            return Response({'status': 'Deleted',
+                             'message': 'The agent file has been deleted'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'Not found',
+                             'message': 'The agent file has not been found!'},
+                            status=status.HTTP_404_NOT_FOUND)
+
+
+class UploadAgent(views.APIView):
+    parser_classes = (FileUploadParser,)
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def post(self, request):
+        if 'agent_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?agent_name=*agent_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+
+        if len(group_member) == 0:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        file_obj = request.data['file']
+
+        if file_obj.content_type not in settings.ALLOWED_UPLOAD_LANGUAGES_CONTENT_TYPE:
+            types = ''.join(str(e) + " " for e in settings.ALLOWED_UPLOAD_LANGUAGES_CONTENT_TYPE)
+            return Response({'status': 'Not allowed file!',
+                             'message': 'The allowed files are: ' + types},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not file_obj.name.lower().endswith(tuple(settings.ALLOWED_UPLOAD_LANGUAGES_EXTENSIONS)):
+            types = ''.join(str(e) + " " for e in settings.ALLOWED_UPLOAD_LANGUAGES_EXTENSIONS)
+            return Response({'status': 'Not allowed file!',
+                             'message': 'The allowed extensions are: ' + types},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if file_obj.size > settings.ALLOWED_UPLOAD_SIZE:
+            return Response({'status': 'Bad request',
+                             'message': 'You can only upload files with size less than' + str(
+                                 settings.ALLOWED_UPLOAD_SIZE) + "kb."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not agent.locations:
+            load = []
+        else:
+            load = json.loads(agent.locations)
+
+            # verify if the code type is the same as uploaded before
+            if len(load) > 0:
+                tmp_file = default_storage.open(load[0])
+
+                if os.path.splitext(tmp_file.name)[1] != os.path.splitext(file_obj.name)[1]:
+                    return Response({'status': 'Bad request',
+                                     'message': 'You can only upload files of the same type! Expected: ' +
+                                                os.path.splitext(tmp_file.name)[1]},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+        path = default_storage.save('competition_files/agents/' + agent.agent_name + '/' + file_obj.name,
+                                    ContentFile(file_obj.read()))
+
+        load += [path]
+        agent.locations = json.dumps(load)
+        agent.save()
+
+        return Response({'status': 'File uploaded!',
+                         'message': 'The agent code has been uploaded!'},
+                        status=status.HTTP_201_CREATED)
+
+
 class UploadRoundXMLView(views.APIView):
     parser_classes = (FileUploadParser,)
 
@@ -375,7 +829,7 @@ class UploadRoundXMLView(views.APIView):
 
         if file_obj.size > 102400:
             return Response({'status': 'Bad request',
-                             'message': 'You can only upload photos with size less than 100KB.'},
+                             'message': 'You can only upload files with size less than 100KB.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         if file_obj.content_type != 'application/xml':

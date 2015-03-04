@@ -27,6 +27,27 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
         model = GroupEnrolled
         fields = ('competition_name', 'group_name',)
 
+
+class AgentSerializer(serializers.ModelSerializer):
+    group_name = serializers.CharField(max_length=128)
+    user = AccountSerializer(read_only=True)
+
+    class Meta:
+        model = Agent
+        fields = ('agent_name', 'user', 'group_name', 'created_at', 'updated_at')
+        read_only_fields = ('user', 'created_at', 'updated_at',)
+
+
+class CompetitionAgentSerializer(serializers.ModelSerializer):
+    round_name = serializers.CharField(max_length=128)
+    agent_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = CompetitionAgent
+        fields = ('round_name', 'agent_name', 'created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at',)
+
+
 """
 ---------------------------------------------------------------
 APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS

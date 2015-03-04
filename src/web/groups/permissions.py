@@ -2,7 +2,7 @@
 from rest_framework import permissions
 
 from authentication.models import Group, GroupMember
-
+from competition.models import Agent
 
 class IsAdminOfGroup(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -40,11 +40,28 @@ class IsAdminOfGroup(permissions.BasePermission):
                     group = Group.objects.filter(name=group_name)
                 except AttributeError:
                     return False
+            elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'POST':
+                try:
+                    group_name = request.data['group_name']
+                    group = Group.objects.filter(name=group_name)
+                except AttributeError:
+                    return False
+            elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'DELETE':
+                try:
+                    agent_name = request.path.split("/")[-2:-1][0]
+                except ValueError:
+                    return False
+                try:
+                    agent = Agent.objects.get(agent_name=agent_name)
+                    group = agent.group
+                except AttributeError:
+                    return False
             elif 'group_name' in request.GET:
                 group = Group.objects.filter(name=request.GET.get('group_name', ''))
                 if len(group) == 0:
                     return False
             else:
+                print request
                 return False
 
         group_member = GroupMember.objects.filter(account=request.user, group=group)

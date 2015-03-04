@@ -10,7 +10,9 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
 from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
 from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, \
     CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet, \
-    CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet
+    CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet, AgentViewSets, UploadAgent, \
+    DeleteUploadedFileAgent, AssociateAgent, AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
+    RoundParticipantsNotEligible, RoundGroupsNotEligible
 
 from rest_framework import routers
 
@@ -37,6 +39,15 @@ router_competitions.register(r'groups_not_valid', CompetitionGetNotValidGroupsVi
 router_competitions.register(r'group_valid', CompetitionGroupValidViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
+router_competitions.register(r'agent', AgentViewSets)
+router_competitions.register(r'delete_agent_file', DeleteUploadedFileAgent)
+router_competitions.register(r'associate_agent', AssociateAgent)
+router_competitions.register(r'valid_round_agents', AgentsRound)
+router_competitions.register(r'valid_round_participants', RoundParticipants)
+router_competitions.register(r'valid_round_groups', RoundGroups)
+router_competitions.register(r'not_eligible_round_agents', AgentsNotEligible)
+router_competitions.register(r'not_eligible_round_participants', RoundParticipantsNotEligible)
+router_competitions.register(r'not_eligible_round_groups', RoundGroupsNotEligible)
 
 # COMPETITIONS URLs#
 
@@ -54,6 +65,9 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round/upload/grid/$', UploadGridView.as_view(),
                            name="Grid Upload"),
                        url(r'^api/v1/competitions/round/upload/lab/$', UploadLabView.as_view(),
+                           name="Lab Upload"),
+                       # upload agent code
+                       url(r'^api/v1/competitions/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
 
                        # url(r'^api/v1/', include(router.urls)),
