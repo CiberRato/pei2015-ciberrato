@@ -8,6 +8,10 @@ import json
 import os
 
 def main():
+
+	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
 	HOST = "http://127.0.0.1:8000/"
 	result = requests.get(HOST + "api/v1/get_simulation/")
 	simJson = json.loads(result.text)[0]
@@ -22,29 +26,32 @@ def main():
 	print "Creating process for simulator.."
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
-	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-	 				"-param", 	tempFilesList["param_list_path"].name, \
-	 				"-lab", 	tempFilesList["lab_path"].name, \
-	 				"-grid", 	tempFilesList["grid_path"].name], \
-	 				stdout = subprocess.PIPE)
+	# simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+	#  				"-param", 	tempFilesList["param_list_path"].name, \
+	#  				"-lab", 	tempFilesList["lab_path"].name, \
+	#  				"-grid", 	tempFilesList["grid_path"].name], \
+	#  				stdout = subprocess.PIPE)
 
 
 	#run simulator for MAC_OSX
-	#simulator = subprocess.Popen(["../../../cibertools_OSX/simulator-adapted/simulator",\
-	#				"-param", 	tempFilesList["param_list_path"].name,\
-	#				"-lab",	 	tempFilesList["lab_path"].name,\
-	#				"-grid", 	tempFilesList["grid_path"].name],\
-	#				stdout=subprocess.PIPE)
+	simulator = subprocess.Popen(["../../../cibertools_OSX/simulator-adapted/simulator",\
+					"-param", 	tempFilesList["param_list_path"].name,\
+					"-lab",	 	tempFilesList["lab_path"].name,\
+					"-grid", 	tempFilesList["grid_path"].name],\
+					stdout=subprocess.PIPE)
 
 	print "Successfully opened process with process id: ", simulator.pid
+	time.sleep(1)
+
 	print "Creating process for viewer.."
 	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
 	print "Successfully opened process with process id: ", viewer.pid
-	time.sleep(1)
 
-	viewer_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	viewer_c.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	viewer_c.connect(("127.0.0.1", 7000))
+	viewer_tcp.bind(("127.0.0.1", 7000))
+	viewer_tcp.listen(1)
+	viewer_c, viewer_c_addr = viewer_tcp.accept()
+
+	print "Viewer ready.."
 
 	# print "Creating docker for agent.."
 	# docker = subprocess.Popen(["docker", "run", "-H", "tcp://192.168.59.103:2376",\
