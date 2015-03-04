@@ -221,6 +221,21 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
 
+        r = Round.objects.get(name="R1")
+        competition_agent = CompetitionAgent.objects.filter(round=r)
+        competition_agent = competition_agent[0]
+        competition_agent.eligible = False
+        competition_agent.save()
+
+        # retrieve the not eligible agents for one round
+        url = "/api/v1/competitions/not_eligible_round_agents/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
+
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
         response = client.delete(url)
