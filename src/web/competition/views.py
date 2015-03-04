@@ -270,6 +270,20 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The round could not be created with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the oldest round competition
+        B{URL:} ../api/v1/competitions/round/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+
+        serializer = self.serializer_class(RoundSimplex(r))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def destroy(self, request, pk, **kwargs):
         """
         B{Remove} a round from the competition

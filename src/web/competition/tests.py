@@ -353,12 +353,10 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
-        url = "/api/v1/competitions/round/"
+        url = "/api/v1/competitions/round/R1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        # print response.data
-        # self.assertEqual(response.data, [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', '/media/competition_files/param_list/Param_D7V8vSV.xml'), ('grid_path', '/media/competition_files/grid/Ciber2010_Grid_sMNbKrC.xml'), ('lab_path', '/media/competition_files/lab/Ciber2010_Lab_OjaD24i.xml'), ('agents_list', [])])])
-
+        
         for r in Round.objects.all():
             r.lab_path.delete()
             r.param_list_path.delete()
