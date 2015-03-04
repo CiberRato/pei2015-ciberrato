@@ -86,6 +86,7 @@ class Agent(models.Model):
     is_virtual = models.BooleanField(default=False)
 
     competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
+    rounds = models.ManyToManyField('Round', through='CompetitionAgent', related_name="round")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

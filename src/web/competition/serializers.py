@@ -3,7 +3,6 @@ from groups.serializers import *
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Competition
         fields = ('name', 'type_of_competition', 'enrolled_groups')
@@ -31,11 +30,14 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
 class AgentSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(max_length=128)
     user = AccountSerializer(read_only=True)
+    rounds = RoundSerializer(many=True)
+    competitions = CompetitionSerializer(many=True)
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'is_virtual', 'language', 'user', 'group_name', 'created_at', 'updated_at')
-        read_only_fields = ('user', 'language', 'created_at', 'updated_at',)
+        fields = ('agent_name', 'is_virtual', 'language', 'rounds', 'competitions', 'user', 'group_name', 'created_at',
+                  'updated_at')
+        read_only_fields = ('user', 'language', 'rounds', 'competitions', 'created_at', 'updated_at',)
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):
@@ -53,6 +55,8 @@ class CompetitionAgentSerializer(serializers.ModelSerializer):
 APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
 ---------------------------------------------------------------
 """
+
+
 class SimulationSerializer(serializers.BaseSerializer):
     """
     This serializer is only to retrieve and list methods.

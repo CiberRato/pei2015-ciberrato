@@ -132,7 +132,9 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {"agent_name": "KAMIKAZE", 'is_virtual': False, "group_name": "XPTO3"})
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
 
         # get the agent information
         url = "/api/v1/competitions/agent/KAMIKAZE/"
@@ -143,7 +145,8 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
 
-        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'is_virtual': False, 'language': u'', 'group_name': u'XPTO3',
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'competitions': [], 'is_virtual': False, 'language': u'',
+                               'rounds': [], 'group_name': u'XPTO3',
                                'user': OrderedDict(
                                    [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                     ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -187,11 +190,11 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
-        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'user': OrderedDict(
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [], 'competitions': [], 'user': OrderedDict(
             [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
              ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
-                                               'group_name': u'XPTO3'})
+                               'group_name': u'XPTO3'})
 
         # make the code valid
         agent = Agent.objects.get(agent_name='KAMIKAZE')
@@ -205,6 +208,22 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
+
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [OrderedDict(
+            [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
+             ('lab_path', None), ('agents_list', [1])])], 'competitions': [
+            OrderedDict([('name', u'C1'), ('type_of_competition', 'CB'), ('enrolled_groups', [1, 2, 3])])],
+                               'user': OrderedDict(
+                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                    ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                                    ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
+                               'group_name': u'XPTO3'})
 
         # retrieve the agent list of one round
         url = "/api/v1/competitions/valid_round_agents/R1/"
@@ -356,7 +375,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round/R1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        
+
         for r in Round.objects.all():
             r.lab_path.delete()
             r.param_list_path.delete()
