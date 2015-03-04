@@ -26,19 +26,13 @@ def main():
 	print "Creating process for simulator.."
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
-	# simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-	#  				"-param", 	tempFilesList["param_list_path"].name, \
-	#  				"-lab", 	tempFilesList["lab_path"].name, \
-	#  				"-grid", 	tempFilesList["grid_path"].name], \
-	#  				stdout = subprocess.PIPE)
+	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+	 				"-param", 	tempFilesList["param_list_path"].name, \
+	 				"-lab", 	tempFilesList["lab_path"].name, \
+	 				"-grid", 	tempFilesList["grid_path"].name], \
+	 				stdout = subprocess.PIPE)
 
-
-	#run simulator for MAC_OSX
-	simulator = subprocess.Popen(["../../../cibertools_OSX/simulator-adapted/simulator",\
-					"-param", 	tempFilesList["param_list_path"].name,\
-					"-lab",	 	tempFilesList["lab_path"].name,\
-					"-grid", 	tempFilesList["grid_path"].name],\
-					stdout=subprocess.PIPE)
+	print tempFilesList["param_list_path"].name
 
 	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
@@ -80,6 +74,7 @@ def main():
 		data = viewer_c.recv(4096)
 	print "Simulation ended, killing simulator and running agents"
 	viewer_c.close()
+	viewer_tcp.close()
 
 	viewer.wait()
 	# proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
