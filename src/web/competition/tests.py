@@ -172,13 +172,15 @@ class AuthenticationTestCase(TestCase):
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.cpp', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
+        self.assertEqual(response.data, {'status': 'Bad request',
+                                         'message': u'You can only upload files of the same type! Expected: .c'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.java', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
+        self.assertEqual(response.data, {'status': 'Bad request',
+                                         'message': u'You can only upload files of the same type! Expected: .c'})
 
         # make the code valid
         agent = Agent.objects.get(agent_name='KAMIKAZE')
@@ -201,6 +203,17 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
         self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
+
+        # test participants for one round
+        url = "/api/v1/competitions/valid_round_participants/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"

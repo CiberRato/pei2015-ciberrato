@@ -5,6 +5,7 @@ from competition.serializers import CompetitionSerializer, RoundSerializer, Simu
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
+from authentication.serializers import AccountSerializer
 
 from groups.serializers import GroupSerializer
 
@@ -448,6 +449,33 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
         competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
         serializer = self.serializer_class(competition_agents, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the participants available to compete in the round
+        B{URL:} ../api/v1/competitions/valid_round_participants/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
+        competition_groups = [agent.agent.group for agent in competition_agents]
+        accounts = []
+        for group in competition_groups:
+            group_members = GroupMember.objects.filter(group=group)
+            accounts += [group_member.account for group_member in group_members]
+        serializer = self.serializer_class(accounts, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
