@@ -82,6 +82,7 @@ class Agent(models.Model):
     locations = models.CharField(max_length=256)
 
     code_valid = models.BooleanField(default=False)
+    is_virtual = models.BooleanField(default=False)
 
     competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
 
