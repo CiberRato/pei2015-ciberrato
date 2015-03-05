@@ -853,11 +853,33 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The simulation could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the simulation information
+        B{URL:} ../api/v1/competitions/simulation/<identifier>/
 
-    def destroy(self, request, *args, **kwargs):
-        pass
+        @type  identifier: str
+        @param identifier: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+        serializer = self.serializer_class(SimulationSimplex(simulation))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} the simulation information
+        B{URL:} ../api/v1/competitions/simulation/<identifier>/
+
+        @type  identifier: str
+        @param identifier: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+        simulation.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The simulation has been deleted'},
+                        status=status.HTTP_200_OK)
 
 
 class SimulationGet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

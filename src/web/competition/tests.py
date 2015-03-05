@@ -297,9 +297,31 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        identifier = rsp['identifier']
         del rsp['identifier']
         self.assertEqual(rsp, {'round_name': u'R1'})
         self.assertEqual(response.status_code, 201)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/simulation/"+ identifier + "/"
+        response = client.get(url)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # delete the simulation data
+        url = "/api/v1/competitions/simulation/"+ identifier + "/"
+        response = client.delete(url)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation has been deleted'})
+        self.assertEqual(response.status_code, 200)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.data, {u'detail': u'Not found'})
 
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
