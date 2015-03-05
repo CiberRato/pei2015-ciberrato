@@ -1,6 +1,6 @@
 var x2js = new X2JS();
-function labConvertXml2JSon() {
-    return JSON.stringify(x2js.xml_str2json($("#XML").val()));
+function labConvertXml2JSon(log) {
+    return JSON.stringify(x2js.xml_str2json(log));
 }
 
 function convertToStringPoints(cornerList, zoom){
@@ -22,24 +22,12 @@ function convertToStringPoints(cornerList, zoom){
 }
 */
 angular.module('myapp', [])
-    .controller('ctrl', ['$http', '$scope', '$timeout', function($http, $scope, $timeout){
-
-
+    .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
         $scope.zoom = 30;
 
-        $http.get('file://localhost/Users/Bernardo/pei2015-ciberonline/template/log.xml').
-            success(function (data, status, headers, config) {
-                console.log("OK");
-            }).
-            error(function(data, status, headers, config){
-                console.log(data);
-                console.log(status);
-                console.log(headers);
-                console.log(config);
-                console.log("ERRO");
-            });
-
-        var lab_json_object = labConvertXml2JSon();
+        var lab_json_object = labConvertXml2JSon(log);
+        console.log("LOG DONE");
+        console.log(lab_json_object);
         var lab_obj = angular.fromJson(lab_json_object);
         var b = 0;
         var play = 0;
@@ -48,7 +36,7 @@ angular.module('myapp', [])
         for(i=0; i<lab_obj.Log.Lab.Wall.length; i++){
             lab_obj.Log.Lab.Wall[i].str = convertToStringPoints(lab_obj.Log.Lab.Wall[i], $scope.zoom);
         }
-
+        $scope.param=lab_obj.Log.Parameters;
         $scope.beacon_height = lab_obj.Log.Lab.Beacon._Height;
         $scope.map = lab_obj.Log.Lab;
         $scope.grid = lab_obj.Log.Grid;
@@ -56,6 +44,9 @@ angular.module('myapp', [])
         $scope.timeline = lab_obj.Log.LogInfo;
         $scope.dir1= parseInt($scope.timeline[0].Robot[0].Pos._Dir) + 90;
         $scope.dir2= parseInt($scope.timeline[0].Robot[1].Pos._Dir) + 90;
+        $scope.dir3= parseInt($scope.timeline[0].Robot[2].Pos._Dir) + 90;
+        $scope.dir4= parseInt($scope.timeline[0].Robot[3].Pos._Dir) + 90;
+        $scope.dir5= parseInt($scope.timeline[0].Robot[4].Pos._Dir) + 90;
         $scope.robot = $scope.timeline[0].Robot;
         $scope.stats = $scope.timeline[0];
         $scope.idx = 1;
@@ -80,12 +71,12 @@ angular.module('myapp', [])
             try{
                 $scope.updateValues();
 
-                $(".leftGrip").css("left", ($scope.idx*820)/1800);
+                $(".leftGrip").css("left", ($scope.idx*820)/$scope.param._SimTime);
                 if(play){
                     $scope.idx++;
                 }
             }catch(TypeError){
-                $scope.stop();
+                $scope.pause();
             }
             if(play){
                 refresh($scope.refresh_rate);
@@ -97,6 +88,9 @@ angular.module('myapp', [])
             $scope.stats = $scope.timeline[$scope.idx];
             $scope.dir1= parseInt($scope.timeline[$scope.idx].Robot[0].Pos._Dir) + 90;
             $scope.dir2= parseInt($scope.timeline[$scope.idx].Robot[1].Pos._Dir) + 90;
+            $scope.dir3= parseInt($scope.timeline[$scope.idx].Robot[2].Pos._Dir) + 90;
+            $scope.dir4= parseInt($scope.timeline[$scope.idx].Robot[3].Pos._Dir) + 90;
+            $scope.dir5= parseInt($scope.timeline[$scope.idx].Robot[4].Pos._Dir) + 90;
 
             /*if(($scope.last_idx+1)!=$scope.idx){
 
@@ -249,7 +243,32 @@ angular.module('myapp', [])
         };
     });
 
+var log;
 
 angular.element(document).ready(function(){
-    angular.bootstrap(document, ['myapp']);
+    $.get( "http://localhost:63342/pei2015-ciberonline/template/log1.txt", function( data ) {
+        log = data;
+        angular.bootstrap(document, ['myapp']);
+        $('.nstSlider').nstSlider({
+            "left_grip_selector": ".leftGrip",
+            "value_changed_callback": function(cause, leftValue, rightValue) {
+                try{
+                    var scope = angular.element('[ng-controller=ctrl]').scope();
+                    scope.idx = leftValue;
+
+                }catch(TypeError){}
+            }
+        });
+
+        // Call methods and such...
+        var highlightMin = Math.random() * 20,
+            highlightMax = highlightMin + Math.random() * 80;
+        $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+    });
+    /*
+    $.get( "http://localhost:63342/pei2015-ciberonline/template/log.txt", function( data ) {
+        log = data;
+        angular.bootstrap(document, ['myapp']);
+    });
+    */
 });
