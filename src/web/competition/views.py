@@ -66,6 +66,14 @@ class CompetitionAgentSimplex:
         self.updated_at = cas.updated_at
 
 
+class SimulationSimplex:
+    def __init__(self, ss):
+        self.round_name = ss.round.name
+        self.identifier = ss.identifier
+        self.created_at = ss.created_at
+        self.updated_at = ss.updated_at
+
+
 class CompetitionViewSet(viewsets.ModelViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
@@ -833,7 +841,17 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, *args, **kwargs):
-        pass
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            s = Simulation.objects.create(round=r)
+            serializer = SimulationSerializer(SimulationSimplex(s))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The simulation could not be created with received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         pass

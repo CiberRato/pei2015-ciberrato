@@ -50,9 +50,13 @@ class CompetitionAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at',)
 
 
-class SimulationSerializer(serializers.BaseSerializer):
-    pass
+class SimulationSerializer(serializers.ModelSerializer):
+    round_name = serializers.CharField(max_length=128)
 
+    class Meta:
+        model = Simulation
+        fields = ('identifier', 'round_name', 'created_at', 'updated_at',)
+        read_only_fields = ('identifier', 'created_at', 'updated_at',)
 
 """
 ---------------------------------------------------------------

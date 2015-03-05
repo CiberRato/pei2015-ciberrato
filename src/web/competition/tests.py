@@ -290,6 +290,17 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
 
+        # create simulation
+        url = "/api/v1/competitions/simulation/"
+        data = {'round_name': 'R1'}
+        response = client.post(path=url, data=data)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 201)
+
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.delete(path=url)
