@@ -30,7 +30,7 @@
                 <em>{{user.teaching_institution}}</em>
 
                 <ul>
-                    <li><a ng-controller="LogoutController" class="btn btn-primary btn-flat" href="javascript:void(0)" ng-click="vm.logout()" title="Account settings">Logout</a></li>
+                    <li><a ng-controller="LogoutController" class="btn btn-primary btn-flat" href="javascript:void(0)" ng-click="vm.logout()">Logout</a></li>
                 </ul>
             </figcaption>
         </figure>
@@ -53,16 +53,16 @@
             <li>
                 <a href="#"><span class="awe-user"></span><strong>User Management</strong></a>
                 <ul>
-                    <li><a href="changePass.html">Change Password</a></li>
-                    <li><a href="editProfile.html">Edit Profile</a></li>
+                    <li><a href="/panel/{{ user.username }}/changePassword">Change Password</a></li>
+                    <li><a href="/panel/{{ user.username }}/editProfile">Edit Profile</a></li>
                 </ul>
             </li>
             <li>
                 <a href="#"><span class="awe-group"></span><strong>Team Management</strong></a>
                 <ul>
-                    <li><a href="myteams.html">My Teams</a></li>
-                    <li><a href="createTeam.html">Create Team</a></li>
-                    <li><a href="seeGroups.html">All Teams</a></li>
+                    <li><a href="/panel/{{ user.username }}/myTeams">My Teams</a></li>
+                    <li><a href="/panel/{{ user.username }}/createTeam">Create Team</a></li>
+                    <li><a href="/panel/allTeams">All Teams</a></li>
                 </ul>
             </li>
 

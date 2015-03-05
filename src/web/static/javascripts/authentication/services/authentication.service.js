@@ -29,7 +29,7 @@
 
         function loginSuccessFn(data, status, headers, config){
             Authentication.setAuthenticatedAccount(data.data);
-            window.location.assign('/panel/');
+            window.location.assign('/profile/');
         }
 
         function loginErrorFn(data, status, headers, config){

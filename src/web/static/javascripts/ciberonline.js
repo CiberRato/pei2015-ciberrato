@@ -5,7 +5,9 @@
         .module('ciberonline', [
             'ciberonline.config',
             'ciberonline.routes',
-            'ciberonline.authentication'
+            'ciberonline.authentication',
+            'ciberonline.profile',
+            'ciberonline.teams'
         ])
         .run(run);
 

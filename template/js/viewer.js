@@ -244,7 +244,7 @@ angular.module('myapp', [])
 var log;
 
 angular.element(document).ready(function(){
-    $.get( "http://localhost:63342/pei2015-ciberonline/template/log1.txt", function( data ) {
+    $.get( "log1.txt", function( data ) {
         log = data;
         angular.bootstrap(document, ['myapp']);
 
