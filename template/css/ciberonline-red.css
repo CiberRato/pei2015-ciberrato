@@ -11348,6 +11348,9 @@ form .alert {
 .loading.blue {
   background-image: url("../img/icons/loading_blue.gif");
 }
+.loading.ciber {
+    background-image: url("../img/icons/loading_ciber.gif");
+}
 /* Data block components */
 /* Data block header controls */
 .data-block header h2 + .btn,

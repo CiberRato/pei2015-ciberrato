@@ -26,12 +26,10 @@ angular.module('myapp', [])
         $scope.zoom = 30;
 
         var lab_json_object = labConvertXml2JSon(log);
-        console.log("LOG DONE");
-        console.log(lab_json_object);
         var lab_obj = angular.fromJson(lab_json_object);
         var b = 0;
         var play = 0;
-        console.log(lab_obj);
+        //console.log(lab_obj);
 
         for(i=0; i<lab_obj.Log.Lab.Wall.length; i++){
             lab_obj.Log.Lab.Wall[i].str = convertToStringPoints(lab_obj.Log.Lab.Wall[i], $scope.zoom);
@@ -249,6 +247,14 @@ angular.element(document).ready(function(){
     $.get( "http://localhost:63342/pei2015-ciberonline/template/log1.txt", function( data ) {
         log = data;
         angular.bootstrap(document, ['myapp']);
+
+        $("#waitawhile").hide("fast");
+        $("#row1").show("slow");
+        $("#row2").show("slow");
+        $("#row3").show("slow");
+        $("#row4").show("slow");
+        $("#row5").show("slow");
+
         $('.nstSlider').nstSlider({
             "left_grip_selector": ".leftGrip",
             "value_changed_callback": function(cause, leftValue, rightValue) {

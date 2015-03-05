@@ -144,11 +144,32 @@
         <div class="content-block" role="main" ng-controller="ctrl">
 
             <!-- Page header -->
-            <h1>WebViewer</h1>
+            <h1 id="row5" style="display: none">WebViewer</h1>
             <!-- /Page header -->
 
+            <div class="row" id="waitawhile">
+
+                <!-- Data block -->
+                <article class="span12 data-block">
+                    <div class="data-container">
+                        <header>
+                            <h2>Wait a while...</h2>
+                        </header>
+                        <section>
+                            <div class="row">
+                                <div class="span12" style="text-align: center">
+                                    <span class="loading blue" data-original-title="Loading, please wait…">Loading…</span>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </article>
+                <!-- /Data block -->
+
+            </div>
+
             <!-- Grid row -->
-            <div class="row">
+            <div class="row" id="row1" style="display: none">
                 <article class="span12 data-block">
                     <div class="data-container">
                         <section>
@@ -249,7 +270,7 @@
 
             </div>
             <!-- /Grid row -->
-            <div class="row">
+            <div class="row"  id="row2" style="display: none">
                 <article class="span4 data-block">
                     <div class="data-container">
                         <section class="viewer">
@@ -361,7 +382,7 @@
             </div>
             <!-- Grid row -->
 
-            <div class="row">
+            <div class="row"  id="row3" style="display: none">
                 <article class="span12 data-block accordion-block decent">
                     <div class="data-container">
                         <div class="accordion">
@@ -451,7 +472,7 @@
                 </article>
             </div>
 
-            <div class="row">
+            <div class="row"  id="row4" style="display: none">
                 <article class="span12 data-block accordion-block decent">
                     <div class="data-container">
                         <div class="accordion">
