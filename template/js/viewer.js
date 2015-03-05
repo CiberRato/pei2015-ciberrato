@@ -22,14 +22,28 @@ function convertToStringPoints(cornerList, zoom){
 }
 */
 angular.module('myapp', [])
-    .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
+    .controller('ctrl', ['$http', '$scope', '$timeout', function($http, $scope, $timeout){
+
 
         $scope.zoom = 30;
+
+        $http.get('file://localhost/Users/Bernardo/pei2015-ciberonline/template/log.xml').
+            success(function (data, status, headers, config) {
+                console.log("OK");
+            }).
+            error(function(data, status, headers, config){
+                console.log(data);
+                console.log(status);
+                console.log(headers);
+                console.log(config);
+                console.log("ERRO");
+            });
 
         var lab_json_object = labConvertXml2JSon();
         var lab_obj = angular.fromJson(lab_json_object);
         var b = 0;
         var play = 0;
+        console.log(lab_obj);
 
         for(i=0; i<lab_obj.Log.Lab.Wall.length; i++){
             lab_obj.Log.Lab.Wall[i].str = convertToStringPoints(lab_obj.Log.Lab.Wall[i], $scope.zoom);
