@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent
+from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, \
+    LogSimulationAgent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationXSerializer, \
-    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer
+    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer, \
+    SimulationAgentSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
@@ -64,6 +66,21 @@ class CompetitionAgentSimplex:
         self.agent_name = cas.agent.agent_name
         self.created_at = cas.created_at
         self.updated_at = cas.updated_at
+
+
+class SimulationSimplex:
+    def __init__(self, ss):
+        self.round_name = ss.round.name
+        self.identifier = ss.identifier
+        self.created_at = ss.created_at
+        self.updated_at = ss.updated_at
+
+
+class SimulationAgentSimplex:
+    def __init__(self, sas):
+        self.simulation_identifier = sas.simulation.identifier
+        self.agent_name = sas.competition_agent.agent.agent_name
+        self.round_name = sas.simulation.round.name
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -833,13 +850,104 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, *args, **kwargs):
-        pass
+        serializer = self.serializer_class(data=request.data)
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+        if serializer.is_valid():
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            s = Simulation.objects.create(round=r)
+            serializer = SimulationSerializer(SimulationSimplex(s))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def destroy(self, request, *args, **kwargs):
-        pass
+        return Response({'status': 'Bad Request',
+                         'message': 'The simulation could not be created with received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the simulation information
+        B{URL:} ../api/v1/competitions/simulation/<identifier>/
+
+        @type  identifier: str
+        @param identifier: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+        serializer = self.serializer_class(SimulationSimplex(simulation))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} the simulation information
+        B{URL:} ../api/v1/competitions/simulation/<identifier>/
+
+        @type  identifier: str
+        @param identifier: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+        simulation.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The simulation has been deleted'},
+                        status=status.HTTP_200_OK)
+
+
+class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = LogSimulationAgent.objects.all()
+    serializer_class = SimulationAgentSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+
+            competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+
+            simulation = get_object_or_404(Simulation.objects.all(),
+                                           identifier=serializer.validated_data['simulation_identifier'])
+
+            maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
+
+            # competitiva
+            if competition_agent.competition.type_of_competition == settings.COLABORATIVA:
+                # see if the simulation has already the number max of agents
+                simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+                if len(simulation_agents) >= maxs[settings.COLABORATIVA]:
+                    return Response({'status': 'Bad Request',
+                                     'message': 'The simulation reached the number max of participants.'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # all the agents must be part of the same team
+                group = agent.group
+                for simulation_agent in simulation_agents:
+                    if simulation_agent.competition_agent.agent.group != group:
+                        return Response({'status': 'Bad Request',
+                                         'message': 'The competition is in Colaborativa mode, the agents must be owned by the same team.'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+
+            # colaborativa
+            if competition_agent.competition.type_of_competition == settings.COMPETITIVA:
+                # see if the simulation has already the number max of agents
+                simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+                if len(simulation_agents) >= maxs[settings.COMPETITIVA]:
+                    return Response({'status': 'Bad Request',
+                                     'message': 'The simulation reached the number max of participants.'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # all the agents must be from different teams
+                group = agent.group
+                for simulation_agent in simulation_agents:
+                    if simulation_agent.competition_agent.agent.group == group:
+                        return Response({'status': 'Bad Request',
+                                         'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+
+            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation)
+            serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The simulation agent could not be created with received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class SimulationGet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -860,8 +968,26 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the agent simulations
+        B{URL:} ../api/v1/competitions/simulations_by_agent/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        competition_agents = CompetitionAgent.objects.filter(agent=agent)
+        simulations = []
+
+        for competition_agent in competition_agents:
+            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
+            for lga in lgas:
+                simulations += [SimulationSimplex(lga.simulation)]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -871,8 +997,26 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the round simulations
+        B{URL:} ../api/v1/competitions/simulations_by_round/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(round=r)
+        simulations = []
+
+        for competition_agent in competition_agents:
+            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
+            for lga in lgas:
+                simulations += [SimulationSimplex(lga.simulation)]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -882,8 +1026,26 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the competition simulations
+        B{URL:} ../api/v1/competitions/simulations_by_competition/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(competition=competition)
+        simulations = []
+
+        for competition_agent in competition_agents:
+            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
+            for lga in lgas:
+                simulations += [SimulationSimplex(lga.simulation)]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UploadRoundXMLView(views.APIView):

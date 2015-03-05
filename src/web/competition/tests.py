@@ -283,12 +283,84 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
 
+        # create simulation
+        url = "/api/v1/competitions/simulation/"
+        data = {'round_name': 'R1'}
+        response = client.post(path=url, data=data)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        identifier = rsp['identifier']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 201)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.get(url)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # associate an agent to the simulation
+        url = "/api/v1/competitions/associate_agent_to_simulation/"
+        data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data),
+                         {'round_name': u'R1', 'agent_name': u'KAMIKAZE', 'simulation_identifier': identifier})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(LogSimulationAgent.objects.all()), 1)
+
+        # get the simulations by agent
+        url = "/api/v1/competitions/simulations_by_agent/KAMIKAZE/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by round
+        url = "/api/v1/competitions/simulations_by_round/R1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by competition
+        url = "/api/v1/competitions/simulations_by_competition/C1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
         response = client.delete(url)
         self.assertEqual(response.status_code, response.status_code)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
+
+        # delete the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.delete(url)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation has been deleted'})
+        self.assertEqual(response.status_code, 200)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.data, {u'detail': u'Not found'})
 
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
