@@ -324,8 +324,18 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1'})
         self.assertEqual(response.status_code, 200)
 
-        # get the simulations by agent
+        # get the simulations by round
         url = "/api/v1/competitions/simulations_by_round/R1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by competition
+        url = "/api/v1/competitions/simulations_by_competition/C1/"
         response = client.get(url)
         rsp = response.data[0]
         del rsp['created_at']

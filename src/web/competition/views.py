@@ -1002,8 +1002,8 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the round simulations
         B{URL:} ../api/v1/competitions/simulations_by_round/<round_name>/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        @type  round_name: str
+        @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=pk)
         competition_agents = CompetitionAgent.objects.filter(round=r)
@@ -1026,8 +1026,26 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the competition simulations
+        B{URL:} ../api/v1/competitions/simulations_by_competition/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition_agents = CompetitionAgent.objects.filter(competition=competition)
+        simulations = []
+
+        for competition_agent in competition_agents:
+            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
+            for lga in lgas:
+                simulations += [SimulationSimplex(lga.simulation)]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UploadRoundXMLView(views.APIView):
