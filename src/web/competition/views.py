@@ -924,6 +924,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                         return Response({'status': 'Bad Request',
                                          'message': 'The competition is in Colaborativa mode, the agents must be owned by the same team.'},
                                         status=status.HTTP_400_BAD_REQUEST)
+
             # colaborativa
             if competition_agent.competition.type_of_competition == settings.COMPETITIVA:
                 # see if the simulation has already the number max of agents
@@ -967,8 +968,26 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the agent simulations
+        B{URL:} ../api/v1/competitions/simulations_by_agent/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        competition_agents = CompetitionAgent.objects.filter(agent=agent)
+        simulations = []
+
+        for competition_agent in competition_agents:
+            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
+            for lga in lgas:
+                simulations += [SimulationSimplex(lga.simulation)]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
