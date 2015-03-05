@@ -117,6 +117,9 @@ class LogSimulationAgent(models.Model):
     competition_agent = models.ForeignKey('CompetitionAgent')
     simulation = models.ForeignKey('Simulation')
 
+    class Meta:
+        unique_together = ('competition_agent', 'simulation',)
+
 
 class Simulation(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)

@@ -107,6 +107,11 @@ NUMBER_AGENTS_BY_COMPETITION_TYPE = (
     (COMPETITIVA, 1)
 )
 
+NUMBER_AGENTS_BY_SIMULATION = (
+    (COLABORATIVA, 5),
+    (COMPETITIVA, 3)
+)
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist/static'),
     os.path.join(BASE_DIR, 'static'),

@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, LogSimulationAgent
+from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, \
+    LogSimulationAgent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationXSerializer, \
     GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer, \
     SimulationAgentSerializer
@@ -902,8 +903,42 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
 
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+
             simulation = get_object_or_404(Simulation.objects.all(),
                                            identifier=serializer.validated_data['simulation_identifier'])
+
+            maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
+
+            # competitiva
+            if competition_agent.competition.type_of_competition == settings.COLABORATIVA:
+                # see if the simulation has already the number max of agents
+                simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+                if len(simulation_agents) >= maxs[settings.COLABORATIVA]:
+                    return Response({'status': 'Bad Request',
+                                     'message': 'The simulation reached the number max of participants.'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # all the agents must be part of the same team
+                group = agent.group
+                for simulation_agent in simulation_agents:
+                    if simulation_agent.competition_agent.agent.group != group:
+                        return Response({'status': 'Bad Request',
+                                         'message': 'The competition is in Colaborativa mode, the agents must be owned by the same team.'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+            # colaborativa
+            if competition_agent.competition.type_of_competition == settings.COMPETITIVA:
+                # see if the simulation has already the number max of agents
+                simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+                if len(simulation_agents) >= maxs[settings.COMPETITIVA]:
+                    return Response({'status': 'Bad Request',
+                                     'message': 'The simulation reached the number max of participants.'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # all the agents must be from different teams
+                group = agent.group
+                for simulation_agent in simulation_agents:
+                    if simulation_agent.competition_agent.agent.group == group:
+                        return Response({'status': 'Bad Request',
+                                         'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
+                                        status=status.HTTP_400_BAD_REQUEST)
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation)
             serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
