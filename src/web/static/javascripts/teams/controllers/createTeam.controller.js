@@ -10,6 +10,7 @@
     function CreateTeamController($location, $routeParams, Authentication, Team){
         var vm = this;
 
+        console.log("estive aqui");
         vm.create = create;
 
         activate();
