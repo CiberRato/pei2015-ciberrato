@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent
+from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, LogSimulationAgent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationXSerializer, \
-    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer
+    GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer, \
+    SimulationAgentSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
@@ -72,6 +73,13 @@ class SimulationSimplex:
         self.identifier = ss.identifier
         self.created_at = ss.created_at
         self.updated_at = ss.updated_at
+
+
+class SimulationAgentSimplex:
+    def __init__(self, sas):
+        self.simulation_identifier = sas.simulation.identifier
+        self.agent_name = sas.competition_agent.agent.agent_name
+        self.round_name = sas.simulation.round.name
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -880,6 +888,30 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return Response({'status': 'Deleted',
                          'message': 'The simulation has been deleted'},
                         status=status.HTTP_200_OK)
+
+
+class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = LogSimulationAgent.objects.all()
+    serializer_class = SimulationAgentSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+
+            competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+            simulation = get_object_or_404(Simulation.objects.all(),
+                                           identifier=serializer.validated_data['simulation_identifier'])
+
+            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation)
+            serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The simulation agent could not be created with received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class SimulationGet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
