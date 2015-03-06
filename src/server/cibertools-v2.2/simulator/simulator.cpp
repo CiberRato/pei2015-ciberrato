@@ -335,16 +335,16 @@ int main(int argc, char *argv[])
 	srand(_getpid());
 #endif
 
-        /* start simulator timer */
+    /* start simulator timer */
 	simulator.startTimer();
 
-        /* preparing ALARM timer */
-    cbSimulatorGUI gui(&simulator);
+    /* preparing ALARM timer */
+    //cbSimulatorGUI gui(&simulator);
 
-    simulator.setGUI(&gui);
+    //simulator.setGUI(&gui);
     //gui.setMaximumSize(gui.size());
     //gui.setMinimumSize(gui.size());
-	gui.show();
+	//gui.show();
 
 	app.exec();
 
