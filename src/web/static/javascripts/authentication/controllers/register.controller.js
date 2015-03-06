@@ -16,7 +16,7 @@
 
         function activate(){
             if(Authentication.isAuthenticated()){
-                $location.url("/idp/register");
+                $location.url("/idp/register/");
             }
         }
 

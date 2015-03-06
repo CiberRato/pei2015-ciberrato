@@ -129,10 +129,12 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for group
         url = "/api/v1/competitions/agent/"
-        data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3'}
+        data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {"agent_name": "KAMIKAZE", "group_name": "XPTO3"})
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
 
         # get the agent information
         url = "/api/v1/competitions/agent/KAMIKAZE/"
@@ -143,14 +145,16 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
 
-        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'group_name': u'XPTO3', 'user': OrderedDict(
-            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
-             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-             ('last_name', u'Ferreira')])})
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'competitions': [], 'is_virtual': False, 'language': u'',
+                               'rounds': [], 'group_name': u'XPTO3',
+                               'user': OrderedDict(
+                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                    ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                                    ('last_name', u'Ferreira')])})
 
 
         # upload agent code
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
@@ -162,23 +166,35 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=C"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.c', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=cplusplus"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.cpp', 'r')
         response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Java"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.java', 'r')
         response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': u'You can only upload files of the same type! Expected: .c'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [], 'competitions': [], 'user': OrderedDict(
+            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+             ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
+                               'group_name': u'XPTO3'})
 
         # make the code valid
         agent = Agent.objects.get(agent_name='KAMIKAZE')
@@ -193,12 +209,158 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
 
+        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [OrderedDict(
+            [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
+             ('lab_path', None), ('agents_list', [1])])], 'competitions': [
+            OrderedDict([('name', u'C1'), ('type_of_competition', 'CB'), ('enrolled_groups', [1, 2, 3])])],
+                               'user': OrderedDict(
+                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                    ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                                    ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
+                               'group_name': u'XPTO3'})
+
+        # retrieve the agent list of one round
+        url = "/api/v1/competitions/valid_round_agents/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
+
+        # test participants for one round
+        url = "/api/v1/competitions/valid_round_participants/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
+
+        # test groups for one round
+        url = "/api/v1/competitions/valid_round_groups/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
+        r = Round.objects.get(name="R1")
+        competition_agent = CompetitionAgent.objects.filter(round=r)
+        competition_agent = competition_agent[0]
+        competition_agent.eligible = False
+        competition_agent.save()
+
+        # retrieve the not eligible agents for one round
+        url = "/api/v1/competitions/not_eligible_round_agents/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
+
+        # retrieve the not eligible participantes for one round
+        url = "/api/v1/competitions/not_eligible_round_participants/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                                      ('teaching_institution', u'Universidade de Aveiro'),
+                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
+
+        # test not eligible groups for one round
+        url = "/api/v1/competitions/not_eligible_round_groups/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
+        # create simulation
+        url = "/api/v1/competitions/simulation/"
+        data = {'round_name': 'R1'}
+        response = client.post(path=url, data=data)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        identifier = rsp['identifier']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 201)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.get(url)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # associate an agent to the simulation
+        url = "/api/v1/competitions/associate_agent_to_simulation/"
+        data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data),
+                         {'round_name': u'R1', 'agent_name': u'KAMIKAZE', 'simulation_identifier': identifier})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(LogSimulationAgent.objects.all()), 1)
+
+        # get the simulations by agent
+        url = "/api/v1/competitions/simulations_by_agent/KAMIKAZE/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by round
+        url = "/api/v1/competitions/simulations_by_round/R1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by competition
+        url = "/api/v1/competitions/simulations_by_competition/C1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(response.status_code, 200)
+
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
         response = client.delete(url)
         self.assertEqual(response.status_code, response.status_code)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
+
+        # delete the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.delete(url)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation has been deleted'})
+        self.assertEqual(response.status_code, 200)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.data, {u'detail': u'Not found'})
 
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
@@ -282,11 +444,9 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
-        url = "/api/v1/competitions/round/"
+        url = "/api/v1/competitions/round/R1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        # print response.data
-        # self.assertEqual(response.data, [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', '/media/competition_files/param_list/Param_D7V8vSV.xml'), ('grid_path', '/media/competition_files/grid/Ciber2010_Grid_sMNbKrC.xml'), ('lab_path', '/media/competition_files/lab/Ciber2010_Lab_OjaD24i.xml'), ('agents_list', [])])])
 
         for r in Round.objects.all():
             r.lab_path.delete()

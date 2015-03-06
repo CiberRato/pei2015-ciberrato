@@ -5,17 +5,19 @@ from xml.dom import minidom
 from collections import OrderedDict
 
 def main():
+	log.write("viewer started")
+
 	log_name = "ciberOnline_log"
 	log = open("log", "w") # log file used to view prints of this program
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	#starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	#starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-	starter_tcp.bind(("127.0.0.1", 7000))
-	starter_tcp.listen(1)
-	starter_s, starter_s_addr = starter_tcp.accept()
+	# starter_tcp.bind(("127.0.0.1", 7000))
+	# starter_tcp.listen(1)
+	# starter_s, starter_s_addr = starter_tcp.accept()
 
 	simulator_s.sendto("<View/>\n" ,("127.0.0.1", 6000))
 	# Ler o valor do tempo de simulação e obter as portas
@@ -27,6 +29,11 @@ def main():
 
 	log_file = open(log_name, "w")
 	log_file.write(data)
+
+	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	starter_s.connect(("127.0.0.1", 7000))
+
 	# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
 	data = starter_s.recv(4096)
 	robotsXML = minidom.parseString(data)
@@ -51,8 +58,6 @@ def main():
 			log.write(str(len(checkedRobots)) + "\n")
 
 	log.write("All Robots are registered\n")
-
-	starter_s.send("<RobotsRegistered/>")
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":

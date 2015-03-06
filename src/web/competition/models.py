@@ -81,9 +81,12 @@ class Agent(models.Model):
     group = models.ForeignKey(Group, blank=False)
     locations = models.CharField(max_length=256)
 
+    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
     code_valid = models.BooleanField(default=False)
+    is_virtual = models.BooleanField(default=False)
 
     competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
+    rounds = models.ManyToManyField('Round', through='CompetitionAgent', related_name="round")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -114,12 +117,15 @@ class LogSimulationAgent(models.Model):
     competition_agent = models.ForeignKey('CompetitionAgent')
     simulation = models.ForeignKey('Simulation')
 
+    class Meta:
+        unique_together = ('competition_agent', 'simulation',)
+
 
 class Simulation(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
     round = models.ForeignKey(Round, blank=False)
-    log_path = models.FileField(max_length=128)
+    log = models.TextField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -92,8 +92,12 @@ STATIC_ROOT = 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-ALLOWED_UPLOAD_LANGUAGES_CONTENT_TYPE = ['text/x-python', 'text/x-c', 'text/x-java-source']
-ALLOWED_UPLOAD_LANGUAGES_EXTENSIONS = ['.py', '.c', '.cpp', '.java']
+ALLOWED_UPLOAD_LANGUAGES = (
+    ('Python', 'Python'),
+    ('C', 'C'),
+    ('cplusplus', 'cplusplus'),
+    ('Java', 'Java')
+)
 ALLOWED_UPLOAD_SIZE = 5000000  # bytes
 
 COLABORATIVA = 'CB'
@@ -101,6 +105,11 @@ COMPETITIVA = 'CP'
 NUMBER_AGENTS_BY_COMPETITION_TYPE = (
     (COLABORATIVA, 5),
     (COMPETITIVA, 1)
+)
+
+NUMBER_AGENTS_BY_SIMULATION = (
+    (COLABORATIVA, 5),
+    (COMPETITIVA, 3)
 )
 
 STATICFILES_DIRS = (

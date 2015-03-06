@@ -3,7 +3,6 @@ from groups.serializers import *
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Competition
         fields = ('name', 'type_of_competition', 'enrolled_groups')
@@ -31,11 +30,14 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
 class AgentSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(max_length=128)
     user = AccountSerializer(read_only=True)
+    rounds = RoundSerializer(many=True)
+    competitions = CompetitionSerializer(many=True)
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'user', 'group_name', 'created_at', 'updated_at')
-        read_only_fields = ('user', 'created_at', 'updated_at',)
+        fields = ('agent_name', 'is_virtual', 'language', 'rounds', 'competitions', 'user', 'group_name', 'created_at',
+                  'updated_at')
+        read_only_fields = ('user', 'language', 'rounds', 'competitions', 'created_at', 'updated_at',)
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):
@@ -48,12 +50,33 @@ class CompetitionAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at',)
 
 
+class SimulationSerializer(serializers.ModelSerializer):
+    round_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = Simulation
+        fields = ('identifier', 'round_name', 'created_at', 'updated_at',)
+        read_only_fields = ('identifier', 'created_at', 'updated_at',)
+
+
+class SimulationAgentSerializer(serializers.ModelSerializer):
+    simulation_identifier = serializers.CharField(max_length=100)
+    agent_name = serializers.CharField(max_length=128)
+    round_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = LogSimulationAgent
+        fields = ('simulation_identifier', 'agent_name', 'round_name',)
+        read_only_fields = ()
+
 """
 ---------------------------------------------------------------
 APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
 ---------------------------------------------------------------
 """
-class SimulationSerializer(serializers.BaseSerializer):
+
+
+class SimulationXSerializer(serializers.BaseSerializer):
     """
     This serializer is only to retrieve and list methods.
     """
