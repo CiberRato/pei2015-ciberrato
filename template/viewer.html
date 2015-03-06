@@ -393,77 +393,154 @@
                                 <div id="sotable" class="accordion-body collapse">
                                     <div class="row" >
                                         <table class="table table-striped table-bordered table-condensed table-hover">
-										<thead>
-
-											<tr>
-												<th>#</th>
-												<th ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0]._Id}} - {{robot[0]._Name}}</th>
-												<th ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1]._Id}} - {{robot[1]._Name}}</th>
-												<th ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2]._Id}} - {{robot[2]._Name}}</th>
-												<th ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3]._Id}} - {{robot[3]._Name}}</th>
-												<th ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4]._Id}} - {{robot[4]._Name}}</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>Compass</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors._Compass}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors._Compass}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors._Compass}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors._Compass}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors._Compass}}</td>
-											</tr>
-											<tr>
-												<td>Collision</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors._Collision}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors._Collision}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors._Collision}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors._Collision}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors._Collision}}</td>
-											</tr>
-											<tr>
-												<td>Ground</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors._Ground}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors._Ground}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors._Ground}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors._Ground}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors._Ground}}</td>
-											</tr>
-											<tr>
-												<td>IRSensor {{robot[0].Measures.Sensors.IRSensor[0]._Id}}</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors.IRSensor[0]._Value}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors.IRSensor[0]._Value}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors.IRSensor[0]._Value}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors.IRSensor[0]._Value}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors.IRSensor[0]._Value}}</td>
-											</tr>
-											<tr>
-												<td>IRSensor {{robot[0].Measures.Sensors.IRSensor[1]._Id}}</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors.IRSensor[1]._Value}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors.IRSensor[1]._Value}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors.IRSensor[1]._Value}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors.IRSensor[1]._Value}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors.IRSensor[1]._Value}}</td>
-											</tr>
-											<tr>
-												<td>IRSensor {{robot[0].Measures.Sensors.IRSensor[2]._Id}}</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors.IRSensor[2]._Value}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors.IRSensor[2]._Value}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors.IRSensor[2]._Value}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors.IRSensor[2]._Value}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors.IRSensor[2]._Value}}</td>
-											</tr>
-											<tr>
-												<td>IRSensor {{robot[0].Measures.Sensors.IRSensor[3]._Id}}</td>
-												<td ng-if="timeline[0].Robot[0].Scores._Score == 0">{{robot[0].Measures.Sensors.IRSensor[3]._Value}}</td>
-												<td ng-if="timeline[0].Robot[1].Scores._Score == 0">{{robot[1].Measures.Sensors.IRSensor[3]._Value}}</td>
-												<td ng-if="timeline[0].Robot[2].Scores._Score == 0">{{robot[2].Measures.Sensors.IRSensor[3]._Value}}</td>
-												<td ng-if="timeline[0].Robot[3].Scores._Score == 0">{{robot[3].Measures.Sensors.IRSensor[3]._Value}}</td>
-												<td ng-if="timeline[0].Robot[4].Scores._Score == 0">{{robot[4].Measures.Sensors.IRSensor[3]._Value}}</td>
-											</tr>
-
-										</tbody>
-									</table>
+                                            <colgroup>
+                                                <col style="width: 15%" />
+                                                <col style="width: 17%" />
+                                                <col style="width: 17%" />
+                                                <col style="width: 17%" />
+                                                <col style="width: 17%" />
+                                                <col style="width: 17%" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0]._Id}} - {{robot[0]._Name}}</th>
+                                                    <th ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1]._Id}} - {{robot[1]._Name}}</th>
+                                                    <th ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2]._Id}} - {{robot[2]._Name}}</th>
+                                                    <th ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3]._Id}} - {{robot[3]._Name}}</th>
+                                                    <th ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4]._Id}} - {{robot[4]._Name}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th>Position(x,y)</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">({{robot[0].Pos._X}}, {{robot[0].Pos._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">({{robot[1].Pos._X}}, {{robot[1].Pos._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">({{robot[2].Pos._X}}, {{robot[2].Pos._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">({{robot[3].Pos._X}}, {{robot[3].Pos._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">({{robot[4].Pos._X}}, {{robot[4].Pos._Y}})</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Direction</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Pos._Dir}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Pos._Dir}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Pos._Dir}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Pos._Dir}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Pos._Dir}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Compass</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Compass}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Compass}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Compass}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Compass}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Compass}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Collision</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Collision}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Collision}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Collision}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Collision}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Collision}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Ground</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Ground}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Ground}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Ground}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Ground}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Ground}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[0]._Id}}</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[1]._Id}}</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[2]._Id}}</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[3]._Id}}</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Beacon Sensor</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.BeaconSensor._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.BeaconSensor._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.BeaconSensor._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.BeaconSensor._Value}}</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.BeaconSensor._Value}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>GPS(x,y)</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">({{robot[0].Measures.Sensors.GPS._X}}, {{robot[0].Measures.Sensors.GPS._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">({{robot[1].Measures.Sensors.GPS._X}}, {{robot[1].Measures.Sensors.GPS._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">({{robot[2].Measures.Sensors.GPS._X}}, {{robot[2].Measures.Sensors.GPS._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">({{robot[3].Measures.Sensors.GPS._X}}, {{robot[3].Measures.Sensors.GPS._Y}})</td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">({{robot[4].Measures.Sensors.GPS._X}}, {{robot[4].Measures.Sensors.GPS._Y}})</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>End Led</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Returning Led</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Visiting Led</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                </tr>
+										    </tbody>
+									    </table>
                                     </div>
                                 </div>
                             </div>
