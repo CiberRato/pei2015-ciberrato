@@ -155,13 +155,13 @@ class AuthenticationTestCase(TestCase):
 
         # upload agent code
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob.py', 'r')
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob_do.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         # delete uploaded file
-        url = "/api/v1/competitions/delete_agent_file/KAMIKAZE/?file_name=myrob.py"
+        url = "/api/v1/competitions/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
@@ -395,7 +395,7 @@ class AuthenticationTestCase(TestCase):
         # get the agent files
         url = "/api/v1/competitions/agent_file/"+identifier+"/KAMIKAZE/"
         response = client.get(url)
-        print response
+        self.assertEqual(response.status_code, 200)
 
         for r in Round.objects.all():
             r.lab_path.delete()
