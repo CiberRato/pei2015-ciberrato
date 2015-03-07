@@ -295,7 +295,6 @@ angular.element(document).ready(function(){
 
                     angular.bootstrap(document, ['myapp']);
 
-                    $("#waitawhile").hide("fast");
                     $("#row1").show("slow");
                     $("#row2").show("slow");
                     $("#row3").show("slow");
