@@ -16,26 +16,32 @@ angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
         $scope.zoom = 30;
 
-        var lab_json_object = labConvertXml2JSon(log);
-        var lab_obj = angular.fromJson(lab_json_object);
+        var lab_json = labConvertXml2JSon(lab);
+        var grid_json = labConvertXml2JSon(grid);
+        var parameters_json = labConvertXml2JSon(parameters);
+        var logInfo_json = labConvertXml2JSon(logInfo);
+        var lab_obj = angular.fromJson(lab_json);
+        var grid_obj = angular.fromJson(grid_json);
+        var parameters_obj = angular.fromJson(parameters_json);
+        var logInfo_obj = angular.fromJson(logInfo_json);
         var b = 0;
         var play = 0;
 
-        for(i=0; i<lab_obj.Log.Lab.Wall.length; i++){
-            lab_obj.Log.Lab.Wall[i].str = convertToStringPoints(lab_obj.Log.Lab.Wall[i], $scope.zoom);
+        for(i=0; i<lab_obj.Lab.Wall.length; i++){
+            lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
 
-        $scope.param=lab_obj.Log.Parameters;
+        $scope.param=parameters_obj.Parameters;
 
         if($scope.param._NBeacons == 1)
-            $scope.beacon_height = lab_obj.Log.Lab.Beacon._Height;
+            $scope.beacon_height = lab_obj.Lab.Beacon._Height;
         else
-            $scope.beacon_height = lab_obj.Log.Lab.Beacon[0]._Height;
+            $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
 
-        $scope.beacon = lab_obj.Log.Lab.Beacon;
-        $scope.map = lab_obj.Log.Lab;
-        $scope.grid = lab_obj.Log.Grid;
-        $scope.timeline = lab_obj.Log.LogInfo;
+        $scope.beacon = lab_obj.Lab.Beacon;
+        $scope.map = lab_obj.Lab;
+        $scope.grid = grid_obj.Grid;
+        $scope.timeline = logInfo_obj.Log.LogInfo;
         try{
             $scope.dir1= parseInt($scope.timeline[0].Robot[0].Pos._Dir) + 90;
             $scope.dir2= parseInt($scope.timeline[0].Robot[1].Pos._Dir) + 90;
@@ -269,35 +275,50 @@ angular.module('myapp', [])
         };
     });
 
-var log;
+
+var parameters;
+var logInfo;
+var grid;
+var lab;
 
 angular.element(document).ready(function(){
-    $.get( "log1.txt", function( data ) {
-        log = data;
-        angular.bootstrap(document, ['myapp']);
+    $.get( "logs/lab.txt", function( data ) {
+        lab = data;
+        $.get( "logs/parameters.txt", function( data ) {
+            parameters = data;
+            $.get( "logs/grid.txt", function( data ) {
+                grid = data;
+                $.get( "logs/logInfo.txt", function( data ) {
+                    logInfo = data;
 
-        $("#waitawhile").hide("fast");
-        $("#row1").show("slow");
-        $("#row2").show("slow");
-        $("#row3").show("slow");
-        $("#row4").show("slow");
-        $("#row5").show("slow");
+                    angular.bootstrap(document, ['myapp']);
 
-        $('.nstSlider').nstSlider({
-            "left_grip_selector": ".leftGrip",
-            "value_changed_callback": function(cause, leftValue, rightValue) {
-                try{
-                    var scope = angular.element('[ng-controller=ctrl]').scope();
-                    scope.idx = leftValue;
+                    $("#waitawhile").hide("fast");
+                    $("#row1").show("slow");
+                    $("#row2").show("slow");
+                    $("#row3").show("slow");
+                    $("#row4").show("slow");
+                    $("#row5").show("slow");
 
-                }catch(TypeError){}
-            }
+                    $('.nstSlider').nstSlider({
+                        "left_grip_selector": ".leftGrip",
+                        "value_changed_callback": function(cause, leftValue, rightValue) {
+                            try{
+                                var scope = angular.element('[ng-controller=ctrl]').scope();
+                                scope.idx = leftValue;
+
+                            }catch(TypeError){}
+                        }
+                    });
+
+                    // Call methods and such...
+                    var highlightMin = Math.random() * 20,
+                        highlightMax = highlightMin + Math.random() * 80;
+                    $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+                });
+            });
         });
 
-        // Call methods and such...
-        var highlightMin = Math.random() * 20,
-            highlightMax = highlightMin + Math.random() * 80;
-        $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
     });
     /*
     $.get( "http://localhost:63342/pei2015-ciberonline/template/log.txt", function( data ) {
