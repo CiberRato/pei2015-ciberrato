@@ -1,3 +1,7 @@
+import json
+import tempfile
+import tarfile
+
 import os
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, \
@@ -9,25 +13,17 @@ from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
 from authentication.serializers import AccountSerializer
-
 from groups.serializers import GroupSerializer
-
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
-
 from competition.renderers import PlainTextRenderer
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
 from competition.permissions import IsAdmin
 from groups.permissions import IsAdminOfGroup
-
 from django.conf import settings
-import json
-import tempfile
-import tarfile
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
 
@@ -897,9 +893,41 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
+class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, pk, **kwargs):
+        """
+        B{Get} the simulation competition agents
+        B{URL:} ../api/v1/competitions/simulation_agents/<identifier>/
+
+        @type  identifier: str
+        @param identifier: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+
+        simulations = []
+        lgas = LogSimulationAgent.objects.filter(simulation=simulation)
+
+        for lga in lgas:
+            simulations += [SimulationAgentSimplex(lga)]
+
+        # Competition Agents name
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = LogSimulationAgent.objects.all()
     serializer_class = SimulationAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -947,24 +975,15 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                                          'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
-            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation, pos=serializer.validated_data['pos'])
+            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
+                                                    pos=serializer.validated_data['pos'])
             serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': 'The simulation agent could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
-
-
-class SimulationGet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        pass
 
 
 class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -1115,7 +1134,7 @@ class GetRoundFile(views.APIView):
         # see if round exists
         r = get_object_or_404(Round.objects.all(), name=round_name)
         try:
-            data = default_storage.open(getattr(r, param+'_path', None)).read()
+            data = default_storage.open(getattr(r, param + '_path', None)).read()
         except Exception:
             return Response({'status': 'Bad request',
                              'message': 'The file doesn\'t exists'},
@@ -1125,7 +1144,6 @@ class GetRoundFile(views.APIView):
 
 
 class GetAgentFiles(views.APIView):
-
     def get(self, request, simulation_id, agent_name):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
@@ -1152,7 +1170,7 @@ class GetAgentFiles(views.APIView):
 
         wrapper = FileWrapper(temp)
         response = HttpResponse(wrapper, content_type="application/x-compressed")
-        response['Content-Disposition'] = 'attachment; filename='+simulation_id+agent_name+'.tar.gz'
+        response['Content-Disposition'] = 'attachment; filename=' + simulation_id + agent_name + '.tar.gz'
         response['Content-Length'] = os.path.getsize(temp.name)
         temp.seek(0)
         return response

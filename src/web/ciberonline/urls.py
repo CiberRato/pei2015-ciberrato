@@ -13,7 +13,8 @@ from competition.views import UploadParamListView, UploadGridView, UploadLabView
     CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet, AgentViewSets, UploadAgent, \
     DeleteUploadedFileAgent, AssociateAgent, AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetRoundFile, GetAgentFiles
+    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetRoundFile, GetAgentFiles, \
+    GetSimulationAgents
 
 from rest_framework import routers
 
@@ -54,6 +55,7 @@ router_competitions.register(r'associate_agent_to_simulation', AssociateAgentToS
 router_competitions.register(r'simulations_by_agent', SimulationByAgent)
 router_competitions.register(r'simulations_by_round', SimulationByRound)
 router_competitions.register(r'simulations_by_competition', SimulationByCompetition)
+router_competitions.register(r'simulation_agents', GetSimulationAgents)
 router_competitions.register(r'get_simulations', GetSimulations)
 
 # COMPETITIONS URLs#

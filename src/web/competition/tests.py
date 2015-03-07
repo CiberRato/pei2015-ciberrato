@@ -345,6 +345,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1'})
         self.assertEqual(response.status_code, 200)
 
+        # get the simulation groups
+        url = "/api/v1/competitions/simulation_agents/"+identifier+"/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('simulation_identifier', u''+identifier), ('agent_name', u'KAMIKAZE'), ('round_name', u'R1'), ('pos', 1)])])
+
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Param.xml', 'r')
         response = client.post(url, {'file': f})
