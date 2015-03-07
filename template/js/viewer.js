@@ -12,15 +12,6 @@ function convertToStringPoints(cornerList, zoom){
     return out;
 }
 
-/*function turn90(PosList){
-    for(i=0; i<PosList.length; i++) {
-        for (j = 0; j < PosList[i].Robot.length; j++) {
-            PosList[i].Robot[j].Pos._Dir = parseInt(PosList[i].Robot[j].Pos._Dir) + 90;
-        }
-    }
-    return PosList;
-}
-*/
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
         $scope.zoom = 30;
@@ -29,27 +20,41 @@ angular.module('myapp', [])
         var lab_obj = angular.fromJson(lab_json_object);
         var b = 0;
         var play = 0;
-        //console.log(lab_obj);
 
         for(i=0; i<lab_obj.Log.Lab.Wall.length; i++){
             lab_obj.Log.Lab.Wall[i].str = convertToStringPoints(lab_obj.Log.Lab.Wall[i], $scope.zoom);
         }
+
         $scope.param=lab_obj.Log.Parameters;
-        $scope.beacon_height = lab_obj.Log.Lab.Beacon._Height;
+
+        if($scope.param._NBeacons == 1)
+            $scope.beacon_height = lab_obj.Log.Lab.Beacon._Height;
+        else
+            $scope.beacon_height = lab_obj.Log.Lab.Beacon[0]._Height;
+
+        $scope.beacon = lab_obj.Log.Lab.Beacon;
         $scope.map = lab_obj.Log.Lab;
         $scope.grid = lab_obj.Log.Grid;
-        //$scope.timeline = turn90(lab_obj.Log.LogInfo);
         $scope.timeline = lab_obj.Log.LogInfo;
-        $scope.dir1= parseInt($scope.timeline[0].Robot[0].Pos._Dir) + 90;
-        $scope.dir2= parseInt($scope.timeline[0].Robot[1].Pos._Dir) + 90;
-        $scope.dir3= parseInt($scope.timeline[0].Robot[2].Pos._Dir) + 90;
-        $scope.dir4= parseInt($scope.timeline[0].Robot[3].Pos._Dir) + 90;
-        $scope.dir5= parseInt($scope.timeline[0].Robot[4].Pos._Dir) + 90;
+        try{
+            $scope.dir1= parseInt($scope.timeline[0].Robot[0].Pos._Dir) + 90;
+            $scope.dir2= parseInt($scope.timeline[0].Robot[1].Pos._Dir) + 90;
+            $scope.dir3= parseInt($scope.timeline[0].Robot[2].Pos._Dir) + 90;
+            $scope.dir4= parseInt($scope.timeline[0].Robot[3].Pos._Dir) + 90;
+            $scope.dir5= parseInt($scope.timeline[0].Robot[4].Pos._Dir) + 90;
+        }catch(TypeError){
+
+        }
+
         $scope.robot = $scope.timeline[0].Robot;
         $scope.stats = $scope.timeline[0];
         $scope.idx = 1;
         $scope.refresh_rate = 50;
-        $scope.pline = "";
+        $scope.pline1 = "";
+        $scope.pline2 = "";
+        $scope.pline3 = "";
+        $scope.pline4 = "";
+        $scope.pline5 = "";
         $scope.last_idx = 0;
         $scope.robotColor1 = 'img/svg/mickey_red_smile.svg';
         $scope.robotColor2 = 'img/svg/mickey_green_smile.svg';
@@ -84,22 +89,45 @@ angular.module('myapp', [])
         $scope.updateValues = function(){
             $scope.robot = $scope.timeline[$scope.idx].Robot;
             $scope.stats = $scope.timeline[$scope.idx];
-            $scope.dir1= parseInt($scope.timeline[$scope.idx].Robot[0].Pos._Dir) + 90;
-            $scope.dir2= parseInt($scope.timeline[$scope.idx].Robot[1].Pos._Dir) + 90;
-            $scope.dir3= parseInt($scope.timeline[$scope.idx].Robot[2].Pos._Dir) + 90;
-            $scope.dir4= parseInt($scope.timeline[$scope.idx].Robot[3].Pos._Dir) + 90;
-            $scope.dir5= parseInt($scope.timeline[$scope.idx].Robot[4].Pos._Dir) + 90;
+            try{
+                $scope.dir1= parseInt($scope.timeline[$scope.idx].Robot[0].Pos._Dir) + 90;
+                $scope.dir2= parseInt($scope.timeline[$scope.idx].Robot[1].Pos._Dir) + 90;
+                $scope.dir3= parseInt($scope.timeline[$scope.idx].Robot[2].Pos._Dir) + 90;
+                $scope.dir4= parseInt($scope.timeline[$scope.idx].Robot[3].Pos._Dir) + 90;
+                $scope.dir5= parseInt($scope.timeline[$scope.idx].Robot[4].Pos._Dir) + 90;
+            }catch(TypeError){
 
-            /*if(($scope.last_idx+1)!=$scope.idx){
-
-                $scope.pline ="";
-                for(b=0;b<$scope.idx;b++){
-                    $scope.pline += $scope.timeline[b].Robot.Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot.Pos._Y*$scope.zoom + " ";
-                }
-            }else{
-                $scope.pline += $scope.timeline[$scope.idx].Robot.Pos._X*$scope.zoom + "," + $scope.timeline[$scope.idx].Robot.Pos._Y*$scope.zoom + " ";
             }
-            $scope.last_idx = $scope.idx;*/
+            if(($scope.last_idx+1)!=$scope.idx){
+
+                $scope.pline1 = "";
+                $scope.pline2 = "";
+                $scope.pline3 = "";
+                $scope.pline4 = "";
+                $scope.pline5 = "";
+                for(b=0;b<$scope.idx;b++){
+                    try{
+                        $scope.pline1 += $scope.timeline[b].Robot[0].Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot[0].Pos._Y*$scope.zoom + " ";
+                        $scope.pline2 += $scope.timeline[b].Robot[1].Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot[1].Pos._Y*$scope.zoom + " ";
+                        $scope.pline3 += $scope.timeline[b].Robot[2].Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot[2].Pos._Y*$scope.zoom + " ";
+                        $scope.pline4 += $scope.timeline[b].Robot[3].Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot[3].Pos._Y*$scope.zoom + " ";
+                        $scope.pline5 += $scope.timeline[b].Robot[4].Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot[4].Pos._Y*$scope.zoom + " ";
+                    }catch(TypeError){
+
+                    }
+                }
+            }else {
+                try {
+                    $scope.pline1 += $scope.timeline[$scope.idx].Robot[0].Pos._X * $scope.zoom + "," + $scope.timeline[$scope.idx].Robot[0].Pos._Y * $scope.zoom + " ";
+                    $scope.pline2 += $scope.timeline[$scope.idx].Robot[1].Pos._X * $scope.zoom + "," + $scope.timeline[$scope.idx].Robot[1].Pos._Y * $scope.zoom + " ";
+                    $scope.pline3 += $scope.timeline[$scope.idx].Robot[2].Pos._X * $scope.zoom + "," + $scope.timeline[$scope.idx].Robot[2].Pos._Y * $scope.zoom + " ";
+                    $scope.pline4 += $scope.timeline[$scope.idx].Robot[3].Pos._X * $scope.zoom + "," + $scope.timeline[$scope.idx].Robot[3].Pos._Y * $scope.zoom + " ";
+                    $scope.pline5 += $scope.timeline[$scope.idx].Robot[4].Pos._X * $scope.zoom + "," + $scope.timeline[$scope.idx].Robot[4].Pos._Y * $scope.zoom + " ";
+                }catch(TypeError){
+
+                }
+            }
+            $scope.last_idx = $scope.idx;
         }
 
         $scope.refreshSVG = function(){
@@ -107,7 +135,7 @@ angular.module('myapp', [])
             $timeout($scope.refreshSVG, 1000);
 
         }
-        $scope.setRobotColor = function(id){
+        /*$scope.setRobotColor = function(id){
 
             if(id == 1){
                 $scope.robotColor = 'img/svg/mickey_red_smile.svg';
@@ -118,7 +146,7 @@ angular.module('myapp', [])
             if(id == 3){
                 $scope.robotColor = 'img/svg/mickey_green_smile.svg';
             }
-        };
+        };*/
 
         $scope.setMazeColor = function(id){
 
