@@ -955,7 +955,7 @@ void cbSimulator::UpdateViews()
 			view->send(xmlCharA, xmlString.length()+1);
 	    }
 	}
-	
+
 	char xml[1024];
 	for (unsigned int i=0; i<robots.size(); i++)
 	{
@@ -967,7 +967,7 @@ void cbSimulator::UpdateViews()
 			for (unsigned int j=0; j<views.size(); j++) {
 				cbView *view = views[j];
 				view->send(xml, n+1);
-        	}
+			}
 		}
 
         if (showPositions)
