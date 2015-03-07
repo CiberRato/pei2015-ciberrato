@@ -180,10 +180,6 @@
                                             <g transform="scale(1,-1)">
                                                 <g><rect width="{{map._Width*zoom}}" height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
                                                     <g ng-repeat="(key, value) in map">
-                                                        <g ng-if="key == 'Beacon'">
-                                                            <circle ng-cx="{{value._X*zoom}}" ng-cy="{{value._Y*zoom}}" ng-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
-                                                            <image ng-x="{{value._X*zoom-30}}" ng-y="{{value._Y*zoom-30}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
-                                                        </g>
 
                                                         <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
                                                             <!-- Parede grande - original verde-->
@@ -193,13 +189,35 @@
                                                         </g>
                                                     </g>
 
+                                                    <g ng-if="param._NBeacons != 1" ng-repeat="(i,o) in beacon track by $index">
+                                                        <circle ng-cx="{{o._X*zoom}}" ng-cy="{{o._Y*zoom}}" ng-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                        <image ng-x="{{o._X*zoom-30}}" ng-y="{{o._Y*zoom-30}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
+                                                    </g>
+                                                    <g ng-if="param._NBeacons == 1">
+                                                        <circle ng-cx="{{beacon._X*zoom}}" ng-cy="{{beacon._Y*zoom}}" ng-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                        <image ng-x="{{beacon._X*zoom-30}}" ng-y="{{beacon._Y*zoom-30}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
+                                                    </g>
+
+
                                                     <g ng-repeat="(key, value) in grid">
                                                         <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
                                                             <circle ng-cx="{{v._X*zoom}}" ng-cy="{{v._Y*zoom}}" ng-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
                                                         </g>
                                                     </g>
-                                                    <g id="line" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                    <g id="line1" style="visibility: hidden; display: none">
+                                                        <polyline points="{{pline1}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                    </g>
+                                                    <g id="line2" style="visibility: hidden; display: none">
+                                                        <polyline points="{{pline2}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                    </g>
+                                                    <g id="line3" style="visibility: hidden; display: none">
+                                                        <polyline points="{{pline3}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                    </g>
+                                                    <g id="line4" style="visibility: hidden; display: none">
+                                                        <polyline points="{{pline4}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                    </g>
+                                                    <g id="line5" style="visibility: hidden; display: none">
+                                                        <polyline points="{{pline5}}" style="fill:none;stroke:yellow;stroke-width:3" />
                                                     </g>
                                                     <g>
 
@@ -246,7 +264,12 @@
 
                                         </div>
 
-                                        <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px"></div>
+                                        <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px">
+                                            <select id="mazeColor" class="span2">
+                                                <option value="1">Standard</option>
+                                                <option value="2">Black&White</option>
+                                            </select>
+                                        </div>
                                         <div class="span3" style="text-align: right; margin-top: 5px">
                                             <div class="btn-group" data-toggle="buttons-checkbox">
                                                 <button class="btn" id="14x">1/4x</button>
@@ -392,7 +415,7 @@
                                 </div>
                                 <div id="sotable" class="accordion-body collapse">
                                     <div class="row" >
-                                        <table class="table table-striped table-bordered table-condensed table-hover">
+                                        <table id="scoretable" class="table table-striped table-bordered table-condensed table-hover">
                                             <colgroup>
                                                 <col style="width: 15%" />
                                                 <col style="width: 17%" />
@@ -539,63 +562,43 @@
                                                     <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
                                                     <td ng-if="timeline[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
                                                 </tr>
+
+                                                <tr>
+                                                    <th>Line</th>
+                                                    <td ng-if="timeline[0].Robot[0].Scores._Score == 0" style="text-align: center">
+                                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                                            <button class="btn btn-success" id="show1">Show</button>
+                                                            <button class="btn btn-danger" id="hide1" disabled="true">Hide</button>
+                                                        </div>
+                                                    </td>
+                                                    <td ng-if="timeline[0].Robot[1].Scores._Score == 0" style="text-align: center">
+                                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                                            <button class="btn btn-success" id="show2">Show</button>
+                                                            <button class="btn btn-danger" id="hide2" disabled="true">Hide</button>
+                                                        </div>
+                                                    </td>
+                                                    <td ng-if="timeline[0].Robot[2].Scores._Score == 0" style="text-align: center">
+                                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                                            <button class="btn btn-success" id="show3">Show</button>
+                                                            <button class="btn btn-danger" id="hide3" disabled="true">Hide</button>
+                                                        </div>
+                                                    </td>
+                                                    <td ng-if="timeline[0].Robot[3].Scores._Score == 0" style="text-align: center">
+                                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                                            <button class="btn btn-success" id="show4">Show</button>
+                                                            <button class="btn btn-danger" id="hide4" disabled="true">Hide</button>
+                                                        </div>
+                                                    </td>
+                                                    <td ng-if="timeline[0].Robot[4].Scores._Score == 0" style="text-align: center">
+                                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                                            <button class="btn btn-success" id="show5">Show</button>
+                                                            <button class="btn btn-danger" id="hide5" disabled="true">Hide</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
 										    </tbody>
 									    </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-
-            <div class="row"  id="row4" style="display: none">
-                <article class="span12 data-block accordion-block decent">
-                    <div class="data-container">
-                        <div class="accordion">
-                            <div class="accordion-group">
-                                <div class="accordion-heading">
-                                    <a class="accordion-toggle" href="#stats" data-parent="#icons" data-toggle="collapse"><h2>Debug Tools</h2></a>
-                                </div>
-                                <div id="stats" class="accordion-body collapse">
-                                    <div class="row" >
-                                        <div class="span2" style="margin-left: 20px; text-align: center">
-                                            <h2>Line</h2>
-                                            <p class="btn-group" data-toggle="buttons-checkbox">
-                                                <button class="btn btn-success" id="show">Show</button>
-                                                <button class="btn btn-danger" id="hide" disabled="true">Hide</button>
-                                            </p>
-                                        </div>
-
-                                        <div class="span1" style="text-align: center">
-                                            <h2>X</h2>
-                                            <p>{{robot._X}}</p>
-                                        </div>
-                                        <div class="span1" style="text-align: center">
-                                            <h2>Y</h2>
-                                            <p>{{robot._Y}}</p>
-
-                                        </div>
-                                        <div class="span1" style="text-align: center">
-                                            <h2>Dir</h2>
-                                            <p>{{robot._Dir}}</p>
-
-                                        </div>
-                                        <div class="span2" style="text-align: center">
-                                            <h2>Robot Color</h2>
-                                            <p><select id="robotColor" class="span1">
-                                                <option value="1">Red</option>
-                                                <option value="2">Blue</option>
-                                                <option value="3">Green</option>
-                                            </select></p>
-                                        </div>
-                                        <div class="span2" style="text-align: center">
-                                            <h2>Maze Color</h2>
-                                            <p><select id="mazeColor" class="span2">
-                                                <option value="1">Standard</option>
-                                                <option value="2">Black&White</option>
-                                            </select></p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -669,16 +672,68 @@
     </script>
 
     <script>
-        $("#show").click(function() {
-            $("#line").css({"visibility":"visible", "display": "initial"});
+        $('#scoretable').on('click', '#show1' , function () {
+            $("#line1").css({"visibility":"visible", "display": "initial"});
             $(this).attr("disabled", true);
-            $("#hide").removeAttr("disabled");
+            $("#hide1").removeAttr("disabled");
             return false;
         });
-        $("#hide").click(function() {
-            $("#line").css({"visibility":"hidden", "display": "none"});
+        $('#scoretable').on('click', '#hide1' , function () {
+            $("#line1").css({"visibility":"hidden", "display": "none"});
             $(this).attr("disabled", true);
-            $("#show").removeAttr("disabled");
+            $("#show1").removeAttr("disabled");
+            return false;
+        });
+
+        $('#scoretable').on('click', '#show2' , function () {
+            $("#line2").css({"visibility":"visible", "display": "initial"});
+            $(this).attr("disabled", true);
+            $("#hide2").removeAttr("disabled");
+            return false;
+        });
+        $('#scoretable').on('click', '#hide2' , function () {
+            $("#line2").css({"visibility":"hidden", "display": "none"});
+            $(this).attr("disabled", true);
+            $("#show2").removeAttr("disabled");
+            return false;
+        });
+
+        $('#scoretable').on('click', '#show3' , function () {
+            $("#line3").css({"visibility":"visible", "display": "initial"});
+            $(this).attr("disabled", true);
+            $("#hide3").removeAttr("disabled");
+            return false;
+        });
+        $('#scoretable').on('click', '#hide3' , function () {
+            $("#line3").css({"visibility":"hidden", "display": "none"});
+            $(this).attr("disabled", true);
+            $("#show3").removeAttr("disabled");
+            return false;
+        });
+
+        $('#scoretable').on('click', '#show4' , function () {
+            $("#line4").css({"visibility":"visible", "display": "initial"});
+            $(this).attr("disabled", true);
+            $("#hide4").removeAttr("disabled");
+            return false;
+        });
+        $('#scoretable').on('click', '#hide4' , function () {
+            $("#line4").css({"visibility":"hidden", "display": "none"});
+            $(this).attr("disabled", true);
+            $("#show4").removeAttr("disabled");
+            return false;
+        });
+
+        $('#scoretable').on('click', '#show5' , function () {
+            $("#line5").css({"visibility":"visible", "display": "initial"});
+            $(this).attr("disabled", true);
+            $("#hide5").removeAttr("disabled");
+            return false;
+        });
+        $('#scoretable').on('click', '#hide5' , function () {
+            $("#line5").css({"visibility":"hidden", "display": "none"});
+            $(this).attr("disabled", true);
+            $("#show5").removeAttr("disabled");
             return false;
         });
 
