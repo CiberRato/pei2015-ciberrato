@@ -588,7 +588,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(Simulation.objects.all()), simulation_len - 1)
         self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len - 1)
 
-
     def test_uploadFile(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
