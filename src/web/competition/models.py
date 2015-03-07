@@ -12,9 +12,9 @@ class Competition(models.Model):
         (settings.COMPETITIVA, 'Competitiva'),
     )
 
-    REGISTER = 'RG'
-    COMPETITION = 'CP'
-    PAST = 'PST'
+    REGISTER = 'Register'
+    COMPETITION = 'Competition'
+    PAST = 'Past'
 
     STATE = (
         (REGISTER, 'Register'),

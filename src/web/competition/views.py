@@ -95,6 +95,15 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, **kwargs):
+        """
+        B{Create} a competition
+        B{URL:} ../api/v1/competitions/crud/
+
+        @type  name: str
+        @param name: The competition name
+        @type  type_of_competition: Colaborativa | Competitiva
+        @param type_of_competition: The competition type
+        """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -107,6 +116,13 @@ class CompetitionViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk, **kwargs):
+        """
+        B{Retrieve} the competition information
+        B{URL:} ../api/v1/competitions/crud/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=pk)
         serializer = self.serializer_class(competition)
@@ -114,6 +130,13 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, pk, **kwargs):
+        """
+        B{Destroy} the competition
+        B{URL:} ../api/v1/competitions/crud/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=pk)
 

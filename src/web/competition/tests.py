@@ -35,6 +35,13 @@ class AuthenticationTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=user)
 
+        # create competition
+        url = "/api/v1/competitions/crud/"
+        data = {'name': 'C2', 'type_of_competition': 'Competitiva'}
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', 'Competitiva')]))
+
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
         response = client.post(path=url, data=data)
@@ -218,7 +225,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [OrderedDict(
             [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
              ('lab_path', None), ('agents_list', [1])])], 'competitions': [
-            OrderedDict([('name', u'C1'), ('type_of_competition', 'CB'), ('enrolled_groups', [1, 2, 3])])],
+            OrderedDict([('name', u'C1'), ('type_of_competition', 'Colaborativa'), ('enrolled_groups', [1, 2, 3])])],
                                'user': OrderedDict(
                                    [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                     ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -488,7 +495,73 @@ class AuthenticationTestCase(TestCase):
 
         client.force_authenticate(user=None)
 
-    # def test_remove_competiton recursive removeall
+    def cascade_setup(self):
+        references = []
+        # create competition
+        c3 = Competition.objects.create(name="C3")
+        references += [c3]
+
+        # create round
+        r7 = Round.objects.create(name="R7", parent_competition=c3)
+        references += [r7]
+
+        # create another round
+        r8 = Round.objects.create(name="R8", parent_competition=c3)
+        references += [r8]
+
+        # create another round more
+        r9 = Round.objects.create(name="R9", parent_competition=c3)
+        references += [r9]
+
+        # create an agent
+        user = Account.objects.get(username="gipmon")
+        group = Group.objects.get(name="XPTO1")
+        a = Agent.objects.create(agent_name="RQ7", user=user, group=group)
+        references += [a]
+
+        # create a competition agent
+        competition_agent = CompetitionAgent.objects.create(competition=c3, round=r7, agent=a)
+        references += [competition_agent]
+
+        # enroll in competition
+        group_enrolled = GroupEnrolled.objects.create(competition=c3, group=group)
+        references += [group_enrolled]
+
+        # create simulation
+        simulation = Simulation.objects.create(round=r7)
+        references += [simulation]
+
+        # create simulation agent
+        lga = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation, pos=1)
+        references += [lga]
+
+        # c3|r7|r8|r9|a|competition_agent|group_enroll|simulation|lga
+        return references
+
+    def test_cascade_delete_competition(self):
+        references = self.cascade_setup()
+
+        competition_len = len(Competition.objects.all())  # 2 => C1 and C2
+        round_len = len(Round.objects.all())  # 4 => R1, R7, R8 e R9
+        agent_len = len(Agent.objects.all())  # 1 => RQ7
+        competition_agent_len = len(CompetitionAgent.objects.all())  # 1
+        group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
+        simulation_len = len(Simulation.objects.all())  # 1
+        log_simulation_agent_len = len(LogSimulationAgent.objects.all())  # 1
+
+        references[0].delete()
+
+        """
+        Is suppose when it's deleted a Competition to delete all the Rounds, GroupEnrolled,
+        Simulations and SimulationsLogs. The agent is suppose to not be deleted.
+        """
+        self.assertEqual(len(Competition.objects.all()), competition_len-1)
+        self.assertEqual(len(Round.objects.all()), round_len-3)
+        self.assertEqual(len(Agent.objects.all()), agent_len)
+        self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len-1)
+        self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len-1)
+        self.assertEqual(len(Simulation.objects.all()), simulation_len-1)
+        self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len-1)
 
     def test_uploadFile(self):
         user = Account.objects.get(username="gipmon")

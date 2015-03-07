@@ -73,11 +73,6 @@ class GroupViewSet(viewsets.ModelViewSet):
         """
         queryset = Group.objects.all()
         group = get_object_or_404(queryset, name=pk)
-
-        group_members = GroupMember.objects.filter(group=group)
-        for member in group_members:
-            member.delete()
-
         group.delete()
         return Response({'status': 'Deleted',
                          'message': 'The group has been deleted and the group members too.'},
