@@ -563,6 +563,32 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(Simulation.objects.all()), simulation_len-1)
         self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len-1)
 
+    def test_cascade_delete_round(self):
+        references = self.cascade_setup()
+
+        competition_len = len(Competition.objects.all())  # 2 => C1 and C2
+        round_len = len(Round.objects.all())  # 4 => R1, R7, R8 e R9
+        agent_len = len(Agent.objects.all())  # 1 => RQ7
+        competition_agent_len = len(CompetitionAgent.objects.all())  # 1
+        group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
+        simulation_len = len(Simulation.objects.all())  # 1
+        log_simulation_agent_len = len(LogSimulationAgent.objects.all())  # 1
+
+        references[1].delete()
+
+        """
+        Is suppose when it's deleted a Round,
+        Simulations and SimulationsLogs. The agent is suppose to not be deleted.
+        """
+        self.assertEqual(len(Competition.objects.all()), competition_len)
+        self.assertEqual(len(Round.objects.all()), round_len - 1)
+        self.assertEqual(len(Agent.objects.all()), agent_len)
+        self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
+        self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len)
+        self.assertEqual(len(Simulation.objects.all()), simulation_len - 1)
+        self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len - 1)
+
+
     def test_uploadFile(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
