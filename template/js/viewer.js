@@ -1,7 +1,7 @@
-var x2js = new X2JS();
+/*var x2js = new X2JS();
 function labConvertXml2JSon(log) {
     return JSON.stringify(x2js.xml_str2json(log));
-}
+}*/
 
 function convertToStringPoints(cornerList, zoom){
     var out = "";
@@ -16,14 +16,16 @@ angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
         $scope.zoom = 30;
 
-        var lab_json = labConvertXml2JSon(lab);
-        var grid_json = labConvertXml2JSon(grid);
-        var parameters_json = labConvertXml2JSon(parameters);
-        var logInfo_json = labConvertXml2JSon(logInfo);
-        var lab_obj = angular.fromJson(lab_json);
-        var grid_obj = angular.fromJson(grid_json);
-        var parameters_obj = angular.fromJson(parameters_json);
-        var logInfo_obj = angular.fromJson(logInfo_json);
+        //var lab_json = labConvertXml2JSon(lab);
+        //var grid_json = labConvertXml2JSon(grid);
+        //var parameters_json = labConvertXml2JSon(parameters);
+        //var logInfo_json = labConvertXml2JSon(logInfo);
+
+
+        var lab_obj = angular.fromJson(lab);
+        var grid_obj = angular.fromJson(grid);
+        var parameters_obj = angular.fromJson(parameters);
+        var logInfo_obj = angular.fromJson(logInfo);
         var b = 0;
         var play = 0;
 
@@ -282,13 +284,13 @@ var grid;
 var lab;
 
 angular.element(document).ready(function(){
-    $.get( "logs/lab.txt", function( data ) {
+    $.get( "logs/lab_json.txt", function( data ) {
         lab = data;
-        $.get( "logs/parameters.txt", function( data ) {
+        $.get( "logs/parameters_json.txt", function( data ) {
             parameters = data;
-            $.get( "logs/grid.txt", function( data ) {
+            $.get( "logs/grid_json.txt", function( data ) {
                 grid = data;
-                $.get( "logs/logInfo.txt", function( data ) {
+                $.get( "logs/log_json.txt", function( data ) {
                     logInfo = data;
 
                     angular.bootstrap(document, ['myapp']);
