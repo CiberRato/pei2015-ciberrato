@@ -71,6 +71,7 @@ public:
 	void setReceptionist(cbReceptionist *);
     void setGUI(cbSimulatorGUI *g) { gui=g;}
     void setLogFilename(QString lfn) { logFilename=lfn; logging=true; }
+    void setViewerAsLog(bool v) { viewerAsLog = v; }
 
 	void setReceptionistAt(int port);
 
@@ -202,7 +203,7 @@ protected: // data members
 
 	State curState, nextState;	// current and next states
 
-    bool logging;
+    bool logging, viewerAsLog;
     ostream *logStream;
 	QString logFilename;
 	
