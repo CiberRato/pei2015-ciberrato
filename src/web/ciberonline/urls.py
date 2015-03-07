@@ -8,12 +8,12 @@ from authentication.views import AccountViewSet, LoginView, LogoutView
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet
 from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
-from competition.views import GetSimulation, UploadParamListView, UploadGridView, UploadLabView, \
+from competition.views import UploadParamListView, UploadGridView, UploadLabView, \
     CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet, \
     CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet, AgentViewSets, UploadAgent, \
     DeleteUploadedFileAgent, AssociateAgent, AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition
+    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetRoundFile, GetAgentFiles
 
 from rest_framework import routers
 
@@ -54,11 +54,9 @@ router_competitions.register(r'associate_agent_to_simulation', AssociateAgentToS
 router_competitions.register(r'simulations_by_agent', SimulationByAgent)
 router_competitions.register(r'simulations_by_round', SimulationByRound)
 router_competitions.register(r'simulations_by_competition', SimulationByCompetition)
+router_competitions.register(r'get_simulations', GetSimulations)
 
 # COMPETITIONS URLs#
-
-# melhorar isto
-router_accounts.register(r'get_simulation', GetSimulation, 'Get simulation')
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
@@ -75,6 +73,13 @@ urlpatterns = patterns('',
                        # upload agent code
                        url(r'^api/v1/competitions/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
+
+                       # get round file
+                       url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
+                           name="Get round file"),
+                       # get agent files
+                       url(r'^api/v1/competitions/agent_file/(?P<simulation_id>.+)/(?P<agent_name>.+)/$', GetAgentFiles.as_view(),
+                           name="Get agent files"),
 
                        # url(r'^api/v1/', include(router.urls)),
                        url(r"api/v1/auth/login/$", LoginView.as_view(), name="login"),

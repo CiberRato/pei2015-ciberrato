@@ -117,6 +117,8 @@ class LogSimulationAgent(models.Model):
     competition_agent = models.ForeignKey('CompetitionAgent')
     simulation = models.ForeignKey('Simulation')
 
+    pos = models.IntegerField(blank=False)
+
     class Meta:
         unique_together = ('competition_agent', 'simulation',)
 
@@ -132,6 +134,7 @@ class Simulation(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        get_latest_by = "created_at"
 
     def __unicode__(self):
         return self.agent_path

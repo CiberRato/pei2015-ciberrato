@@ -66,25 +66,38 @@ class SimulationAgentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LogSimulationAgent
-        fields = ('simulation_identifier', 'agent_name', 'round_name',)
+        fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos')
         read_only_fields = ()
 
-"""
----------------------------------------------------------------
-APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
----------------------------------------------------------------
-"""
+
+class AgentXSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, instance):
+        if not instance.files:
+            return {
+                'agent_type': instance.agent_type,
+                'agent_name': instance.agent_name,
+                'pos': instance.pos,
+                'language': instance.language
+            }
+        else:
+            return {
+                'agent_type': instance.agent_type,
+                'agent_name': instance.agent_name,
+                'pos': instance.pos,
+                'language': instance.language,
+                'files': instance.files
+            }
 
 
 class SimulationXSerializer(serializers.BaseSerializer):
-    """
-    This serializer is only to retrieve and list methods.
-    """
 
     def to_representation(self, instance):
+        agents = AgentXSerializer(instance.agents, many=True)
         return {
-            'param_list_path': "media/tmp_simulations/Param.xml",
-            'grid_path': "media/tmp_simulations/Ciber2010_Grid.xml",
-            'lab_path': "media/tmp_simulations/Ciber2010_Lab.xml",
-            'agent_path': "media/tmp_simulations/myrob.py"
+            'simulation_id': instance.simulation_id,
+            'grid': instance.grid,
+            'param_list': instance.param_list,
+            'lab': instance.lab,
+            'agents': agents.data
         }

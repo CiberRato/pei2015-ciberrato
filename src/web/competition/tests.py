@@ -307,10 +307,11 @@ class AuthenticationTestCase(TestCase):
 
         # associate an agent to the simulation
         url = "/api/v1/competitions/associate_agent_to_simulation/"
-        data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE'}
+        data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE', 'pos': 1}
         response = client.post(path=url, data=data)
         self.assertEqual(dict(response.data),
-                         {'round_name': u'R1', 'agent_name': u'KAMIKAZE', 'simulation_identifier': identifier})
+                         {'round_name': u'R1', 'agent_name': u'KAMIKAZE', 'pos': 1,
+                          'simulation_identifier': identifier})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(LogSimulationAgent.objects.all()), 1)
 
@@ -343,6 +344,63 @@ class AuthenticationTestCase(TestCase):
         del rsp['identifier']
         self.assertEqual(rsp, {'round_name': u'R1'})
         self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/competitions/round/upload/param_list/?round=R1"
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Param.xml', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        url = "/api/v1/competitions/round/upload/grid/?round=R1"
+        f = open(
+            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml',
+            'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        url = "/api/v1/competitions/round/upload/lab/?round=R1"
+        f = open(
+            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Lab.xml',
+            'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        # get simulation for simulate
+        url = "/api/v1/competitions/get_simulations/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data[0]
+        del rsp['simulation_id']
+        del rsp['agents']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list', 'grid': u'/api/v1/competitions/round_file/R1/?file=grid', 'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+
+        # get round file: param_list
+        url = "/api/v1/competitions/round_file/R1/?file=param_list"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # get round file: grid
+        url = "/api/v1/competitions/round_file/R1/?file=grid"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # get round file: lab
+        url = "/api/v1/competitions/round_file/R1/?file=lab"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # get the agent files
+        url = "/api/v1/competitions/agent_file/"+identifier+"/KAMIKAZE/"
+        response = client.get(url)
+        print response
+
+        for r in Round.objects.all():
+            r.lab_path.delete()
+            r.param_list_path.delete()
+            r.grid_path.delete()
 
         # deassociate the agent to the competition
         url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"

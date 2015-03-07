@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, \
     LogSimulationAgent
@@ -14,7 +15,7 @@ from groups.serializers import GroupSerializer
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
 
-from rest_framework.decorators import api_view
+from competition.renderers import PlainTextRenderer
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
@@ -25,6 +26,10 @@ from groups.permissions import IsAdminOfGroup
 
 from django.conf import settings
 import json
+import tempfile
+import tarfile
+from django.http import HttpResponse
+from django.core.servers.basehttp import FileWrapper
 
 
 class RoundSimplex:
@@ -81,6 +86,7 @@ class SimulationAgentSimplex:
         self.simulation_identifier = sas.simulation.identifier
         self.agent_name = sas.competition_agent.agent.agent_name
         self.round_name = sas.simulation.round.name
+        self.pos = sas.pos
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -941,7 +947,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                                          'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
-            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation)
+            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation, pos=serializer.validated_data['pos'])
             serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -1048,6 +1054,110 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class GetSimulations(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationXSerializer
+
+    def list(self, request, *args, **kwargs):
+        class AgentX():
+            def __init__(self, log_simulation_agent, simulation_id):
+                if log_simulation_agent.competition_agent.agent.is_virtual:
+                    self.agent_type = "virtual"
+                else:
+                    self.agent_type = "local"
+
+                self.agent_name = log_simulation_agent.competition_agent.agent.agent_name
+                self.pos = log_simulation_agent.pos
+                self.language = log_simulation_agent.competition_agent.agent.language
+
+                if not log_simulation_agent.competition_agent.agent.is_virtual:
+                    # o agent tem de estar na simulacao
+                    # autenticacao para receber estes dados
+                    self.files = "/api/v1/competitions/agent_file/" + simulation_id + "/" + log_simulation_agent.competition_agent.agent.agent_name + "/"
+
+        class SimulationX():
+            def __init__(self, simulation):
+                self.simulation_id = simulation.identifier
+                # a competicao nao pode estar em register
+                self.grid = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=grid"
+                self.param_list = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=param_list"
+                self.lab = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=lab"
+
+                # get the agents
+                log_simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+                self.agents = []
+                for log_simulation_agent in log_simulation_agents:
+                    self.agents += [AgentX(log_simulation_agent, self.simulation_id)]
+
+        simulations = [SimulationX(simulation) for simulation in Simulation.objects.all()]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetRoundFile(views.APIView):
+    renderer_classes = (PlainTextRenderer,)
+
+    def get(self, request, round_name):
+        if 'file' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?file=*file*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        param = request.QUERY_PARAMS.get('file')
+
+        if param != 'param_list' and param != 'lab' and param != 'grid':
+            return Response({'status': 'Bad request',
+                             'message': 'A valid *file*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # see if round exists
+        r = get_object_or_404(Round.objects.all(), name=round_name)
+        try:
+            data = default_storage.open(getattr(r, param+'_path', None)).read()
+        except Exception:
+            return Response({'status': 'Bad request',
+                             'message': 'The file doesn\'t exists'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data)
+
+
+class GetAgentFiles(views.APIView):
+
+    def get(self, request, simulation_id, agent_name):
+        # agent_name
+        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+
+        # simulation_id
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
+
+        # see if round is in agent rounds
+        if simulation.round not in agent.rounds.all():
+            return Response({'status': 'Bad request',
+                             'message': 'The agent is not in this round.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not agent.locations or len(json.loads(agent.locations)) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent doesn\'t have files.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        temp = tempfile.NamedTemporaryFile()
+        with tarfile.open(temp.name, "w:gz") as tar:
+            for name in json.loads(agent.locations):
+                tar.addfile(tarfile.TarInfo(default_storage.get_valid_name(name)), fileobj=default_storage.open(name))
+            tar.close()
+
+        wrapper = FileWrapper(temp)
+        response = HttpResponse(wrapper, content_type="application/x-compressed")
+        response['Content-Disposition'] = 'attachment; filename='+simulation_id+agent_name+'.tar.gz'
+        response['Content-Length'] = os.path.getsize(temp.name)
+        temp.seek(0)
+        return response
+
+
 class UploadRoundXMLView(views.APIView):
     parser_classes = (FileUploadParser,)
 
@@ -1107,30 +1217,3 @@ class UploadGridView(UploadRoundXMLView):
 class UploadLabView(UploadRoundXMLView):
     def __init__(self):
         UploadRoundXMLView.__init__(self, "lab_path", "lab")
-
-
-"""
----------------------------------------------------------------
-APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
----------------------------------------------------------------
-"""
-
-
-class GetSimulation(mixins.ListModelMixin,
-                    viewsets.GenericViewSet):
-    serializer_class = SimulationXSerializer
-
-    def get_queryset(self):
-        return [Simulation.objects.first()]
-
-    @api_view(['GET'])
-    def get_simulation(self, request):
-        """
-        B{Retrieve}: the first simulation
-        B{URL:} ../api/v1/get_simulation/
-        """
-
-        serializer = self.serializer_class()
-        return Response(serializer.data)
-
-
