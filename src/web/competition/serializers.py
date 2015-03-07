@@ -66,7 +66,16 @@ class SimulationAgentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LogSimulationAgent
-        fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos')
+        fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos',)
+        read_only_fields = ()
+
+
+class LogSimulation(serializers.ModelSerializer):
+    simulation_identifier = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = Simulation
+        fields = ('simulation_identifier', 'log_json', 'simulation_log_xml',)
         read_only_fields = ()
 
 

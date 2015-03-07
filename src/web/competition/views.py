@@ -8,7 +8,7 @@ from competition.models import Competition, Round, Simulation, GroupEnrolled, Co
     LogSimulationAgent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationXSerializer, \
     GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer, \
-    SimulationAgentSerializer
+    SimulationAgentSerializer, LogSimulation
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
@@ -1042,6 +1042,34 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(simulations, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SaveLogs(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = LogSimulation
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Create} the xml and json log
+        B{URL:} ../api/v1/competitions/simulation_log/
+
+        @type  log_json: str
+        @param log_json: The json log
+        @type  simulation_log_xml: str
+        @param simulation_log_xml: The xml log
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
+            simulation.log_json = serializer.validated_data['log_json']
+            simulation.simulation_log_xml = serializer.validated_data['simulation_log_xml']
+            simulation.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The simulation couldn\'t be updated with that data.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
