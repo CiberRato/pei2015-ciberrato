@@ -661,9 +661,9 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            round = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
-            competition = r.parent_competition
+            competition = round.parent_competition
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',
@@ -995,8 +995,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                 for simulation_agent in simulation_agents:
                     if simulation_agent.competition_agent.agent.group == group:
                         return Response({'status': 'Bad Request',
-                                         'message': 'The competition is in Colaborativa mode, the agents must be\
-                                          from different teams.'},
+                                         'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
@@ -1144,8 +1143,7 @@ class GetSimulations(mixins.ListModelMixin, viewsets.GenericViewSet):
                 if not log_simulation_agent.competition_agent.agent.is_virtual:
                     # o agent tem de estar na simulacao
                     # autenticacao para receber estes dados
-                    self.files = "/api/v1/competitions/agent_file/" + simulation_id + "/" + \
-                                 log_simulation_agent.competition_agent.agent.agent_name + "/"
+                    self.files = "/api/v1/competitions/agent_file/" + simulation_id + "/" + log_simulation_agent.competition_agent.agent.agent_name + "/"
 
         class SimulationX():
             def __init__(self, simulation):
