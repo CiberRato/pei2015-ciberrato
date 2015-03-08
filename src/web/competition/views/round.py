@@ -11,7 +11,7 @@ from competition.permissions import IsAdmin
 from competition.views.simplex import RoundSimplex, CompetitionAgentSimplex
 
 
-class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
                    mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Round.objects.all()
     serializer_class = RoundSerializer

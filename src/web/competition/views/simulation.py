@@ -215,7 +215,7 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SaveLogs(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Simulation.objects.all()
     serializer_class = LogSimulation
 
