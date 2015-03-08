@@ -43,6 +43,7 @@
 #include "cbsimulator.h"
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <stdlib.h>
 #include <assert.h>
@@ -943,17 +944,31 @@ void cbSimulator::SendSensors()
 */
 void cbSimulator::UpdateViews()
 {
+	if (viewerAsLog) {
+		std::ostringstream xmlStream;
+		Log(xmlStream, false);
+
+		std::string xmlString = xmlStream.str();
+		const char* xmlCharA = xmlString.c_str();
+		for (unsigned int j = 0; j < views.size(); j++) {
+			cbView *view = views[j];
+			view->send(xmlCharA, xmlString.length()+1);
+	    }
+	}
+
 	char xml[1024];
 	for (unsigned int i=0; i<robots.size(); i++)
 	{
 		cbRobot *robot = robots[i];
 		if (robot == 0) continue;
 		unsigned int n = robot->toXml(xml, sizeof(xml));
-		for (unsigned int j=0; j<views.size(); j++)
-		{
-			cbView *view = views[j];
-			view->send(xml, n+1);
-        }
+		
+		if (!viewerAsLog) {
+			for (unsigned int j=0; j<views.size(); j++) {
+				cbView *view = views[j];
+				view->send(xml, n+1);
+			}
+		}
 
         if (showPositions)
             gui->writeOnBoard("Position of " + QString(robot->Name()) + " (robot " + QString::number(robot->Id()) + ") sent to Viewer(s):\n" + xml, (int) robot->Id(), 2);

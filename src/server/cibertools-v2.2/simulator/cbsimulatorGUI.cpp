@@ -125,6 +125,9 @@ cbSimulatorGUI::~cbSimulatorGUI()
 
 void cbSimulatorGUI::appendMessage(const QString msg, const bool isErr)
 {
+	if (this == NULL)
+		return;
+	
     if (isErr)
         ui->messages->setTextColor(Qt::red);
     else
@@ -135,6 +138,9 @@ void cbSimulatorGUI::appendMessage(const QString msg, const bool isErr)
 
 void cbSimulatorGUI::writeOnBoard(const QString msg, int id, int type)
 {
+	if (this == NULL) 
+		return;
+
     QColor c;
     if (selectedRobotId == 0 || selectedRobotId == id)
     {
@@ -166,6 +172,7 @@ void cbSimulatorGUI::writeOnBoard(const QString msg, int id, int type)
 
 void cbSimulatorGUI::buildStatusBar()
 {
+
     stateLabel = new QLabel(simulator->curStateAsString());
     stateLabel->setToolTip("Simulation State");
     connect (simulator, SIGNAL(stateChanged(QString)), stateLabel, SLOT (setText(QString)));
@@ -291,7 +298,6 @@ void cbSimulatorGUI::setStartStopButton(bool running)
     }
 
     startNext = !running;
-
 }
 
 void cbSimulatorGUI::on_actionStartStop_triggered()
@@ -402,7 +408,7 @@ void cbSimulatorGUI::removeRobWidget(int id)
 
 void cbSimulatorGUI::refreshRobComboBox()
 {
-    ui->comboBox_Robot->clear();
+  	ui->comboBox_Robot->clear();
     ui->comboBox_Robot->addItem("everyone", QVariant(0));
     for (int i = 0; i < nRobots; i++)
     {
@@ -428,7 +434,7 @@ void cbSimulatorGUI::on_actionSimulator_Help_triggered()
 
 void cbSimulatorGUI::on_actionLoad_Defaults_triggered()
 {
-    if(simulator->state()==cbSimulator::INIT)
+   	if(simulator->state()==cbSimulator::INIT)
     {
         simulator->setDefaultParameters();
         simulator->setDefaultGrid();
@@ -437,5 +443,4 @@ void cbSimulatorGUI::on_actionLoad_Defaults_triggered()
     }
     else
         appendMessage("Cannot Set Defaults After Start - Use Reset",true);
-
 }

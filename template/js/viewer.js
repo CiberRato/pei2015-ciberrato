@@ -1,8 +1,3 @@
-var x2js = new X2JS();
-function labConvertXml2JSon(log) {
-    return JSON.stringify(x2js.xml_str2json(log));
-}
-
 function convertToStringPoints(cornerList, zoom){
     var out = "";
     var b = 0;
@@ -12,48 +7,82 @@ function convertToStringPoints(cornerList, zoom){
     return out;
 }
 
-/*function turn90(PosList){
-    for(i=0; i<PosList.length; i++) {
-        for (j = 0; j < PosList[i].Robot.length; j++) {
-            PosList[i].Robot[j].Pos._Dir = parseInt(PosList[i].Robot[j].Pos._Dir) + 90;
-        }
-    }
-    return PosList;
-}
-*/
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
+        /* Zoom variable (30->Standard) */
         $scope.zoom = 30;
 
-        var lab_json_object = labConvertXml2JSon(log);
-        var lab_obj = angular.fromJson(lab_json_object);
+        /* JSON to Object */
+        var lab_obj = angular.fromJson(lab);
+        var grid_obj = angular.fromJson(grid);
+        var parameters_obj = angular.fromJson(parameters);
+        var logInfo_obj = angular.fromJson(logInfo);
+
         var b = 0;
         var play = 0;
-        //console.log(lab_obj);
 
-        for(i=0; i<lab_obj.Log.Lab.Wall.length; i++){
-            lab_obj.Log.Lab.Wall[i].str = convertToStringPoints(lab_obj.Log.Lab.Wall[i], $scope.zoom);
+        /* Convert wall points to be integrated in SVG */
+        for(i=0; i<lab_obj.Lab.Wall.length; i++){
+            lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
         }
-        $scope.param=lab_obj.Log.Parameters;
-        $scope.beacon_height = lab_obj.Log.Lab.Beacon._Height;
-        $scope.map = lab_obj.Log.Lab;
-        $scope.grid = lab_obj.Log.Grid;
-        //$scope.timeline = turn90(lab_obj.Log.LogInfo);
-        $scope.timeline = lab_obj.Log.LogInfo;
-        $scope.dir1= parseInt($scope.timeline[0].Robot[0].Pos._Dir) + 90;
-        $scope.dir2= parseInt($scope.timeline[0].Robot[1].Pos._Dir) + 90;
-        $scope.dir3= parseInt($scope.timeline[0].Robot[2].Pos._Dir) + 90;
-        $scope.dir4= parseInt($scope.timeline[0].Robot[3].Pos._Dir) + 90;
-        $scope.dir5= parseInt($scope.timeline[0].Robot[4].Pos._Dir) + 90;
-        $scope.robot = $scope.timeline[0].Robot;
-        $scope.stats = $scope.timeline[0];
+
+        /* Parameters Object */
+        $scope.param=parameters_obj.Parameters;
+
+        /* Map Object */
+        $scope.map = lab_obj.Lab;
+
+        /* Grid Object */
+        $scope.grid = grid_obj.Grid;
+
+        /* Log Object */
+        $scope.log = logInfo_obj.Log.LogInfo;
+
+        /* Beacons Object */
+        $scope.beacon = lab_obj.Lab.Beacon;
+
+        /* Find beacon height */
+        if($scope.param._NBeacons == 1)
+            $scope.beacon_height = lab_obj.Lab.Beacon._Height;
+        else
+            $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
+
+        /* Retrieve spawning direction for every robot */
+        try{
+            $scope.dir1= parseInt($scope.log[0].Robot[0].Pos._Dir) + 90;
+            $scope.dir2= parseInt($scope.log[0].Robot[1].Pos._Dir) + 90;
+            $scope.dir3= parseInt($scope.log[0].Robot[2].Pos._Dir) + 90;
+            $scope.dir4= parseInt($scope.log[0].Robot[3].Pos._Dir) + 90;
+            $scope.dir5= parseInt($scope.log[0].Robot[4].Pos._Dir) + 90;
+        }catch(TypeError){
+
+        }
+        /* Robots Object */
+        $scope.robot = $scope.log[0].Robot;
+
+        /* Time Value */
+        $scope.time = $scope.log[0]._Time;
+
+        /* Refresh rate value for each iteration */
+        $scope.refresh_rate = $scope.param._CycleTime;
+
         $scope.idx = 1;
-        $scope.refresh_rate = 50;
-        $scope.pline = "";
         $scope.last_idx = 0;
+
+        $scope.pline1 = "";
+        $scope.pline2 = "";
+        $scope.pline3 = "";
+        $scope.pline4 = "";
+        $scope.pline5 = "";
+
+        /* Set Robots Colors */
         $scope.robotColor1 = 'img/svg/mickey_red_smile.svg';
         $scope.robotColor2 = 'img/svg/mickey_green_smile.svg';
         $scope.robotColor3 = 'img/svg/mickey_blue_smile.svg';
+        $scope.robotColor4 = 'img/svg/mickey_yellow_smile.svg';
+        $scope.robotColor5 = 'img/svg/mickey_orange_smile.svg';
+
+        /* Set Maze Colors */
         $scope.groundColor = 'black';
         $scope.cheeseColor = 'img/svg/cheese.svg';
         $scope.circleBorder = '#00ffff';
@@ -65,6 +94,7 @@ angular.module('myapp', [])
             $timeout(tick, refresh_rate);
         }
 
+        /* Update timeline */
         var tick = function() {
             try{
                 $scope.updateValues();
@@ -81,25 +111,54 @@ angular.module('myapp', [])
             }
         };
 
+        /* Update Viewer Values */
         $scope.updateValues = function(){
-            $scope.robot = $scope.timeline[$scope.idx].Robot;
-            $scope.stats = $scope.timeline[$scope.idx];
-            $scope.dir1= parseInt($scope.timeline[$scope.idx].Robot[0].Pos._Dir) + 90;
-            $scope.dir2= parseInt($scope.timeline[$scope.idx].Robot[1].Pos._Dir) + 90;
-            $scope.dir3= parseInt($scope.timeline[$scope.idx].Robot[2].Pos._Dir) + 90;
-            $scope.dir4= parseInt($scope.timeline[$scope.idx].Robot[3].Pos._Dir) + 90;
-            $scope.dir5= parseInt($scope.timeline[$scope.idx].Robot[4].Pos._Dir) + 90;
 
-            /*if(($scope.last_idx+1)!=$scope.idx){
+            $scope.robot = $scope.log[$scope.idx].Robot;
+            $scope.time = $scope.log[$scope.idx]._Time;
 
-                $scope.pline ="";
-                for(b=0;b<$scope.idx;b++){
-                    $scope.pline += $scope.timeline[b].Robot.Pos._X*$scope.zoom + "," + $scope.timeline[b].Robot.Pos._Y*$scope.zoom + " ";
-                }
-            }else{
-                $scope.pline += $scope.timeline[$scope.idx].Robot.Pos._X*$scope.zoom + "," + $scope.timeline[$scope.idx].Robot.Pos._Y*$scope.zoom + " ";
+            /* Update directions of every robot */
+            try{
+                $scope.dir1= parseInt($scope.log[$scope.idx].Robot[0].Pos._Dir) + 90;
+                $scope.dir2= parseInt($scope.log[$scope.idx].Robot[1].Pos._Dir) + 90;
+                $scope.dir3= parseInt($scope.log[$scope.idx].Robot[2].Pos._Dir) + 90;
+                $scope.dir4= parseInt($scope.log[$scope.idx].Robot[3].Pos._Dir) + 90;
+                $scope.dir5= parseInt($scope.log[$scope.idx].Robot[4].Pos._Dir) + 90;
+            }catch(TypeError){
+
             }
-            $scope.last_idx = $scope.idx;*/
+            /* Calculate visited points line */
+            if(($scope.last_idx+1)!=$scope.idx){
+
+                $scope.pline1 = "";
+                $scope.pline2 = "";
+                $scope.pline3 = "";
+                $scope.pline4 = "";
+                $scope.pline5 = "";
+                for(b=0;b<$scope.idx;b++){
+                    try{
+                        $scope.pline1 += $scope.log[b].Robot[0].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[0].Pos._Y*$scope.zoom + " ";
+                        $scope.pline2 += $scope.log[b].Robot[1].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[1].Pos._Y*$scope.zoom + " ";
+                        $scope.pline3 += $scope.log[b].Robot[2].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[2].Pos._Y*$scope.zoom + " ";
+                        $scope.pline4 += $scope.log[b].Robot[3].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[3].Pos._Y*$scope.zoom + " ";
+                        $scope.pline5 += $scope.log[b].Robot[4].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[4].Pos._Y*$scope.zoom + " ";
+                    }catch(TypeError){
+
+                    }
+                }
+            }else {
+                try {
+                    $scope.pline1 += $scope.log[$scope.idx].Robot[0].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[0].Pos._Y * $scope.zoom + " ";
+                    $scope.pline2 += $scope.log[$scope.idx].Robot[1].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[1].Pos._Y * $scope.zoom + " ";
+                    $scope.pline3 += $scope.log[$scope.idx].Robot[2].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[2].Pos._Y * $scope.zoom + " ";
+                    $scope.pline4 += $scope.log[$scope.idx].Robot[3].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[3].Pos._Y * $scope.zoom + " ";
+                    $scope.pline5 += $scope.log[$scope.idx].Robot[4].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[4].Pos._Y * $scope.zoom + " ";
+                }catch(TypeError){
+
+                }
+            }
+            $scope.last_idx = $scope.idx;
+
         }
 
         $scope.refreshSVG = function(){
@@ -107,7 +166,7 @@ angular.module('myapp', [])
             $timeout($scope.refreshSVG, 1000);
 
         }
-        $scope.setRobotColor = function(id){
+        /*$scope.setRobotColor = function(id){
 
             if(id == 1){
                 $scope.robotColor = 'img/svg/mickey_red_smile.svg';
@@ -118,7 +177,7 @@ angular.module('myapp', [])
             if(id == 3){
                 $scope.robotColor = 'img/svg/mickey_green_smile.svg';
             }
-        };
+        };*/
 
         $scope.setMazeColor = function(id){
 
@@ -241,40 +300,48 @@ angular.module('myapp', [])
         };
     });
 
-var log;
+
+var parameters;
+var logInfo;
+var grid;
+var lab;
 
 angular.element(document).ready(function(){
-    $.get( "log1.txt", function( data ) {
-        log = data;
-        angular.bootstrap(document, ['myapp']);
+    $.get( "logs/lab_json.txt", function( data ) {
+        lab = data;
+        $.get( "logs/parameters_json.txt", function( data ) {
+            parameters = data;
+            $.get( "logs/grid_json.txt", function( data ) {
+                grid = data;
+                $.get( "logs/log_json.txt", function( data ) {
+                    logInfo = data;
 
-        $("#waitawhile").hide("fast");
-        $("#row1").show("slow");
-        $("#row2").show("slow");
-        $("#row3").show("slow");
-        $("#row4").show("slow");
-        $("#row5").show("slow");
+                    angular.bootstrap(document, ['myapp']);
 
-        $('.nstSlider').nstSlider({
-            "left_grip_selector": ".leftGrip",
-            "value_changed_callback": function(cause, leftValue, rightValue) {
-                try{
-                    var scope = angular.element('[ng-controller=ctrl]').scope();
-                    scope.idx = leftValue;
+                    $("#waitawhile").hide("fast");
+                    $("#row1").show("slow");
+                    $("#row2").show("slow");
+                    $("#row3").show("slow");
+                    $("#row4").show("slow");
+                    $("#row5").show("slow");
 
-                }catch(TypeError){}
-            }
+                    $('.nstSlider').nstSlider({
+                        "left_grip_selector": ".leftGrip",
+                        "value_changed_callback": function(cause, leftValue, rightValue) {
+                            try{
+                                var scope = angular.element('[ng-controller=ctrl]').scope();
+                                scope.idx = leftValue;
+
+                            }catch(TypeError){}
+                        }
+                    });
+
+                    // Call methods and such...
+                    var highlightMin = Math.random() * 20,
+                        highlightMax = highlightMin + Math.random() * 80;
+                    $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+                });
+            });
         });
-
-        // Call methods and such...
-        var highlightMin = Math.random() * 20,
-            highlightMax = highlightMin + Math.random() * 80;
-        $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
     });
-    /*
-    $.get( "http://localhost:63342/pei2015-ciberonline/template/log.txt", function( data ) {
-        log = data;
-        angular.bootstrap(document, ['myapp']);
-    });
-    */
 });

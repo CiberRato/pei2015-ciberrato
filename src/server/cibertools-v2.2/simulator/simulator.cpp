@@ -166,6 +166,7 @@ int main(int argc, char *argv[])
 	char *paramFilename = 0;
 	char *logFilename = 0;
 	int port = 6000;
+	bool nogui = false;
 
 	bool showGraph=false;
 	int showGraphId=0;
@@ -231,6 +232,14 @@ int main(int argc, char *argv[])
             }
             else CommandLineError();
 		}
+		else if (strcmp(argv[p], "-nogui") == 0) {
+			// wait until second pass of command line parsing
+            p+=1;
+		}
+        else if (strcmp(argv[p], "-viewerlog") == 0) {
+            // wait until second pass of command line parsing
+            p+=1;
+        }
         else {
             CommandLineError();
 		}
@@ -298,11 +307,18 @@ int main(int argc, char *argv[])
             }
             else CommandLineError();
 		}
+		else if (strcmp(argv[p], "-nogui") == 0) {
+			nogui = true;
+			p+=1;
+		}
+        else if (strcmp(argv[p], "-viewerlog") == 0) {
+            simulator.setViewerAsLog(true);
+            p+=1;
+        }
         else {
             CommandLineError();
 		}
 	}
-	
 	//cout << " done.\n";
 
 	/* change lab object */
@@ -335,18 +351,19 @@ int main(int argc, char *argv[])
 	srand(_getpid());
 #endif
 
-        /* start simulator timer */
+    /* start simulator timer */
 	simulator.startTimer();
 
-        /* preparing ALARM timer */
-    cbSimulatorGUI gui(&simulator);
+	cbSimulatorGUI * gui = NULL;
+    if (!nogui) {
+		gui = new cbSimulatorGUI(&simulator);
+		simulator.setGUI(gui);
+		//gui.setMaximumSize(gui.size());
+		//gui.setMinimumSize(gui.size());
+		gui->show();
+    }
+    app.exec();
 
-    simulator.setGUI(&gui);
-    //gui.setMaximumSize(gui.size());
-    //gui.setMinimumSize(gui.size());
-	gui.show();
-
-	app.exec();
-
+    delete gui;
 	return 0;
 }

@@ -12,9 +12,9 @@ class Competition(models.Model):
         (settings.COMPETITIVA, 'Competitiva'),
     )
 
-    REGISTER = 'RG'
-    COMPETITION = 'CP'
-    PAST = 'PST'
+    REGISTER = 'Register'
+    COMPETITION = 'Competition'
+    PAST = 'Past'
 
     STATE = (
         (REGISTER, 'Register'),
@@ -117,6 +117,8 @@ class LogSimulationAgent(models.Model):
     competition_agent = models.ForeignKey('CompetitionAgent')
     simulation = models.ForeignKey('Simulation')
 
+    pos = models.IntegerField(blank=False)
+
     class Meta:
         unique_together = ('competition_agent', 'simulation',)
 
@@ -125,13 +127,15 @@ class Simulation(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
     round = models.ForeignKey(Round, blank=False)
-    log = models.TextField(max_length=128)
+    log_json = models.TextField(max_length=128)
+    simulation_log_xml = models.TextField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['created_at']
+        get_latest_by = "created_at"
 
     def __unicode__(self):
         return self.agent_path

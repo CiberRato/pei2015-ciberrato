@@ -1,30 +1,31 @@
+import json
+import tempfile
+import tarfile
+
+import os
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, Simulation, GroupEnrolled, CompetitionAgent, Agent, \
     LogSimulationAgent
 from competition.serializers import CompetitionSerializer, RoundSerializer, SimulationXSerializer, \
     GroupEnrolledSerializer, AgentSerializer, CompetitionAgentSerializer, SimulationSerializer, \
-    SimulationAgentSerializer
+    SimulationAgentSerializer, LogSimulation
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group, GroupMember
 from authentication.serializers import AccountSerializer
-
 from groups.serializers import GroupSerializer
-
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
-
-from rest_framework.decorators import api_view
+from competition.renderers import PlainTextRenderer
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
 from competition.permissions import IsAdmin
 from groups.permissions import IsAdminOfGroup
-
 from django.conf import settings
-import json
+from django.http import HttpResponse
+from django.core.servers.basehttp import FileWrapper
 
 
 class RoundSimplex:
@@ -81,6 +82,7 @@ class SimulationAgentSimplex:
         self.simulation_identifier = sas.simulation.identifier
         self.agent_name = sas.competition_agent.agent.agent_name
         self.round_name = sas.simulation.round.name
+        self.pos = sas.pos
 
 
 class CompetitionViewSet(viewsets.ModelViewSet):
@@ -93,6 +95,15 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, **kwargs):
+        """
+        B{Create} a competition
+        B{URL:} ../api/v1/competitions/crud/
+
+        @type  name: str
+        @param name: The competition name
+        @type  type_of_competition: Colaborativa | Competitiva
+        @param type_of_competition: The competition type
+        """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -104,16 +115,30 @@ class CompetitionViewSet(viewsets.ModelViewSet):
                          'message': 'The competitions could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the competition information
+        B{URL:} ../api/v1/competitions/crud/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
         queryset = Competition.objects.all()
-        competition = get_object_or_404(queryset, name=pk)
+        competition = get_object_or_404(queryset, name=kwargs.get('pk'))
         serializer = self.serializer_class(competition)
 
         return Response(serializer.data)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Destroy} the competition
+        B{URL:} ../api/v1/competitions/crud/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
         queryset = Competition.objects.all()
-        competition = get_object_or_404(queryset, name=pk)
+        competition = get_object_or_404(queryset, name=kwargs.get('pk'))
 
         rounds = Round.objects.filter(parent_competition=competition)
         for r in rounds:
@@ -130,7 +155,7 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
     queryset = Competition.objects.all()
     serializer_class = GroupSerializer
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of a Groups enrolled and with valid inscription in the Competition
         B{URL:} ../api/v1/competitions/groups/<competition_name>/
@@ -138,7 +163,7 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(self.queryset, name=pk)
+        competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         valid = GroupEnrolled.objects.filter(valid=True, competition=competition)
         valid_groups = [g.group for g in valid]
         serializer = self.serializer_class(valid_groups, many=True)
@@ -150,7 +175,7 @@ class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
     queryset = Competition.objects.all()
     serializer_class = GroupSerializer
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of a Groups enrolled with inscription not valid in the Competition
         B{URL:} ../api/v1/competitions/groups_not_valid/<competition_name>/
@@ -158,7 +183,7 @@ class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(self.queryset, name=pk)
+        competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         not_valid = GroupEnrolled.objects.filter(valid=False, competition=competition)
         not_valid_groups = [g.group for g in not_valid]
         serializer = self.serializer_class(not_valid_groups, many=True)
@@ -173,7 +198,7 @@ class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericView
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsAdmin(),
 
-    def update(self, request, pk, **kwargs):
+    def update(self, request, *args, **kwargs):
         """
         B{Update} the group enrolled attribute to valid or to false (it's a toggle)
         B{URL:} ../api/v1/competitions/group_valid/<group_name>/?competition_name=<competition_name>
@@ -191,7 +216,7 @@ class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericView
         competition = get_object_or_404(Competition.objects.all(),
                                         name=request.GET.get('competition_name', ''))
         group = get_object_or_404(Group.objects.all(),
-                                  name=pk)
+                                  name=kwargs.get('pk'))
 
         group_enrolled = get_object_or_404(self.queryset, group=group, competition=competition)
         group_enrolled.valid = not group_enrolled.valid
@@ -206,7 +231,7 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
     serializer_class = RoundSerializer
     queryset = Round.objects.all()
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the oldest round competition
         B{URL:} ../api/v1/competitions/first_round/<competition_name>/
@@ -214,7 +239,7 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         competition_rounds = Round.objects.filter(parent_competition=competition)
 
         if len(competition_rounds) == 0:
@@ -231,7 +256,7 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
     serializer_class = RoundSerializer
     queryset = Round.objects.all()
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the earliest round competition
         B{URL:} ../api/v1/competitions/earliest_round/<competition_name>/
@@ -239,7 +264,7 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         competition_rounds = Round.objects.filter(parent_competition=competition)
 
         if len(competition_rounds) == 0:
@@ -292,7 +317,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The round could not be created with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the oldest round competition
         B{URL:} ../api/v1/competitions/round/<round_name>/
@@ -300,13 +325,13 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(self.queryset, name=pk)
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
         serializer = self.serializer_class(RoundSimplex(r))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Remove} a round from the competition
         B{URL:} ../api/v1/competitions/round/<name>/
@@ -314,7 +339,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  name: str
         @param name: The round name
         """
-        r = get_object_or_404(self.queryset, name=pk)
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
         for c_agent in CompetitionAgent.objects.all():
             c_agent.delete()
@@ -377,7 +402,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The group can\'t enroll with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Remove} a group from the competition
         B{URL:} ../api/v1/competitions/enroll/<competition_name>/?group_name=<group_name>
@@ -392,7 +417,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'Please provide the ?group_name=*group_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
 
         group_not_enrolled = (len(GroupEnrolled.objects.filter(competition=competition, group=group)) == 0)
@@ -434,7 +459,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The agent could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} information of the agent
         B{URL:} ../api/v1/competitions/agent/<agent_name>/
@@ -442,12 +467,12 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  agent_name: str
         @param agent_name: The agent name
         """
-        agent = get_object_or_404(self.queryset, agent_name=pk)
+        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
         serializer = AgentSerializer(AgentSimplex(agent))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent
         B{URL:} ../api/v1/competitions/agent/<agent_name>/
@@ -455,7 +480,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  agent_name: str
         @param agent_name: The agent name
         """
-        agent = get_object_or_404(self.queryset, agent_name=pk)
+        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
 
         if agent.locations:
             if len(json.loads(agent.locations)) > 0:
@@ -476,7 +501,7 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the agents available to compete in the round
         B{URL:} ../api/v1/competitions/valid_round_agents/<round_name>/
@@ -484,7 +509,7 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
         competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
         serializer = self.serializer_class(competition_agents, many=True)
@@ -499,7 +524,7 @@ class AgentsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the agents available to compete in the round
         B{URL:} ../api/v1/competitions/not_eligible_round_agents/<round_name>/
@@ -507,7 +532,7 @@ class AgentsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
         competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
         serializer = self.serializer_class(competition_agents, many=True)
@@ -522,7 +547,7 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the participants available to compete in the round
         B{URL:} ../api/v1/competitions/valid_round_participants/<round_name>/
@@ -530,7 +555,7 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
         competition_groups = [agent.agent.group for agent in competition_agents]
         accounts = []
@@ -549,7 +574,7 @@ class RoundParticipantsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericVi
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the participants available to compete in the round
         B{URL:} ../api/v1/competitions/not_eligible_round_participants/<round_name>/
@@ -557,7 +582,7 @@ class RoundParticipantsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericVi
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
         competition_groups = [agent.agent.group for agent in competition_agents]
         accounts = []
@@ -576,7 +601,7 @@ class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the groups available to compete in the round
         B{URL:} ../api/v1/competitions/valid_round_groups/<round_name>/
@@ -584,7 +609,7 @@ class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
         competition_groups = [agent.agent.group for agent in competition_agents]
         serializer = self.serializer_class(competition_groups, many=True)
@@ -599,7 +624,7 @@ class RoundGroupsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the groups available to compete in the round
         B{URL:} ../api/v1/competitions/not_eligible_round_groups/<round_name>/
@@ -607,7 +632,7 @@ class RoundGroupsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
         competition_groups = [agent.agent.group for agent in competition_agents]
         serializer = self.serializer_class(competition_groups, many=True)
@@ -683,7 +708,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                          'message': 'We cound not associate the agent to the competition.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Associate} an agent
         B{URL:} ../api/v1/competitions/associate_agent/<agent_name>/?round_name?<round_name>
@@ -699,7 +724,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                             status=status.HTTP_400_BAD_REQUEST)
 
         r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
-        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
         competition = r.parent_competition
 
         if competition.state_of_competition != "Register":
@@ -734,7 +759,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent file
         B{URL:} ../api/v1/competitions/delete_agent_file/<agent_name>/?file_name=<file_name>
@@ -744,7 +769,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         @type  file_name: str
         @param file_name: The file name
         """
-        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
         group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
 
         if len(group_member) == 0:
@@ -862,7 +887,7 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The simulation could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the simulation information
         B{URL:} ../api/v1/competitions/simulation/<identifier>/
@@ -870,12 +895,12 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  identifier: str
         @param identifier: The simulation identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class(SimulationSimplex(simulation))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} the simulation information
         B{URL:} ../api/v1/competitions/simulation/<identifier>/
@@ -883,7 +908,7 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  identifier: str
         @param identifier: The simulation identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=pk)
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
         simulation.delete()
 
         return Response({'status': 'Deleted',
@@ -891,9 +916,41 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
+class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} the simulation competition agents
+        B{URL:} ../api/v1/competitions/simulation_agents/<identifier>/
+
+        @type  identifier: str
+        @param identifier: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+
+        simulations = []
+        lgas = LogSimulationAgent.objects.filter(simulation=simulation)
+
+        for lga in lgas:
+            simulations += [SimulationAgentSimplex(lga)]
+
+        # Competition Agents name
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = LogSimulationAgent.objects.all()
     serializer_class = SimulationAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -941,24 +998,15 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                                          'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
-            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation)
+            lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
+                                                    pos=serializer.validated_data['pos'])
             serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': 'The simulation agent could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
-
-
-class SimulationGet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        pass
 
 
 class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -968,7 +1016,7 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the agent simulations
         B{URL:} ../api/v1/competitions/simulations_by_agent/<agent_name>/
@@ -976,7 +1024,7 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  agent_name: str
         @param agent_name: The agent name
         """
-        agent = get_object_or_404(Agent.objects.all(), agent_name=pk)
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(agent=agent)
         simulations = []
 
@@ -997,7 +1045,7 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the round simulations
         B{URL:} ../api/v1/competitions/simulations_by_round/<round_name>/
@@ -1005,7 +1053,7 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  round_name: str
         @param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=pk)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r)
         simulations = []
 
@@ -1019,6 +1067,34 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class SaveLogs(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = LogSimulation
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Create} the xml and json log
+        B{URL:} ../api/v1/competitions/simulation_log/
+
+        @type  log_json: str
+        @param log_json: The json log
+        @type  simulation_log_xml: str
+        @param simulation_log_xml: The xml log
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
+            simulation.log_json = serializer.validated_data['log_json']
+            simulation.simulation_log_xml = serializer.validated_data['simulation_log_xml']
+            simulation.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The simulation couldn\'t be updated with that data.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
 class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Simulation.objects.all()
     serializer_class = SimulationSerializer
@@ -1026,7 +1102,7 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the competition simulations
         B{URL:} ../api/v1/competitions/simulations_by_competition/<competition_name>/
@@ -1034,7 +1110,7 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         @type  competition_name: str
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(Competition.objects.all(), name=pk)
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(competition=competition)
         simulations = []
 
@@ -1046,6 +1122,109 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         serializer = self.serializer_class(simulations, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetSimulations(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = SimulationXSerializer
+
+    def list(self, request, *args, **kwargs):
+        class AgentX():
+            def __init__(self, log_simulation_agent, simulation_id):
+                if log_simulation_agent.competition_agent.agent.is_virtual:
+                    self.agent_type = "virtual"
+                else:
+                    self.agent_type = "local"
+
+                self.agent_name = log_simulation_agent.competition_agent.agent.agent_name
+                self.pos = log_simulation_agent.pos
+                self.language = log_simulation_agent.competition_agent.agent.language
+
+                if not log_simulation_agent.competition_agent.agent.is_virtual:
+                    # o agent tem de estar na simulacao
+                    # autenticacao para receber estes dados
+                    self.files = "/api/v1/competitions/agent_file/" + simulation_id + "/" + log_simulation_agent.competition_agent.agent.agent_name + "/"
+
+        class SimulationX():
+            def __init__(self, simulation):
+                self.simulation_id = simulation.identifier
+                # a competicao nao pode estar em register
+                self.grid = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=grid"
+                self.param_list = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=param_list"
+                self.lab = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=lab"
+
+                # get the agents
+                log_simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+                self.agents = []
+                for log_simulation_agent in log_simulation_agents:
+                    self.agents += [AgentX(log_simulation_agent, self.simulation_id)]
+
+        simulations = [SimulationX(simulation) for simulation in Simulation.objects.all()]
+
+        serializer = self.serializer_class(simulations, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetRoundFile(views.APIView):
+    renderer_classes = (PlainTextRenderer,)
+
+    def get(self, request, round_name):
+        if 'file' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?file=*file*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        param = request.QUERY_PARAMS.get('file')
+
+        if param != 'param_list' and param != 'lab' and param != 'grid':
+            return Response({'status': 'Bad request',
+                             'message': 'A valid *file*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # see if round exists
+        r = get_object_or_404(Round.objects.all(), name=round_name)
+        try:
+            data = default_storage.open(getattr(r, param + '_path', None)).read()
+        except Exception:
+            return Response({'status': 'Bad request',
+                             'message': 'The file doesn\'t exists'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data)
+
+
+class GetAgentFiles(views.APIView):
+    def get(self, request, simulation_id, agent_name):
+        # agent_name
+        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+
+        # simulation_id
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
+
+        # see if round is in agent rounds
+        if simulation.round not in agent.rounds.all():
+            return Response({'status': 'Bad request',
+                             'message': 'The agent is not in this round.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not agent.locations or len(json.loads(agent.locations)) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent doesn\'t have files.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        temp = tempfile.NamedTemporaryFile()
+        with tarfile.open(temp.name, "w:gz") as tar:
+            for name in json.loads(agent.locations):
+                tar.addfile(tarfile.TarInfo(default_storage.get_valid_name(name)), fileobj=default_storage.open(name))
+            tar.close()
+
+        wrapper = FileWrapper(temp)
+        response = HttpResponse(wrapper, content_type="application/x-compressed")
+        response['Content-Disposition'] = 'attachment; filename=' + simulation_id + agent_name + '.tar.gz'
+        response['Content-Length'] = os.path.getsize(temp.name)
+        temp.seek(0)
+        return response
 
 
 class UploadRoundXMLView(views.APIView):
@@ -1107,30 +1286,3 @@ class UploadGridView(UploadRoundXMLView):
 class UploadLabView(UploadRoundXMLView):
     def __init__(self):
         UploadRoundXMLView.__init__(self, "lab_path", "lab")
-
-
-"""
----------------------------------------------------------------
-APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
----------------------------------------------------------------
-"""
-
-
-class GetSimulation(mixins.ListModelMixin,
-                    viewsets.GenericViewSet):
-    serializer_class = SimulationXSerializer
-
-    def get_queryset(self):
-        return [Simulation.objects.first()]
-
-    @api_view(['GET'])
-    def get_simulation(self, request):
-        """
-        B{Retrieve}: the first simulation
-        B{URL:} ../api/v1/get_simulation/
-        """
-
-        serializer = self.serializer_class()
-        return Response(serializer.data)
-
-
