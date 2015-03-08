@@ -76,9 +76,9 @@
             <!-- User profile -->
             <section class="user-profile">
                 <figure>
-                    <img alt="John Pixel avatar" src="autocarro/306e22d51e339755ae9ff3daf0e9858e?s=60">
+                    <img alt="Gravatar" src="http://www.gravatar.com/avatar/8a3b221d39c8f6538d27c03078ae8f29.png">
                     <figcaption>
-                        <strong><a href="#" class="">Gabriel Vieira</a></strong>
+                        <strong><a href="#" class="">Bernardo Ferreira</a></strong>
                         <em>Universidade de Aveiro</em>
                         <ul>
                             <li><a class="btn btn-primary btn-flat" href="#" title="Account settings">Logout</a></li>
@@ -225,19 +225,19 @@
                                                         <image ng-if="robot[0].Scores._Collision=='True'" x="{{robot[0].Pos._X*zoom-zoom/2}}" y="{{robot[0].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir1}},{{robot[0].Pos._X*zoom}},{{robot[0].Pos._Y*zoom}})" />
                                                         <circle ng-if="log[0].Robot[0].Scores._Score == 0" cx="{{robot[0].Pos._X*zoom}}" cy="{{robot[0].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
-                                                        <image ng-if="robot[1].Scores._Collision=='False'" x="{{robot[1].Pos._X*zoom-zoom/2}}" y="{{robot[1].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor4}}"  transform="rotate({{dir2}},{{robot[1].Pos._X*zoom}},{{robot[1].Pos._Y*zoom}})" />
+                                                        <image ng-if="robot[1].Scores._Collision=='False'" x="{{robot[1].Pos._X*zoom-zoom/2}}" y="{{robot[1].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor2}}"  transform="rotate({{dir2}},{{robot[1].Pos._X*zoom}},{{robot[1].Pos._Y*zoom}})" />
                                                         <image ng-if="robot[1].Scores._Collision=='True'" x="{{robot[1].Pos._X*zoom-zoom/2}}" y="{{robot[1].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir2}},{{robot[1].Pos._X*zoom}},{{robot[1].Pos._Y*zoom}})" />
                                                         <circle ng-if="log[0].Robot[1].Scores._Score == 0" cx="{{robot[1].Pos._X*zoom}}" cy="{{robot[1].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
-                                                        <image ng-if="robot[2].Scores._Collision=='False'" x="{{robot[2].Pos._X*zoom-zoom/2}}" y="{{robot[2].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor5}}"  transform="rotate({{dir3}},{{robot[2].Pos._X*zoom}},{{robot[2].Pos._Y*zoom}})" />
+                                                        <image ng-if="robot[2].Scores._Collision=='False'" x="{{robot[2].Pos._X*zoom-zoom/2}}" y="{{robot[2].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor3}}"  transform="rotate({{dir3}},{{robot[2].Pos._X*zoom}},{{robot[2].Pos._Y*zoom}})" />
                                                         <image ng-if="robot[2].Scores._Collision=='True'" x="{{robot[2].Pos._X*zoom-zoom/2}}" y="{{robot[2].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir3}},{{robot[2].Pos._X*zoom}},{{robot[2].Pos._Y*zoom}})" />
                                                         <circle ng-if="log[0].Robot[2].Scores._Score == 0" cx="{{robot[2].Pos._X*zoom}}" cy="{{robot[2].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
-                                                        <image ng-if="robot[3].Scores._Collision=='False'" x="{{robot[3].Pos._X*zoom-zoom/2}}" y="{{robot[3].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor1}}"  transform="rotate({{dir4}},{{robot[3].Pos._X*zoom}},{{robot[3].Pos._Y*zoom}})" />
+                                                        <image ng-if="robot[3].Scores._Collision=='False'" x="{{robot[3].Pos._X*zoom-zoom/2}}" y="{{robot[3].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor4}}"  transform="rotate({{dir4}},{{robot[3].Pos._X*zoom}},{{robot[3].Pos._Y*zoom}})" />
                                                         <image ng-if="robot[3].Scores._Collision=='True'" x="{{robot[3].Pos._X*zoom-zoom/2}}" y="{{robot[3].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir4}},{{robot[3].Pos._X*zoom}},{{robot[3].Pos._Y*zoom}})" />
                                                         <circle ng-if="log[0].Robot[3].Scores._Score == 0" cx="{{robot[3].Pos._X*zoom}}" cy="{{robot[3].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
-                                                        <image ng-if="robot[4].Scores._Collision=='False'" x="{{robot[4].Pos._X*zoom-zoom/2}}" y="{{robot[4].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor1}}"  transform="rotate({{dir5}},{{robot[4].Pos._X*zoom}},{{robot[4].Pos._Y*zoom}})" />
+                                                        <image ng-if="robot[4].Scores._Collision=='False'" x="{{robot[4].Pos._X*zoom-zoom/2}}" y="{{robot[4].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor5}}"  transform="rotate({{dir5}},{{robot[4].Pos._X*zoom}},{{robot[4].Pos._Y*zoom}})" />
                                                         <image ng-if="robot[4].Scores._Collision=='True'" x="{{robot[4].Pos._X*zoom-zoom/2}}" y="{{robot[4].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir4}},{{robot[4].Pos._X*zoom}},{{robot[4].Pos._Y*zoom}})" />
                                                         <circle ng-if="log[0].Robot[4].Scores._Score == 0" cx="{{robot[4].Pos._X*zoom}}" cy="{{robot[4].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
                                                         <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
@@ -304,27 +304,27 @@
                             </div>
                             <div ng-if="log[0].Robot[0].Scores._Score == 0" class="row-fluid" style="text-align: center">
                                 <div class="span6 viewer"><h2>{{robot[0]._Name}}</h2></div>
-                                <div class="span6 viewer"><h2>{{robot[0]._Id}}</h2></div>
+                                <div class="span6 viewer"><img src="img/svg/mickey_red_smile.svg" width="35" height="35"></div>
 
                             </div>
                             <div ng-if="log[0].Robot[1].Scores._Score == 0" class="row-fluid" style="text-align: center">
                                 <div class="span6 viewer"><h2>{{robot[1]._Name}}</h2></div>
-                                <div class="span6 viewer"><h2>{{robot[1]._Id}}</h2></div>
+                                <div class="span6 viewer"><img src="img/svg/mickey_green_smile.svg" width="35" height="35"></div>
 
                             </div>
                             <div ng-if="log[0].Robot[2].Scores._Score == 0" class="row-fluid" style="text-align: center">
                                 <div class="span6 viewer"><h2>{{robot[2]._Name}}</h2></div>
-                                <div class="span6 viewer"><h2>{{robot[2]._Id}}</h2></div>
+                                <div class="span6 viewer"><img src="img/svg/mickey_blue_smile.svg" width="35" height="35"></div>
 
                             </div>
                             <div ng-if="log[0].Robot[3].Scores._Score == 0" class="row-fluid" style="text-align: center">
                                 <div class="span6 viewer"><h2>{{robot[3]._Name}}</h2></div>
-                                <div class="span6 viewer"><h2>{{robot[3]._Id}}</h2></div>
+                                <div class="span6 viewer"><img src="img/svg/mickey_yellow_smile.svg" width="35" height="35"></div>
 
                             </div>
                             <div ng-if="log[0].Robot[4].Scores._Score == 0" class="row-fluid" style="text-align: center">
                                 <div class="span6 viewer"><h2>{{robot[4]._Name}}</h2></div>
-                                <div class="span6 viewer"><h2>{{robot[4]._Id}}</h2></div>
+                                <div class="span6 viewer"><img src="img/svg/mickey_orange_smile.svg" width="35" height="35"></div>
 
                             </div>
                         </section>
@@ -631,17 +631,6 @@
     </footer>
     <!-- /Main page footer -->
 
-
-
-    <textarea id="XML" cols="55" rows="15" style="visibility: hidden; display: none">
-
-
-    </textarea>
-
-
-
-
-
     <!-- Scripts -->
     <script src="js/navigation.js"></script>
     <script src="js/bootstrap/bootstrap-affix.js"></script>
@@ -677,6 +666,51 @@
             $("#play").removeAttr("disabled");
             return false;
         });
+    </script>
+
+    <script>
+        $(window).keypress(function(e) {
+            if ((e.keyCode == 0 || e.keyCode == 32) && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
+                console.log('Space pressed');
+                angular.element('[ng-controller=ctrl]').scope().pause();
+                $("#pause").attr("disabled", true);
+                $("#play").removeAttr("disabled");
+                $("#stop").removeAttr("disabled");
+                return false;
+            }
+            else if((e.keyCode == 0 || e.keyCode == 32) && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
+                console.log('Space pressed');
+                angular.element('[ng-controller=ctrl]').scope().play();
+                $("#play").attr("disabled", true);
+                $("#pause").removeAttr("disabled");
+                $("#stop").removeAttr("disabled");
+                return false;
+            }
+        });
+    </script>
+
+    <script>
+        $(document).keydown(function(e) {
+            switch(e.which) {
+                case 37: // left
+                    angular.element('[ng-controller=ctrl]').scope().idx-=100;
+                    break;
+
+                case 38: // up
+                    break;
+
+                case 39: // right
+                    angular.element('[ng-controller=ctrl]').scope().idx+=100;
+                    break;
+
+                case 40: // down
+                    break;
+
+                default: return; // exit this handler for other keys
+            }
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        });
+
     </script>
 
     <script>

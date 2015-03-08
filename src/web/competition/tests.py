@@ -632,3 +632,202 @@ class AuthenticationTestCase(TestCase):
              ('lab_path', None), ('agents_list', [])])])
 
         client.force_authenticate(user=None)
+
+    def test_max_agents_colaborativa(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        url = "/api/v1/competitions/enroll/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE1'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a1 = Agent.objects.get(agent_name="KAMIKAZE1")
+        a1.is_virtual = True
+        a1.save()
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a2 = Agent.objects.get(agent_name="KAMIKAZE2")
+        a2.is_virtual = True
+        a2.save()
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE3', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE3'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a3 = Agent.objects.get(agent_name="KAMIKAZE3")
+        a3.is_virtual = True
+        a3.save()
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE4', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE4'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a4 = Agent.objects.get(agent_name="KAMIKAZE4")
+        a4.is_virtual = True
+        a4.save()
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE5', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE5'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a5 = Agent.objects.get(agent_name="KAMIKAZE5")
+        a5.is_virtual = True
+        a5.save()
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE6', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE6'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a6 = Agent.objects.get(agent_name="KAMIKAZE6")
+        a6.is_virtual = True
+        a6.save()
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE1'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE1'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(CompetitionAgent.objects.all()), 1)
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE2'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE2'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(CompetitionAgent.objects.all()), 2)
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE3'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(CompetitionAgent.objects.all()), 3)
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE4'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE4'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(CompetitionAgent.objects.all()), 4)
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE5'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE5'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(CompetitionAgent.objects.all()), 5)
+
+        # reach maximum agents in competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE6'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Reached the limit of agents', 'message': 'Reached the number of competition_agents!'})
+        self.assertEqual(response.status_code, 400)
+
+        client.force_authenticate(user=None)
+
+    def test_max_agents_competitiva(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        c = Competition.objects.get(name="C1")
+        c.type_of_competition = "Competitiva"
+        c.save()
+
+        url = "/api/v1/competitions/enroll/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE1'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a1 = Agent.objects.get(agent_name="KAMIKAZE1")
+        a1.is_virtual = True
+        a1.save()
+
+        # create a agent for group
+        url = "/api/v1/competitions/agent/"
+        data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_virtual': False}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('rounds', []), ('competitions', []),
+             ('group_name', u'XPTO3')]))
+
+        a2 = Agent.objects.get(agent_name="KAMIKAZE2")
+        a2.is_virtual = True
+        a2.save()
+
+        # associate the agent to the competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE1'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE1'})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(CompetitionAgent.objects.all()), 1)
+
+        # reach maximum agents in competition
+        url = "/api/v1/competitions/associate_agent/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE2'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Reached the limit of agents',
+                                         'message': 'Reached the number of competition_agents!'})
+        self.assertEqual(response.status_code, 400)
+
+        client.force_authenticate(user=None)
