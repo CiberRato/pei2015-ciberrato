@@ -136,14 +136,21 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
             # verify limits
             groups_agent = Agent.objects.filter(group=agent.group)
             groups_agents_in_round = [agent for agent in groups_agent if
-                                      len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 0]
+                                      len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 1]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
             if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
+                print numbers[competition.type_of_competition]
+                print len(groups_agents_in_round)
                 return Response({'status': 'Reached the limit of agents',
-                                 'message': 'The group must first enroll in the competition.'},
+                                 'message': 'Reached the number of competition_agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+
+            # not modified values
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            competition = r.parent_competition
 
             CompetitionAgent.objects.create(agent=agent, round=r, competition=competition)
 
@@ -188,6 +195,11 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
             return Response({'status': 'Permission denied',
                              'message': 'The group must first enroll in the competition.'},
                             status=status.HTTP_403_FORBIDDEN)
+
+        # not modified values
+        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+        competition = r.parent_competition
 
         competition_agent = CompetitionAgent.objects.filter(competition=competition, round=r, agent=agent)
         competition_agent.delete()
