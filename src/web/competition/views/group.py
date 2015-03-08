@@ -17,6 +17,9 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
     queryset = Competition.objects.all()
     serializer_class = GroupSerializer
 
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of a Groups enrolled and with valid inscription in the Competition
@@ -36,6 +39,9 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
 class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = GroupSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -93,6 +99,9 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
     serializer_class = RoundSerializer
     queryset = Round.objects.all()
 
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the oldest round competition
@@ -117,6 +126,9 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
 class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = RoundSerializer
     queryset = Round.objects.all()
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -150,6 +162,10 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
     def list(self, request, **kwargs):
+        """
+        B{List} the enrolled groups
+        B{URL:} ../api/v1/competitions/enroll/
+        """
         serializer = self.serializer_class([GroupEnrolledSimplex(ge=query) for query in GroupEnrolled.objects.all()],
                                            many=True)
         return Response(serializer.data)

@@ -22,6 +22,10 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def list(self, request, **kwargs):
+        """
+        B{List} of rounds
+        B{URL:} ../api/v1/competitions/round/
+        """
         serializer = self.serializer_class([RoundSimplex(r=query) for query in Round.objects.all()], many=True)
         return Response(serializer.data)
 

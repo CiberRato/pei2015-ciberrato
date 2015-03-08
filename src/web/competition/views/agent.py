@@ -24,6 +24,17 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
     def create(self, request, *args, **kwargs):
+        """
+        B{Create} an agent
+        B{URL:} ../api/v1/competitions/agent/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        @type  group_name: str
+        @param group_name: The group name
+        @type  is_virtual: boolean
+        @param is_virtual: True if is virtual or False if is not virtual
+        """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -95,9 +106,9 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            round = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
-            competition = round.parent_competition
+            competition = r.parent_competition
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',
@@ -125,7 +136,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
             # verify limits
             groups_agent = Agent.objects.filter(group=agent.group)
             groups_agents_in_round = [agent for agent in groups_agent if
-                                      len(CompetitionAgent.objects.filter(agent=agent, round=round)) == 0]
+                                      len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 0]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
@@ -134,7 +145,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                  'message': 'The group must first enroll in the competition.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            CompetitionAgent.objects.create(agent=agent, round=round, competition=competition)
+            CompetitionAgent.objects.create(agent=agent, round=r, competition=competition)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -144,7 +155,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Associate} an agent
+        B{Delete} the associated agent from the round
         B{URL:} ../api/v1/competitions/associate_agent/<agent_name>/?round_name?<round_name>
 
         @type  round_name: str

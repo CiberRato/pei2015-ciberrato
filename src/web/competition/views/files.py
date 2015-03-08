@@ -161,6 +161,7 @@ class GetRoundFile(views.APIView):
 
 
 class GetAgentFiles(views.APIView):
+
     def get(self, request, simulation_id, agent_name):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
