@@ -7,14 +7,16 @@ from authentication.views import AccountViewSet, LoginView, LogoutView
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet
-from competition.views import CompetitionViewSet, RoundViewSet, EnrollGroup
-from competition.views import UploadParamListView, UploadGridView, UploadLabView, \
-    CompetitionGetGroupsViewSet, CompetitionEarliestRoundViewSet, CompetitionOldestRoundViewSet, \
-    CompetitionGetNotValidGroupsViewSet, CompetitionGroupValidViewSet, AgentViewSets, UploadAgent, \
-    DeleteUploadedFileAgent, AssociateAgent, AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
-    RoundParticipantsNotEligible, RoundGroupsNotEligible, SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetRoundFile, GetAgentFiles, \
-    GetSimulationAgents, SaveLogs
+from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
+    CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet
+from competition.views.agent import AssociateAgent, AgentViewSets
+from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
+    RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet
+from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
+    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetSimulationAgents, SaveLogs
+from competition.views.view import CompetitionViewSet
+from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, UploadAgent, \
+    DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles
 
 from rest_framework import routers
 
@@ -34,31 +36,35 @@ router_groups.register(r'member', MemberInGroupViewSet)
 # COMPETITIONS URLs#
 router_competitions = routers.SimpleRouter()
 router_competitions.register(r'crud', CompetitionViewSet)
-router_competitions.register(r'round', RoundViewSet)
+# Groups
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
 router_competitions.register(r'groups_not_valid', CompetitionGetNotValidGroupsViewSet)
 router_competitions.register(r'group_valid', CompetitionGroupValidViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
+# Agent
 router_competitions.register(r'agent', AgentViewSets)
-router_competitions.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_competitions.register(r'associate_agent', AssociateAgent)
+# Round
+router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'valid_round_agents', AgentsRound)
 router_competitions.register(r'valid_round_participants', RoundParticipants)
 router_competitions.register(r'valid_round_groups', RoundGroups)
 router_competitions.register(r'not_eligible_round_agents', AgentsNotEligible)
 router_competitions.register(r'not_eligible_round_participants', RoundParticipantsNotEligible)
 router_competitions.register(r'not_eligible_round_groups', RoundGroupsNotEligible)
+# Simulation
 router_competitions.register(r'simulation', SimulationViewSet)
 router_competitions.register(r'associate_agent_to_simulation', AssociateAgentToSimulation)
 router_competitions.register(r'simulations_by_agent', SimulationByAgent)
 router_competitions.register(r'simulations_by_round', SimulationByRound)
-router_competitions.register(r'simulations_by'
-                             r'_competition', SimulationByCompetition)
+router_competitions.register(r'simulations_by_competition', SimulationByCompetition)
 router_competitions.register(r'simulation_agents', GetSimulationAgents)
 router_competitions.register(r'simulation_log', SaveLogs)
 router_competitions.register(r'get_simulations', GetSimulations)
+# Uploads
+router_competitions.register(r'delete_agent_file', DeleteUploadedFileAgent)
 
 # COMPETITIONS URLs#
 
@@ -82,7 +88,8 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),
                        # get agent files
-                       url(r'^api/v1/competitions/agent_file/(?P<simulation_id>.+)/(?P<agent_name>.+)/$', GetAgentFiles.as_view(),
+                       url(r'^api/v1/competitions/agent_file/(?P<simulation_id>.+)/(?P<agent_name>.+)/$',
+                           GetAgentFiles.as_view(),
                            name="Get agent files"),
 
                        # url(r'^api/v1/', include(router.urls)),
