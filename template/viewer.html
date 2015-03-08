@@ -631,17 +631,6 @@
     </footer>
     <!-- /Main page footer -->
 
-
-
-    <textarea id="XML" cols="55" rows="15" style="visibility: hidden; display: none">
-
-
-    </textarea>
-
-
-
-
-
     <!-- Scripts -->
     <script src="js/navigation.js"></script>
     <script src="js/bootstrap/bootstrap-affix.js"></script>
@@ -698,6 +687,30 @@
                 return false;
             }
         });
+    </script>
+
+    <script>
+        $(document).keydown(function(e) {
+            switch(e.which) {
+                case 37: // left
+                    angular.element('[ng-controller=ctrl]').scope().idx-=100;
+                    break;
+
+                case 38: // up
+                    break;
+
+                case 39: // right
+                    angular.element('[ng-controller=ctrl]').scope().idx+=100;
+                    break;
+
+                case 40: // down
+                    break;
+
+                default: return; // exit this handler for other keys
+            }
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        });
+
     </script>
 
     <script>
