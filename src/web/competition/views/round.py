@@ -79,9 +79,6 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
-        for c_agent in CompetitionAgent.objects.all():
-            c_agent.delete()
-
         r.delete()
 
         return Response(status=status.HTTP_200_OK)

@@ -236,7 +236,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         # validations update values
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
-            
+
         group_enrolled = GroupEnrolled.objects.get(competition=competition, group=group)
         group_enrolled.delete()
 

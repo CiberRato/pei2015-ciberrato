@@ -23,6 +23,13 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, *args, **kwargs):
+        """
+        B{Create} one simulation for one round
+        B{URL:} ../api/v1/competitions/simulation/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -101,6 +108,19 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
         return permissions.IsAuthenticated(),
 
     def create(self, request, *args, **kwargs):
+        """
+        B{Create} one simulation for one round
+        B{URL:} ../api/v1/competitions/associate_agent_to_simulation/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  simulation_identifier: str
+        @param simulation_identifier: The simulation identifier
+        @type  agent_name: str
+        @param agent_name: The agent name
+        @type  pos: int
+        @param pos: The agent position
+        """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -145,6 +165,13 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                         return Response({'status': 'Bad Request',
                                          'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
+
+            # Reload values
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+            simulation = get_object_or_404(Simulation.objects.all(),
+                                           identifier=serializer.validated_data['simulation_identifier'])
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
                                                     pos=serializer.validated_data['pos'])
