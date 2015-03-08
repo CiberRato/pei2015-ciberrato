@@ -13,11 +13,13 @@
         console.log("estive aqui");
         vm.create = create;
 
+        var username;
+
         activate();
 
         function activate(){
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            var username = $routeParams.username;
+            username = $routeParams.username;
 
             if(!authenticatedAccount){
                 $location.url('/');
@@ -30,7 +32,25 @@
         }
 
         function create(){
-            Team.create(vm.name, vm.max_members);
+            Team.create(vm.name, vm.max_members).then(createSuccessFn, createErrorFn);;
+        }
+
+        function createSuccessFn(data, status, headers, config){
+            $.jGrowl("Group has been created successfully.", {
+                life: 2500,
+                theme: 'success'
+            });
+            $location.path('/panel/'+ username + '/myTeams/');
+
+
+        }
+
+        function createErrorFn(data, status, headers, config){
+            console.error(data.data);
+            $.jGrowl("Group could not be created.", {
+                life: 2500,
+                theme: 'btn-danger'
+            });
         }
     }
 })();

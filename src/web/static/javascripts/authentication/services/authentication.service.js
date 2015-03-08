@@ -51,12 +51,19 @@
         }
 
         function registerSuccessFn(data, status, headers, config){
+            $.jGrowl("Register Error.", {
+                life: 2500,
+                theme: 'btn-success'
+            });
             $location.path('/idp/login/');
         }
 
         function registerErrorFn(data, status, headers, config){
-            console.error("Registration Failure!");
             console.error(data.data);
+            $.jGrowl("Register Error.", {
+                life: 2500,
+                theme: 'btn-danger'
+            });
 
         }
 

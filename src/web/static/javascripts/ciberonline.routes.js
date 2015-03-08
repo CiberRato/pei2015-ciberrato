@@ -8,7 +8,7 @@
     config.$inject = ['$routeProvider'];
 
     function config($routeProvider){
-        $routeProvider.when('/idp/register',{
+        $routeProvider.when('/idp/register/',{
             controller: 'RegisterController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/authentication/register.html'
@@ -27,14 +27,18 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editProfile.html'
         }).when('/panel/:username/myTeams',{
-            controller: 'ProfileController',
+            controller: 'MyTeamsController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/myTeams.html'
         }).when('/panel/:username/createTeam',{
             controller: 'CreateTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/createTeam.html'
+        }).when('/panel/:username/:team.name/editGroup',{
+            templateUrl: '/static/templates/panel/editGroup.html'
         }).when('/panel/allTeams',{
+            controller:'AllTeamsController',
+            controllerAs:'vm',
             templateUrl: '/static/templates/panel/allTeams.html'
         }).when('/',{
             templateUrl: '/templates/index.html'

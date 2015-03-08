@@ -1,6 +1,4 @@
-<div class="content-block" role="main">
-
-
+<div class="content-block" role="main" ng-controller="AllTeamsController">
     <!-- Grid row -->
     <div class="row">
 
@@ -14,6 +12,7 @@
 
                         <h2>All teams</h2>
                         <p>Here is shown in table the list of all teams registered. You may able to see their informations</strong></p>
+
                         <table class="table table-striped table-hover">
                             <thead>
                             <tr>
@@ -22,17 +21,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td>Cenas</td>
-                                <td>3</td>
-                            </tr>
-                            <tr>
-                                <td>Mosquitos</td>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <td>Rabanozes</td>
-                                <td>2</td>
+                            <tr ng-repeat="(key, value) in vm.team">
+                                <td>{{value.name}}</td>
+                                <td>{{value.max_members}}</td>
+
                             </tr>
                             </tbody>
                         </table>

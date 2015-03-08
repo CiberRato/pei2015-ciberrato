@@ -1,7 +1,4 @@
-<div class="content-block" role="main">
-
-
-
+<div class="content-block" role="main" ng-controller="MyTeamsController" ng-controller="ProfileController">
     <!-- Grid row -->
     <div class="row">
 
@@ -22,17 +19,9 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td><a href="editGroup.html">Cenas</a></td>
-                                <td>3</td>
-                            </tr>
-                            <tr>
-                                <td><a href="editGroup.html">Cenas</a></td>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <td><a href="editGroup.html">Cenas</a></td>
-                                <td>2</td>
+                            <tr ng-repeat="(key, value) in vm.team">
+                                <td><a href="panel/{{ value.name }}/editProfile">{{ value.name }}</a></td>
+                                <td>{{value.max_members}}</td>
                             </tr>
                             </tbody>
                         </table>

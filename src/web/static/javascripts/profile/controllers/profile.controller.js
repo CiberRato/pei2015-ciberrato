@@ -15,6 +15,7 @@
         activate();
 
         function activate(){
+            console.log("profile")
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 

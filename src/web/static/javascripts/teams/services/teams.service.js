@@ -9,7 +9,9 @@
 
     function Team($http){
         var Team = {
-            create: create
+            create: create,
+            getAll: getAll,
+            getByUser: getByUser
         };
 
         return Team;
@@ -18,16 +20,17 @@
             return $http.post('api/v1/groups/crud/', {
                 name: name,
                 max_members: max_members
-            }).then(createSuccessFn, createErrorFn);
+            });
 
         }
 
-        function createSuccessFn(data, status, headers, config){
-            $location.path('/idp/panel/:username/myTeams/');
+        function getAll(){
+            return $http.get('api/v1/groups/crud/');
         }
 
-        function createErrorFn(data, status, headers, config){
-            console.error(data.data);
+        function getByUser(username){
+            console.log(username);
+            return $http.get('api/v1/groups/user/' + username + '/');
         }
 
     }
