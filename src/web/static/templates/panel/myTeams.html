@@ -1,4 +1,4 @@
-<div class="content-block" role="main" ng-controller="MyTeamsController" ng-controller="ProfileController">
+<div class="content-block" role="main">
     <!-- Grid row -->
     <div class="row">
 
@@ -20,15 +20,13 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.team">
-                                <td><a href="panel/{{ value.name }}/editProfile">{{ value.name }}</a></td>
+                                <td><a href="panel/{{ value.name }}/editTeam">{{ value.name }}</a></td>
                                 <td>{{value.max_members}}</td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div class="form-actions">
-                        <a class="btn btn-large btn-inverse btn-alt" href="index.html"><span class="pull-left"> </span> Back </a>
-                    </div>
+
                 </section>
             </div>
 

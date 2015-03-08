@@ -15,7 +15,6 @@
         activate();
 
         function activate(){
-            console.log("profile")
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 
@@ -39,7 +38,6 @@
         }
 
         function update(){
-            console.log('update');
             Profile.update(vm.profile).then(profileSuccessFn, profileErrorFn);
 
             function profileSuccessFn(data, status, headers, config){

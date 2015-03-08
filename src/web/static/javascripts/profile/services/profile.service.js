@@ -16,12 +16,10 @@
         return Profile;
 
         function get(username) {
-            console.log('get');
             return $http.get('/api/v1/accounts/' + username + '/');
         }
 
         function update(profile){
-            console.log('update');
             return $http.put('/api/v1/accounts/' + profile.username + '/', profile);
         }
 

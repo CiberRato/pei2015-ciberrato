@@ -34,8 +34,14 @@
             controller: 'CreateTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/createTeam.html'
-        }).when('/panel/:username/:team.name/editGroup',{
-            templateUrl: '/static/templates/panel/editGroup.html'
+        }).when('/panel/:name/editTeam',{
+            controller: 'TeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/editTeam.html'
+        }).when('/panel/:name/editTeamProfile',{
+            controller: 'TeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/editTeamProfile.html'
         }).when('/panel/allTeams',{
             controller:'AllTeamsController',
             controllerAs:'vm',

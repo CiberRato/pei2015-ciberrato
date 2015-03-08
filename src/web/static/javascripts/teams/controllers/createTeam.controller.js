@@ -36,7 +36,7 @@
         }
 
         function createSuccessFn(data, status, headers, config){
-            $.jGrowl("Group has been created successfully.", {
+            $.jGrowl("Team has been created successfully.", {
                 life: 2500,
                 theme: 'success'
             });
