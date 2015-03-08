@@ -3,7 +3,6 @@ from groups.serializers import *
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Competition
         fields = ('name', 'type_of_competition', 'enrolled_groups')
@@ -31,11 +30,14 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
 class AgentSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(max_length=128)
     user = AccountSerializer(read_only=True)
+    rounds = RoundSerializer(many=True)
+    competitions = CompetitionSerializer(many=True)
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'is_virtual', 'user', 'group_name', 'created_at', 'updated_at')
-        read_only_fields = ('user', 'created_at', 'updated_at',)
+        fields = ('agent_name', 'is_virtual', 'language', 'rounds', 'competitions', 'user', 'group_name', 'created_at',
+                  'updated_at')
+        read_only_fields = ('user', 'language', 'rounds', 'competitions', 'created_at', 'updated_at',)
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):
@@ -48,20 +50,63 @@ class CompetitionAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at',)
 
 
-"""
----------------------------------------------------------------
-APAGAR A PARTE DA SIMULATION QUANDO AS RONDAS ESTIVEREM PRONTAS
----------------------------------------------------------------
-"""
-class SimulationSerializer(serializers.BaseSerializer):
-    """
-    This serializer is only to retrieve and list methods.
-    """
+class SimulationSerializer(serializers.ModelSerializer):
+    round_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = Simulation
+        fields = ('identifier', 'round_name', 'created_at', 'updated_at',)
+        read_only_fields = ('identifier', 'created_at', 'updated_at',)
+
+
+class SimulationAgentSerializer(serializers.ModelSerializer):
+    simulation_identifier = serializers.CharField(max_length=100)
+    agent_name = serializers.CharField(max_length=128)
+    round_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = LogSimulationAgent
+        fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos',)
+        read_only_fields = ()
+
+
+class LogSimulation(serializers.ModelSerializer):
+    simulation_identifier = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = Simulation
+        fields = ('simulation_identifier', 'log_json', 'simulation_log_xml',)
+        read_only_fields = ()
+
+
+class AgentXSerializer(serializers.BaseSerializer):
 
     def to_representation(self, instance):
+        if not instance.files:
+            return {
+                'agent_type': instance.agent_type,
+                'agent_name': instance.agent_name,
+                'pos': instance.pos,
+                'language': instance.language
+            }
+        else:
+            return {
+                'agent_type': instance.agent_type,
+                'agent_name': instance.agent_name,
+                'pos': instance.pos,
+                'language': instance.language,
+                'files': instance.files
+            }
+
+
+class SimulationXSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, instance):
+        agents = AgentXSerializer(instance.agents, many=True)
         return {
-            'param_list_path': "media/tmp_simulations/Param.xml",
-            'grid_path': "media/tmp_simulations/Ciber2010_Grid.xml",
-            'lab_path': "media/tmp_simulations/Ciber2010_Lab.xml",
-            'agent_path': "media/tmp_simulations/myrob.py"
+            'simulation_id': instance.simulation_id,
+            'grid': instance.grid,
+            'param_list': instance.param_list,
+            'lab': instance.lab,
+            'agents': agents.data
         }

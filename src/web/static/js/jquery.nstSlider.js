@@ -485,12 +485,12 @@
             //
             // if the user used the finger, he/she is allowed to touch anywhere.
             // but if the mouse is used, we want to enable the logic only for
-            // left grip, right grip, bar/panel elements.
+            // left grip, right grip, bar/profile elements.
             //
             var $target = $(e.target);
 
             // ... if the highlight range was enabled we should check wether
-            // the user has tapped or clicked the highlight panel...
+            // the user has tapped or clicked the highlight profile...
             var targetIsPanelSelector = false;
             if (typeof settings.highlight === 'object') {
                 targetIsPanelSelector = $target.is(settings.highlight.panel_selector);
@@ -1085,7 +1085,7 @@
                 //
                 // 'highlight' : {
                 //     'grip_class' : '.nsti-slider-hi',
-                //     'panel_selector' : '.nst-slider-highlight-panel'
+                //     'panel_selector' : '.nst-slider-highlight-profile'
                 // },
                 'highlight' : undefined,
 

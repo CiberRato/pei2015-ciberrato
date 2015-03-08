@@ -1,0 +1,70 @@
+<div class="content-block" role="main">
+
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>Edit Team Profile</h2>
+                    <section class="tab-content">
+                        <br></br>
+                        <!-- Tab #basic -->
+                        <div class="tab-pane active" id="basic">
+
+                            <!-- Example vertical forms -->
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <p>In this page you can edit your team profile. Please edit your <strong>team name</strong>,
+                                        <strong>max number of members</strong> or <strong>delete your Team</strong>.
+                                    </p>
+                                    <br></br>
+                                    <p> When you complete your editions, please click on button <strong>Save changes</strong> to save your profile with new information.</p>
+
+                                </div>
+                                <div class="span8">
+                                    <form role="form" ng-submit="vm.update()">
+                                        <fieldset>
+                                            <div class="control-group">
+                                                <label class="control-label" for="teamName">Team Name</label>
+                                                <div class="controls">
+                                                    <input id="teamName" class="form-control" type="text" placeholder="Team Name" name="name" ng-model="vm.profile.first_name" enabled>
+                                                    <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
+                                                </div>
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label class="control-label" for="max_members">Max Number of Members</label>
+                                                <div class="controls">
+                                                    <input id="max_members" class="input-xlarge" type="number" placeholder="Max Number of Members" name="name" ng-model="vm.profile.last_name" enabled>
+                                                    <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
+                                                </div>
+                                            </div>
+
+                                            <div class="control-group">
+                                                <a class="btn btn-primary btn-flat" ng-click="vm.removeMember(value.username)">Delete Team</a>
+
+                                            </div>
+
+                                            <div class="form-actions">
+                                                <a class="btn btn-alt btn-large btn-primary" type="submit">Save changes</a>
+                                            </div>
+
+                                            <!-- info abaixo -->
+                                            <footer class="info">
+                                                <p>After you click on "Save Changes", the profile information will be saved in a database.</p>
+
+
+                                            </footer>
+                                        </fieldset>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+            </div>
+        </article>
+    </div>
+</div>

@@ -152,14 +152,17 @@ def dist(p,q):
     (qx,qy) = q
     return sqrt((px-qx)**2 + (py-qy)**2)
 
+robname = "AA"
 host = "localhost"
 pos = 3
 for i in range(0, len(sys.argv)):
-  if sys.argv[i] == "--host" and i != len(sys.argv)-1:
+  if sys.argv[i] == "-host" and i != len(sys.argv)-1:
     host = sys.argv[i+1]
-  if sys.argv[i] == "--pos" and i != len(sys.argv)-1:
+  if sys.argv[i] == "-pos" and i != len(sys.argv)-1:
     pos = int(sys.argv[i+1])
+  if sys.argv[i] == "-robname" and i != len(sys.argv)-1:
+    robname = sys.argv[i+1]
 
-rob = MyRob("AA", pos, host)
+rob = MyRob(robname, pos, host)
 rob.run()
 

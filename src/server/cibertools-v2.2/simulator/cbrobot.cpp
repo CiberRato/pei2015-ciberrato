@@ -1041,21 +1041,21 @@ void cbRobot::Log(ostream &log, bool withActions)
 #ifdef LOGWITHMEASURES
 	char xml[1024*16];
 	unsigned int n;
-	n = sprintf(xml, "<Measures Time=\"%u\">\n", simulator->curTime());
+	n = sprintf(xml, "\t\t<Measures Time=\"%u\">\n", simulator->curTime());
 	/* add sensor information */
-	n += sprintf(xml+n, "\t<Sensors");
+	n += sprintf(xml+n, "\t\t\t<Sensors");
 	n += sprintf(xml+n, " Compass=\"%g\"", compassSensor->Degrees());
 
 	n += sprintf(xml+n, " Collision=\"%s\"", collisionSensor->Value()?"Yes":"No");
 	n += sprintf(xml+n, " Ground=\"%d\">\n", groundSensor->Value());
 
 	for(int i=0; i < NUM_IR_SENSORS; i++)
-		n += sprintf(xml+n,"\t\t<IRSensor Id=\"%d\" Value=\"%g\"/>\n",
+		n += sprintf(xml+n,"\t\t\t\t<IRSensor Id=\"%d\" Value=\"%g\"/>\n",
 				i, irSensors[i]->Value());
 
 	for(unsigned int b=0; b < beaconSensors.size(); b++) {
         if(beaconSensors[b]->Ready()){
-            n += sprintf(xml+n, "\t\t<BeaconSensor Id=\"%d\" Value=", b);
+            n += sprintf(xml+n, "\t\t\t\t<BeaconSensor Id=\"%d\" Value=", b);
 	        if(beaconSensors[b]->BeaconVisible())
 	            n += sprintf(xml+n, "\"%g\"", beaconSensors[b]->Degrees());
 	        else
@@ -1065,21 +1065,21 @@ void cbRobot::Log(ostream &log, bool withActions)
 	}
 
     if(GPSOn) {
-	   n += sprintf(xml+n, "\t\t<GPS X=\"%g\" Y=\"%g\" ", 
+	   n += sprintf(xml+n, "\t\t\t\t<GPS X=\"%g\" Y=\"%g\" ", 
                     GPSSensor->X(), GPSSensor->Y());
        if(GPSDirOn) n += sprintf(xml+n, " Dir=\"%g\" ", GPSSensor->Degrees());
        n += sprintf(xml+n, "/>\n");
     }
 
-	n += sprintf(xml+n, "\t</Sensors>\n");
+	n += sprintf(xml+n, "\t\t\t</Sensors>\n");
 	/* add end led information */
-	n += sprintf(xml+n, "\t<Leds EndLed=\"%s\" ReturningLed=\"%s\" VisitingLed=\"%s\"/>\n", 
+	n += sprintf(xml+n, "\t\t\t<Leds EndLed=\"%s\" ReturningLed=\"%s\" VisitingLed=\"%s\"/>\n", 
 			    endLed?"On":"Off", returningLed?"On":"Off", visitingLed?"On":"Off");
 	/* add buttons information */
-	n += sprintf(xml+n, "\t<Buttons Start=\"%s\" Stop=\"%s\"/>\n",
+	n += sprintf(xml+n, "\t\t\t<Buttons Start=\"%s\" Stop=\"%s\"/>\n",
 			simulator->getNextState()==cbSimulator::RUNNING?"On":"Off",
                         simulator->getNextState()==cbSimulator::STOPPED?"On":"Off");
-	n += sprintf(xml+n, "</Measures>\n");
+	n += sprintf(xml+n, "\t\t</Measures>\n");
 
 	log << xml;
 #endif

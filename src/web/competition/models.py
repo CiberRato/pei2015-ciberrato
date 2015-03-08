@@ -12,9 +12,9 @@ class Competition(models.Model):
         (settings.COMPETITIVA, 'Competitiva'),
     )
 
-    REGISTER = 'RG'
-    COMPETITION = 'CP'
-    PAST = 'PST'
+    REGISTER = 'Register'
+    COMPETITION = 'Competition'
+    PAST = 'Past'
 
     STATE = (
         (REGISTER, 'Register'),
@@ -81,10 +81,12 @@ class Agent(models.Model):
     group = models.ForeignKey(Group, blank=False)
     locations = models.CharField(max_length=256)
 
+    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
     code_valid = models.BooleanField(default=False)
     is_virtual = models.BooleanField(default=False)
 
     competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
+    rounds = models.ManyToManyField('Round', through='CompetitionAgent', related_name="round")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -115,18 +117,25 @@ class LogSimulationAgent(models.Model):
     competition_agent = models.ForeignKey('CompetitionAgent')
     simulation = models.ForeignKey('Simulation')
 
+    pos = models.IntegerField(blank=False)
+
+    class Meta:
+        unique_together = ('competition_agent', 'simulation',)
+
 
 class Simulation(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
     round = models.ForeignKey(Round, blank=False)
-    log_path = models.FileField(max_length=128)
+    log_json = models.TextField(max_length=128)
+    simulation_log_xml = models.TextField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['created_at']
+        get_latest_by = "created_at"
 
     def __unicode__(self):
         return self.agent_path

@@ -50,7 +50,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                          'message': 'The group could not be created with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the group attributes by group name
         B{URL:} ../api/v1/groups/crud/<group_name>/
@@ -59,11 +59,11 @@ class GroupViewSet(viewsets.ModelViewSet):
         @param pk: The group name
         """
         queryset = Group.objects.all()
-        group = get_object_or_404(queryset, name=pk)
+        group = get_object_or_404(queryset, name=kwargs.get('pk'))
         serializer = self.serializer_class(group)
         return Response(serializer.data)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} the group by a group admin user and delete all the group members
         B{URL:} ../api/v1/groups/crud/<group_name>/
@@ -72,12 +72,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @param pk: The group name
         """
         queryset = Group.objects.all()
-        group = get_object_or_404(queryset, name=pk)
-
-        group_members = GroupMember.objects.filter(group=group)
-        for member in group_members:
-            member.delete()
-
+        group = get_object_or_404(queryset, name=kwargs.get('pk'))
         group.delete()
         return Response({'status': 'Deleted',
                          'message': 'The group has been deleted and the group members too.'},
@@ -99,12 +94,12 @@ class AccountGroupsViewSet(mixins.RetrieveModelMixin,
         """
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the groups of an Account
         B{URL:} ../api/v1/groups/user/<username>/
         """
-        self.queryset = self.queryset.get(username=pk)
+        self.queryset = self.queryset.get(username=kwargs.get('pk'))
         serializer = self.serializer_class(self.queryset.groups, many=True)
         return Response(serializer.data)
 
@@ -122,12 +117,12 @@ class GroupMembersViewSet(mixins.RetrieveModelMixin,
         """
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the Group members list
         B{URL:} ../api/v1/groups/members/<group_name>/
         """
-        group = get_object_or_404(Group.objects.all(), name=pk)
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
 
         queryset = self.queryset.filter(group=group)
         queryset = [gm.account for gm in queryset]
@@ -190,7 +185,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         'message': 'The group member could not be created with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def destroy(self, request, pk, **kwargs):
+    def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} a GroupMember from a Group
         B{URL:} ../api/v1/groups/member/<group_name>/?username=<user_name>
@@ -205,7 +200,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                             'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=pk)
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
         member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
@@ -220,7 +215,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         return Response(status=status.HTTP_200_OK)
 
-    def retrieve(self, request, pk, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the GroupMember of a Group
         B{URL:} ../api/v1/groups/member/<group_name>/?username=<user_name>
@@ -235,7 +230,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                             'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=pk)
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
         member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
@@ -264,7 +259,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
         """
         return permissions.IsAuthenticated(), IsAdminOfGroup(),
 
-    def update(self, request, pk, **kwargs):
+    def update(self, request, *args, **kwargs):
         """
         B{Update}: make admin of the Group
         B{URL:} ../api/v1/groups/admin/<group_name>/?username=<user_name>
@@ -279,7 +274,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
                             'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=pk)
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
         member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)

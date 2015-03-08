@@ -9249,8 +9249,8 @@ body > header .brand {
   background-color: transparent;
   border: 0;
   display: block;
-  width: 114px;
-  height: 37px;
+  width: 432px;
+  height: 84px;
   background-image: url("../img/template_logo.png");
 }
 body > header nav {
@@ -11347,6 +11347,9 @@ form .alert {
 }
 .loading.blue {
   background-image: url("../img/icons/loading_blue.gif");
+}
+.loading.ciber {
+    background-image: url("../img/icons/loading_ciber.gif");
 }
 /* Data block components */
 /* Data block header controls */
