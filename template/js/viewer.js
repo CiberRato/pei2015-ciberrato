@@ -19,7 +19,7 @@ angular.module('myapp', [])
         var logInfo_obj = angular.fromJson(logInfo);
 
         var b = 0;
-        var play = 0;
+        $scope.playvar = 0;
 
         /* Convert wall points to be integrated in SVG */
         for(i=0; i<lab_obj.Lab.Wall.length; i++){
@@ -100,13 +100,13 @@ angular.module('myapp', [])
                 $scope.updateValues();
 
                 $(".leftGrip").css("left", ($scope.idx*820)/$scope.param._SimTime);
-                if(play){
+                if($scope.play){
                     $scope.idx++;
                 }
             }catch(TypeError){
                 $scope.pause();
             }
-            if(play){
+            if($scope.playvar){
                 refresh($scope.refresh_rate);
             }
         };
@@ -203,22 +203,22 @@ angular.module('myapp', [])
         };
 
         $scope.play = function() {
-            if(!play){
-                play = 1;
+            if(!$scope.playvar){
+                $scope.playvar = 1;
                 refresh($scope.refresh_rate);
             }
         };
 
         $scope.pause = function(){
-            if(play){
-                play = 0;
+            if($scope.playvar){
+                $scope.playvar = 0;
                 $timeout($scope.refreshSVG, 1000);
             }
         };
 
         $scope.stop = function(){
             $scope.idx = 0;
-            play = 0;
+            $scope.playvar = 0;
             refresh(0);
         };
     }])

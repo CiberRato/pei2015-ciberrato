@@ -680,6 +680,27 @@
     </script>
 
     <script>
+        $(window).keypress(function(e) {
+            if ((e.keyCode == 0 || e.keyCode == 32) && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
+                console.log('Space pressed');
+                angular.element('[ng-controller=ctrl]').scope().pause();
+                $("#pause").attr("disabled", true);
+                $("#play").removeAttr("disabled");
+                $("#stop").removeAttr("disabled");
+                return false;
+            }
+            else if((e.keyCode == 0 || e.keyCode == 32) && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
+                console.log('Space pressed');
+                angular.element('[ng-controller=ctrl]').scope().play();
+                $("#play").attr("disabled", true);
+                $("#pause").removeAttr("disabled");
+                $("#stop").removeAttr("disabled");
+                return false;
+            }
+        });
+    </script>
+
+    <script>
         $('#scoretable').on('click', '#show1' , function () {
             $("#line1").css({"visibility":"visible", "display": "initial"});
             $(this).attr("disabled", true);
