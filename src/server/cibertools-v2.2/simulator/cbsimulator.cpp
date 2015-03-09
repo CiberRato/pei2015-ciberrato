@@ -626,7 +626,7 @@ void cbSimulator::CheckIn()
 					size += grid->toXml(xmlread, sizeof(xmlread));
 					strcat(xml, xmlread);
 
-					views[cnt]->send(xml, size+1);
+					views[cnt]->send(xml, size);
 				} else {
 					views[cnt]->Reply(form.addr, form.port, param);
 				}
