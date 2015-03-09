@@ -78,7 +78,35 @@ class GroupViewSet(viewsets.ModelViewSet):
                          'message': 'The group has been deleted and the group members too.'},
                         status=status.HTTP_200_OK)
 
-        # update? missing I think...
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the group
+        B{URL:} ../api/v1/groups/crud/<group_name>/
+
+        @type  pk: str
+        @param pk: The group name
+        """
+        queryset = Group.objects.all()
+        group = get_object_or_404(queryset, name=kwargs.get('pk'))
+
+        max_members = request.data.get('max_members', None)
+        name = request.data.get('name', None)
+
+        if max_members is not None:
+            group.max_members = max_members
+        if name is not None:
+            group.name = name
+
+        if max_members is None and name is None:
+            return Response({'status': 'Bad request',
+                             'message': 'The group could not be updated with received data.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        else:
+            group.save()
+
+        return Response({'status': 'Updated',
+                         'message': 'The group has been updated.'},
+                        status=status.HTTP_200_OK)
 
 
 class AccountGroupsViewSet(mixins.RetrieveModelMixin,

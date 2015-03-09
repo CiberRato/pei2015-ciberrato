@@ -13,7 +13,7 @@ class GroupsModelsTestCase(TestCase):
         a2 = Account.objects.create(email="ey@rf.pt", username="eypo", first_name="Costa", last_name="Ferreira",
                                     teaching_institution="Universidade de Aveiro")
         Account.objects.create(email="af@rf.pt", username="eypo94", first_name="Antonio", last_name="Ferreira",
-                                    teaching_institution="Universidade de Aveiro")
+                               teaching_institution="Universidade de Aveiro")
         GroupMember.objects.create(account=a1, group=g)
         GroupMember.objects.create(account=a2, group=g)
 
@@ -153,8 +153,21 @@ class GroupsModelsTestCase(TestCase):
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
-        # delete the group
+        # update the group
         url = "/api/v1/groups/crud/TestGroup/"
+        data = {'name': "XPTO2", 'max_members': 10}
+        response = client.put(url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'status': 'Updated', 'message': 'The group has been updated.'})
+
+        # see if has been updated
+        url = "/api/v1/groups/crud/XPTO2/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'max_members': 10, 'name': u'XPTO2'})
+
+        # delete the group
+        url = "/api/v1/groups/crud/XPTO2/"
         response = client.delete(url)
 
         self.assertEqual(response.status_code, 200)
@@ -162,7 +175,7 @@ class GroupsModelsTestCase(TestCase):
                          {'status': 'Deleted', 'message': 'The group has been deleted and the group members too.'})
 
         # the group not found
-        url = "/api/v1/groups/members/TestGroup/"
+        url = "/api/v1/groups/members/XPTO2/"
         response = client.get(url)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data, {u'detail': u'Not found'})
@@ -249,7 +262,8 @@ class GroupsModelsTestCase(TestCase):
         data = {'name': 'TestGroup', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+        self.assertEqual(response.data,
+                         {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
 
         client.force_authenticate(user=None)
 
@@ -262,7 +276,6 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 0}
         response = client.post(path=url, data=data, format='json')
-
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data,
@@ -305,7 +318,8 @@ class GroupsModelsTestCase(TestCase):
         data = {'group_name': 'TestGroup', 'user_name': 'eypo94'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': 'The group reached the number max of members:2'})
+        self.assertEqual(response.data,
+                         {'status': 'Bad request', 'message': 'The group reached the number max of members:2'})
 
         client.force_authenticate(user=None)
         user = Account.objects.get(username="eypo")
