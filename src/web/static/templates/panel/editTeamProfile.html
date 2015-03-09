@@ -1,4 +1,4 @@
-<div class="content-block" role="main">
+<div class="content-block" role="main" ng-controller="EditTeamController">
 
     <!-- Grid row -->
     <div class="row">
@@ -29,7 +29,7 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="teamName">Team Name</label>
                                                 <div class="controls">
-                                                    <input id="teamName" class="form-control" type="text" placeholder="Team Name" name="name" ng-model="vm.profile.first_name" enabled>
+                                                    <input id="teamName" class="form-control" type="text" placeholder="Team Name" name="name" ng-model="vm.team.name" enabled>
                                                     <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
                                                 </div>
                                             </div>
@@ -37,7 +37,7 @@
                                             <div class="control-group">
                                                 <label class="control-label" for="max_members">Max Number of Members</label>
                                                 <div class="controls">
-                                                    <input id="max_members" class="input-xlarge" type="number" placeholder="Max Number of Members" name="name" ng-model="vm.profile.last_name" enabled>
+                                                    <input id="max_members" class="form-control" type="number" placeholder="Max Number of Members" name="max_members" ng-model="vm.team.max_members" enabled>
                                                     <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
                                                 </div>
                                             </div>
@@ -48,7 +48,7 @@
                                             </div>
 
                                             <div class="form-actions">
-                                                <a class="btn btn-alt btn-large btn-primary" type="submit">Save changes</a>
+                                                <button class="btn btn-alt btn-large btn-primary" type="submit">Save changes</button>
                                             </div>
 
                                             <!-- info abaixo -->

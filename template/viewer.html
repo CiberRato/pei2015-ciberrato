@@ -205,19 +205,19 @@
                                                         </g>
                                                     </g>
                                                     <g id="line1" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline1}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                        <polyline points="{{pline1}}" style="fill:none;stroke:#E04F5F;stroke-width:3" />
                                                     </g>
                                                     <g id="line2" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline2}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                        <polyline points="{{pline2}}" style="fill:none;stroke:#5FBF60;stroke-width:3" />
                                                     </g>
                                                     <g id="line3" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline3}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                        <polyline points="{{pline3}}" style="fill:none;stroke:#29BAF7;stroke-width:3" />
                                                     </g>
                                                     <g id="line4" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline4}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                        <polyline points="{{pline4}}" style="fill:none;stroke:#eaea3d;stroke-width:3" />
                                                     </g>
                                                     <g id="line5" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline5}}" style="fill:none;stroke:yellow;stroke-width:3" />
+                                                        <polyline points="{{pline5}}" style="fill:none;stroke:#f28d14;stroke-width:3" />
                                                     </g>
                                                     <g>
 
@@ -670,7 +670,7 @@
 
     <script>
         $(window).keypress(function(e) {
-            if ((e.keyCode == 0 || e.keyCode == 32) && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
+            if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
                 console.log('Space pressed');
                 angular.element('[ng-controller=ctrl]').scope().pause();
                 $("#pause").attr("disabled", true);
@@ -678,7 +678,7 @@
                 $("#stop").removeAttr("disabled");
                 return false;
             }
-            else if((e.keyCode == 0 || e.keyCode == 32) && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
+            else if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
                 console.log('Space pressed');
                 angular.element('[ng-controller=ctrl]').scope().play();
                 $("#play").attr("disabled", true);
