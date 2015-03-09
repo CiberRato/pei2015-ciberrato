@@ -166,14 +166,14 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
             if already_member:
                 return Response({'status': 'Bad request',
-                                'message': 'The user is already in the group'},
+                                 'message': 'The user is already in the group'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             number_of_members = len(GroupMember.objects.filter(group=group))
 
             if number_of_members >= group.max_members:
                 return Response({'status': 'Bad request',
-                                'message': 'The group reached the number max of members:' + str(number_of_members)},
+                                 'message': 'The group reached the number max of members:' + str(number_of_members)},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             group_member = GroupMember.objects.create(group=group, account=user)
@@ -182,7 +182,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                        'message': 'The group member could not be created with received data.'},
+                         'message': 'The group member could not be created with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
@@ -197,7 +197,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         if 'username' not in request.GET:
             return Response({'status': 'Bad request',
-                            'message': 'Please provide the ?username=*username*'},
+                             'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
@@ -207,11 +207,16 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if member_not_in_group:
             return Response({'status': 'Bad request',
-                            'message': 'The user is not in the group'},
+                             'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         group_member = GroupMember.objects.get(group=group, account=user)
         group_member.delete()
+
+        members = GroupMember.objects.filter(group=group)
+        if len(members) == 0:
+            group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+            group.delete()
 
         return Response(status=status.HTTP_200_OK)
 
@@ -227,7 +232,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         if 'username' not in request.GET:
             return Response({'status': 'Bad request',
-                            'message': 'Please provide the ?username=*username*'},
+                             'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
@@ -237,7 +242,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if member_not_in_group:
             return Response({'status': 'Bad request',
-                            'message': 'The user is not in the group'},
+                             'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         group_member = GroupMember.objects.get(group=group, account=user)
@@ -271,7 +276,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
         """
         if 'username' not in request.GET:
             return Response({'status': 'Bad request',
-                            'message': 'Please provide the ?username=*username*'},
+                             'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
@@ -281,7 +286,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
 
         if member_not_in_group:
             return Response({'status': 'Bad request',
-                            'message': 'The user is not in the group'},
+                             'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         members = GroupMember.objects.filter(group=group)
