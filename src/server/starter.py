@@ -33,6 +33,7 @@ def main():
 	# Run simulator for LINUX
 	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 	                "-nogui", \
+	                "-viewerlog", \
 	 				"-param", 	tempFilesList["param_list"].name, \
 	 				"-lab", 	tempFilesList["lab"].name, \
 	 				"-grid", 	tempFilesList["grid"].name], \

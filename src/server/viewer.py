@@ -24,6 +24,11 @@ def main():
 	log_file = open(log_name, "w")
 	log_file.write(data)
 
+	# Lab here
+	data, (host, port) = simulator_s.recvfrom(1024)
+	# Grid here
+	data, (host, port) = simulator_s.recvfrom(1024)
+
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	starter_s.connect(("127.0.0.1", 7000))
