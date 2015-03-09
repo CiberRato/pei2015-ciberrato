@@ -602,7 +602,8 @@ void cbSimulator::step()
 */
 void cbSimulator::CheckIn()
 {
-	char xml[4096*16];
+	char xmlread[4096*16];
+	char xml[4096*16*3];
 	int size;
 	while (receptionist->CheckIn())
 	{
@@ -618,11 +619,13 @@ void cbSimulator::CheckIn()
 
 				if (viewerAsLog) {
 					views[cnt]->Reply(form.addr, form.port, param, false);
-					size = param->toXml(xml, sizeof(xml));
-					views[cnt]->send(xml, size+1);
-					size = lab->toXml(xml, sizeof(xml));
-					views[cnt]->send(xml, size+1);
-					size = grid->toXml(xml, sizeof(xml));
+					size = param->toXml(xmlread, sizeof(xmlread));
+					strcat(xml, xmlread);
+					size += lab->toXml(xmlread, sizeof(xmlread));
+					strcat(xml, xmlread);
+					size += grid->toXml(xmlread, sizeof(xmlread));
+					strcat(xml, xmlread);
+
 					views[cnt]->send(xml, size+1);
 				} else {
 					views[cnt]->Reply(form.addr, form.port, param);

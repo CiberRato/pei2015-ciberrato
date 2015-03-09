@@ -15,19 +15,15 @@ def main():
 
 	simulator_s.sendto("<View/>\n" ,("127.0.0.1", 6000))
 	# Ler o valor do tempo de simulação e obter as portas
-	data, (host, port) = simulator_s.recvfrom(1024)
-	parametersXML = minidom.parseString(data.replace("\x00", ""))
+	data, (host, port) = simulator_s.recvfrom(4096)
+	# Vem params, grid e lab aqui
+	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
 	itemlist = parametersXML.getElementsByTagName('Parameters')
 	simTime = itemlist[0].attributes['SimTime'].value
 	log.write("SimTime: "+ simTime+"\n")
 
 	log_file = open(log_name, "w")
 	log_file.write(data)
-
-	# Lab here
-	data, (host, port) = simulator_s.recvfrom(1024)
-	# Grid here
-	data, (host, port) = simulator_s.recvfrom(1024)
 
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -45,7 +41,7 @@ def main():
 
 	checkedRobots = []
 	while len(checkedRobots) != int(robotsAmount):
-		data, (host, port) = simulator_s.recvfrom(1024)
+		data, (host, port) = simulator_s.recvfrom(4096)
 		#starter_s.send(data)
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
 		robots = robotsXML.getElementsByTagName('Robot')
