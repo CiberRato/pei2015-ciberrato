@@ -616,18 +616,18 @@ void cbSimulator::CheckIn()
 				views.resize(cnt+1);
 				views[cnt] = form.client.view;
 
-				views[cnt]->Reply(form.addr, form.port, param);
-
 				if (viewerAsLog) {
-					views[cnt]->Reply(form.addr, form.port, param);
+					views[cnt]->Reply(form.addr, form.port, param, false);
 					size = param->toXml(xml, sizeof(xml));
-					views[cnt]->send(xml, size);
+					views[cnt]->send(xml, size+1);
 					size = lab->toXml(xml, sizeof(xml));
-					views[cnt]->send(xml, size);
+					views[cnt]->send(xml, size+1);
 					size = grid->toXml(xml, sizeof(xml));
-					views[cnt]->send(xml, size);
+					views[cnt]->send(xml, size+1);
+				} else {
+					views[cnt]->Reply(form.addr, form.port, param);
 				}
-				
+
                 if (curState==INIT) {
 				    nextState=STOPPED;
                     if(logging)
