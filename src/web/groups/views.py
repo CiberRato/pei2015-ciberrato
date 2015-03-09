@@ -284,7 +284,19 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
                             'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        members = GroupMember.objects.filter(group=group)
+        num_admins = 0
+        for member in members:
+            if member.is_admin:
+                num_admins += 1
+
         group_member = GroupMember.objects.get(group=group, account=user)
+
+        if group_member.is_admin and num_admins == 1:
+            return Response({'status': 'Bad request',
+                             'message': 'The group mast have at least one admin!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         group_member.is_admin = not group_member.is_admin
         group_member.save()
 

@@ -141,8 +141,6 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
             if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
-                print numbers[competition.type_of_competition]
-                print len(groups_agents_in_round)
                 return Response({'status': 'Reached the limit of agents',
                                  'message': 'Reached the number of competition_agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
