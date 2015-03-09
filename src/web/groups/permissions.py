@@ -61,7 +61,6 @@ class IsAdminOfGroup(permissions.BasePermission):
                 if len(group) == 0:
                     return False
             else:
-                print request
                 return False
 
         group_member = GroupMember.objects.filter(account=request.user, group=group)
