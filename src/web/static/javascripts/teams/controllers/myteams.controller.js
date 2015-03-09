@@ -13,7 +13,6 @@
 		activate();
 
 		function activate(){
-            console.log("myteams")
 			var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 
