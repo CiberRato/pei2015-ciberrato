@@ -963,10 +963,12 @@ void cbSimulator::UpdateViews()
 		Log(xmlStream, false);
 
 		std::string xmlString = xmlStream.str();
-		const char* xmlCharA = xmlString.c_str();
-		for (unsigned int j = 0; j < views.size(); j++) {
-			cbView *view = views[j];
-			view->send(xmlCharA, xmlString.length()+1);
+		if (xmlString.length() != 0) {
+			const char* xmlCharA = xmlString.c_str();
+			for (unsigned int j = 0; j < views.size(); j++) {
+				cbView *view = views[j];
+				view->send(xmlCharA, xmlString.length()+1);
+		    }
 	    }
 	}
 
