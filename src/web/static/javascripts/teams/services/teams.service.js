@@ -16,7 +16,9 @@
             getMembers: getMembers,
             addMember: addMember,
             manageAdmin: manageAdmin,
-            removeMember: removeMember
+            removeMember: removeMember,
+            update: update,
+            getTeam: getTeam
         };
 
         return Team;
@@ -34,14 +36,15 @@
         }
 
         function getByUser(username){
-            console.log(username);
             return $http.get('api/v1/groups/user/' + username + '/');
         }
 
         function getTeamInformation(teamName, username){
-            console.log('entrei pelo' + teamName + username);
-            console.log($http.get('api/v1/groups/member/' + teamName +'/?username=' + username));
             return $http.get('api/v1/groups/member/' + teamName +'/?username=' + username);
+        }
+
+        function getTeam(teamName){
+            return $http.get('api/v1/groups/crud/' + teamName + '/');
         }
 
         function getMembers(teamName){
@@ -62,6 +65,14 @@
 
         function removeMember(user_name, group_name){
             return $http.delete('api/v1/groups/member/' + group_name + '/?username=' + user_name);
+        }
+
+        function update(team, teamName){
+            return $http.put('api/v1/groups/crud/' + teamName + "/", {
+                name: team.name,
+                max_members: team.max_members
+
+            });
         }
 
     }

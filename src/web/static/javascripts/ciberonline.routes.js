@@ -39,7 +39,7 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editTeam.html'
         }).when('/panel/:name/editTeamProfile',{
-            controller: 'TeamController',
+            controller: 'EditTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editTeamProfile.html'
         }).when('/panel/allTeams',{

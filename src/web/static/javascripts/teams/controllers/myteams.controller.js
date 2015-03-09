@@ -13,7 +13,6 @@
 		activate();
 
 		function activate(){
-            console.log("myteams")
 			var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 
@@ -29,6 +28,8 @@
 
             function getByUserSuccessFn(data, status, headers, config){
             	vm.team = data.data;
+                vm.team.count = vm.team.length;
+                vm.team.username = username;
             }
 
             function getByUserErrorFn(data, status, headers, config){
