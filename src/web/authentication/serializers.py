@@ -17,21 +17,3 @@ class AccountSerializer(serializers.ModelSerializer):
 
         def create(self, validated_data):
             return Account.objects.create(**validated_data)
-
-        def update(self, instance, validated_data):
-            instance.email = validated_data.get('email', instance.email)
-            instance.teaching_institution = validated_data.get('teaching_institution', instance.teaching_institution)
-            instance.first_name = validated_data.get('first_name', instance.first_name)
-            instance.last_name = validated_data.get('last_name', instance.last_name)
-
-            instance.save()
-
-            password = validated_data.get('password', None)
-            confirm_password = validated_data.get('confirm_password', None)
-
-            if password and confirm_password and password == confirm_password:
-                instance.set_password(password)
-                instance.save()
-
-            return instance
-

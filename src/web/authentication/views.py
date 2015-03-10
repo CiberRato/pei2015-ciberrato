@@ -1,4 +1,5 @@
 import json
+from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, viewsets, status, views
 from rest_framework.response import Response
@@ -61,6 +62,27 @@ class AccountViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Bad Request',
                          'message': 'Account could not be created with received data.'
                         }, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
+
+        instance.email = request.data.get('email', instance.email)
+        instance.teaching_institution = request.data.get('teaching_institution', instance.teaching_institution)
+        instance.first_name = request.data.get('first_name', instance.first_name)
+        instance.last_name = request.data.get('last_name', instance.last_name)
+
+        instance.save()
+
+        password = request.data.get('password', None)
+        confirm_password = request.data.get('confirm_password', None)
+
+        if password and confirm_password and password == confirm_password:
+            instance.set_password(password)
+            instance.save()
+
+        return Response({'status': 'Updated',
+                         'message': 'Account updated.'
+                        }, status=status.HTTP_201_CREATED)
 
 
 class LoginView(views.APIView):
