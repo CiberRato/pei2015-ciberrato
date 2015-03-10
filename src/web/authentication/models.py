@@ -3,8 +3,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 from django.core.validators import MinValueValidator
 
-class AccountManager(BaseUserManager):
 
+class AccountManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
         """
         Create an user, with email, username, teaching institution, first name, last name and password
@@ -100,4 +100,3 @@ class GroupMember(models.Model):
 
     def __unicode__(self):
         return "%s is in group %s (as %s)" % (self.account, self.group, self.is_admin)
-
