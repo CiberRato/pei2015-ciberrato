@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from authentication.models import Account
 
+
 class AccountSerializer(serializers.ModelSerializer):
     """
     This Account Serializer allow to CRUD the fields: id, email, username, teaching instituition, first name, 
@@ -12,8 +13,6 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ('id', 'email','username','teaching_institution','first_name','last_name','password','confirm_password')
-        read_only_fields = ('created_at','updated_at')
-
-        def create(self, validated_data):
-            return Account.objects.create(**validated_data)
+        fields = ('id', 'email', 'username', 'teaching_institution', 'first_name', 'last_name', 'password',
+                  'confirm_password')
+        read_only_fields = ('created_at', 'updated_at')

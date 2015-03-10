@@ -39,11 +39,11 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = "/api/v1/accounts/test/"
+        url = "/api/v1/accounts/test1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dict(response.data),
-                         {'id': 1, 'email': u'test@test.com', 'username': u'test', 'teaching_institution': u'testUA',
+                         {'id': 2, 'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
                           'first_name': u'unit', 'last_name': u'test'})
 
         url = "/api/v1/accounts/test/"
