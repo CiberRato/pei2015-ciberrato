@@ -40,14 +40,16 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(dict(response.data), {'id': 1, 'email': u'test@test.com', 'username': u'test', 'teaching_institution': u'testUA', 'first_name':u'unit', 'last_name': u'test'})
 
         url = "/api/v1/accounts/test/"
-        data = {'email': 'test2@test.com', 'username': 'test3', 'first_name': 'unit', 'last_name': 'test',
+        data = {'email': 'test2@test.com', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA'}
         response = client.put(url, data)
-        print response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'status': 'Updated', 'message': 'Account updated.'})
 
         url = "/api/v1/accounts/test/"
         response = client.get(url)
-        print response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(dict(response.data), {'username': u'test', 'first_name': u'unit', 'last_name': u'test', 'teaching_institution': u'testUA', 'email': u'test2@test.com', 'id': 1})
 
         client.login(email='test@test.com')
         client.logout()

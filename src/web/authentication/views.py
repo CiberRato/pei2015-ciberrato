@@ -82,7 +82,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
         return Response({'status': 'Updated',
                          'message': 'Account updated.'
-                        }, status=status.HTTP_201_CREATED)
+                        }, status=status.HTTP_200_OK)
 
 
 class LoginView(views.APIView):
