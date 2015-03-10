@@ -27,7 +27,7 @@
 
             function getProfileSuccessFn(data, status, headers, config) {
                 vm.accountInfo = data.data;
-
+                vm.gravatar = get_gravatar(vm.accountInfo.email, 60);
             }
 
             function getProfileErrorFn(data, status, headers, config){
