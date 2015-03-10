@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import permissions, viewsets, status, views
 from rest_framework.response import Response
 from authentication.models import Account
@@ -5,11 +7,8 @@ from authentication.serializers import AccountSerializer
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 
-import json
-
 
 class AccountViewSet(viewsets.ModelViewSet):
-
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
@@ -59,13 +58,12 @@ class AccountViewSet(viewsets.ModelViewSet):
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
-        return Response({
-        'status': 'Bad Request',
-        'message': 'Account could not be created with received data.'
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'status': 'Bad Request',
+                         'message': 'Account could not be created with received data.'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(views.APIView):
-    
     def post(self, request):
         """
         B{Login} an user
@@ -86,16 +84,15 @@ class LoginView(views.APIView):
                 return Response(serialized.data)
 
             else:
-                return Response({
-                    'status': 'Unauthorized',
-                    'message': 'This account has been disabled.'
-                    }, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'status': 'Unauthorized',
+                                 'message': 'This account has been disabled.'
+                                }, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
-            return Response({
-                'status': 'Unauthorized',
-                'message': 'Username and/or password is wrong.'
-                }, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'status': 'Unauthorized',
+                             'message': 'Username and/or password is wrong.'
+                            }, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class LogoutView(views.APIView):
     """
