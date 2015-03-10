@@ -602,6 +602,9 @@ void cbSimulator::step()
 */
 void cbSimulator::CheckIn()
 {
+	char xmlread[4096*16];
+	char xml[4096*16*3];
+	int size;
 	while (receptionist->CheckIn())
 	{
 		cbClientForm &form = receptionist->Form();
@@ -613,7 +616,21 @@ void cbSimulator::CheckIn()
 				cnt = views.size();
 				views.resize(cnt+1);
 				views[cnt] = form.client.view;
-                views[cnt]->Reply(form.addr, form.port, param);
+
+				if (viewerAsLog) {
+					views[cnt]->Reply(form.addr, form.port, param, false);
+					size = param->toXml(xmlread, sizeof(xmlread));
+					strcat(xml, xmlread);
+					size += lab->toXml(xmlread, sizeof(xmlread));
+					strcat(xml, xmlread);
+					size += grid->toXml(xmlread, sizeof(xmlread));
+					strcat(xml, xmlread);
+
+					views[cnt]->send(xml, size);
+				} else {
+					views[cnt]->Reply(form.addr, form.port, param);
+				}
+
                 if (curState==INIT) {
 				    nextState=STOPPED;
                     if(logging)
@@ -698,6 +715,9 @@ void cbSimulator::ViewCommands()
 				case cbCommand::START:
 					//cout << "View command = Start\n";
 					start();
+					break;
+				case cbCommand::RESET:
+					reset();
 					break;
 				case cbCommand::STOP:
 					//cout << "View command = Stop\n";
@@ -949,10 +969,12 @@ void cbSimulator::UpdateViews()
 		Log(xmlStream, false);
 
 		std::string xmlString = xmlStream.str();
-		const char* xmlCharA = xmlString.c_str();
-		for (unsigned int j = 0; j < views.size(); j++) {
-			cbView *view = views[j];
-			view->send(xmlCharA, xmlString.length()+1);
+		if (xmlString.length() != 0) {
+			const char* xmlCharA = xmlString.c_str();
+			for (unsigned int j = 0; j < views.size(); j++) {
+				cbView *view = views[j];
+				view->send(xmlCharA, xmlString.length()+1);
+		    }
 	    }
 	}
 

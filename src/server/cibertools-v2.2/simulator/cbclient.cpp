@@ -42,13 +42,14 @@ cbClient::~cbClient()
 /*!
 	Send the OK reply message to client.
 */
-bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
+bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, bool replyback)
 {
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
     /* set peer address and peer port */
     address = a;
 	port = p;
-
+	if (!replyback)
+		return true;
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
 	int cnt;

@@ -39,7 +39,7 @@ public:
 	cbClient();
 	virtual ~cbClient();
 
-	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param);
+	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param, bool replyback = true);
 	virtual bool Refuse(QHostAddress &addr, unsigned short &port);
 
 	bool send(const char *, unsigned int);

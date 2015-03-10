@@ -3,29 +3,24 @@ import socket
 import time
 from xml.dom import minidom
 from collections import OrderedDict
+import json
 
 def main():
-	log.write("viewer started")
-
 	log_name = "ciberOnline_log"
-	log = open("log", "w") # log file used to view prints of this program
+	log = open("log.txt", "w") # log file used to view prints of this program
+	log.write("viewer started")
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	#starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	#starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-	# starter_tcp.bind(("127.0.0.1", 7000))
-	# starter_tcp.listen(1)
-	# starter_s, starter_s_addr = starter_tcp.accept()
 
 	simulator_s.sendto("<View/>\n" ,("127.0.0.1", 6000))
 	# Ler o valor do tempo de simulação e obter as portas
-	data, (host, port) = simulator_s.recvfrom(1024)
-	parametersXML = minidom.parseString(data.replace("\x00", ""))
+	data, (host, port) = simulator_s.recvfrom(4096)
+	# Vem params, grid e lab aqui
+	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
 	itemlist = parametersXML.getElementsByTagName('Parameters')
 	simTime = itemlist[0].attributes['SimTime'].value
-	print "SimTime: ", simTime
+	log.write("SimTime: "+ simTime+"\n")
 
 	log_file = open(log_name, "w")
 	log_file.write(data)
@@ -46,18 +41,21 @@ def main():
 
 	checkedRobots = []
 	while len(checkedRobots) != int(robotsAmount):
-		data, (host, port) = simulator_s.recvfrom(1024)
+		data, (host, port) = simulator_s.recvfrom(4096)
+		#starter_s.send(data)
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
 		robots = robotsXML.getElementsByTagName('Robot')
 		if len(robots):
 			robotID = robots[0].attributes['Id'].value
-			log.write(robotID)
+			log.write(robotID + "\n	")
 			checkedRobots += [robotID]
 			checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 			log.write(str(checkedRobots) + "\n	")
-			log.write(str(len(checkedRobots)) + "\n")
+			#log.write(str(len(checkedRobots)) + "\n")
+
 
 	log.write("All Robots are registered\n")
+	starter_s.send("<AllRobotsRegistered/>")
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":
@@ -69,6 +67,7 @@ def main():
 	#django_tcp.bind(("127.0.0.1", 7000))
 	#django_tcp.listen(1)
 	#django_s, django_addr = django_tcp.accept()
+	jsonFile = open("test.json", "w")
 	while simTime != robotTime:
 		data = simulator_s.recv(4096)
 		# Actualizar o tempo do robot
@@ -76,14 +75,17 @@ def main():
 		robotXML = minidom.parseString(data)
 		itemlist = robotXML.getElementsByTagName('Robot')
 		robotTime = itemlist[0].attributes['Time'].value
+
+		#Convert to json
+		robot_json = json.dumps(robotXML, skipkeys=True)
+
 		# Enviar os dados da simulação para o exterior
 		#django_s.send(data)
-		log_file.write(data)
+		log_file.write(robot_json)
 
 	starter_s.send("<EndedSimulation/>")
 
 	starter_s.close()
-	starter_tcp.close()
 	simulator_s.close()
 
 if __name__ == "__main__":
