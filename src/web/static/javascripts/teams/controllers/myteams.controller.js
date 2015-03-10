@@ -33,6 +33,7 @@
             }
 
             function getByUserErrorFn(data, status, headers, config){
+                console.error(data.data);
             	$location.path('/panel/');
             }
 		}

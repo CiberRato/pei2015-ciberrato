@@ -10,7 +10,6 @@
     function CreateTeamController($location, $routeParams, Authentication, Team){
         var vm = this;
 
-        console.log("estive aqui");
         vm.create = create;
 
         var username;
@@ -47,7 +46,7 @@
 
         function createErrorFn(data, status, headers, config){
             console.error(data.data);
-            $.jGrowl("Group could not be created.", {
+            $.jGrowl("Team could not be created.", {
                 life: 2500,
                 theme: 'btn-danger'
             });

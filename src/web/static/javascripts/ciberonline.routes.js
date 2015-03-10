@@ -42,8 +42,12 @@
             controller: 'EditTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editTeamProfile.html'
+        }).when('/panel/:name/editTeamProfile/deleteTeam',{
+            controller: 'EditTeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/confirm.html'
         }).when('/panel/:name/teamMembers',{
-            controller: 'TeamController',
+            controller: 'AllTeamsMembersController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/allTeamsMembers.html'
         }).when('/panel/:username/memberProfile',{

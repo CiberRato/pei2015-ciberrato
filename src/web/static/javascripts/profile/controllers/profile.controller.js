@@ -33,7 +33,8 @@
             }
 
             function profileErrorFn(data, status, headers, config){
-                $location.url('/');
+                console.error(data.data);
+                $location.url('/panel/');
             }
         }
 
@@ -41,11 +42,19 @@
             Profile.update(vm.profile).then(profileSuccessFn, profileErrorFn);
 
             function profileSuccessFn(data, status, headers, config){
-                window.location.assign("/panel/")
+                $.jGrowl("Profile has been updated.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                window.location.assign("/panel/");
             }
 
             function profileErrorFn(data, status, headers, config){
-
+                $.jGrowl("Profile could not be updated.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.error(data.data);
             }
         }
     }

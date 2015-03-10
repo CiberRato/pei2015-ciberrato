@@ -18,14 +18,14 @@
         	function getAllSuccessFn(data, status, headers, config){
         		vm.team = data.data;
                 for(var i=0; i<vm.team.length; i++){
-                    console.log(vm.team[i].name);
                     getNumberOfMembers(vm.team[i].name, i);
                 }
 
         	}
 
        		function getAllErrorFn(data, status, headers, config){
-       			$location.url('/');
+                console.error(data.data);
+       			$location.url('/panel/');
    			}
 
             function getNumberOfMembers(teamName, i){

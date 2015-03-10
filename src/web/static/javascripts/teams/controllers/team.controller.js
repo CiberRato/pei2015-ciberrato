@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('TeamController', TeamController);
 
-    TeamController.$inject = ['$location', '$routeParams','Team', 'Authentication'];
+    TeamController.$inject = ['$location', '$routeParams','Team', 'Authentication', 'Profile'];
 
-    function TeamController($location, $routeParams, Team, Authentication){
+    function TeamController($location, $routeParams, Team, Authentication, Profile){
         var vm = this;
 
         vm.addMember = addMember;
@@ -25,6 +25,7 @@
 
             Team.getMembers(teamName).then(getMembersSuccessFn, getMembersErrorFn);
             Team.getTeamInformation(teamName, username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
+            Profile.get(username).then(getUserSuccessFn, getUserErrorFn);
 
             function getMembersSuccessFn(data, status, headers, config){
                 vm.members = data.data;
@@ -35,6 +36,25 @@
             }
 
             function getMembersErrorFn(data, status, headers, config){
+                $location.path('/panel/');
+            }
+
+            function getUserSuccessFn(data, status, headers, config){
+                vm.member = data.data;
+                Team.getTeamInformation(teamName, username).then(getTeamInformationUserSuccessFn, getTeamInformationUserErrorFn);
+            }
+
+            function getUserErrorFn(data, status, headers, config){
+                $location.path('/panel/');
+            }
+
+            function getTeamInformationUserSuccessFn(data, status, headers, config){
+                vm.memberInfo = data.data;
+                vm.member.is_admin = vm.memberInfo.is_admin;
+
+            }
+
+            function getTeamInformationUserErrorFn(data, status, headers, config){
                 $location.path('/panel/');
             }
         }
