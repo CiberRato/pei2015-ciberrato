@@ -7,7 +7,8 @@
             'ciberonline.routes',
             'ciberonline.authentication',
             'ciberonline.profile',
-            'ciberonline.teams'
+            'ciberonline.teams',
+            'ciberonline.search'
         ])
         .run(run);
 

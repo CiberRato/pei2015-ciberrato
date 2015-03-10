@@ -9,7 +9,8 @@
 
     function EditTeamController($location, $routeParams, Authentication, Team){
         var vm = this;
-        var username;
+        var authenticatedAccount = Authentication.getAuthenticatedAccount();
+        var username = authenticatedAccount.username;
         var teamName;
         vm.update = update;
 

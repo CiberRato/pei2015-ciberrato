@@ -42,10 +42,22 @@
             controller: 'EditTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editTeamProfile.html'
+        }).when('/panel/:name/teamMembers',{
+            controller: 'TeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/allTeamsMembers.html'
+        }).when('/panel/:username/memberProfile',{
+            controller: 'MemberProfile',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/memberProfile.html'
         }).when('/panel/allTeams',{
             controller:'AllTeamsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/allTeams.html'
+        }).when('/panel/searchResults/:search',{
+            controller:'SearchController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/search.html'
         }).when('/',{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

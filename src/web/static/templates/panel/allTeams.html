@@ -18,11 +18,13 @@
                             <tr>
                                 <th>Team Name</th>
                                 <th>Number of elements</th>
+                                <th>Max Number of elements</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.team">
-                                <td>{{value.name}}</td>
+                                <td><a href="panel/{{ value.name }}/teamMembers">{{value.name}}</a></td>
+                                <td>{{value.allmembers}}</td>
                                 <td>{{value.max_members}}</td>
 
                             </tr>

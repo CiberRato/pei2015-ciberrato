@@ -9,11 +9,16 @@
 
     function Profile($http){
         var Profile = {
+            getAll: getAll,
             get: get,
             update: update
         };
 
         return Profile;
+
+        function getAll(){
+            return $http.get('api/v1/accounts/');
+        }
 
         function get(username) {
             return $http.get('/api/v1/accounts/' + username + '/');
