@@ -89,12 +89,12 @@ class AccountViewSet(viewsets.ModelViewSet):
         groups = instance.groups.all()
 
         for group in groups:
-            group_member = GroupMember.objects.get(group=group, user=instance)
+            group_member = GroupMember.objects.get(group=group, account=instance)
             if group_member and group_member.is_admin:
                 group_members = GroupMember.objects.filter(group=group)
                 has_other_admin = False
                 for gm in group_members:
-                    if gm.is_admin and gm.user != instance:
+                    if gm.is_admin and gm.account != instance:
                         has_other_admin = True
                         break
                 if not has_other_admin:

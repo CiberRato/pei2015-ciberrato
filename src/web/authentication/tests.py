@@ -59,6 +59,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(dict(response.data), {'username': u'test', 'first_name': u'unit', 'last_name': u'test',
                                                'teaching_institution': u'testUA', 'email': u'test2@test.com', 'id': 1})
 
+        # create a group
+        url = "/api/v1/groups/crud/"
+        data = {'name': 'TestGroup', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
+
         url = "/api/v1/accounts/test/"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
