@@ -59,6 +59,16 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(dict(response.data), {'username': u'test', 'first_name': u'unit', 'last_name': u'test',
                                                'teaching_institution': u'testUA', 'email': u'test2@test.com', 'id': 1})
 
+        url = "/api/v1/accounts/test/"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The account has been deleted.'})
+
+        url = "/api/v1/accounts/test/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.data, {u'detail': u'Not found'})
+
         client.login(email='test@test.com')
         client.logout()
 

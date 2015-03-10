@@ -86,7 +86,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
-        groups = instance.groups
+        groups = instance.groups.all()
 
         for group in groups:
             group_member = GroupMember.objects.filter(group=group, user=instance)
@@ -100,6 +100,7 @@ class AccountViewSet(viewsets.ModelViewSet):
                 if not has_other_admin:
                     group.delete()
 
+        instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
         instance.delete()
         return Response({'status': 'Deleted',
                          'message': 'The account has been deleted.'
