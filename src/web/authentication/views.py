@@ -89,7 +89,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         groups = instance.groups.all()
 
         for group in groups:
-            group_member = GroupMember.objects.filter(group=group, user=instance)
+            group_member = GroupMember.objects.get(group=group, user=instance)
             if group_member and group_member.is_admin:
                 group_members = GroupMember.objects.filter(group=group)
                 has_other_admin = False
