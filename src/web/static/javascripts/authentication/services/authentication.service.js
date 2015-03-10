@@ -51,7 +51,7 @@
         }
 
         function registerSuccessFn(data, status, headers, config){
-            $.jGrowl("Register Error.", {
+            $.jGrowl("Register Success.", {
                 life: 2500,
                 theme: 'btn-success'
             });
