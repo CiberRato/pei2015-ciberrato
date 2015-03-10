@@ -42,7 +42,7 @@
                 console.log(vm.members);
                 vm.membersFound =[];
                 for(var i = 0; i<vm.members.length; i++) {
-                    if (vm.members[i].username === search || vm.members[i].first_name === search.substr(0,search.indexOf(' ')) || vm.members[i].first_name === search || vm.members[i].last_name === search.substr(search.indexOf(' ')+1) || members[i].last_name === search.substr(search.indexOf(' ')+1, search.indexOf(' '))){
+                    if (vm.members[i].username === search || vm.members[i].first_name === search.substr(0,search.indexOf(' ')) || vm.members[i].first_name === search || vm.members[i].last_name === search.substr(search.indexOf(' ')+1) || vm.members[i].last_name === search.substr(search.indexOf(' ')+1, search.indexOf(' '))){
                         vm.membersFound[j] = vm.members[i];
                         j++;
                     }
