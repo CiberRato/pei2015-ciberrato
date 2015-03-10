@@ -117,7 +117,6 @@ class LoginView(views.APIView):
 
 
 class LogoutView(views.APIView):
-
     def get_permissions(self):
         """
         User needs to be authenticated to logout
