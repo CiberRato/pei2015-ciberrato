@@ -22,12 +22,12 @@ class AccountViewSet(viewsets.ModelViewSet):
         :rtype:
         """
         if self.request.method in permissions.SAFE_METHODS:
-            return (permissions.AllowAny(),)
+            return permissions.AllowAny(),
 
         if self.request.method == 'POST':
-            return (permissions.AllowAny(),)
+            return permissions.AllowAny(),
 
-        return (permissions.IsAuthenticated(), IsAccountOwner(),)
+        return permissions.IsAuthenticated(), IsAccountOwner(),
 
     def create(self, request):
         """
@@ -95,10 +95,12 @@ class LoginView(views.APIView):
 
 
 class LogoutView(views.APIView):
-    """
-    User needs to be authenticated to logout
-    """
-    permission = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        """
+        User needs to be authenticated to logout
+        """
+        return permissions.IsAuthenticated(),
 
     def post(self, request):
         """
