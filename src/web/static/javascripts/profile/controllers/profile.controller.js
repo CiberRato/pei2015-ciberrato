@@ -11,6 +11,7 @@
         var vm = this;
 
         vm.update = update;
+        vm.destroy = destroy;
 
         activate();
 
@@ -56,6 +57,27 @@
                 });
                 console.error(data.data);
             }
+        }
+
+        function destroy(){
+            Profile.destroy(vm.profile.username).then(destroyProfileSuccessFn, destroyProfileErrorFn);
+
+            function destroyProfileSuccessFn(data, status, headers, config){
+                $.jGrowl("Profile has been deleted.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                window.location.assign("/");
+            }
+
+            function destroyProfileErrorFn(data, status, headers, config){
+                $.jGrowl("Profile could not be deleted.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.error(data.data);
+            }
+
         }
     }
 })();

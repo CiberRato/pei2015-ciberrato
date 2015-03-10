@@ -56,7 +56,7 @@
             Team.destroy(teamName).then(destroyTeamSuccessFn, destroyTeamErrorFn);
 
             function destroyTeamSuccessFn(data, status, headers, config){
-                $.jGrowl("Team has been removed.", {
+                $.jGrowl("Team has been deleted.", {
                     life: 2500,
                     theme: 'success'
                 });
@@ -64,7 +64,7 @@
             }
 
             function destroyTeamErrorFn(data, status, headers, config){
-                $.jGrowl("Team could not be removed.", {
+                $.jGrowl("Team could not be deleted.", {
                     life: 2500,
                     theme: 'btn-danger'
                 });

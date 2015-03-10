@@ -11,7 +11,8 @@
         var Profile = {
             getAll: getAll,
             get: get,
-            update: update
+            update: update,
+            destroy: destroy
         };
 
         return Profile;
@@ -26,6 +27,10 @@
 
         function update(profile){
             return $http.put('/api/v1/accounts/' + profile.username + '/', profile);
+        }
+
+        function destroy(username){
+            return $http.delete('/api/v1/accounts/' + username + '/');
         }
 
     }
