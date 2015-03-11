@@ -11,6 +11,7 @@
         var vm = this;
 
         vm.update = update;
+        vm.updatePassword = updatePassword;
         vm.destroy = destroy;
 
         activate();
@@ -31,6 +32,7 @@
 
             function profileSuccessFn(data, status, headers, config){
                 vm.profile = data.data;
+                console.log(vm.profile);
             }
 
             function profileErrorFn(data, status, headers, config){
@@ -40,9 +42,9 @@
         }
 
         function update(){
-            Profile.update(vm.profile).then(profileSuccessFn, profileErrorFn);
+            Profile.update(vm.profile).then(profileUpdateSuccessFn, profileUpdateErrorFn);
 
-            function profileSuccessFn(data, status, headers, config){
+            function profileUpdateSuccessFn(data, status, headers, config){
                 $.jGrowl("Profile has been updated.", {
                     life: 2500,
                     theme: 'success'
@@ -50,8 +52,28 @@
                 window.location.assign("/panel/");
             }
 
-            function profileErrorFn(data, status, headers, config){
+            function profileUpdateErrorFn(data, status, headers, config){
                 $.jGrowl("Profile could not be updated.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.error(data.data);
+            }
+        }
+
+        function updatePassword(){
+            Profile.updatePassword(vm.profile.username,vm.profile.password, vm.profile.confirm_password).then(profilePassSuccessFn, profilePassErrorFn);
+
+            function profilePassSuccessFn(data, status, headers, config){
+                $.jGrowl("Password has been updated.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                window.location.assign("/");
+            }
+
+            function profilePassErrorFn(data, status, headers, config){
+                $.jGrowl("Password could not be updated.", {
                     life: 2500,
                     theme: 'btn-danger'
                 });

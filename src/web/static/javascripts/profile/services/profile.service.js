@@ -12,6 +12,7 @@
             getAll: getAll,
             get: get,
             update: update,
+            updatePassword: updatePassword,
             destroy: destroy
         };
 
@@ -27,6 +28,13 @@
 
         function update(profile){
             return $http.put('/api/v1/accounts/' + profile.username + '/', profile);
+        }
+
+        function updatePassword(username, password, confirm_password){
+            return $http.put('/api/v1/accounts/' + username + '/', {
+                password: password,
+                confirm_password: confirm_password
+            });
         }
 
         function destroy(username){
