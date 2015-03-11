@@ -4,10 +4,11 @@ import time
 from xml.dom import minidom
 from collections import OrderedDict
 import json
+import xmltodict
 
 def main():
 	log_name = "ciberOnline_log"
-	log = open("log.txt", "w") # log file used to view prints of this program
+	log = open("log", "w") # log file used to view prints of this program
 	log.write("viewer started")
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -39,19 +40,19 @@ def main():
 
 	log.write("checking Robots\n")
 
-	checkedRobots = []
-	while len(checkedRobots) != int(robotsAmount):
-		data, (host, port) = simulator_s.recvfrom(4096)
-		#starter_s.send(data)
-		robotsXML = minidom.parseString(data.replace("\x00", ""))
-		robots = robotsXML.getElementsByTagName('Robot')
-		if len(robots):
-			robotID = robots[0].attributes['Id'].value
-			log.write(robotID + "\n	")
-			checkedRobots += [robotID]
-			checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
-			log.write(str(checkedRobots) + "\n	")
-			#log.write(str(len(checkedRobots)) + "\n")
+	# checkedRobots = []
+	# while len(checkedRobots) != int(robotsAmount):
+	# 	data, (host, port) = simulator_s.recvfrom(4096)
+	# 	#starter_s.send(data)
+	# 	robotsXML = minidom.parseString(data.replace("\x00", ""))
+	# 	robots = robotsXML.getElementsByTagName('Robot')
+	# 	if len(robots):
+	# 		robotID = robots[0].attributes['Id'].value
+	# 		log.write(robotID + "\n	")
+	# 		checkedRobots += [robotID]
+	# 		checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
+	# 		log.write(str(checkedRobots) + "\n	")
+	# 		log.write(str(len(checkedRobots)) + "\n")
 
 
 	log.write("All Robots are registered\n")
@@ -72,19 +73,27 @@ def main():
 		data = simulator_s.recv(4096)
 		# Actualizar o tempo do robot
 		data = data.replace("\x00", "")
+		log.write(data)
 		robotXML = minidom.parseString(data)
-		itemlist = robotXML.getElementsByTagName('Robot')
+		itemlist = robotXML.getElementsByTagName('LogInfo')
 		robotTime = itemlist[0].attributes['Time'].value
 
 		#Convert to json
-		robot_json = json.dumps(robotXML, skipkeys=True)
+		json_obj = xmltodict.parse(data)
+		json_data = json.dumps(o, indent=4, separators=(',', ': '))
+
+		json_d = json_d.replace("@", "_")
+		json_d = json_d.replace('"#text": "\\""', "")
+
+		log_file.write(json_d)
 
 		# Enviar os dados da simulação para o exterior
 		#django_s.send(data)
-		log_file.write(robot_json)
 
 	starter_s.send("<EndedSimulation/>")
 
+	log.close()
+	log_file.close()
 	starter_s.close()
 	simulator_s.close()
 
