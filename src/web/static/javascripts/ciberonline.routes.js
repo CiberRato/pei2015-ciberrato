@@ -66,6 +66,10 @@
             controller:'SearchController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/search.html'
+        }).when('/panel/competitions',{
+            controller:'AllCompetitionsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/actualCompetitions.html'
         }).when('/',{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

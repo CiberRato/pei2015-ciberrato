@@ -8,7 +8,8 @@
             'ciberonline.authentication',
             'ciberonline.profile',
             'ciberonline.teams',
-            'ciberonline.search'
+            'ciberonline.search',
+            'ciberonline.competitions'
         ])
         .run(run);
 
