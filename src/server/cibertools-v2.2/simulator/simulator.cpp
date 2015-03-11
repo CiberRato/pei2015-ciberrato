@@ -171,11 +171,6 @@ int main(int argc, char *argv[])
 	bool showGraph=false;
 	int showGraphId=0;
 
-    QApplication app(argc,argv);
-
-    setlocale(LC_ALL,"C");
-    QLocale::setDefault(QLocale::c());
-
     //cout << "Parse command line (First Pass) ..."
 
     int p=1;
@@ -350,6 +345,10 @@ int main(int argc, char *argv[])
 #else
 	srand(_getpid());
 #endif
+	QApplication app(argc, argv, !nogui);
+
+    setlocale(LC_ALL,"C");
+    QLocale::setDefault(QLocale::c());
 
     /* start simulator timer */
 	simulator.startTimer();
