@@ -47,16 +47,16 @@ angular.module('myapp', [])
         else
             $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
 
-        /* Retrieve spawning direction for every robot */
-        try{
-            $scope.dir1= parseInt($scope.log[0].Robot[0].Pos._Dir) + 90;
-            $scope.dir2= parseInt($scope.log[0].Robot[1].Pos._Dir) + 90;
-            $scope.dir3= parseInt($scope.log[0].Robot[2].Pos._Dir) + 90;
-            $scope.dir4= parseInt($scope.log[0].Robot[3].Pos._Dir) + 90;
-            $scope.dir5= parseInt($scope.log[0].Robot[4].Pos._Dir) + 90;
-        }catch(TypeError){
+        /* Number of Robots */
+        $scope.numRobots = $scope.log[0].Robot.length;
 
+        /* Retrieve spawning direction for every robot */
+        $scope.dir = [];
+        for(i=0; i<$scope.numRobots; i++){
+            $scope.dir[i] = parseInt($scope.log[0].Robot[i].Pos._Dir) + 90;
         }
+        console.log($scope.dir);
+
         /* Robots Object */
         $scope.robot = $scope.log[0].Robot;
 
@@ -69,18 +69,26 @@ angular.module('myapp', [])
         $scope.idx = 1;
         $scope.last_idx = 0;
 
-        $scope.pline1 = "";
-        $scope.pline2 = "";
-        $scope.pline3 = "";
-        $scope.pline4 = "";
-        $scope.pline5 = "";
-
+        $scope.pline = [];
+        for(i=0; i<$scope.numRobots; i++){
+            $scope.pline[i] = "";
+        }
+        console.log($scope.pline);
         /* Set Robots Colors */
-        $scope.robotColor1 = 'img/svg/mickey_red_smile.svg';
-        $scope.robotColor2 = 'img/svg/mickey_green_smile.svg';
-        $scope.robotColor3 = 'img/svg/mickey_blue_smile.svg';
-        $scope.robotColor4 = 'img/svg/mickey_yellow_smile.svg';
-        $scope.robotColor5 = 'img/svg/mickey_orange_smile.svg';
+        $scope.robotColor = [];
+        $scope.robotColor[0] = 'img/svg/mickey_red_smile.svg';
+        $scope.robotColor[1] = 'img/svg/mickey_green_smile.svg';
+        $scope.robotColor[2] = 'img/svg/mickey_blue_smile.svg';
+        $scope.robotColor[3] = 'img/svg/mickey_yellow_smile.svg';
+        $scope.robotColor[4] = 'img/svg/mickey_orange_smile.svg';
+
+        /* Set Line Colors */
+        $scope.lineColor = [];
+        $scope.lineColor[0] = '#E04F5F';
+        $scope.lineColor[1] = '#5FBF60';
+        $scope.lineColor[2] = '#29BAF7';
+        $scope.lineColor[3] = '#eaea3d';
+        $scope.lineColor[4] = '#f28d14';
 
         /* Set Maze Colors */
         $scope.groundColor = 'black';
@@ -118,43 +126,24 @@ angular.module('myapp', [])
             $scope.time = $scope.log[$scope.idx]._Time;
 
             /* Update directions of every robot */
-            try{
-                $scope.dir1= parseInt($scope.log[$scope.idx].Robot[0].Pos._Dir) + 90;
-                $scope.dir2= parseInt($scope.log[$scope.idx].Robot[1].Pos._Dir) + 90;
-                $scope.dir3= parseInt($scope.log[$scope.idx].Robot[2].Pos._Dir) + 90;
-                $scope.dir4= parseInt($scope.log[$scope.idx].Robot[3].Pos._Dir) + 90;
-                $scope.dir5= parseInt($scope.log[$scope.idx].Robot[4].Pos._Dir) + 90;
-            }catch(TypeError){
-
+            for(i=0; i<$scope.numRobots; i++){
+                $scope.dir[i] = parseInt($scope.log[$scope.idx].Robot[i].Pos._Dir) + 90;
             }
             /* Calculate visited points line */
             if(($scope.last_idx+1)!=$scope.idx){
 
-                $scope.pline1 = "";
-                $scope.pline2 = "";
-                $scope.pline3 = "";
-                $scope.pline4 = "";
-                $scope.pline5 = "";
+                for(i=0; i<$scope.numRobots; i++){
+                    $scope.pline[i] = "";
+                }
                 for(b=0;b<$scope.idx;b++){
-                    try{
-                        $scope.pline1 += $scope.log[b].Robot[0].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[0].Pos._Y*$scope.zoom + " ";
-                        $scope.pline2 += $scope.log[b].Robot[1].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[1].Pos._Y*$scope.zoom + " ";
-                        $scope.pline3 += $scope.log[b].Robot[2].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[2].Pos._Y*$scope.zoom + " ";
-                        $scope.pline4 += $scope.log[b].Robot[3].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[3].Pos._Y*$scope.zoom + " ";
-                        $scope.pline5 += $scope.log[b].Robot[4].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[4].Pos._Y*$scope.zoom + " ";
-                    }catch(TypeError){
 
+                    for(i=0; i<$scope.numRobots; i++){
+                        $scope.pline[i] += $scope.log[b].Robot[i].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[i].Pos._Y*$scope.zoom + " ";
                     }
                 }
             }else {
-                try {
-                    $scope.pline1 += $scope.log[$scope.idx].Robot[0].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[0].Pos._Y * $scope.zoom + " ";
-                    $scope.pline2 += $scope.log[$scope.idx].Robot[1].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[1].Pos._Y * $scope.zoom + " ";
-                    $scope.pline3 += $scope.log[$scope.idx].Robot[2].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[2].Pos._Y * $scope.zoom + " ";
-                    $scope.pline4 += $scope.log[$scope.idx].Robot[3].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[3].Pos._Y * $scope.zoom + " ";
-                    $scope.pline5 += $scope.log[$scope.idx].Robot[4].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[4].Pos._Y * $scope.zoom + " ";
-                }catch(TypeError){
-
+                for(i=0; i<$scope.numRobots; i++){
+                    $scope.pline[i] += $scope.log[$scope.idx].Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[i].Pos._Y * $scope.zoom + " ";
                 }
             }
             $scope.last_idx = $scope.idx;
@@ -223,70 +212,6 @@ angular.module('myapp', [])
         };
     }])
 
-    .directive('ngCx', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngCx, function(value) {
-                element.attr('cx', value);
-            });
-        };
-    })
-    .directive('ngCy', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngCy, function(value) {
-                element.attr('cy', value);
-            });
-        };
-    })
-    .directive('ngX', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngX, function(value) {
-                element.attr('x', value);
-            });
-        };
-    })
-    .directive('ngY', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngY, function(value) {
-                element.attr('y', value);
-            });
-        };
-    })
-    .directive('ngR', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngR, function(value) {
-                element.attr('r', value);
-            });
-        };
-    })
-    .directive('ngH', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngH, function(value) {
-                element.attr('height', value);
-            });
-        };
-    })
-    .directive('ngW', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngW, function(value) {
-                element.attr('width', value);
-            });
-        };
-    })
-    .directive('ngT', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngT, function() {
-                console.log(attrs.ngT);
-                element.attr('transform', attrs.ngT);
-            });
-        };
-    })
-    .directive('ngPoints', function() {
-        return function(scope, element, attrs) {
-            scope.$watch(attrs.ngPoints, function(value) {
-                element.attr('points', value);
-            });
-        };
-    })
     .directive('conversation', function() {
         return {
             restrict: 'E',
