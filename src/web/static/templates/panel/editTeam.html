@@ -7,18 +7,21 @@
 	<!-- Data block -->
 	<article class="span12 data-block">
 		<div class="data-container">
-			<header>
-				<h2>{{ vm.team.group.name }}</h2>
-			<section class="tab-content">
-				<br></br>
-				<!-- Tab #basic -->
-				<div class="tab-pane active" id="basic">
-				
-					<!-- Example vertical forms -->
-					<div class="row-fluid">
+            <section class="tab-content">
+                <header>
+                    <h2>{{ vm.team.group.name }}</h2>
+                    <a ng-if="vm.member.is_admin==true" href="/panel/{{ vm.team.group.name }}/editTeamProfile">( Edit Team Profile ) </a>
 
-						</div>
-						<div class="span8">
+                </header>
+                <br></br>
+                <!-- Tab #basic -->
+                <div class="tab-pane active" id="basic">
+
+                    <!-- Example vertical forms -->
+                    <div class="row-fluid">
+
+                        </div>
+                        <div class="span8">
                             <div class="tab-pane active" id="static">
                                 <table class="table table-striped table-hover">
                                     <thead>
@@ -57,11 +60,10 @@
                                     </fieldset>
 
                                 </form>
-                                <a ng-if="vm.member.is_admin==true" href="/panel/{{ vm.team.group.name }}/editTeamProfile">Edit Team Profile</a>
                             </div>
-						</div>
-					</div>
-				</div>
+                        </div>
+                    </div>
+                </div>
 			</section>	
 		</div>
 	</article>

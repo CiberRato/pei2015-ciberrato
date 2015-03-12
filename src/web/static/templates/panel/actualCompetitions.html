@@ -1,0 +1,38 @@
+<div class="content-block" role="main" ng-controller="AllCompetitionsController">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>Competitions</h2>
+                        <p>Here is shown in table the list of all competitions that you can enroll.</p>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Competition Name</th>
+                                <th>Type Of Competition</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.competitions">
+                                <td><a href="panel/{{ value.name }}/detailCompetition">{{value.name}}</a></td>
+                                <td ng-if="value.type_of_competition == 'Colaborativa'">Colaborative</td>
+                                <td ng-if="value.type_of_competition == 'Competitiva'">Competitive</td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>

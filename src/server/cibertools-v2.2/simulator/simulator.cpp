@@ -136,7 +136,7 @@ double  cbBeaconSensor::sensorAperture    = M_PI;
 void CommandLineError()
 {
     QMessageBox::critical(0,"Error", 
-		    "SYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps]",
+		    "SYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui] [-viewerlog]",
 		    QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
     exit(1);
 }
@@ -170,11 +170,6 @@ int main(int argc, char *argv[])
 
 	bool showGraph=false;
 	int showGraphId=0;
-
-    QApplication app(argc,argv);
-
-    setlocale(LC_ALL,"C");
-    QLocale::setDefault(QLocale::c());
 
     //cout << "Parse command line (First Pass) ..."
 
@@ -321,6 +316,11 @@ int main(int argc, char *argv[])
 	}
 	//cout << " done.\n";
 
+	QApplication app(argc, argv, !nogui);
+
+    setlocale(LC_ALL,"C");
+    QLocale::setDefault(QLocale::c());
+
 	/* change lab object */
 	if (labFilename) // a lab file is given
 		simulator.changeLab(labFilename);
@@ -343,14 +343,12 @@ int main(int argc, char *argv[])
         if(simulator.labView)
             simulator.labView->show();
 	}
-
 	/* preparing the random generator */
 #ifndef MicWindows
 	srand(getpid());
 #else
 	srand(_getpid());
 #endif
-
     /* start simulator timer */
 	simulator.startTimer();
 
