@@ -17,12 +17,30 @@
 
             function getAllSuccessFn(data, status, headers, config){
                 vm.competitions = data.data;
-                console.log(vm.competitions[0].type_of_competition);
+                for(var i = 0; i<vm.competitions.length; i++){
+                    getTeams(vm.competitions[i].name, i);
+                }
             }
 
             function getAllErrorFn(data, status, headers, config){
                 console.error(data.data);
                 $location.url('/panel/');
+            }
+
+            function getTeams(competitionName, i) {
+                Competition.getTeams(competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
+
+
+                function getTeamsSuccessFn(data, status, headers, config) {
+                    vm.teams = data.data;
+                    console.log(vm.teams.enrolled_groups.length);
+                    vm.competitions[i].allTeams = vm.teams.enrolled_groups.length;
+                }
+
+                function getTeamsErrorFn(data, status, headers, config) {
+                    console.error(data.data);
+                    $location.path('/panel/')
+                }
             }
 
         }

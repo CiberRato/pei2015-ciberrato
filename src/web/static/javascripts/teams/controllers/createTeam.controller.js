@@ -41,7 +41,6 @@
             });
             $location.path('/panel/'+ username + '/myTeams/');
 
-
         }
 
         function createErrorFn(data, status, headers, config){
