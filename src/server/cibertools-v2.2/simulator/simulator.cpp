@@ -316,6 +316,11 @@ int main(int argc, char *argv[])
 	}
 	//cout << " done.\n";
 
+	QApplication app(argc, argv, !nogui);
+
+    setlocale(LC_ALL,"C");
+    QLocale::setDefault(QLocale::c());
+
 	/* change lab object */
 	if (labFilename) // a lab file is given
 		simulator.changeLab(labFilename);
@@ -338,18 +343,12 @@ int main(int argc, char *argv[])
         if(simulator.labView)
             simulator.labView->show();
 	}
-
 	/* preparing the random generator */
 #ifndef MicWindows
 	srand(getpid());
 #else
 	srand(_getpid());
 #endif
-	QApplication app(argc, argv, !nogui);
-
-    setlocale(LC_ALL,"C");
-    QLocale::setDefault(QLocale::c());
-
     /* start simulator timer */
 	simulator.startTimer();
 
