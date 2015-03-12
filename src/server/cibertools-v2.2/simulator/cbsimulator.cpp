@@ -654,16 +654,6 @@ void cbSimulator::CheckIn()
 				if (registerRobot(robot))
 				{
 					robot->Reply(form.addr, form.port, param);
-					if (viewerAsLog) {
-						std::ostringstream oss;
-						oss << "<RobotRegistered ID=\"" << robot->Id() << "\" Name=\"" << robot->Name() << "\" />";
-						std::string str = oss.str();
-						for (unsigned int j = 0; j < views.size(); j++) {
-							cbView *view = views[j];
-							view->send(str.c_str(), str.length()+1);
-					    }
-					}
-					
                     cout << robot->Name() << " has been registered\n";
                     gui->appendMessage( QString(robot->Name())+" has been registered" );
 				}
@@ -976,7 +966,7 @@ void cbSimulator::UpdateViews()
 {
 	if (viewerAsLog) {
 		std::ostringstream xmlStream;
-		Log(xmlStream, false);
+		Log(xmlStream, false, true);
 
 		std::string xmlString = xmlStream.str();
 		if (xmlString.length() != 0) {
@@ -1037,10 +1027,10 @@ void cbSimulator::UpdateState()
 
 }
 
-void cbSimulator::Log(ostream &log, bool withActions)
+void cbSimulator::Log(ostream &log, bool withActions, bool stateIndependent)
 {
 	unsigned int n = robots.size();
-	if(curState == RUNNING) {
+	if(curState == RUNNING || stateIndependent) {
 		log << "<LogInfo Time=\"" << curCycle << "\">\n";
 		for (unsigned int i = 0; i<n; i++)
 		{

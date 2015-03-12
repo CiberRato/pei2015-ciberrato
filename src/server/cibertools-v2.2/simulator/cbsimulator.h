@@ -220,7 +220,7 @@ protected: // member functions
 	void ViewCommands();
 	void PanelCommands();
 	void RobotActions();
-	void Log(ostream &, bool withactions=true);
+	void Log(ostream &, bool withactions=true, bool stateIndependent=false);
 	void NextPositions();
 	void CheckCollisions();
 	void Commit();
