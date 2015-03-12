@@ -130,6 +130,8 @@ cbSimulator::cbSimulator()
     labScene=0;labView=0;
 
     defaultParam = 0; defaultLab = 0; defaultGrid = 0;
+    viewerAsLog = false;
+
     QXmlInputSource *sourceParam = new QXmlInputSource;
     QXmlInputSource *sourceLab = new QXmlInputSource;
     QXmlInputSource *sourceGrid = new QXmlInputSource;
@@ -966,7 +968,7 @@ void cbSimulator::UpdateViews()
 {
 	if (viewerAsLog) {
 		std::ostringstream xmlStream;
-		Log(xmlStream, false);
+		Log(xmlStream, false, true);
 
 		std::string xmlString = xmlStream.str();
 		if (xmlString.length() != 0) {
@@ -1027,18 +1029,18 @@ void cbSimulator::UpdateState()
 
 }
 
-void cbSimulator::Log(ostream &log, bool withActions)
+void cbSimulator::Log(ostream &log, bool withActions, bool stateIndependent)
 {
 	unsigned int n = robots.size();
-	if(curState==RUNNING) {
+	if(curState == RUNNING || stateIndependent) {
 		log << "<LogInfo Time=\"" << curCycle << "\">\n";
 		for (unsigned int i = 0; i<n; i++)
 		{
 			cbRobot *r = robots[i];
-                	if(r==0) continue;
-                	r->Log(log, withActions);
+            if(r==0) continue;
+            r->Log(log, withActions);
 		}
-        	log << "</LogInfo>\n";
+        log << "</LogInfo>\n";
 	}
 }
 

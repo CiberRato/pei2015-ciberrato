@@ -1,944 +1,921 @@
-    <!DOCTYPE html>
-    <!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
-    <!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
-    <!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <title>Main Page | Bootstrap Admin Template</title>
-        <meta name="description" content="">
-        <meta name="robots" content="index, follow">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<!--[if IE 8]>    <html class="no-js ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>Main Page | Bootstrap Admin Template</title>
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- jQuery Visualize Styles -->
-        <link rel='stylesheet' type='text/css' href='css/plugins/jquery.visualize.css'>
+    <!-- jQuery Visualize Styles -->
+    <link rel='stylesheet' type='text/css' href='css/plugins/jquery.visualize.css'>
 
-        <!-- jQuery jGrowl Styles -->
-        <link rel='stylesheet' type='text/css' href='css/plugins/jquery.jgrowl.css'>
-        <link type="text/css" rel="stylesheet" href="css/jquery.nstSlider.css">
+    <!-- jQuery jGrowl Styles -->
+    <link rel='stylesheet' type='text/css' href='css/plugins/jquery.jgrowl.css'>
+    <link type="text/css" rel="stylesheet" href="css/jquery.nstSlider.css">
 
-        <!-- CSS styles -->
-        <link rel='stylesheet' type='text/css' href='css/ciberonline-red.css'>
+    <!-- CSS styles -->
+    <link rel='stylesheet' type='text/css' href='css/ciberonline-red.css'>
 
-        <!-- Fav and touch icons -->
-        <link rel="shortcut icon" href="img/icons/favicon.ico">
-        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png">
-        <link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png">
+    <!-- Fav and touch icons -->
+    <link rel="shortcut icon" href="img/icons/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/icons/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/icons/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="img/icons/apple-touch-icon-57-precomposed.png">
 
-        <!-- JS Libs -->
-        <script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
-        <script src="js/libs/modernizr.js"></script>
-        <script src="js/libs/selectivizr.js"></script>
+    <!-- JS Libs -->
+    <script>window.jQuery || document.write('<script src="js/libs/jquery.js"><\/script>')</script>
+    <script src="js/libs/modernizr.js"></script>
+    <script src="js/libs/selectivizr.js"></script>
 
-        <script data-require="angular.js@1.2.x" src="autocarro/angular.js" data-semver="1.2.7"></script>
-        <script type='text/javascript' src='autocarro/jquery-git.js'></script>
-        <script type='text/javascript' src="autocarro/xml2json.js"></script>
-        <script src ="js/viewer.js"></script>
+    <script data-require="angular.js@1.2.x" src="autocarro/angular.js" data-semver="1.2.7"></script>
+    <script type='text/javascript' src='autocarro/jquery-git.js'></script>
+    <script type='text/javascript' src="autocarro/xml2json.js"></script>
+    <script src ="js/viewer.js"></script>
 
-        <script>
-            $(document).ready(function(){
+    <script>
+        $(document).ready(function(){
 
-                // Tooltips
-                $('[title]').tooltip({
-                    placement: 'top'
-                });
-
+            // Tooltips
+            $('[title]').tooltip({
+                placement: 'top'
             });
-        </script>
-    </head>
-    <body>
 
-    <!-- Main page header -->
-    <header class="container">
+        });
+    </script>
+</head>
+<body>
 
-        <!-- Main page logo -->
-        <h1><a href="login.html" class="brand">Ciber</a></h1>
+<!-- Main page header -->
+<header class="container">
 
-        <!-- Alternative navigation -->
-        <nav>
+    <!-- Main page logo -->
+    <h1><a href="login.html" class="brand">Ciber</a></h1>
+
+    <!-- Alternative navigation -->
+    <nav>
+        <ul>
+            <li><a href="admin/index.html" style="color: #e74949">Administration</a></li>
+            <li><a href="login.html">Universidade de Aveiro</a></li>
+            <li><a href="login.html">Ciber Rato</a></li>
+        </ul>
+    </nav>
+    <!-- /Alternative navigation -->
+
+</header>
+<!-- /Main page header -->
+
+<!-- Main page container -->
+<section class="container" role="main">
+
+    <!-- Left (navigation) side -->
+    <div class="navigation-block">
+
+        <!-- User profile -->
+        <section class="user-profile">
+            <figure>
+                <img alt="Gravatar" src="http://www.gravatar.com/avatar/8a3b221d39c8f6538d27c03078ae8f29.png">
+                <figcaption>
+                    <strong><a href="#" class="">Bernardo Ferreira</a></strong>
+                    <em>Universidade de Aveiro</em>
+                    <ul>
+                        <li><a class="btn btn-primary btn-flat" href="#" title="Account settings">Logout</a></li>
+                    </ul>
+                </figcaption>
+            </figure>
+        </section>
+        <!-- /User profile -->
+
+        <!-- Main navigation -->
+        <nav class="main-navigation" role="navigation">
             <ul>
-                <li><a href="admin/index.html" style="color: #e74949">Administration</a></li>
-                <li><a href="login.html">Universidade de Aveiro</a></li>
-                <li><a href="login.html">Ciber Rato</a></li>
+
+                <li>
+                    <a href="index.html"><span class="awe-home"></span><strong>Home Page</strong></a>
+                </li>
+                <li>
+                    <a href="#"><span class="awe-user"></span><strong>User Management</strong></a>
+                    <ul>
+                        <li><a href="changePass.html">Change Password</a></li>
+                        <li><a href="editProfile.html">Edit Profile</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#"><span class="awe-group"></span><strong>Team Management</strong></a>
+                    <ul>
+                        <li><a href="myteams.html">My Teams</a></li>
+                        <li><a href="createTeam.html">Create Team</a></li>
+                        <li><a href="seeGroups.html">All Teams</a></li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#"><span class="awe-trophy"></span><strong>Competition</strong></a>
+                    <ul>
+                        <li><a href="SubmeterCodigo.html">Submit</a></li>
+                        <li><a href="#">Join competition</a></li>
+
+                        <li><a href="seelogs.html">See logs</a></li>
+                        <li><a href="#">Past Competitions</a></li>
+                        <li><a href="#">My teams submissions</a></li>
+                        <li><a href="currentCompetition.html">Current competition</a></li>
+                    </ul>
+                </li>
             </ul>
+
         </nav>
-        <!-- /Alternative navigation -->
+        <!-- /Main navigation -->
 
-    </header>
-    <!-- /Main page header -->
-
-    <!-- Main page container -->
-    <section class="container" role="main">
-
-        <!-- Left (navigation) side -->
-        <div class="navigation-block">
-
-            <!-- User profile -->
-            <section class="user-profile">
-                <figure>
-                    <img alt="Gravatar" src="http://www.gravatar.com/avatar/8a3b221d39c8f6538d27c03078ae8f29.png">
-                    <figcaption>
-                        <strong><a href="#" class="">Bernardo Ferreira</a></strong>
-                        <em>Universidade de Aveiro</em>
-                        <ul>
-                            <li><a class="btn btn-primary btn-flat" href="#" title="Account settings">Logout</a></li>
-                        </ul>
-                    </figcaption>
-                </figure>
-            </section>
-            <!-- /User profile -->
-
-            <!-- Main navigation -->
-            <nav class="main-navigation" role="navigation">
-                <ul>
-
-                    <li>
-                        <a href="index.html"><span class="awe-home"></span><strong>Home Page</strong></a>
-                    </li>
-                    <li>
-                        <a href="#"><span class="awe-user"></span><strong>User Management</strong></a>
-                        <ul>
-                            <li><a href="changePass.html">Change Password</a></li>
-                            <li><a href="editProfile.html">Edit Profile</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><span class="awe-group"></span><strong>Team Management</strong></a>
-                        <ul>
-                            <li><a href="myteams.html">My Teams</a></li>
-                            <li><a href="createTeam.html">Create Team</a></li>
-                            <li><a href="seeGroups.html">All Teams</a></li>
-                        </ul>
-                    </li>
-
-                    <li>
-                        <a href="#"><span class="awe-trophy"></span><strong>Competition</strong></a>
-                        <ul>
-                            <li><a href="SubmeterCodigo.html">Submit</a></li>
-                            <li><a href="#">Join competition</a></li>
-
-                            <li><a href="seelogs.html">See logs</a></li>
-                            <li><a href="#">Past Competitions</a></li>
-                            <li><a href="#">My teams submissions</a></li>
-                            <li><a href="currentCompetition.html">Current competition</a></li>
-                        </ul>
-                    </li>
-                </ul>
-
-            </nav>
-            <!-- /Main navigation -->
-
-            <!-- Sample side note -->
-            <section class="side-note">
-                <div class="side-note-container">
-                    <h2>Sample Side Note</h2>
-                    <p>This project was developed by a group students of the University of Aveiro.</p>
-                </div>
-                <div class="side-note-bottom"></div>
-            </section>
-            <!-- /Sample side note -->
-        </div>
-        <!-- Left (navigation) side -->
-
-        <!-- Right (content) side -->
-        <div class="content-block" role="main" ng-controller="ctrl">
-
-            <!-- Page header -->
-            <h1 id="row5" style="display: none">WebViewer</h1>
-            <!-- /Page header -->
-
-            <div class="row" id="waitawhile">
-
-                <!-- Data block -->
-                <article class="span12 data-block">
-                    <div class="data-container">
-                        <header>
-                            <h2>Wait a while...</h2>
-                        </header>
-                        <section>
-                            <div class="row">
-                                <div class="span12" style="text-align: center">
-                                    <span class="loading blue" data-original-title="Loading, please wait…">Loading…</span>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </article>
-                <!-- /Data block -->
-
+        <!-- Sample side note -->
+        <section class="side-note">
+            <div class="side-note-container">
+                <h2>Sample Side Note</h2>
+                <p>This project was developed by a group students of the University of Aveiro.</p>
             </div>
+            <div class="side-note-bottom"></div>
+        </section>
+        <!-- /Sample side note -->
+    </div>
+    <!-- Left (navigation) side -->
 
-            <!-- Grid row -->
-            <div class="row" id="row1" style="display: none">
-                <article class="span12 data-block">
-                    <div class="data-container">
-                        <section>
-                            <div class="row">
-                                <div class="span12 viewer" style="text-align: center; vertical-align: middle">
-                                    <svg ng-w="{{map._Width*zoom}}" ng-h="{{map._Height*zoom}}" style="background-color: {{groundColor}}" >
-                                        <g ng-t="translate(0,{{map._Height*zoom}})">
-                                            <g transform="scale(1,-1)">
-                                                <g><rect width="{{map._Width*zoom}}" height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
-                                                    <g ng-repeat="(key, value) in map">
+    <!-- Right (content) side -->
+    <div class="content-block" role="main" ng-controller="ctrl">
 
-                                                        <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
-                                                            <!-- Parede grande - original verde-->
-                                                            <polygon ng-if="v._Height>=beacon_height" ng-points="'{{v.str}}'" style=" fill:{{greatWallColor}}" />
-                                                            <!-- Parede grande - original azul-->
-                                                            <polygon ng-if="v._Height<beacon_height" ng-points="'{{v.str}}'" style=" fill:{{smallWallColor}}" />
-                                                        </g>
+        <!-- Page header -->
+        <h1 id="row5" style="display: none">WebViewer</h1>
+        <!-- /Page header -->
+
+        <div class="row" id="waitawhile">
+
+            <!-- Data block -->
+            <article class="span12 data-block">
+                <div class="data-container">
+                    <header>
+                        <h2>Wait a while...</h2>
+                    </header>
+                    <section>
+                        <div class="row">
+                            <div class="span12" style="text-align: center">
+                                <span class="loading blue" data-original-title="Loading, please wait…">Loading…</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <!-- /Data block -->
+
+        </div>
+
+        <!-- Grid row -->
+        <div class="row" id="row1" style="display: none">
+            <article class="span12 data-block">
+                <div class="data-container">
+                    <section>
+                        <div class="row">
+                            <div class="span12 viewer" style="text-align: center; vertical-align: middle">
+                                <svg ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="background-color: {{groundColor}}" >
+                                    <g ng-attr-transform="translate(0,{{map._Height*zoom}})">
+                                        <g transform="scale(1,-1)">
+                                            <g><rect ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
+                                                <g ng-repeat="(key, value) in map">
+
+                                                    <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
+                                                        <!-- Parede grande - original verde-->
+                                                        <polygon ng-if="v._Height>=beacon_height" ng-attr-points="{{v.str}}" style=" fill:{{greatWallColor}}" />
+                                                        <!-- Parede grande - original azul-->
+                                                        <polygon ng-if="v._Height<beacon_height" ng-attr-points="{{v.str}}" style=" fill:{{smallWallColor}}" />
                                                     </g>
+                                                </g>
 
-                                                    <g ng-if="param._NBeacons != 1" ng-repeat="(i,o) in beacon track by $index">
-                                                        <circle ng-cx="{{o._X*zoom}}" ng-cy="{{o._Y*zoom}}" ng-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
-                                                        <image ng-x="{{o._X*zoom-zoom}}" ng-y="{{o._Y*zoom-zoom}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
-                                                    </g>
-                                                    <g ng-if="param._NBeacons == 1">
-                                                        <circle ng-cx="{{beacon._X*zoom}}" ng-cy="{{beacon._Y*zoom}}" ng-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
-                                                        <image ng-x="{{beacon._X*zoom-zoom}}" ng-y="{{beacon._Y*zoom-zoom}}" ng-w="{{zoom*2}}" ng-h="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
-                                                    </g>
+                                                <g ng-if="param._NBeacons != 1" ng-repeat="(i,o) in beacon track by $index">
+                                                    <circle ng-attr-cx="{{o._X*zoom}}" ng-attr-cy="{{o._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                    <image ng-attr-x="{{o._X*zoom-zoom}}" ng-attr-y="{{o._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
+                                                </g>
+                                                <g ng-if="param._NBeacons == 1">
+                                                    <circle ng-attr-cx="{{beacon._X*zoom}}" ng-attr-cy="{{beacon._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                    <image ng-attr-x="{{beacon._X*zoom-zoom}}" ng-attr-y="{{beacon._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
+                                                </g>
 
 
-                                                    <g ng-repeat="(key, value) in grid">
-                                                        <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
-                                                            <circle ng-cx="{{v._X*zoom}}" ng-cy="{{v._Y*zoom}}" ng-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
-                                                        </g>
+                                                <g ng-repeat="(key, value) in grid">
+                                                    <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
+                                                        <circle ng-attr-cx="{{v._X*zoom}}" ng-attr-cy="{{v._Y*zoom}}" ng-attr-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
                                                     </g>
-                                                    <g id="line1" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline1}}" style="fill:none;stroke:#E04F5F;stroke-width:3" />
-                                                    </g>
-                                                    <g id="line2" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline2}}" style="fill:none;stroke:#5FBF60;stroke-width:3" />
-                                                    </g>
-                                                    <g id="line3" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline3}}" style="fill:none;stroke:#29BAF7;stroke-width:3" />
-                                                    </g>
-                                                    <g id="line4" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline4}}" style="fill:none;stroke:#eaea3d;stroke-width:3" />
-                                                    </g>
-                                                    <g id="line5" style="visibility: hidden; display: none">
-                                                        <polyline points="{{pline5}}" style="fill:none;stroke:#f28d14;stroke-width:3" />
-                                                    </g>
-                                                    <g>
-
-                                                        <image ng-if="robot[0].Scores._Collision=='False'" x="{{robot[0].Pos._X*zoom-zoom/2}}" y="{{robot[0].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor1}}"  transform="rotate({{dir1}},{{robot[0].Pos._X*zoom}},{{robot[0].Pos._Y*zoom}})" />
-                                                        <image ng-if="robot[0].Scores._Collision=='True'" x="{{robot[0].Pos._X*zoom-zoom/2}}" y="{{robot[0].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir1}},{{robot[0].Pos._X*zoom}},{{robot[0].Pos._Y*zoom}})" />
-                                                        <circle ng-if="log[0].Robot[0].Scores._Score == 0" cx="{{robot[0].Pos._X*zoom}}" cy="{{robot[0].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-
-                                                        <image ng-if="robot[1].Scores._Collision=='False'" x="{{robot[1].Pos._X*zoom-zoom/2}}" y="{{robot[1].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor2}}"  transform="rotate({{dir2}},{{robot[1].Pos._X*zoom}},{{robot[1].Pos._Y*zoom}})" />
-                                                        <image ng-if="robot[1].Scores._Collision=='True'" x="{{robot[1].Pos._X*zoom-zoom/2}}" y="{{robot[1].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir2}},{{robot[1].Pos._X*zoom}},{{robot[1].Pos._Y*zoom}})" />
-                                                        <circle ng-if="log[0].Robot[1].Scores._Score == 0" cx="{{robot[1].Pos._X*zoom}}" cy="{{robot[1].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-
-                                                        <image ng-if="robot[2].Scores._Collision=='False'" x="{{robot[2].Pos._X*zoom-zoom/2}}" y="{{robot[2].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor3}}"  transform="rotate({{dir3}},{{robot[2].Pos._X*zoom}},{{robot[2].Pos._Y*zoom}})" />
-                                                        <image ng-if="robot[2].Scores._Collision=='True'" x="{{robot[2].Pos._X*zoom-zoom/2}}" y="{{robot[2].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir3}},{{robot[2].Pos._X*zoom}},{{robot[2].Pos._Y*zoom}})" />
-                                                        <circle ng-if="log[0].Robot[2].Scores._Score == 0" cx="{{robot[2].Pos._X*zoom}}" cy="{{robot[2].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-
-                                                        <image ng-if="robot[3].Scores._Collision=='False'" x="{{robot[3].Pos._X*zoom-zoom/2}}" y="{{robot[3].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor4}}"  transform="rotate({{dir4}},{{robot[3].Pos._X*zoom}},{{robot[3].Pos._Y*zoom}})" />
-                                                        <image ng-if="robot[3].Scores._Collision=='True'" x="{{robot[3].Pos._X*zoom-zoom/2}}" y="{{robot[3].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir4}},{{robot[3].Pos._X*zoom}},{{robot[3].Pos._Y*zoom}})" />
-                                                        <circle ng-if="log[0].Robot[3].Scores._Score == 0" cx="{{robot[3].Pos._X*zoom}}" cy="{{robot[3].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-
-                                                        <image ng-if="robot[4].Scores._Collision=='False'" x="{{robot[4].Pos._X*zoom-zoom/2}}" y="{{robot[4].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="{{robotColor5}}"  transform="rotate({{dir5}},{{robot[4].Pos._X*zoom}},{{robot[4].Pos._Y*zoom}})" />
-                                                        <image ng-if="robot[4].Scores._Collision=='True'" x="{{robot[4].Pos._X*zoom-zoom/2}}" y="{{robot[4].Pos._Y*zoom-zoom/2}}" ng-w="{{zoom}}" ng-h="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  transform="rotate({{dir4}},{{robot[4].Pos._X*zoom}},{{robot[4].Pos._Y*zoom}})" />
-                                                        <circle ng-if="log[0].Robot[4].Scores._Score == 0" cx="{{robot[4].Pos._X*zoom}}" cy="{{robot[4].Pos._Y*zoom}}" ng-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-                                                        <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
+                                                </g>
+                                                <g ng-repeat="v in pline track by $index">
+                                                    <g ng-attr-id="{{ 'line' + ($index+1) }}" style="visibility: hidden; display: none">
+                                                        <polyline ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
                                                     </g>
 
                                                 </g>
+
+                                                <g ng-repeat="value in robot">
+
+                                                    <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
+                                                    <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
+                                                    <circle ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
+
+                                                     <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
+                                                </g>
+
                                             </g>
                                         </g>
-                                    </svg>
-                                    <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}}"
-                                         data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-left: 20px; margin-top: -5px">
-                                        <div class="leftGrip"></div>
+                                    </g>
+                                </svg>
+                                <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}}"
+                                     data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-left: 20px; margin-top: -5px">
+                                    <div class="leftGrip"></div>
+                                </div>
+
+                                <div class="row" >
+                                    <div class ="span3" style="text-align: left;margin-left: 20px; margin-top: 5px">
+                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                            <button class="btn btn-success" id="play"><span class="awe-play"></span></button>
+                                            <button class="btn btn-danger" id="pause" disabled="true"><span class="awe-pause"></span></button>
+                                            <button class="btn btn-info" id="stop" disabled="true"><span class="awe-stop"></span></button>
+                                        </div>
+                                    </div>
+                                    <div class="span3" style="margin-top: 5px">
+
                                     </div>
 
-                                    <div class="row" >
-                                        <div class ="span3" style="text-align: left;margin-left: 20px; margin-top: 5px">
-                                            <div class="btn-group" data-toggle="buttons-checkbox">
-                                                <button class="btn btn-success" id="play"><span class="awe-play"></span></button>
-                                                <button class="btn btn-danger" id="pause" disabled="true"><span class="awe-pause"></span></button>
-                                                <button class="btn btn-info" id="stop" disabled="true"><span class="awe-stop"></span></button>
-                                            </div>
-                                        </div>
-                                        <div class="span3" style="margin-top: 5px">
-
-                                        </div>
-
-                                        <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px">
-                                            <select id="mazeColor" class="span2">
-                                                <option value="1">Standard</option>
-                                                <option value="2">Black&White</option>
-                                            </select>
-                                        </div>
-                                        <div class="span3" style="text-align: right; margin-top: 5px">
-                                            <div class="btn-group" data-toggle="buttons-checkbox">
-                                                <button class="btn" id="14x">1/4x</button>
-                                                <button class="btn" id="12x">1/2x</button>
-                                                <button class="btn" id="1x" disabled="true">1x</button>
-                                                <button class="btn" id="2x">2x</button>
-                                                <button class="btn" id="4x">4x</button>
-                                            </div>
-                                        </div>
-
-
+                                    <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px">
+                                        <select id="mazeColor" class="span2">
+                                            <option value="1">Standard</option>
+                                            <option value="2">Black&White</option>
+                                        </select>
                                     </div>
+                                    <div class="span3" style="text-align: right; margin-top: 5px">
+                                        <div class="btn-group" data-toggle="buttons-checkbox">
+                                            <button class="btn" id="14x">1/4x</button>
+                                            <button class="btn" id="12x">1/2x</button>
+                                            <button class="btn" id="1x" disabled="true">1x</button>
+                                            <button class="btn" id="2x">2x</button>
+                                            <button class="btn" id="4x">4x</button>
+                                        </div>
+                                    </div>
+
 
                                 </div>
-                            </div>
-
-
-                        </section>
-                    </div>
-                </article>
-
-            </div>
-            <!-- /Grid row -->
-            <div class="row"  id="row2" style="display: none">
-                <article class="span4 data-block">
-                    <div class="data-container">
-                        <section class="viewer">
-                            <div class="row-fluid demo">
-                                <div class="span6">Name</div>
-                                <div class="span6">Position</div>
 
                             </div>
-                            <div ng-if="log[0].Robot[0].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span6 viewer"><h2>{{robot[0]._Name}}</h2></div>
-                                <div class="span6 viewer"><img src="img/svg/mickey_red_smile.svg" width="35" height="35"></div>
+                        </div>
 
+
+                    </section>
+                </div>
+            </article>
+
+        </div>
+        <!-- /Grid row -->
+        <div class="row"  id="row2" style="display: none">
+            <article class="span4 data-block">
+                <div class="data-container">
+                    <section class="viewer">
+                        <div class="row-fluid demo">
+                            <div class="span6">Name</div>
+                            <div class="span6">Position</div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[0].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span6 viewer"><h2>{{robot[0]._Name}}</h2></div>
+                            <div class="span6 viewer"><img src="img/svg/mickey_red_smile.svg" width="35" height="35"></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[1].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span6 viewer"><h2>{{robot[1]._Name}}</h2></div>
+                            <div class="span6 viewer"><img src="img/svg/mickey_green_smile.svg" width="35" height="35"></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[2].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span6 viewer"><h2>{{robot[2]._Name}}</h2></div>
+                            <div class="span6 viewer"><img src="img/svg/mickey_blue_smile.svg" width="35" height="35"></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[3].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span6 viewer"><h2>{{robot[3]._Name}}</h2></div>
+                            <div class="span6 viewer"><img src="img/svg/mickey_yellow_smile.svg" width="35" height="35"></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[4].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span6 viewer"><h2>{{robot[4]._Name}}</h2></div>
+                            <div class="span6 viewer"><img src="img/svg/mickey_orange_smile.svg" width="35" height="35"></div>
+
+                        </div>
+                    </section>
+                </div>
+            </article>
+            <!-- Data block -->
+            <article class="span8 data-block">
+                <div class="data-container">
+                    <section class="viewer">
+                        <div class="row-fluid demo">
+                            <div class="span2">Time</div>
+                            <div class="span2">Collisions</div>
+                            <div class="span2">State</div>
+                            <div class="span2">Score</div>
+                            <div class="span2">Retur. Time</div>
+                            <div class="span2">Remaining</div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[0].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span2 viewer"><h2>{{time}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[0].Scores._Collisions}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[0]._State}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[0].Scores._Score}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[0].Scores._ReturningTime}}</h2></div>
+                            <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[1].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span2 viewer"><h2>{{time}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[1].Scores._Collisions}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[1]._State}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[1].Scores._Score}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[1].Scores._ReturningTime}}</h2></div>
+                            <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[2].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span2 viewer"><h2>{{time}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[2].Scores._Collisions}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[2]._State}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[2].Scores._Score}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[2].Scores._ReturningTime}}</h2></div>
+                            <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[3].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span2 viewer"><h2>{{time}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[3].Scores._Collisions}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[3]._State}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[3].Scores._Score}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[3].Scores._ReturningTime}}</h2></div>
+                            <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+
+                        </div>
+                        <div ng-if="log[0].Robot[4].Scores._Score == 0" class="row-fluid" style="text-align: center">
+                            <div class="span2 viewer"><h2>{{time}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[4].Scores._Collisions}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[4]._State}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[4].Scores._Score}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot[4].Scores._ReturningTime}}</h2></div>
+                            <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+
+                        </div>
+
+                    </section>
+                </div>
+            </article>
+            <!-- /Data block -->
+
+            <!-- Data block -->
+
+            <!-- /Data block -->
+
+            <!-- Data block -->
+
+            <!-- /Data block -->
+
+        </div>
+        <!-- Grid row -->
+
+        <div class="row"  id="row3" style="display: none">
+            <article class="span12 data-block accordion-block decent">
+                <div class="data-container">
+                    <div class="accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <a class="accordion-toggle" href="#sotable" data-parent="#icons" data-toggle="collapse"><h2>Sensors Data</h2></a>
                             </div>
-                            <div ng-if="log[0].Robot[1].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span6 viewer"><h2>{{robot[1]._Name}}</h2></div>
-                                <div class="span6 viewer"><img src="img/svg/mickey_green_smile.svg" width="35" height="35"></div>
+                            <div id="sotable" class="accordion-body collapse">
+                                <div class="row" >
+                                    <table id="scoretable" class="table table-striped table-bordered table-condensed table-hover">
+                                        <colgroup>
+                                            <col style="width: 15%" />
+                                            <col style="width: 17%" />
+                                            <col style="width: 17%" />
+                                            <col style="width: 17%" />
+                                            <col style="width: 17%" />
+                                            <col style="width: 17%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0]._Id}} - {{robot[0]._Name}}</th>
+                                                <th ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1]._Id}} - {{robot[1]._Name}}</th>
+                                                <th ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2]._Id}} - {{robot[2]._Name}}</th>
+                                                <th ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3]._Id}} - {{robot[3]._Name}}</th>
+                                                <th ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4]._Id}} - {{robot[4]._Name}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-if="robot[0].Pos._X<10000">
+                                                <th>Position(x,y)</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">({{robot[0].Pos._X}}, {{robot[0].Pos._Y}})</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">({{robot[1].Pos._X}}, {{robot[1].Pos._Y}})</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">({{robot[2].Pos._X}}, {{robot[2].Pos._Y}})</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">({{robot[3].Pos._X}}, {{robot[3].Pos._Y}})</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">({{robot[4].Pos._X}}, {{robot[4].Pos._Y}})</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Pos._Dir<10000">
+                                                <th>Direction</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Pos._Dir}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Pos._Dir}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Pos._Dir}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Pos._Dir}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Pos._Dir}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors._Compass<10000">
+                                                <th>Compass</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Compass}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Compass}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Compass}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Compass}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Compass}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Action._LeftMotor<10000">
+                                                <th>Left Motor</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Action._LeftMotor}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Action._LeftMotor}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Action._LeftMotor}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Action._LeftMotor}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Action._LeftMotor}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Action._RightMotor<10000">
+                                                <th>Right Motor</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Action._RightMotor}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Action._RightMotor}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Action._RightMotor}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Action._RightMotor}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Action._RightMotor}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors._Collision<10000">
+                                                <th>Collision</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Collision}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Collision}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Collision}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Collision}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Collision}}</td>
+                                            </tr>
+                                            <tr ng="robot[0].Measures.Sensors._Ground<10000">
+                                                <th>Ground</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Ground}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Ground}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Ground}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Ground}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Ground}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors.IRSensor[0]._Value<10000">
+                                                <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[0]._Id}}</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[0]._Value}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors.IRSensor[1]._Value<10000">
+                                                <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[1]._Id}}</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[1]._Value}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors.IRSensor[2]._Value<10000">
+                                                <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[2]._Id}}</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[2]._Value}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors.IRSensor[3]._Value<10000">
+                                                <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[3]._Id}}</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[3]._Value}}</td>
+                                            </tr>
+                                            <tr ng-if="robot[0].Measures.Sensors.GPS._X<10000">
+                                                <th>GPS(x,y)</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">({{robot[0].Measures.Sensors.GPS._X}}, {{robot[0].Measures.Sensors.GPS._Y}})</td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">({{robot[1].Measures.Sensors.GPS._X}}, {{robot[1].Measures.Sensors.GPS._Y}})</td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">({{robot[2].Measures.Sensors.GPS._X}}, {{robot[2].Measures.Sensors.GPS._Y}})</td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">({{robot[3].Measures.Sensors.GPS._X}}, {{robot[3].Measures.Sensors.GPS._Y}})</td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">({{robot[4].Measures.Sensors.GPS._X}}, {{robot[4].Measures.Sensors.GPS._Y}})</td>
+                                            </tr>
+                                            <tr>
+                                                <th>End Led</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Returning Led</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Visiting Led</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
+                                            </tr>
 
-                            </div>
-                            <div ng-if="log[0].Robot[2].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span6 viewer"><h2>{{robot[2]._Name}}</h2></div>
-                                <div class="span6 viewer"><img src="img/svg/mickey_blue_smile.svg" width="35" height="35"></div>
+                                            <tr>
+                                                <th>Line</th>
+                                                <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">
+                                                    <div class="btn-group" data-toggle="buttons-checkbox">
+                                                        <button class="btn btn-success" id="show1">Show</button>
+                                                        <button class="btn btn-danger" id="hide1" disabled="true">Hide</button>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">
+                                                    <div class="btn-group" data-toggle="buttons-checkbox">
+                                                        <button class="btn btn-success" id="show2">Show</button>
+                                                        <button class="btn btn-danger" id="hide2" disabled="true">Hide</button>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">
+                                                    <div class="btn-group" data-toggle="buttons-checkbox">
+                                                        <button class="btn btn-success" id="show3">Show</button>
+                                                        <button class="btn btn-danger" id="hide3" disabled="true">Hide</button>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">
+                                                    <div class="btn-group" data-toggle="buttons-checkbox">
+                                                        <button class="btn btn-success" id="show4">Show</button>
+                                                        <button class="btn btn-danger" id="hide4" disabled="true">Hide</button>
+                                                    </div>
+                                                </td>
+                                                <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">
+                                                    <div class="btn-group" data-toggle="buttons-checkbox">
+                                                        <button class="btn btn-success" id="show5">Show</button>
+                                                        <button class="btn btn-danger" id="hide5" disabled="true">Hide</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
 
-                            </div>
-                            <div ng-if="log[0].Robot[3].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span6 viewer"><h2>{{robot[3]._Name}}</h2></div>
-                                <div class="span6 viewer"><img src="img/svg/mickey_yellow_smile.svg" width="35" height="35"></div>
-
-                            </div>
-                            <div ng-if="log[0].Robot[4].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span6 viewer"><h2>{{robot[4]._Name}}</h2></div>
-                                <div class="span6 viewer"><img src="img/svg/mickey_orange_smile.svg" width="35" height="35"></div>
-
-                            </div>
-                        </section>
-                    </div>
-                </article>
-                <!-- Data block -->
-                <article class="span8 data-block">
-                    <div class="data-container">
-                        <section class="viewer">
-                            <div class="row-fluid demo">
-                                <div class="span2">Time</div>
-                                <div class="span2">Collisions</div>
-                                <div class="span2">State</div>
-                                <div class="span2">Score</div>
-                                <div class="span2">Retur. Time</div>
-                                <div class="span2">Remaining</div>
-
-                            </div>
-                            <div ng-if="log[0].Robot[0].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span2 viewer"><h2>{{time}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[0].Scores._Collisions}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[0]._State}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[0].Scores._Score}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[0].Scores._ReturningTime}}</h2></div>
-                                <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
-
-                            </div>
-                            <div ng-if="log[0].Robot[1].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span2 viewer"><h2>{{time}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[1].Scores._Collisions}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[1]._State}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[1].Scores._Score}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[1].Scores._ReturningTime}}</h2></div>
-                                <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
-
-                            </div>
-                            <div ng-if="log[0].Robot[2].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span2 viewer"><h2>{{time}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[2].Scores._Collisions}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[2]._State}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[2].Scores._Score}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[2].Scores._ReturningTime}}</h2></div>
-                                <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
-
-                            </div>
-                            <div ng-if="log[0].Robot[3].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span2 viewer"><h2>{{time}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[3].Scores._Collisions}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[3]._State}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[3].Scores._Score}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[3].Scores._ReturningTime}}</h2></div>
-                                <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
-
-                            </div>
-                            <div ng-if="log[0].Robot[4].Scores._Score == 0" class="row-fluid" style="text-align: center">
-                                <div class="span2 viewer"><h2>{{time}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[4].Scores._Collisions}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[4]._State}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[4].Scores._Score}}</h2></div>
-                                <div class="span2 viewer"><h2>{{robot[4].Scores._ReturningTime}}</h2></div>
-                                <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
-
-                            </div>
-
-                        </section>
-                    </div>
-                </article>
-                <!-- /Data block -->
-
-                <!-- Data block -->
-
-                <!-- /Data block -->
-
-                <!-- Data block -->
-
-                <!-- /Data block -->
-
-            </div>
-            <!-- Grid row -->
-
-            <div class="row"  id="row3" style="display: none">
-                <article class="span12 data-block accordion-block decent">
-                    <div class="data-container">
-                        <div class="accordion">
-                            <div class="accordion-group">
-                                <div class="accordion-heading">
-                                    <a class="accordion-toggle" href="#sotable" data-parent="#icons" data-toggle="collapse"><h2>Sensors Data</h2></a>
-                                </div>
-                                <div id="sotable" class="accordion-body collapse">
-                                    <div class="row" >
-                                        <table id="scoretable" class="table table-striped table-bordered table-condensed table-hover">
-                                            <colgroup>
-                                                <col style="width: 15%" />
-                                                <col style="width: 17%" />
-                                                <col style="width: 17%" />
-                                                <col style="width: 17%" />
-                                                <col style="width: 17%" />
-                                                <col style="width: 17%" />
-                                            </colgroup>
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0]._Id}} - {{robot[0]._Name}}</th>
-                                                    <th ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1]._Id}} - {{robot[1]._Name}}</th>
-                                                    <th ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2]._Id}} - {{robot[2]._Name}}</th>
-                                                    <th ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3]._Id}} - {{robot[3]._Name}}</th>
-                                                    <th ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4]._Id}} - {{robot[4]._Name}}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr ng-if="robot[0].Pos._X<10000">
-                                                    <th>Position(x,y)</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">({{robot[0].Pos._X}}, {{robot[0].Pos._Y}})</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">({{robot[1].Pos._X}}, {{robot[1].Pos._Y}})</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">({{robot[2].Pos._X}}, {{robot[2].Pos._Y}})</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">({{robot[3].Pos._X}}, {{robot[3].Pos._Y}})</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">({{robot[4].Pos._X}}, {{robot[4].Pos._Y}})</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Pos._Dir<10000">
-                                                    <th>Direction</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Pos._Dir}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Pos._Dir}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Pos._Dir}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Pos._Dir}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Pos._Dir}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors._Compass<10000">
-                                                    <th>Compass</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Compass}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Compass}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Compass}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Compass}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Compass}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Action._LeftMotor<10000">
-                                                    <th>Left Motor</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Action._LeftMotor}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Action._LeftMotor}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Action._LeftMotor}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Action._LeftMotor}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Action._LeftMotor}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Action._RightMotor<10000">
-                                                    <th>Right Motor</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Action._RightMotor}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Action._RightMotor}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Action._RightMotor}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Action._RightMotor}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Action._RightMotor}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors._Collision<10000">
-                                                    <th>Collision</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Collision}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Collision}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Collision}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Collision}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Collision}}</td>
-                                                </tr>
-                                                <tr ng="robot[0].Measures.Sensors._Ground<10000">
-                                                    <th>Ground</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors._Ground}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors._Ground}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors._Ground}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors._Ground}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors._Ground}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors.IRSensor[0]._Value<10000">
-                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[0]._Id}}</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[0]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[0]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[0]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[0]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[0]._Value}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors.IRSensor[1]._Value<10000">
-                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[1]._Id}}</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[1]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[1]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[1]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[1]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[1]._Value}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors.IRSensor[2]._Value<10000">
-                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[2]._Id}}</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[2]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[2]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[2]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[2]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[2]._Value}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors.IRSensor[3]._Value<10000">
-                                                    <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[3]._Id}}</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">{{robot[0].Measures.Sensors.IRSensor[3]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">{{robot[1].Measures.Sensors.IRSensor[3]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">{{robot[2].Measures.Sensors.IRSensor[3]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">{{robot[3].Measures.Sensors.IRSensor[3]._Value}}</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">{{robot[4].Measures.Sensors.IRSensor[3]._Value}}</td>
-                                                </tr>
-                                                <tr ng-if="robot[0].Measures.Sensors.GPS._X<10000">
-                                                    <th>GPS(x,y)</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">({{robot[0].Measures.Sensors.GPS._X}}, {{robot[0].Measures.Sensors.GPS._Y}})</td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">({{robot[1].Measures.Sensors.GPS._X}}, {{robot[1].Measures.Sensors.GPS._Y}})</td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">({{robot[2].Measures.Sensors.GPS._X}}, {{robot[2].Measures.Sensors.GPS._Y}})</td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">({{robot[3].Measures.Sensors.GPS._X}}, {{robot[3].Measures.Sensors.GPS._Y}})</td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">({{robot[4].Measures.Sensors.GPS._X}}, {{robot[4].Measures.Sensors.GPS._Y}})</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>End Led</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._EndLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._EndLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Returning Led</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._ReturningLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._ReturningLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Visiting Led</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0 && robot[0].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0 && robot[1].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0 && robot[2].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0 && robot[3].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='Off'" style="text-align: center"><span class="label label-important">OFF</span></td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0 && robot[4].Measures.Leds._VisitingLed=='On'" style="text-align: center"><span class="label label-success">ON</span></td>
-                                                </tr>
-
-                                                <tr>
-                                                    <th>Line</th>
-                                                    <td ng-if="log[0].Robot[0].Scores._Score == 0" style="text-align: center">
-                                                        <div class="btn-group" data-toggle="buttons-checkbox">
-                                                            <button class="btn btn-success" id="show1">Show</button>
-                                                            <button class="btn btn-danger" id="hide1" disabled="true">Hide</button>
-                                                        </div>
-                                                    </td>
-                                                    <td ng-if="log[0].Robot[1].Scores._Score == 0" style="text-align: center">
-                                                        <div class="btn-group" data-toggle="buttons-checkbox">
-                                                            <button class="btn btn-success" id="show2">Show</button>
-                                                            <button class="btn btn-danger" id="hide2" disabled="true">Hide</button>
-                                                        </div>
-                                                    </td>
-                                                    <td ng-if="log[0].Robot[2].Scores._Score == 0" style="text-align: center">
-                                                        <div class="btn-group" data-toggle="buttons-checkbox">
-                                                            <button class="btn btn-success" id="show3">Show</button>
-                                                            <button class="btn btn-danger" id="hide3" disabled="true">Hide</button>
-                                                        </div>
-                                                    </td>
-                                                    <td ng-if="log[0].Robot[3].Scores._Score == 0" style="text-align: center">
-                                                        <div class="btn-group" data-toggle="buttons-checkbox">
-                                                            <button class="btn btn-success" id="show4">Show</button>
-                                                            <button class="btn btn-danger" id="hide4" disabled="true">Hide</button>
-                                                        </div>
-                                                    </td>
-                                                    <td ng-if="log[0].Robot[4].Scores._Score == 0" style="text-align: center">
-                                                        <div class="btn-group" data-toggle="buttons-checkbox">
-                                                            <button class="btn btn-success" id="show5">Show</button>
-                                                            <button class="btn btn-danger" id="hide5" disabled="true">Hide</button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-
-										    </tbody>
-									    </table>
-                                    </div>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </article>
-            </div>
-            <!-- /Grid row -->
+                </div>
+            </article>
         </div>
-    </section>
-    <!-- /Main page container -->
+        <!-- /Grid row -->
+    </div>
+</section>
+<!-- /Main page container -->
 
-    <!-- Main page footer -->
-    <footer class="container">
-        <p>Built with love on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a> by <a href="http://www.ciberonline.com">CiberOnline</a>.</p>
-        <ul>
-            <li><a href="#" class="">Support</a></li>
-            <li><a href="#" class="">Documentation</a></li>
-            <li><a href="#" class="">API</a></li>
-        </ul>
-        <a href="#top" class="btn btn-primary btn-flat pull-right">Top &uarr;</a>
-    </footer>
-    <!-- /Main page footer -->
+<!-- Main page footer -->
+<footer class="container">
+    <p>Built with love on <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap</a> by <a href="http://www.ciberonline.com">CiberOnline</a>.</p>
+    <ul>
+        <li><a href="#" class="">Support</a></li>
+        <li><a href="#" class="">Documentation</a></li>
+        <li><a href="#" class="">API</a></li>
+    </ul>
+    <a href="#top" class="btn btn-primary btn-flat pull-right">Top &uarr;</a>
+</footer>
+<!-- /Main page footer -->
 
-    <!-- Scripts -->
-    <script src="js/navigation.js"></script>
-    <script src="js/bootstrap/bootstrap-affix.js"></script>
-    <script src="js/bootstrap/bootstrap-alert.js"></script>
-    <script src="js/bootstrap/bootstrap-tooltip.js"></script>
-    <script src="js/bootstrap/bootstrap-dropdown.js"></script>
-    <script src="js/bootstrap/bootstrap-tab.js"></script>
-    <script src="js/bootstrap/bootstrap-collapse.js"></script>
-    <script src="js/bootstrap/bootstrap-fileupload.js"></script>
-    <script src="js/bootstrap/bootstrap-inputmask.js"></script>
-    <script src="js/jquery.nstSlider.js"></script>
+<!-- Scripts -->
+<script src="js/navigation.js"></script>
+<script src="js/bootstrap/bootstrap-affix.js"></script>
+<script src="js/bootstrap/bootstrap-alert.js"></script>
+<script src="js/bootstrap/bootstrap-tooltip.js"></script>
+<script src="js/bootstrap/bootstrap-dropdown.js"></script>
+<script src="js/bootstrap/bootstrap-tab.js"></script>
+<script src="js/bootstrap/bootstrap-collapse.js"></script>
+<script src="js/bootstrap/bootstrap-fileupload.js"></script>
+<script src="js/bootstrap/bootstrap-inputmask.js"></script>
+<script src="js/jquery.nstSlider.js"></script>
 
 
-    <script>
-        $("#play").click(function() {
+<script>
+    $("#play").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().play();
+        $(this).attr("disabled", true);
+        $("#pause").removeAttr("disabled");
+        $("#stop").removeAttr("disabled");
+        return false;
+    });
+    $("#pause").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().pause();
+        $(this).attr("disabled", true);
+        $("#play").removeAttr("disabled");
+        $("#stop").removeAttr("disabled");
+        return false;
+    });
+    $("#stop").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().stop();
+        $(this).attr("disabled", true);
+        $("#pause").attr("disabled", true);
+        $("#play").removeAttr("disabled");
+        return false;
+    });
+</script>
+
+<script>
+    $(window).keypress(function(e) {
+        if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
+            console.log('Space pressed');
+            angular.element('[ng-controller=ctrl]').scope().pause();
+            $("#pause").attr("disabled", true);
+            $("#play").removeAttr("disabled");
+            $("#stop").removeAttr("disabled");
+            return false;
+        }
+        else if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
+            console.log('Space pressed');
             angular.element('[ng-controller=ctrl]').scope().play();
-            $(this).attr("disabled", true);
+            $("#play").attr("disabled", true);
             $("#pause").removeAttr("disabled");
             $("#stop").removeAttr("disabled");
             return false;
-        });
-        $("#pause").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().pause();
-            $(this).attr("disabled", true);
-            $("#play").removeAttr("disabled");
-            $("#stop").removeAttr("disabled");
-            return false;
-        });
-        $("#stop").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().stop();
-            $(this).attr("disabled", true);
-            $("#pause").attr("disabled", true);
-            $("#play").removeAttr("disabled");
-            return false;
-        });
-    </script>
+        }
+    });
+</script>
 
-    <script>
-        $(window).keypress(function(e) {
-            if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
-                console.log('Space pressed');
-                angular.element('[ng-controller=ctrl]').scope().pause();
-                $("#pause").attr("disabled", true);
-                $("#play").removeAttr("disabled");
-                $("#stop").removeAttr("disabled");
-                return false;
-            }
-            else if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
-                console.log('Space pressed');
-                angular.element('[ng-controller=ctrl]').scope().play();
-                $("#play").attr("disabled", true);
-                $("#pause").removeAttr("disabled");
-                $("#stop").removeAttr("disabled");
-                return false;
-            }
-        });
-    </script>
+<script>
+    $(document).keydown(function(e) {
+        switch(e.which) {
+            case 37: // left
+                angular.element('[ng-controller=ctrl]').scope().idx-=100;
+                break;
 
-    <script>
-        $(document).keydown(function(e) {
-            switch(e.which) {
-                case 37: // left
-                    angular.element('[ng-controller=ctrl]').scope().idx-=100;
-                    break;
+            case 38: // up
+                break;
 
-                case 38: // up
-                    break;
+            case 39: // right
+                angular.element('[ng-controller=ctrl]').scope().idx+=100;
+                break;
 
-                case 39: // right
-                    angular.element('[ng-controller=ctrl]').scope().idx+=100;
-                    break;
+            case 40: // down
+                break;
 
-                case 40: // down
-                    break;
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    });
 
-                default: return; // exit this handler for other keys
-            }
-            e.preventDefault(); // prevent the default action (scroll / move caret)
-        });
+</script>
 
-    </script>
+<script>
+    $('#scoretable').on('click', '#show1' , function () {
+        $("#line1").css({"visibility":"visible", "display": "initial"});
+        $(this).attr("disabled", true);
+        $("#hide1").removeAttr("disabled");
+        return false;
+    });
+    $('#scoretable').on('click', '#hide1' , function () {
+        $("#line1").css({"visibility":"hidden", "display": "none"});
+        $(this).attr("disabled", true);
+        $("#show1").removeAttr("disabled");
+        return false;
+    });
 
-    <script>
-        $('#scoretable').on('click', '#show1' , function () {
-            $("#line1").css({"visibility":"visible", "display": "initial"});
-            $(this).attr("disabled", true);
-            $("#hide1").removeAttr("disabled");
-            return false;
-        });
-        $('#scoretable').on('click', '#hide1' , function () {
-            $("#line1").css({"visibility":"hidden", "display": "none"});
-            $(this).attr("disabled", true);
-            $("#show1").removeAttr("disabled");
-            return false;
-        });
+    $('#scoretable').on('click', '#show2' , function () {
+        $("#line2").css({"visibility":"visible", "display": "initial"});
+        $(this).attr("disabled", true);
+        $("#hide2").removeAttr("disabled");
+        return false;
+    });
+    $('#scoretable').on('click', '#hide2' , function () {
+        $("#line2").css({"visibility":"hidden", "display": "none"});
+        $(this).attr("disabled", true);
+        $("#show2").removeAttr("disabled");
+        return false;
+    });
 
-        $('#scoretable').on('click', '#show2' , function () {
-            $("#line2").css({"visibility":"visible", "display": "initial"});
-            $(this).attr("disabled", true);
-            $("#hide2").removeAttr("disabled");
-            return false;
-        });
-        $('#scoretable').on('click', '#hide2' , function () {
-            $("#line2").css({"visibility":"hidden", "display": "none"});
-            $(this).attr("disabled", true);
-            $("#show2").removeAttr("disabled");
-            return false;
-        });
+    $('#scoretable').on('click', '#show3' , function () {
+        $("#line3").css({"visibility":"visible", "display": "initial"});
+        $(this).attr("disabled", true);
+        $("#hide3").removeAttr("disabled");
+        return false;
+    });
+    $('#scoretable').on('click', '#hide3' , function () {
+        $("#line3").css({"visibility":"hidden", "display": "none"});
+        $(this).attr("disabled", true);
+        $("#show3").removeAttr("disabled");
+        return false;
+    });
 
-        $('#scoretable').on('click', '#show3' , function () {
-            $("#line3").css({"visibility":"visible", "display": "initial"});
-            $(this).attr("disabled", true);
-            $("#hide3").removeAttr("disabled");
-            return false;
-        });
-        $('#scoretable').on('click', '#hide3' , function () {
-            $("#line3").css({"visibility":"hidden", "display": "none"});
-            $(this).attr("disabled", true);
-            $("#show3").removeAttr("disabled");
-            return false;
-        });
+    $('#scoretable').on('click', '#show4' , function () {
+        $("#line4").css({"visibility":"visible", "display": "initial"});
+        $(this).attr("disabled", true);
+        $("#hide4").removeAttr("disabled");
+        return false;
+    });
+    $('#scoretable').on('click', '#hide4' , function () {
+        $("#line4").css({"visibility":"hidden", "display": "none"});
+        $(this).attr("disabled", true);
+        $("#show4").removeAttr("disabled");
+        return false;
+    });
 
-        $('#scoretable').on('click', '#show4' , function () {
-            $("#line4").css({"visibility":"visible", "display": "initial"});
-            $(this).attr("disabled", true);
-            $("#hide4").removeAttr("disabled");
-            return false;
-        });
-        $('#scoretable').on('click', '#hide4' , function () {
-            $("#line4").css({"visibility":"hidden", "display": "none"});
-            $(this).attr("disabled", true);
-            $("#show4").removeAttr("disabled");
-            return false;
-        });
+    $('#scoretable').on('click', '#show5' , function () {
+        $("#line5").css({"visibility":"visible", "display": "initial"});
+        $(this).attr("disabled", true);
+        $("#hide5").removeAttr("disabled");
+        return false;
+    });
+    $('#scoretable').on('click', '#hide5' , function () {
+        $("#line5").css({"visibility":"hidden", "display": "none"});
+        $(this).attr("disabled", true);
+        $("#show5").removeAttr("disabled");
+        return false;
+    });
 
-        $('#scoretable').on('click', '#show5' , function () {
-            $("#line5").css({"visibility":"visible", "display": "initial"});
-            $(this).attr("disabled", true);
-            $("#hide5").removeAttr("disabled");
-            return false;
-        });
-        $('#scoretable').on('click', '#hide5' , function () {
-            $("#line5").css({"visibility":"hidden", "display": "none"});
-            $(this).attr("disabled", true);
-            $("#show5").removeAttr("disabled");
-            return false;
-        });
+</script>
 
-    </script>
+<script>
+    $("#robotColor").change(function() {
+        angular.element('[ng-controller=ctrl]').scope().setRobotColor($( "#robotColor" ).val());
+        return false;
+    });
 
-    <script>
-        $("#robotColor").change(function() {
-            angular.element('[ng-controller=ctrl]').scope().setRobotColor($( "#robotColor" ).val());
-            return false;
-        });
+</script>
+<script>
+    $("#mazeColor").change(function() {
+        angular.element('[ng-controller=ctrl]').scope().setMazeColor($( "#mazeColor" ).val());
+        return false;
+    });
 
-    </script>
-    <script>
-        $("#mazeColor").change(function() {
-            angular.element('[ng-controller=ctrl]').scope().setMazeColor($( "#mazeColor" ).val());
-            return false;
-        });
+</script>
 
-    </script>
+<script>
+    $("#1x").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().refresh_rate=50;
+        $(this).attr("disabled", true);
+        $("#12x").removeAttr("disabled");
+        $("#14x").removeAttr("disabled");
+        $("#2x").removeAttr("disabled");
+        $("#4x").removeAttr("disabled");
+        return false;
+    });
+    $("#2x").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().refresh_rate=25;
+        $(this).attr("disabled", true);
+        $("#12x").removeAttr("disabled");
+        $("#14x").removeAttr("disabled");
+        $("#1x").removeAttr("disabled");
+        $("#4x").removeAttr("disabled");
+        return false;
+    });
+    $("#4x").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().refresh_rate=12.5;
+        $(this).attr("disabled", true);
+        $("#12x").removeAttr("disabled");
+        $("#14x").removeAttr("disabled");
+        $("#2x").removeAttr("disabled");
+        $("#1x").removeAttr("disabled");
+        return false;
+    });
+    $("#12x").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().refresh_rate=100;
+        $(this).attr("disabled", true);
+        $("#4x").removeAttr("disabled");
+        $("#14x").removeAttr("disabled");
+        $("#2x").removeAttr("disabled");
+        $("#1x").removeAttr("disabled");
+        return false;
+    });
+    $("#14x").click(function() {
+        angular.element('[ng-controller=ctrl]').scope().refresh_rate=200;
+        $(this).attr("disabled", true);
+        $("#12x").removeAttr("disabled");
+        $("#4x").removeAttr("disabled");
+        $("#2x").removeAttr("disabled");
+        $("#1x").removeAttr("disabled");
+        return false;
+    });
+</script>
 
-    <script>
-        $("#1x").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().refresh_rate=50;
-            $(this).attr("disabled", true);
-            $("#12x").removeAttr("disabled");
-            $("#14x").removeAttr("disabled");
-            $("#2x").removeAttr("disabled");
-            $("#4x").removeAttr("disabled");
-            return false;
-        });
-        $("#2x").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().refresh_rate=25;
-            $(this).attr("disabled", true);
-            $("#12x").removeAttr("disabled");
-            $("#14x").removeAttr("disabled");
-            $("#1x").removeAttr("disabled");
-            $("#4x").removeAttr("disabled");
-            return false;
-        });
-        $("#4x").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().refresh_rate=12.5;
-            $(this).attr("disabled", true);
-            $("#12x").removeAttr("disabled");
-            $("#14x").removeAttr("disabled");
-            $("#2x").removeAttr("disabled");
-            $("#1x").removeAttr("disabled");
-            return false;
-        });
-        $("#12x").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().refresh_rate=100;
-            $(this).attr("disabled", true);
-            $("#4x").removeAttr("disabled");
-            $("#14x").removeAttr("disabled");
-            $("#2x").removeAttr("disabled");
-            $("#1x").removeAttr("disabled");
-            return false;
-        });
-        $("#14x").click(function() {
-            angular.element('[ng-controller=ctrl]').scope().refresh_rate=200;
-            $(this).attr("disabled", true);
-            $("#12x").removeAttr("disabled");
-            $("#4x").removeAttr("disabled");
-            $("#2x").removeAttr("disabled");
-            $("#1x").removeAttr("disabled");
-            return false;
-        });
-    </script>
+<!-- jQuery TagsInput -->
+<script src="js/plugins/tagsInput/jquery.tagsinput.min.js"></script>
 
-    <!-- jQuery TagsInput -->
-    <script src="js/plugins/tagsInput/jquery.tagsinput.min.js"></script>
+<script>
+    $(document).ready(function() {
 
-    <script>
-        $(document).ready(function() {
+        $('.tagsinput').tagsInput();
 
-            $('.tagsinput').tagsInput();
+    });
+</script>
 
-        });
-    </script>
+<!-- jQuery jWYSIWYG -->
+<script src="js/plugins/jWYSIWYG/jquery.wysiwyg.js"></script>
 
-    <!-- jQuery jWYSIWYG -->
-    <script src="js/plugins/jWYSIWYG/jquery.wysiwyg.js"></script>
+<script>
+    $(document).ready(function() {
 
-    <script>
-        $(document).ready(function() {
+        $('.wysiwyg').wysiwyg({
+            controls: {
+                bold          : { visible : true },
+                italic        : { visible : true },
+                underline     : { visible : true },
+                strikeThrough : { visible : true },
 
-            $('.wysiwyg').wysiwyg({
-                controls: {
-                    bold          : { visible : true },
-                    italic        : { visible : true },
-                    underline     : { visible : true },
-                    strikeThrough : { visible : true },
+                justifyLeft   : { visible : true },
+                justifyCenter : { visible : true },
+                justifyRight  : { visible : true },
+                justifyFull   : { visible : true },
 
-                    justifyLeft   : { visible : true },
-                    justifyCenter : { visible : true },
-                    justifyRight  : { visible : true },
-                    justifyFull   : { visible : true },
+                indent  : { visible : true },
+                outdent : { visible : true },
 
-                    indent  : { visible : true },
-                    outdent : { visible : true },
+                subscript   : { visible : true },
+                superscript : { visible : true },
 
-                    subscript   : { visible : true },
-                    superscript : { visible : true },
+                undo : { visible : true },
+                redo : { visible : true },
 
-                    undo : { visible : true },
-                    redo : { visible : true },
+                insertOrderedList    : { visible : true },
+                insertUnorderedList  : { visible : true },
+                insertHorizontalRule : { visible : true },
 
-                    insertOrderedList    : { visible : true },
-                    insertUnorderedList  : { visible : true },
-                    insertHorizontalRule : { visible : true },
-
-                    cut   : { visible : true },
-                    copy  : { visible : true },
-                    paste : { visible : true }
-                },
-                events: {
-                    click: function(event) {
-                        if ($("#click-inform:checked").length > 0) {
-                            event.preventDefault();
-                            alert("You have clicked jWysiwyg content!");
-                        }
+                cut   : { visible : true },
+                copy  : { visible : true },
+                paste : { visible : true }
+            },
+            events: {
+                click: function(event) {
+                    if ($("#click-inform:checked").length > 0) {
+                        event.preventDefault();
+                        alert("You have clicked jWysiwyg content!");
                     }
                 }
-            });
-
+            }
         });
-    </script>
 
-    <!-- Wysihtml5 -->
-    <script src="js/plugins/wysihtml5/wysihtml5-0.3.0.js"></script>
-    <script src="js/plugins/wysihtml5/bootstrap-wysihtml5.js"></script>
+    });
+</script>
 
-    <script>
-        $(document).ready(function() {
+<!-- Wysihtml5 -->
+<script src="js/plugins/wysihtml5/wysihtml5-0.3.0.js"></script>
+<script src="js/plugins/wysihtml5/bootstrap-wysihtml5.js"></script>
 
-            $('.wysihtml5').wysihtml5();
+<script>
+    $(document).ready(function() {
 
+        $('.wysihtml5').wysihtml5();
+
+    });
+</script>
+
+<!-- Colorpicker -->
+<script src="js/plugins/colorpicker/bootstrap-colorpicker.js"></script>
+
+<script>
+    $(document).ready(function() {
+
+        var preview = $('.colorpicker-preview')[0].style;
+        $('.colorpicker').colorpicker().on('changeColor', function(ev){
+            preview.backgroundColor = ev.color.toHex();
         });
-    </script>
 
-    <!-- Colorpicker -->
-    <script src="js/plugins/colorpicker/bootstrap-colorpicker.js"></script>
+    });
+</script>
 
-    <script>
-        $(document).ready(function() {
+<!-- Colorpicker -->
+<script src="js/plugins/datepicker/bootstrap-datepicker.js"></script>
 
-            var preview = $('.colorpicker-preview')[0].style;
-            $('.colorpicker').colorpicker().on('changeColor', function(ev){
-                preview.backgroundColor = ev.color.toHex();
-            });
+<script>
+    $(document).ready(function() {
 
-        });
-    </script>
+        $('.datepicker').datepicker();
 
-    <!-- Colorpicker -->
-    <script src="js/plugins/datepicker/bootstrap-datepicker.js"></script>
+    });
+</script>
 
-    <script>
-        $(document).ready(function() {
-
-            $('.datepicker').datepicker();
-
-        });
-    </script>
-
-    </body>
-    </html>
+</body>
+</html>

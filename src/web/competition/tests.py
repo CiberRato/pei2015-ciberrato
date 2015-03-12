@@ -235,7 +235,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [OrderedDict(
             [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
              ('lab_path', None), ('agents_list', [1])])], 'competitions': [
-            OrderedDict([('name', u'C1'), ('type_of_competition', 'Colaborativa'), ('enrolled_groups', [1, 2, 3])])],
+            OrderedDict([('name', u'C1'), ('type_of_competition', 'Colaborativa')])],
                                'user': OrderedDict(
                                    [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                     ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
