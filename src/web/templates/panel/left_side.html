@@ -1,11 +1,7 @@
 <div class="navigation-block">
 
     <!-- User profile -->
-    <!-- <section class="user-profile">
-            <strong>User:</strong> <a href="#" class="User">John Pixel</a><p></p>
-            <strong>Educacional institution</strong>: <a href="http://www.ua.pt/">University of Aveiro</a>
-    </section>
--->
+
     <section class="user-profile">
         <figure>
             <script>
@@ -16,7 +12,7 @@
 
                 }
 
-                document.write('<img src="' + get_gravatar('{{user.email}}', 200) + '" />');
+                document.write('<img src="' + get_gravatar('{{user.email}}', 60) + '" />');
             </script>
             <figcaption>
 
@@ -38,9 +34,9 @@
     <!-- /User profile -->
 
     <!-- Sample left search bar -->
-    <!-- <form class="side-search">
-        <input type="text" class="rounded" placeholder="To search type and hit enter">
-    </form> -->
+    <form class="side-search" onsubmit="window.location.href=('panel/searchResults/' + search.value+'/');">
+        <input type="text" class="rounded" placeholder="Search users and groups" name="search">
+    </form>
     <!-- /Sample left search bar -->
 
     <!-- Main navigation -->
@@ -69,8 +65,7 @@
             <li>
                 <a href="#"><span class="awe-trophy"></span><strong>Competition</strong></a>
                 <ul>
-                    <li><a href="SubmeterCodigo.html">Submit</a></li>
-                    <li><a href="#">Join competition</a></li>
+                    <li><a href="/panel/competitions">Join competition</a></li>
 
                     <li><a href="seelogs.html">See logs</a></li>
                     <li><a href="#">Past Competitions</a></li>

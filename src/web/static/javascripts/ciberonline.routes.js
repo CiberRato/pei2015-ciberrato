@@ -26,6 +26,10 @@
             controller: 'ProfileController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editProfile.html'
+        }).when('/panel/:username/editProfile/deleteAccount',{
+            controller: 'ProfileController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/confirmAccount.html'
         }).when('/panel/:username/myTeams',{
             controller: 'MyTeamsController',
             controllerAs: 'vm',
@@ -42,10 +46,30 @@
             controller: 'EditTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editTeamProfile.html'
+        }).when('/panel/:name/editTeamProfile/deleteTeam',{
+            controller: 'EditTeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/confirmTeam.html'
+        }).when('/panel/:name/teamMembers',{
+            controller: 'AllTeamsMembersController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/allTeamsMembers.html'
+        }).when('/panel/:username/memberProfile',{
+            controller: 'MemberProfile',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/memberProfile.html'
         }).when('/panel/allTeams',{
             controller:'AllTeamsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/allTeams.html'
+        }).when('/panel/searchResults/:search',{
+            controller:'SearchController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/search.html'
+        }).when('/panel/competitions',{
+            controller:'AllCompetitionsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/actualCompetitions.html'
         }).when('/',{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

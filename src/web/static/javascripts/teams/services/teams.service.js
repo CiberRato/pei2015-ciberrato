@@ -18,7 +18,8 @@
             manageAdmin: manageAdmin,
             removeMember: removeMember,
             update: update,
-            getTeam: getTeam
+            getTeam: getTeam,
+            destroy: destroy
         };
 
         return Team;
@@ -73,6 +74,10 @@
                 max_members: team.max_members
 
             });
+        }
+
+        function destroy(teamName){
+            return $http.delete('api/v1/groups/crud/' + teamName + '/');
         }
 
     }

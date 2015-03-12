@@ -34,6 +34,16 @@
 <script type="text/javascript" src="{% static 'javascripts/teams/controllers/myteams.controller.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/teams/controllers/team.controller.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/teams/controllers/editTeam.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/memberProfile.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/allTeamsMembers.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/search/search.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/search/controllers/search.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/competitions.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/services/competitions.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/allCompetitions.controller.js' %}"></script>
+
+
+
 
 
 
@@ -41,57 +51,9 @@
 <script type="text/javascript">
     $(document).ready(function(){
 
-        // This value can be true, false or a function to be used as a callback when the closer is clciked
-        $.jGrowl.defaults.closer = function() {
-            console.log("Closing everything!", this);
-        };
-
-        $.jGrowl("Hello stranger!", {
+        $.jGrowl("Welcome to CiberMouse!", {
             theme: 'success'
         });
-
-        $.jGrowl("This notification will live a little longer. This is default style.", {
-            life: 2500,
-            theme: 'danger'
-        });
-        $.jGrowl("Sticky notification with a header", {
-            header: 'Ernest Lawrence',
-            sticky: true
-        });
-        $.jGrowl("Chromatron theme, and a whole bunch of callbacks...", {
-            theme: 'primary',
-            speed: 'slow',
-            beforeOpen: function(e,m,o) {
-                console.log("I am going to be opened!", this);
-            },
-            open: function(e,m,o) {
-                console.log("I have been opened!", this);
-            },
-            beforeClose: function(e,m,o) {
-                console.log("I am going to be closed!", this);
-            },
-            close: function(e,m,o) {
-                console.log("I have been closed!", this);
-            }
-        });
-
-        $.jGrowl("Custom animation test...", {
-            speed: 'slow',
-            animateOpen: {
-                height: "show"
-            },
-            animateClose: {
-                height: "hide"
-            }
-        });
-
-        $.jGrowl("This message will not close because we have a callback that returns false.", {
-            beforeClose: function() {
-                return false;
-            }
-        });
-
-        $.jGrowl.defaults.closerTemplate = '<div>hide all notifications</div>';
 
     });
 

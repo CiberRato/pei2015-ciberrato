@@ -42,6 +42,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', 'Competitiva')]))
 
+        # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
         response = client.post(path=url, data=data)
@@ -49,18 +50,21 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
 
+        # groups that enrolled in the competition
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1')])])
 
+        # the group can't enroll twice
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'status': 'Bad request', 'message': 'The group already enrolled.'})
 
+        # enroll another group to the competition
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO2'}
         response = client.post(path=url, data=data)
@@ -68,6 +72,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
 
+        # and another one :D
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
         response = client.post(path=url, data=data)
@@ -75,6 +80,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
 
+        # see who are in the competition!
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)
 
@@ -83,7 +89,7 @@ class AuthenticationTestCase(TestCase):
                                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')]),
                                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3')])])
 
-        # update a group to a valid inscription
+        # update a group to a valid inscription (this can only be made by an admin)
         url = "/api/v1/competitions/group_valid/XPTO3/?competition_name=C1"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
@@ -103,6 +109,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO1'), ('max_members', 10)]),
                                          OrderedDict([('name', u'XPTO2'), ('max_members', 10)])])
 
+        # its a toggle, two calls make this attribute to False
         url = "/api/v1/competitions/group_valid/XPTO3/?competition_name=C1"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
@@ -123,10 +130,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [])
 
+        # delete the group enroll from the competition
         url = "/api/v1/competitions/enroll/C1/?group_name=XPTO3"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
 
+        # enroll the group again, and OK
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
         response = client.post(path=url, data=data)
@@ -134,7 +143,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
 
-        # create a agent for group
+        # create a agent for group, without code first
         url = "/api/v1/competitions/agent/"
         data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
@@ -143,7 +152,7 @@ class AuthenticationTestCase(TestCase):
             [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('rounds', []), ('competitions', []),
              ('group_name', u'XPTO3')]))
 
-        # get the agent information
+        # get the agent information about the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
@@ -203,7 +212,7 @@ class AuthenticationTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
                                'group_name': u'XPTO3'})
 
-        # make the code valid
+        # make the code valid, this operation only can be made by the script (server validation)
         agent = Agent.objects.get(agent_name='KAMIKAZE')
         agent.code_valid = True
         agent.save()
@@ -216,6 +225,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
 
+        # see the information about the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -290,7 +300,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
 
-        # create simulation
+        # create simulation (only by admin)
         url = "/api/v1/competitions/simulation/"
         data = {'round_name': 'R1'}
         response = client.post(path=url, data=data)
@@ -312,7 +322,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1'})
         self.assertEqual(response.status_code, 200)
 
-        # associate an agent to the simulation
+        # associate an agent to the simulation (only can be made by an admin)
         url = "/api/v1/competitions/associate_agent_to_simulation/"
         data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE', 'pos': 1}
         response = client.post(path=url, data=data)
@@ -358,12 +368,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('simulation_identifier', u''+identifier), ('agent_name', u'KAMIKAZE'), ('round_name', u'R1'), ('pos', 1)])])
 
+        # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
         f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Param.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
+        # only  by admin
         url = "/api/v1/competitions/round/upload/grid/?round=R1"
         f = open(
             '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml',
@@ -372,6 +384,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
+        # only  by admin
         url = "/api/v1/competitions/round/upload/lab/?round=R1"
         f = open(
             '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Lab.xml',
@@ -809,6 +822,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, OrderedDict(
             [('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('rounds', []), ('competitions', []),
              ('group_name', u'XPTO3')]))
+
 
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_virtual = True

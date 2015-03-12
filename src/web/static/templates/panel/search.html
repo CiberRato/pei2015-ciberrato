@@ -1,0 +1,50 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+                        <h2>Users</h2>
+                        <p ng-if="vm.membersFound.count != 0">Here is shown in table the list of all users founded. You may able to see their informations</strong></p>
+                        <p ng-if="vm.membersFound.count == 0">Can't found any user!</strong></p>
+                        <table ng-if="vm.membersFound.count != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Username</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.membersFound">
+                                <td><a href="panel/{{ value.username }}/memberProfile">{{ value.username }}</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <h2>Teams</h2>
+                        <p ng-if="vm.teamsFound.count != 0">Here is shown in table the list of all teams founded. You may able to see their informations</strong></p>
+                        <p ng-if="vm.teamsFound.count == 0">Can't found any team!</strong></p>
+                        <table ng-if="vm.teamsFound.count != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Team Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.teamsFound">
+                                <td><a href="panel/{{ value.name }}/teamMembers">{{ value.name }}</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>

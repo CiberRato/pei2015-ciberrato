@@ -1,0 +1,47 @@
+<div class="content-block" role="main">
+
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Example body text -->
+        <!-- Data block -->
+        <article class="span8 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>User's Information</h2>
+                </header>
+                <table>
+                    <tr>
+                        <td width="90%">
+                            <h3>Name: <em>{{vm.accountInfo.first_name}} {{vm.accountInfo.last_name}}</em></h3>
+                            <h3>Teaching Institution: <em>{{vm.accountInfo.teaching_institution}}</em></h3>
+                            <h3>Username: <em>{{vm.accountInfo.username}}</em></h3>
+                        </td>
+                        <td width="10%" valign="top">
+                            <img src="{{vm.gravatar}}" style="float: right;"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </article>
+        <!-- /Data block -->
+
+        <!-- Headings -->
+        <!-- Data block -->
+        <article class="span4 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>User's Teams</h2>
+                </header>
+                <section>
+                    <ul ng-repeat="(key, value) in vm.teams">
+                        <li><a href="panel/{{ value.name }}/teamMembers">{{value.name}}</a></li>
+                    </ul>
+                </section>
+            </div>
+        </article>
+        <!-- /Data block -->
+
+    </div>
+    <!-- /Grid row -->
+</div>
