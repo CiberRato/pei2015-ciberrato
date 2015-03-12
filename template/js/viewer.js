@@ -37,7 +37,7 @@ angular.module('myapp', [])
 
         /* Log Object */
         $scope.log = logInfo_obj.Log.LogInfo;
-
+        console.log($scope.log);
         /* Beacons Object */
         $scope.beacon = lab_obj.Lab.Beacon;
 
@@ -155,18 +155,6 @@ angular.module('myapp', [])
             $timeout($scope.refreshSVG, 1000);
 
         }
-        /*$scope.setRobotColor = function(id){
-
-            if(id == 1){
-                $scope.robotColor = 'img/svg/mickey_red_smile.svg';
-            }
-            if(id == 2){
-                $scope.robotColor = 'img/svg/mickey_blue_smile.svg';
-            }
-            if(id == 3){
-                $scope.robotColor = 'img/svg/mickey_green_smile.svg';
-            }
-        };*/
 
         $scope.setMazeColor = function(id){
 
