@@ -248,20 +248,17 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} the xml and json log
+        B{Create} the json log
         B{URL:} ../api/v1/competitions/simulation_log/
 
         @type  log_json: str
         @param log_json: The json log
-        @type  simulation_log_xml: str
-        @param simulation_log_xml: The xml log
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
             simulation.log_json = serializer.validated_data['log_json']
-            simulation.simulation_log_xml = serializer.validated_data['simulation_log_xml']
             simulation.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 

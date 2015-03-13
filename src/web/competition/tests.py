@@ -398,12 +398,11 @@ class AuthenticationTestCase(TestCase):
 
         # save simulation logs (only server by server)
         url = "/api/v1/competitions/simulation_log/"
-        data = {'simulation_identifier': identifier, 'log_json': '{OK}', 'simulation_log_xml': '<XML>'}
+        data = {'simulation_identifier': identifier, 'log_json': '{OK}'}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 200)
         simulation = Simulation.objects.get(identifier=identifier)
         self.assertEqual(simulation.log_json, '{OK}')
-        self.assertEqual(simulation.simulation_log_xml, '<XML>')
 
         # get simulation for simulate
         url = "/api/v1/competitions/get_simulations/"

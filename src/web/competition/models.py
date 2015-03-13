@@ -128,7 +128,6 @@ class Simulation(models.Model):
 
     round = models.ForeignKey(Round, blank=False)
     log_json = models.TextField(max_length=128)
-    simulation_log_xml = models.TextField(max_length=128)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

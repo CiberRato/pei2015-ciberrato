@@ -75,7 +75,7 @@ class LogSimulation(serializers.ModelSerializer):
 
     class Meta:
         model = Simulation
-        fields = ('simulation_identifier', 'log_json', 'simulation_log_xml',)
+        fields = ('simulation_identifier', 'log_json',)
         read_only_fields = ()
 
 
