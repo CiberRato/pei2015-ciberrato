@@ -5,8 +5,8 @@ from groups.serializers import *
 class CompetitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition',)
-        read_only_fields = ('enrolled_groups',)
+        fields = ('name', 'type_of_competition', 'state_of_competition')
+        read_only_fields = ('state_of_competition',)
 
 
 class RoundSerializer(serializers.ModelSerializer):
