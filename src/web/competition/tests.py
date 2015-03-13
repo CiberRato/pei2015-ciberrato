@@ -37,10 +37,10 @@ class AuthenticationTestCase(TestCase):
 
         # create competition
         url = "/api/v1/competitions/crud/"
-        data = {'name': 'C2', 'type_of_competition': 'Competitiva'}
+        data = {'name': 'C2', 'type_of_competition': settings.COMPETITIVA}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', 'Competitiva')]))
+        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', settings.COMPETITIVA)]))
 
         # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
@@ -235,7 +235,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [OrderedDict(
             [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
              ('lab_path', None), ('agents_list', [1])])], 'competitions': [
-            OrderedDict([('name', u'C1'), ('type_of_competition', 'Colaborativa')])],
+            OrderedDict([('name', u'C1'), ('type_of_competition', settings.COLABORATIVA)])],
                                'user': OrderedDict(
                                    [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                     ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -791,7 +791,7 @@ class AuthenticationTestCase(TestCase):
         client.force_authenticate(user=user)
 
         c = Competition.objects.get(name="C1")
-        c.type_of_competition = "Competitiva"
+        c.type_of_competition = settings.COMPETITIVA
         c.save()
 
         url = "/api/v1/competitions/enroll/"
