@@ -37,10 +37,10 @@ class AuthenticationTestCase(TestCase):
 
         # create competition
         url = "/api/v1/competitions/crud/"
-        data = {'name': 'C2', 'type_of_competition': 'Competitiva'}
+        data = {'name': 'C2', 'type_of_competition': settings.COMPETITIVA}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', 'Competitiva')]))
+        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', settings.COMPETITIVA)]))
 
         # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
@@ -171,7 +171,8 @@ class AuthenticationTestCase(TestCase):
 
         # upload agent code
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob_do.py', 'r')
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob_do.py',
+                 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
@@ -232,15 +233,15 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
-        self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [OrderedDict(
-            [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
-             ('lab_path', None), ('agents_list', [1])])], 'competitions': [
-            OrderedDict([('name', u'C1'), ('type_of_competition', 'Colaborativa')])],
-                               'user': OrderedDict(
-                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                                    ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-                                    ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
-                               'group_name': u'XPTO3'})
+        self.assertEqual(rsp,
+                         {'agent_name': u'KAMIKAZE', 'language': 'Java', 'is_virtual': False, 'group_name': u'XPTO3',
+                          'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', settings.COLABORATIVA),
+                                                        ('state_of_competition', 'Register')])], 'user': OrderedDict(
+                             [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                              ('last_name', u'Ferreira')]), 'rounds': [OrderedDict(
+                             [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None),
+                              ('grid_path', None), ('lab_path', None), ('agents_list', [1])])]})
 
         # retrieve the agent list of one round
         url = "/api/v1/competitions/valid_round_agents/R1/"
@@ -363,10 +364,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the simulation groups
-        url = "/api/v1/competitions/simulation_agents/"+identifier+"/"
+        url = "/api/v1/competitions/simulation_agents/" + identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('simulation_identifier', u''+identifier), ('agent_name', u'KAMIKAZE'), ('round_name', u'R1'), ('pos', 1)])])
+        self.assertEqual(response.data, [OrderedDict(
+            [('simulation_identifier', u'' + identifier), ('agent_name', u'KAMIKAZE'), ('round_name', u'R1'),
+             ('pos', 1)])])
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
@@ -410,7 +413,9 @@ class AuthenticationTestCase(TestCase):
         del rsp['simulation_id']
         del rsp['agents']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list', 'grid': u'/api/v1/competitions/round_file/R1/?file=grid', 'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
+                               'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
+                               'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
 
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
@@ -428,7 +433,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the agent files
-        url = "/api/v1/competitions/agent_file/"+identifier+"/KAMIKAZE/"
+        url = "/api/v1/competitions/agent_file/" + identifier + "/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -568,13 +573,13 @@ class AuthenticationTestCase(TestCase):
         Is suppose when it's deleted a Competition to delete all the Rounds, GroupEnrolled,
         Simulations and SimulationsLogs. The agent is suppose to not be deleted.
         """
-        self.assertEqual(len(Competition.objects.all()), competition_len-1)
-        self.assertEqual(len(Round.objects.all()), round_len-3)
+        self.assertEqual(len(Competition.objects.all()), competition_len - 1)
+        self.assertEqual(len(Round.objects.all()), round_len - 3)
         self.assertEqual(len(Agent.objects.all()), agent_len)
-        self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len-1)
-        self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len-1)
-        self.assertEqual(len(Simulation.objects.all()), simulation_len-1)
-        self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len-1)
+        self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
+        self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len - 1)
+        self.assertEqual(len(Simulation.objects.all()), simulation_len - 1)
+        self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len - 1)
 
     def test_cascade_delete_round(self):
         references = self.cascade_setup()
@@ -780,7 +785,8 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/associate_agent/"
         data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE6'}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Reached the limit of agents', 'message': 'Reached the number of competition_agents!'})
+        self.assertEqual(response.data, {'status': 'Reached the limit of agents',
+                                         'message': 'Reached the number of competition_agents!'})
         self.assertEqual(response.status_code, 400)
 
         client.force_authenticate(user=None)
@@ -791,7 +797,7 @@ class AuthenticationTestCase(TestCase):
         client.force_authenticate(user=user)
 
         c = Competition.objects.get(name="C1")
-        c.type_of_competition = "Competitiva"
+        c.type_of_competition = settings.COMPETITIVA
         c.save()
 
         url = "/api/v1/competitions/enroll/"
@@ -822,7 +828,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, OrderedDict(
             [('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('rounds', []), ('competitions', []),
              ('group_name', u'XPTO3')]))
-
 
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_virtual = True

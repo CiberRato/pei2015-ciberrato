@@ -147,7 +147,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                 for simulation_agent in simulation_agents:
                     if simulation_agent.competition_agent.agent.group != group:
                         return Response({'status': 'Bad Request',
-                                         'message': 'The competition is in Colaborativa mode, the agents must be owned by the same team.'},
+                                         'message': 'The competition is in '+settings.COLABORATIVA+' mode, the agents must be owned by the same team.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
             # colaborativa
@@ -163,7 +163,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                 for simulation_agent in simulation_agents:
                     if simulation_agent.competition_agent.agent.group == group:
                         return Response({'status': 'Bad Request',
-                                         'message': 'The competition is in Colaborativa mode, the agents must be from different teams.'},
+                                         'message': 'The competition is in '+settings.COLABORATIVA+' mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
             # Reload values

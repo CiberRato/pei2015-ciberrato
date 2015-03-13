@@ -8,8 +8,8 @@ class Competition(models.Model):
     name = models.CharField(max_length=128, blank=False, unique=True)
 
     TYPE_OF_COMPETITIONS = (
-        (settings.COLABORATIVA, 'Colaborativa'),
-        (settings.COMPETITIVA, 'Competitiva'),
+        (settings.COLABORATIVA, settings.COLABORATIVA),
+        (settings.COMPETITIVA, settings.COMPETITIVA),
     )
 
     REGISTER = 'Register'
@@ -24,7 +24,7 @@ class Competition(models.Model):
 
     enrolled_groups = models.ManyToManyField(Group, through='GroupEnrolled', related_name="competition")
 
-    type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default='Colaborativa', max_length=100)
+    type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default=settings.COLABORATIVA, max_length=100)
     state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
