@@ -19,7 +19,8 @@
             removeMember: removeMember,
             update: update,
             getTeam: getTeam,
-            destroy: destroy
+            destroy: destroy,
+            getUserAdmin: getUserAdmin
         };
 
         return Team;
@@ -78,6 +79,10 @@
 
         function destroy(teamName){
             return $http.delete('api/v1/groups/crud/' + teamName + '/');
+        }
+
+        function getUserAdmin(username){
+            return $http.get('api/v1/groups/user_admin/' + username +'/');
         }
 
     }

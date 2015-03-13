@@ -1,13 +1,5 @@
 $(document).ready(function() {
 
-	// Menu scroll fix
-	$('.navigation-block').affix({
-		offset: {
-			top: 95,
-			bottom: 60
-		}
-	});
-
 	// Menu Dropdown
 	$('.main-navigation li:not(.current) ul').hide(); //Hide all sub menus
 	$('.main-navigation li a:not(.current )').not('.main-navigation li a.no-submenu, .main-navigation li li a').click(

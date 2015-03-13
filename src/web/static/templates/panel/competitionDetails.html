@@ -18,18 +18,26 @@
                             <tr>
                                 <th>Team Name</th>
                                 <th>Number of Agents</th>
+                                <th>State of Inscription</th>
+                                <th>Remove Inscription</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitionNotValidTeamsInfo" >
                                 <td><a href="panel/{{ value.name }}/teamMembers">{{value.name}}</a></td>
-                                <td>Team is Not Valid Yet</td>
+                                <td>0</td>
+                                <td><span class="label label-important">Not Valid</span></td>
+                                <td ng-if="value.canRemove == true"><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.name)">X</a></td>
+                                <td ng-if="value.canRemove == false"></td>
+
                             </tr>
                             </tbody>
                         </table>
 
-                        <a ng-if="vm.competitionNotValidTeamsInfo.length == 0"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Be the First to join this Competition</a>
-                        <a ng-if="vm.competitionNotValidTeamsInfo.length != 0"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Join this Competition</a>
+                        <a ng-if="(vm.competitionNotValidTeamsInfo.length == 0 && vm.teamsToShow.length == 0)"  href="panel/competitions/{{vm.competition.name}}/confirmErrorCompetition" class="btn btn-alt btn-large btn-primary" >Be the First to join this Competition</a>
+                        <a ng-if="(vm.competitionNotValidTeamsInfo.length == 0 && vm.teamsToShow.length != 0)"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Be the First to join this Competition</a>
+                        <a ng-if="(vm.competitionNotValidTeamsInfo.length != 0 && vm.teamsToShow.length == 0)"  href="panel/competitions/{{vm.competition.name}}/confirmErrorCompetition" class="btn btn-alt btn-large btn-primary" >Join this Competition</a>
+                        <a ng-if="(vm.competitionNotValidTeamsInfo.length != 0 && vm.teamsToShow.length != 0)"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Join this Competition</a>
                     </div>
 
                 </section>

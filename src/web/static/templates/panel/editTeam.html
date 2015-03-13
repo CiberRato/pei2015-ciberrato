@@ -33,7 +33,7 @@
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="(key, value) in vm.members">
-                                        <td>{{ value.username }}</td>
+                                        <td><a href="panel/{{ value.username }}/memberProfile">{{ value.username }}</a></td>
                                         <td ng-if="value.is_admin==true"><input type="checkbox" name="option1" checked ng-model="value.is_admin" ng-change="vm.removeAdmin(value.username)"></td>
                                         <td ng-if="value.is_admin==false"><input type="checkbox" name="option1" ng-model="value.is_admin" ng-change="vm.addAdmin(value.username)"></td>
                                         <td ng-if="vm.members.length > 1"><a class="btn btn-primary btn-flat" ng-click="vm.removeMember(value.username)">X</a></td>

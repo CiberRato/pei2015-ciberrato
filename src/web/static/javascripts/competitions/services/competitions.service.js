@@ -12,7 +12,8 @@
             getAll: getAll,
             getCompetition: getCompetition,
             getNotValidTeams: getNotValidTeams,
-            enroll: enroll
+            enroll: enroll,
+            deleteEnroll: deleteEnroll
 
         };
 
@@ -35,6 +36,10 @@
                 competition_name: competitionName,
                 group_name: teamName
             });
+        }
+
+        function deleteEnroll(teamName, competitionName){
+            return $http.delete('/api/v1/competitions/enroll/'+ competitionName + '/?group_name=' + teamName);
         }
     }
 

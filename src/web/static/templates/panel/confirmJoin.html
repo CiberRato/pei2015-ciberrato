@@ -9,18 +9,21 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-
                         <h2>You will join the competition ({{vm.competition.name}})!</h2>
                         <h3>Choose which group you want to join this competition</h3>
+
                     </div>
-                    <div class="control-group">
+
+                    <div  class="control-group">
                         <label class="control-label" for="select">Team</label>
                         <div class="controls">
-                            <select  id="select" name="option">
-                                <option ng-repeat="(key, value) in vm.teamsNotValid">{{value.name}}</option>
+                            <select id="select" name="option">
+                                <option ng-repeat="(key, value) in vm.teamsToShow">{{value.name}}</option>
                             </select>
                         </div>
+
                     </div>
+
                 </section>
 
                 <div class="form-actions">

@@ -78,6 +78,10 @@
             controller:'DetailCompetitionController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/confirmJoin.html'
+        }).when('/panel/competitions/:name/confirmErrorCompetition',{
+            controller:'DetailCompetitionController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/confirmJoinError.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
