@@ -20,7 +20,7 @@
             var username = authenticatedAccount.username;
             Competition.getCompetition(competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
             Competition.getNotValidTeams(competitionName).then(getNotValidTeamsSuccessFn, getNotValidTeamsErrorFn);
-            Team.getByUser(username).then(getTeamsByUserSuccessFn, getTeamsByUserErrorFn);
+
 
 
             function getCompetitionSuccessFn(data, status, headers, config){
@@ -34,6 +34,7 @@
 
             function getNotValidTeamsSuccessFn(data, status, headers, config){
                 vm.competitionNotValidTeamsInfo = data.data;
+                Team.getByUser(username).then(getTeamsByUserSuccessFn, getTeamsByUserErrorFn);
             }
 
             function getNotValidTeamsErrorFn(data, status, headers, config){
@@ -43,13 +44,22 @@
 
             function getTeamsByUserSuccessFn(data, status, headers, config){
                 vm.myTeams = data.data;
-                console.log(vm.myTeams);
-                /*for(var i = 0; i< vm.myTeams.length;i++){
-                    if(vm.myTeams[i] in vm.competition){
-                        vm.myTeams[i].();
+                var confirm;
+                vm.teamsNotValid = [];
+                var k = 0;
+                for(var i = 0; i< vm.myTeams.length;i++){
+                    confirm = false;
+                    for(var j = 0; j<vm.competitionNotValidTeamsInfo.length; j++){
+                        if(vm.myTeams[i].name === vm.competitionNotValidTeamsInfo[j].name){
+                            confirm = true;
+                        }
                     }
-                }*/
-                console.log(vm.myTeams);
+
+                    if(confirm === false){
+                        vm.teamsNotValid[k] = vm.myTeams[i];
+                        k++;
+                    }
+                }
             }
 
 

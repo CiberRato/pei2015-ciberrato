@@ -1,4 +1,4 @@
-<div class="content-block" role="main">
+<div class="content-block" role="main" ng-controller="DetailCompetitionController">
     <!-- Grid row -->
     <div class="row">
 
@@ -17,7 +17,7 @@
                         <label class="control-label" for="select">Team</label>
                         <div class="controls">
                             <select  id="select" name="option">
-                                <option ng-repeat="(key, value) in vm.myTeams">{{value.name}}</option>
+                                <option ng-repeat="(key, value) in vm.teamsNotValid">{{value.name}}</option>
                             </select>
                         </div>
                     </div>
@@ -25,7 +25,7 @@
 
                 <div class="form-actions">
                     <button class="btn btn-alt btn-large btn-success" ng-click="vm.enroll()">Confirm</button>
-                    <a class="btn btn-alt btn-large btn-danger" href="/panel/competititons/{{vm.competitionInfo.name}}">Cancel</a>
+                    <a class="btn btn-alt btn-large btn-danger" href="panel/competitions/{{vm.competition.name}}">Cancel</a>
                 </div>
 
             </div>

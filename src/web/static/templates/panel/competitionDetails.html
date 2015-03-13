@@ -1,4 +1,4 @@
-<div class="content-block" role="main">
+<div class="content-block" role="main" ng-controller="DetailCompetitionController">
     <!-- Grid row -->
     <div class="row">
 
@@ -9,11 +9,11 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2 ng-if="vm.competitionInfo.type_of_competition == 'Colaborativa'">{{ vm.competitionInfo.name }} (Colaborative)</h2>
-                        <h2 ng-if="vm.competitionInfo.type_of_competition == 'Competitiva'">{{ vm.competitionInfo.name }} (Competitive)</h2>
+                        <h2 ng-if="vm.competition.type_of_competition == 'Colaborativa'">{{ vm.competition.name }} (Colaborative)</h2>
+                        <h2 ng-if="vm.competition.type_of_competition == 'Competitiva'">{{ vm.competition.name }} (Competitive)</h2>
 
-                        <p ng-if="vm.competitionInfo.enrolled_groups.length != 0">Here is shown in table the list of all teams enrolled in this Competition.</p>
-                        <table ng-if="vm.competitionInfo.enrolled_groups.length != 0" class="table table-striped table-hover">
+                        <p ng-if="vm.competitionNotValidTeamsInfo.length != 0">Here is shown in table the list of all teams enrolled in this Competition.</p>
+                        <table ng-if="vm.competitionNotValidTeamsInfo.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Team Name</th>
@@ -28,8 +28,8 @@
                             </tbody>
                         </table>
 
-                        <a ng-if="vm.competitionInfo.enrolled_groups.length == 0"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Be the First to join this Competition</a>
-                        <a ng-if="vm.competitionInfo.enrolled_groups.length != 0"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Join this Competition</a>
+                        <a ng-if="vm.competitionNotValidTeamsInfo.length == 0"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Be the First to join this Competition</a>
+                        <a ng-if="vm.competitionNotValidTeamsInfo.length != 0"  href="panel/competitions/{{vm.competition.name}}/confirmCompetition" class="btn btn-alt btn-large btn-primary" >Join this Competition</a>
                     </div>
 
                 </section>
