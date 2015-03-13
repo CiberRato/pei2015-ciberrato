@@ -12,16 +12,15 @@
         var vm = this;
         var competitionName = $routeParams.name;
         vm.enroll = enroll;
+        vm.removeInscription = removeInscription;
 
         activate();
 
         function activate(){
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            var username = authenticatedAccount.username;
+            vm.username = authenticatedAccount.username;
             Competition.getCompetition(competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
-            Competition.getNotValidTeams(competitionName).then(getNotValidTeamsSuccessFn, getNotValidTeamsErrorFn);
-
-
+            Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
 
             function getCompetitionSuccessFn(data, status, headers, config){
                 vm.competition = data.data;
@@ -32,38 +31,42 @@
                 $location.url('/panel/');
             }
 
-            function getNotValidTeamsSuccessFn(data, status, headers, config){
-                vm.competitionNotValidTeamsInfo = data.data;
-                Team.getByUser(username).then(getTeamsByUserSuccessFn, getTeamsByUserErrorFn);
-            }
+            function getUserAdminSuccessFn(data, status, headers, config){
+                vm.userAdmin = data.data;
+                Competition.getNotValidTeams(competitionName).then(getNotValidTeamsSuccessFn, getNotValidTeamsErrorFn);
 
-            function getNotValidTeamsErrorFn(data, status, headers, config){
-                console.error(data.data);
-                $location.url('/panel/');
-            }
-
-            function getTeamsByUserSuccessFn(data, status, headers, config){
-                vm.myTeams = data.data;
-                var confirm;
-                vm.teamsNotValid = [];
-                var k = 0;
-                for(var i = 0; i< vm.myTeams.length;i++){
-                    confirm = false;
-                    for(var j = 0; j<vm.competitionNotValidTeamsInfo.length; j++){
-                        if(vm.myTeams[i].name === vm.competitionNotValidTeamsInfo[j].name){
-                            confirm = true;
+                function getNotValidTeamsSuccessFn(data, status, headers, config) {
+                    vm.competitionNotValidTeamsInfo = data.data;
+                    var confirm;
+                    var k = 0;
+                    var m = 0;
+                    vm.teamsToShow = [];
+                    vm.myTeams = [];
+                    for (var i = 0; i < vm.userAdmin.length; i++) {
+                        confirm = false;
+                        for (var j = 0; j < vm.competitionNotValidTeamsInfo.length; j++) {
+                            vm.competitionNotValidTeamsInfo[j].canRemove = false;
+                            if (vm.userAdmin[i].name === vm.competitionNotValidTeamsInfo[j].name) {
+                                confirm = true;
+                                vm.competitionNotValidTeamsInfo[j].canRemove = true;
+                            }
+                        }
+                        if (confirm === false) {
+                            vm.teamsToShow[k] = vm.userAdmin[i];
+                            k++;
                         }
                     }
 
-                    if(confirm === false){
-                        vm.teamsNotValid[k] = vm.myTeams[i];
-                        k++;
-                    }
                 }
+
+                function getNotValidTeamsErrorFn(data, status, headers, config) {
+                    console.error(data.data);
+                    $location.url('/panel/');
+                }
+
+
             }
-
-
-            function getTeamsByUserErrorFn(data, status, headers, config){
+            function getUserAdminErrorFn(data, status, headers, config){
                 console.error(data.data);
             }
 
@@ -73,24 +76,46 @@
             var x = document.getElementById("select").value;
             console.log(x);
             Competition.enroll(competitionName,x).then(enrollSuccessFn, enrollErrorFn);
+
+            function enrollSuccessFn(data, status, headers, config){
+                $.jGrowl("Team has been joined to the competition.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/panel/competitions/'+ competitionName + '/');
+            }
+
+            function enrollErrorFn(data, status, headers, config){
+                console.error(data.data);
+                $.jGrowl("Team could not join the competition.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+            }
         }
 
-        function enrollSuccessFn(data, status, headers, config){
-            $.jGrowl("Team has been joined to the competition.", {
-                life: 2500,
-                theme: 'success'
-            });
-            $location.path('/panel/competitions/'+ competitionName + '/');
-        }
 
-        function enrollErrorFn(data, status, headers, config){
-            console.error(data.data);
-            $.jGrowl("Team could not join the competition.", {
-                life: 2500,
-                theme: 'btn-danger'
-            });
-        }
 
+        function removeInscription(teamName){
+            Competition.deleteEnroll(teamName, competitionName).then(deleteEnrollSuccessFn, deleteEnrollErrorFn);
+
+            function deleteEnrollSuccessFn(data, status, headers, config){
+                $.jGrowl("Team has been removed from the competition.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/panel/competitions/'+ competitionName + '/');
+            }
+
+            function deleteEnrollErrorFn(data, status, headers, config){
+                $.jGrowl("Team can't be removed from the competition.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                $location.path('/panel/competitions/'+ competitionName + '/');
+            }
+
+        }
 
     }
 

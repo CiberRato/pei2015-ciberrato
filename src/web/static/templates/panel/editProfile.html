@@ -8,76 +8,77 @@
             <div class="data-container">
                 <header>
                     <h2>Edit Profile</h2>
-                    <section class="tab-content">
-                        <br></br>
-                        <!-- Tab #basic -->
-                        <div class="tab-pane active" id="basic">
+                </header>
+                <section class="tab-content">
+                    <br></br>
+                    <!-- Tab #basic -->
+                    <div class="tab-pane active" id="basic">
 
-                            <!-- Example vertical forms -->
-                            <div class="row-fluid">
-                                <div class="span4">
-                                    <p>In this page you can edit your profile. Please edit your <strong>first name</strong>,
-                                        <strong>last name</strong>,<strong>email</strong> and <strong>educacional institution</strong>.
-                                    </p>
-                                    <br></br>
-                                    <p> When you complete your editions, please click on button <strong>Save changes</strong> to save your profile with new information.</p>
+                        <!-- Example vertical forms -->
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <p>In this page you can edit your profile. Please edit your <strong>first name</strong>,
+                                    <strong>last name</strong>,<strong>email</strong> and <strong>educacional institution</strong>.
+                                </p>
+                                <br></br>
+                                <p> When you complete your editions, please click on button <strong>Save changes</strong> to save your profile with new information.</p>
 
-                                    <p class="help-block"> The password is edited in other page</p>
-                                </div>
-                                <div class="span8">
-                                    <form role="form" ng-submit="vm.update()">
-                                        <fieldset>
-                                            <div class="control-group">
-                                                <label class="control-label" for="firstname">First Name</label>
-                                                <div class="controls">
-                                                    <input id="firstname" class="form-control" type="text" placeholder="First Name" name="name" ng-model="vm.profile.first_name" enabled>
-                                                    <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
-                                                </div>
+                                <p class="help-block"> The password is edited in other page</p>
+                            </div>
+                            <div class="span8">
+                                <form role="form" ng-submit="vm.update()">
+                                    <fieldset>
+                                        <div class="control-group">
+                                            <label class="control-label" for="firstname">First Name</label>
+                                            <div class="controls">
+                                                <input id="firstname" class="form-control" type="text" placeholder="First Name" name="name" ng-model="vm.profile.first_name" enabled>
+                                                <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
                                             </div>
+                                        </div>
 
-                                            <div class="control-group">
-                                                <label class="control-label" for="lastname">Last Name</label>
-                                                <div class="controls">
-                                                    <input id="lastname" class="input-xlarge" type="text" placeholder="Last Name" name="name" ng-model="vm.profile.last_name" enabled>
-                                                    <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
-                                                </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="lastname">Last Name</label>
+                                            <div class="controls">
+                                                <input id="lastname" class="input-xlarge" type="text" placeholder="Last Name" name="name" ng-model="vm.profile.last_name" enabled>
+                                                <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
                                             </div>
+                                        </div>
 
-                                            <div class="control-group">
-                                                <label class="control-label" for="email">Email</label>
-                                                <div class="controls">
-                                                    <input id="email" class="input-xlarge" type="text" placeholder="email@email.com" ng-model="vm.profile.email" name="name" enabled>
-                                                    <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
-                                                </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="email">Email</label>
+                                            <div class="controls">
+                                                <input id="email" class="input-xlarge" type="text" placeholder="email@email.com" ng-model="vm.profile.email" name="name" enabled>
+                                                <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
                                             </div>
+                                        </div>
 
-                                            <div class="control-group">
-                                                <label class="control-label" for="eduinst">Educational Institution</label>
-                                                <div class="controls">
-                                                    <input id="eduinst" class="input-xlarge" type="text" placeholder="Teaching Institution" name="name" ng-model="vm.profile.teaching_institution" enabled>
-                                                    <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
-                                                </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="eduinst">Educational Institution</label>
+                                            <div class="controls">
+                                                <input id="eduinst" class="input-xlarge" type="text" placeholder="Teaching Institution" name="name" ng-model="vm.profile.teaching_institution" enabled>
+                                                <!--<p class="help-block">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p> -->
                                             </div>
+                                        </div>
 
-                                            <div class="form-actions">
-                                                <button class="btn btn-alt btn-large btn-primary" type="submit">Save changes</button>
-                                            </div>
-
-
-
-                                            <!-- info abaixo -->
-                                            <footer class="warning">
-                                                <a href="/panel/{{ vm.profile.username }}/editProfile/deleteAccount">Delete Account</a>
+                                        <div class="form-actions">
+                                            <button class="btn btn-alt btn-large btn-primary" type="submit">Save changes</button>
+                                        </div>
 
 
 
-                                            </footer>
-                                        </fieldset>
-                                    </form>
-                                </div>
+                                        <!-- info abaixo -->
+                                        <footer class="warning">
+                                            <a href="/panel/{{ vm.profile.username }}/editProfile/deleteAccount">Delete Account</a>
+
+
+
+                                        </footer>
+                                    </fieldset>
+                                </form>
                             </div>
                         </div>
-                    </section>
+                    </div>
+                </section>
             </div>
         </article>
     </div>
