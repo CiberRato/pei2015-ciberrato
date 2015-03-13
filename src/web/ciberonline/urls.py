@@ -6,7 +6,7 @@ from django.views.generic.base import TemplateView
 from authentication.views import AccountViewSet, LoginView, LogoutView
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
-    MemberInGroupViewSet
+    MemberInGroupViewSet, AccountGroupsAdminViewSet
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
     CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet
 from competition.views.agent import AssociateAgent, AgentViewSets
@@ -27,6 +27,7 @@ router_accounts.register(r'accounts', AccountViewSet)
 router_groups = routers.SimpleRouter()
 router_groups.register(r'members', GroupMembersViewSet)
 router_groups.register(r'user', AccountGroupsViewSet)
+router_groups.register(r'user_admin', AccountGroupsAdminViewSet)
 # crud = create read update delete
 router_groups.register(r'crud', GroupViewSet)
 router_groups.register(r'admin', MakeMemberAdminViewSet)

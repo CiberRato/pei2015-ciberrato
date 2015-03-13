@@ -72,6 +72,12 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO'), ('max_members', 10)]),
                                          OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
 
+        # only two groups must be admin
+        url = "/api/v1/groups/user_admin/gipmon/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
+
         # the user must be administrator of the group
         url = "/api/v1/groups/member/TestGroup/?username=gipmon"
         response = client.get(url)

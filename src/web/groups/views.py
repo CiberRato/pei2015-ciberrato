@@ -132,6 +132,35 @@ class AccountGroupsViewSet(mixins.RetrieveModelMixin,
         return Response(serializer.data)
 
 
+class AccountGroupsAdminViewSet(mixins.RetrieveModelMixin,
+                                viewsets.GenericViewSet):
+    queryset = Account.objects.all()
+    serializer_class = GroupSerializer
+
+    def get_permissions(self):
+        """
+        If an user wants to see the groups admin of another user it must be Authenticated.
+        :return: True if Authenticated or False if not
+        :rtype: permissions.isAuthenticated()
+        """
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the groups where the user is admin
+        B{URL:} ../api/v1/groups/user_admin/<username>/
+        """
+        self.queryset = self.queryset.get(username=kwargs.get('pk'))
+        groups = []
+        for group in self.queryset.groups.all():
+            gm = GroupMember.objects.get(account=self.queryset, group=group)
+            if gm.is_admin:
+                groups += [group]
+
+        serializer = self.serializer_class(groups, many=True)
+        return Response(serializer.data)
+
+
 class GroupMembersViewSet(mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet):
     queryset = GroupMember.objects.all()
