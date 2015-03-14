@@ -183,7 +183,7 @@ class GetAgentFiles(views.APIView):
         temp = tempfile.NamedTemporaryFile()
         with tarfile.open(temp.name, "w:gz") as tar:
             for name in json.loads(agent.locations):
-                tar.addfile(tarfile.TarInfo(default_storage.get_valid_name(name)), fileobj=default_storage.open(name))
+                tar.add(default_storage.path(name), arcname=default_storage.get_valid_name(name))
             tar.close()
 
         wrapper = FileWrapper(temp)
