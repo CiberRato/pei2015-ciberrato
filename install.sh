@@ -1,3 +1,8 @@
+if [ $(id -u) != "0" ]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
 if [ "$1" == "--help" ]; then
 	echo "Please use this script under a Debian distribution"
 	echo ""
@@ -11,13 +16,13 @@ if [ "$1" == "--env" ]; then
 	ENV=true
 fi
 echo "	>> Installing general dependencies"
-sudo apt-get install -y	python \
+apt-get install -y	python \
 			build-essential \
 			g++ \
 			qt4-dev-tools \
 			python-pip \
-			python-virtualenv
-
+			python-virtualenv \
+			docker.io
 (cd src/web; 
 if [ "$ENV" ]; then
 echo "	>> Configuring virtual environment"
@@ -45,3 +50,6 @@ fi)
 echo "	>> Compiling cibertools"
 (cd src/server/cibertools-v2.2/;
 make;)
+echo "  >> Creating docker image based on Dockerfile"
+#(cd src/server/;
+#docker build -t ubuntu/ciberonline;)
