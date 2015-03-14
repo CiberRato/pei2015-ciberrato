@@ -129,7 +129,7 @@
         <!-- /Main navigation -->
 
         <!-- Sample side note -->
-        
+
             <div class="row">
                 <article class="span3 data-block">
 
@@ -148,7 +148,7 @@
                     </div>
                 </article>
             </div>
-        
+
         <!-- /Sample side note -->
     </div>
     <!-- Left (navigation) side -->
@@ -256,11 +256,11 @@
                                     </div>
                                     <div class="span3" style="text-align: right; margin-top: 5px">
                                         <div class="btn-group" data-toggle="buttons-checkbox">
-                                            <button class="btn" id="18x">1/8x</button>
-                                            <button class="btn" id="14x">1/4x</button>
-                                            <button class="btn" id="1x" disabled="true">1x</button>
-                                            <button class="btn" id="2x">2x</button>
-                                            <button class="btn" id="4x">4x</button>
+                                            <button ng-disabled="velButton=='18x'" class="btn" ng-click="activeV('18x')">1/8x</button>
+                                            <button ng-disabled="velButton=='14x'" class="btn" ng-click="activeV('14x')">1/4x</button>
+                                            <button ng-disabled="velButton=='1x'" class="btn" ng-click="activeV('1x')">1x</button>
+                                            <button ng-disabled="velButton=='2x'" class="btn" ng-click="activeV('2x')">2x</button>
+                                            <button ng-disabled="velButton=='4x'" class="btn" ng-click="activeV('4x')">4x</button>
                                         </div>
                                     </div>
 
@@ -291,7 +291,7 @@
                             <div class="span4 viewer"><h2>{{value._Name}}</h2></div>
                             <div class="span4 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
                             <button ng-click="toggle([$index])" ng-class="bclass[$index]" >{{toggleText[$index]}}</button>
-                                
+
                         </div>
 
                     </section>
@@ -566,75 +566,6 @@
         return false;
     });
 
-</script>
-
-<script>
-    $("#1x").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().refresh_rate=50;
-        angular.element('[ng-controller=ctrl]').scope().slow=0;
-        $(this).attr("disabled", true);
-        $("#12x").removeAttr("disabled");
-        $("#18x").removeAttr("disabled");
-        $("#14x").removeAttr("disabled");
-        $("#2x").removeAttr("disabled");
-        $("#4x").removeAttr("disabled");
-        return false;
-    });
-    $("#2x").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().refresh_rate=25;
-        angular.element('[ng-controller=ctrl]').scope().slow=0;
-        $(this).attr("disabled", true);
-        $("#12x").removeAttr("disabled");
-        $("#18x").removeAttr("disabled");
-        $("#14x").removeAttr("disabled");
-        $("#1x").removeAttr("disabled");
-        $("#4x").removeAttr("disabled");
-        return false;
-    });
-    $("#4x").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().refresh_rate=12.5;
-        angular.element('[ng-controller=ctrl]').scope().slow=0;
-        $(this).attr("disabled", true);
-        $("#12x").removeAttr("disabled");
-        $("#18x").removeAttr("disabled");
-        $("#14x").removeAttr("disabled");
-        $("#2x").removeAttr("disabled");
-        $("#1x").removeAttr("disabled");
-        return false;
-    });
-    $("#12x").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().refresh_rate=100;
-        angular.element('[ng-controller=ctrl]').scope().slow=0;
-        $(this).attr("disabled", true);
-        $("#4x").removeAttr("disabled");
-        $("#18x").removeAttr("disabled");
-        $("#14x").removeAttr("disabled");
-        $("#2x").removeAttr("disabled");
-        $("#1x").removeAttr("disabled");
-        return false;
-    });
-    $("#14x").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().refresh_rate=200;
-        angular.element('[ng-controller=ctrl]').scope().slow=0;
-        $(this).attr("disabled", true);
-        $("#12x").removeAttr("disabled");
-        $("#18x").removeAttr("disabled");
-        $("#4x").removeAttr("disabled");
-        $("#2x").removeAttr("disabled");
-        $("#1x").removeAttr("disabled");
-        return false;
-    });
-    $("#18x").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().refresh_rate=400;
-        angular.element('[ng-controller=ctrl]').scope().slow=1;
-        $(this).attr("disabled", true);
-        $("#14x").removeAttr("disabled");
-        $("#12x").removeAttr("disabled");
-        $("#4x").removeAttr("disabled");
-        $("#2x").removeAttr("disabled");
-        $("#1x").removeAttr("disabled");
-        return false;
-    });
 </script>
 
 <!-- jQuery TagsInput -->
