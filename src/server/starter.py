@@ -6,19 +6,33 @@ import socket
 import time
 import json
 import os
+import sys
+import tarfile
+from xml.dom import minidom
+
 
 def main():
 	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 	HOST = "http://127.0.0.1:8000"
-	result = requests.get(HOST + "/api/v1/competitions/get_simulations/")
-	simJson = json.loads(result.text)[0]
+	sim_id = "0a256950-7a5c-403d-aba3-52e455d197c5"
+	# while 1:
+	# 	# Turn starter into deamon mode
+	# 	pass
+	#result = requests.get(HOST + "/api/v1/competitions/get_simulations/")
+
+	result = requests.get(HOST + "/api/v1/competitions/get_simulation/" + sim_id + "/")
+	simJson = json.loads(result.text)
 	tempFilesList = {}
 	for key in simJson:
-		if key == "agents" or key == "simulation_id":
+		#Handle agents and simulation id
+		if key == "agents":
 			continue
-			#Handle agents and simulation id
+		if key == "simulation_id":
+			sim_id = simJson[key]
+			continue
+
 		fp = tempfile.NamedTemporaryFile()
 		r = requests.get(HOST + simJson[key])
 		fp.write(r.text)
@@ -32,12 +46,12 @@ def main():
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
 	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-	                "-nogui", \
-	                "-viewerlog", \
-	 				"-param", 	tempFilesList["param_list"].name, \
-	 				"-lab", 	tempFilesList["lab"].name, \
-	 				"-grid", 	tempFilesList["grid"].name], \
-	 				stdout = subprocess.PIPE)
+					"-nogui", \
+					"-viewerlog", \
+					"-param", 	tempFilesList["param_list"].name, \
+					"-lab", 	tempFilesList["lab"].name, \
+					"-grid", 	tempFilesList["grid"].name], \
+					stdout = subprocess.PIPE)
 
 	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
@@ -72,15 +86,15 @@ def main():
 	data = viewer_c.recv(4096)
 	while data != "<AllRobotsRegistered/>":
 		data = viewer_c.recv(4096)
-		print data
 
 	print "Sending message to Viewer (everything is ready to start)"
 	viewer_c.send("<StartedAgents/>")
 	print "Waiting for simulation to end.."
 	data = viewer_c.recv(4096)
-	while data != "<EndedSimulation/>":
+	while not data.find("EndedSimulation"):
 		data = viewer_c.recv(4096)
 	print "Simulation ended, killing simulator and running agents"
+	print "Posting log to the database.."
 	viewer_c.close()
 	viewer_tcp.close()
 
@@ -93,8 +107,34 @@ def main():
 	simulator.terminate()
 	simulator.wait()
 
+	#read json log and turn it in a str
+	logXML = minidom.parseString(data)
+	log_name = logXML.getElementsByTagName('EndedSimulation')
+	file_name = log_name[0].attributes['LogFile'].value
+
+	json_gz = tarfile.open("ciberonline.tar.gz", "w:gz")
+	json_gz.add(file_name, arcname="ciberonline")
+	json_gz.close()
+
+	#save log to the end-point
+	p = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
+	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data=p)
+
+	print response.status_code
+	print response.text
+	if response.status_code != 200:
+		print "Error posting to simulation log end-point!!"
+
+	else:
+		print "Log successfully posted, starter closing now.."
+
+	os.remove(file_name)
+	os.remove("ciberonline.tar.gz")
+
 	for key in tempFilesList:
 		tempFilesList[key].close()
 
+
+
 if __name__ == "__main__":
-    main()
+	main()
