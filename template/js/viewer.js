@@ -11,6 +11,7 @@ angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
         /* Zoom variable (30->Standard) */
         $scope.zoom = 30;
+        $scope.increments = 1;
 
         /* JSON to Object */
         var lab_obj = angular.fromJson(lab);
@@ -39,7 +40,7 @@ angular.module('myapp', [])
 
         /* Log Object */
         $scope.log = logInfo_obj.Log.LogInfo;
-        console.log($scope.log);
+
         /* Beacons Object */
         $scope.beacon = lab_obj.Lab.Beacon;
 
@@ -57,7 +58,6 @@ angular.module('myapp', [])
         for(i=0; i<$scope.numRobots; i++){
             $scope.dir[i] = parseInt($scope.log[0].Robot[i].Pos._Dir) + 90;
         }
-        console.log($scope.dir);
 
         /* Robots Object */
         $scope.robot = $scope.log[0].Robot;
@@ -208,6 +208,19 @@ angular.module('myapp', [])
             }
 
         };
+        $scope.setIncrements = function(id){
+
+            if(id == 1){
+                $scope.increments = 1;
+            }
+            if(id == 2){
+                $scope.increments = 10;
+            }
+            if(id == 3){
+                $scope.increments = 100;
+            }
+
+        };
 
         $scope.play = function() {
             if(!$scope.playvar){
@@ -236,7 +249,6 @@ angular.module('myapp', [])
             replace: true,
             compile: function(tElement, attr) {
                 attr.$observe('typeId', function(data) {
-                    console.log("Updated data ", data);
                 }, true);
 
             }
