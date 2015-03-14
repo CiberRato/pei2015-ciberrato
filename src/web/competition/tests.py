@@ -71,7 +71,7 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1')])])
+        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)])])
 
         # the group can't enroll twice
         url = "/api/v1/competitions/enroll/"
@@ -101,9 +101,9 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1')]),
-                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')]),
-                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3')])])
+        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]),
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
 
         # update a group to a valid inscription (this can only be made by an admin)
         url = "/api/v1/competitions/group_valid/XPTO3/?competition_name=C1"
@@ -509,9 +509,9 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1')]),
-                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2')]),
-                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3')])])
+        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]),
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
+                                         OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
 
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
@@ -697,6 +697,12 @@ class AuthenticationTestCase(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
+
+        # get my enrolled groups
+        url = "/api/v1/competitions/my_enrolled_groups/gipmon/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
 
         # create a agent for group
         url = "/api/v1/competitions/agent/"

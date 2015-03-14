@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from competition.permissions import IsAdmin
 from groups.permissions import IsAdminOfGroup
 from competition.views.simplex import RoundSimplex, GroupEnrolledSimplex
-
+from authentication.models import Account
 
 class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
@@ -31,6 +31,33 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         all_groups = GroupEnrolled.objects.filter(competition=competition)
         serializer = self.serializer_class(all_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MyEnrolledGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = GroupEnrolledSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of a Groups enrolled and with valid inscription by username
+        B{URL:} ../api/v1/competitions/my_enrolled_groups/<username>/
+
+        @type  username: str
+        @param username: The username
+        """
+        user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
+
+        enrolled_groups = []
+        for group in user.groups.all():
+            for eg in GroupEnrolled.objects.filter(group=group):
+                enrolled_groups += [GroupEnrolledSimplex(eg)]
+
+        serializer = self.serializer_class(enrolled_groups, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
