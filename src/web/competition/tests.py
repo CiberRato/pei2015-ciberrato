@@ -50,6 +50,14 @@ class AuthenticationTestCase(TestCase):
                          [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Register"},
                           {"name": "C2", "type_of_competition": "Competitive", "state_of_competition": "Register"}])
 
+        # get all competitions
+        url = "/api/v1/competitions/get/All/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Register"},
+                          {"name": "C2", "type_of_competition": "Competitive", "state_of_competition": "Register"}])
+
         # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
