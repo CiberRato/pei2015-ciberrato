@@ -2,12 +2,14 @@ from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round
 from competition.serializers import CompetitionSerializer
 from rest_framework import permissions
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from competition.permissions import IsAdmin
+from django.conf import settings
 
 
-class CompetitionViewSet(viewsets.ModelViewSet):
+class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
+                         viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
 
@@ -71,3 +73,33 @@ class CompetitionViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Deleted',
                          'message': 'The competition has been deleted'},
                         status=status.HTTP_200_OK)
+
+
+class CompetitionStateViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the competition information
+        B{URL:} ../api/v1/competitions/get/<state>/
+
+        @type  type: {'Past', 'Register', 'Competition', 'All'}
+        @param type: dict
+        """
+        state = dict(Competition.STATE)
+
+        if kwargs.get('pk') in state:
+            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk'))
+        elif kwargs.get('pk') is 'All':
+            queryset = Competition.objects.all()
+        else:
+            return Response({'status': 'Bad Request',
+                             'message': 'The state must mach: {\'Past\', \'Register\', \'Competition\', \'All\'}'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
