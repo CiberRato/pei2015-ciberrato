@@ -20,7 +20,7 @@
         return Competition;
 
         function getAll(){
-            return $http.get('/api/v1/competitions/crud/');
+            return $http.get('/api/v1/competitions/get/All/');
         }
 
         function getCompetition(competitionName){

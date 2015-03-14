@@ -24,8 +24,7 @@
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitions">
                                 <td><a href="panel/competitions/{{ value.name }}">{{value.name}}</a></td>
-                                <td ng-if="value.type_of_competition == 'Colaborativa'">Colaborative</td>
-                                <td ng-if="value.type_of_competition == 'Competitiva'">Competitive</td>
+                                <td>{{value.type_of_competition}}</td>
                                 <td>{{value.allTeams}}</td>
                             </tr>
                             </tbody>

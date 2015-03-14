@@ -28,15 +28,15 @@
             }
 
             function getTeams(competitionName, i) {
-                Competition.getNotValidTeams(competitionName).then(getNotValidTeamsSuccessFn, getNotValidTeamsErrorFn);
+                Competition.getTeams(competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
 
-                function getNotValidTeamsSuccessFn(data, status, headers, config) {
+                function getTeamsSuccessFn(data, status, headers, config) {
                     vm.notValidTeams = data.data;
                     vm.competitions[i].allTeams = vm.notValidTeams.length;
                 }
 
-                function getNotValidTeamsErrorFn(data, status, headers, config) {
+                function getTeamsErrorFn(data, status, headers, config) {
                     console.error(data.data);
                     $location.path('/panel/')
                 }
