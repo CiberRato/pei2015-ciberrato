@@ -131,8 +131,8 @@
         <!-- Sample side note -->
         <section class="side-note">
             <div class="side-note-container">
-                <h2>Sample Side Note</h2>
-                <p>This project was developed by a group students of the University of Aveiro.</p>
+                <h2>Viewer Helper</h2>
+                <p></p>
             </div>
             <div class="side-note-bottom"></div>
         </section>
@@ -204,18 +204,12 @@
                                                         <circle ng-attr-cx="{{v._X*zoom}}" ng-attr-cy="{{v._Y*zoom}}" ng-attr-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
                                                     </g>
                                                 </g>
-                                                <g ng-repeat="v in pline track by $index">
-                                                    <g ng-attr-id="{{ 'line' + ($index+1) }}" style="visibility: hidden; display: none">
-                                                        <polyline ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
-                                                    </g>
-
-                                                </g>
 
                                                 <g ng-repeat="value in robot">
-
+                                                    <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
                                                     <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                     <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
-                                                    <circle ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
+                                                    <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
                                                      <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
                                                 </g>
@@ -275,13 +269,16 @@
                 <div class="data-container">
                     <section class="viewer">
                         <div class="row-fluid demo">
-                            <div class="span6">Name</div>
-                            <div class="span6">Position</div>
+                            <div class="span4">Name</div>
+                            <div class="span4">Position</div>
+                            <div class="span4">Line</div>
 
                         </div>
                         <div ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
-                            <div class="span6 viewer"><h2>{{value._Name}}</h2></div>
-                            <div class="span6 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
+                            <div class="span4 viewer"><h2>{{value._Name}}</h2></div>
+                            <div class="span4 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
+                            <button ng-click="toggle([$index])" ng-class="bclass[$index]" >{{toggleText[$index]}}</button>
+                                
                         </div>
 
                     </section>
@@ -425,17 +422,6 @@
                                                 </td>
                                             </tr>
 
-                                            <!-- Line -->
-                                            <tr>
-                                                <th>Line</th>
-                                                <td ng-repeat="value in robot track by $index" style="text-align: center">
-                                                    <div class="btn-group" data-toggle="buttons-checkbox">
-                                                        <button class="btn btn-success" ng-attr-id="{{ 'show' + ($index+1) }}">Show</button>
-                                                        <button class="btn btn-danger" ng-attr-id="{{ 'hide' + ($index+1) }}" disabled="true">Hide</button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
                                         </tbody>
                                     </table>
                                 </div>
@@ -540,74 +526,6 @@
             default: return; // exit this handler for other keys
         }
         e.preventDefault(); // prevent the default action (scroll / move caret)
-    });
-
-</script>
-
-<script>
-    $('#scoretable').on('click', '#show1' , function () {
-        $("#line1").css({"visibility":"visible", "display": "initial"});
-        $(this).attr("disabled", true);
-        $("#hide1").removeAttr("disabled");
-        return false;
-    });
-    $('#scoretable').on('click', '#hide1' , function () {
-        $("#line1").css({"visibility":"hidden", "display": "none"});
-        $(this).attr("disabled", true);
-        $("#show1").removeAttr("disabled");
-        return false;
-    });
-
-    $('#scoretable').on('click', '#show2' , function () {
-        $("#line2").css({"visibility":"visible", "display": "initial"});
-        $(this).attr("disabled", true);
-        $("#hide2").removeAttr("disabled");
-        return false;
-    });
-    $('#scoretable').on('click', '#hide2' , function () {
-        $("#line2").css({"visibility":"hidden", "display": "none"});
-        $(this).attr("disabled", true);
-        $("#show2").removeAttr("disabled");
-        return false;
-    });
-
-    $('#scoretable').on('click', '#show3' , function () {
-        $("#line3").css({"visibility":"visible", "display": "initial"});
-        $(this).attr("disabled", true);
-        $("#hide3").removeAttr("disabled");
-        return false;
-    });
-    $('#scoretable').on('click', '#hide3' , function () {
-        $("#line3").css({"visibility":"hidden", "display": "none"});
-        $(this).attr("disabled", true);
-        $("#show3").removeAttr("disabled");
-        return false;
-    });
-
-    $('#scoretable').on('click', '#show4' , function () {
-        $("#line4").css({"visibility":"visible", "display": "initial"});
-        $(this).attr("disabled", true);
-        $("#hide4").removeAttr("disabled");
-        return false;
-    });
-    $('#scoretable').on('click', '#hide4' , function () {
-        $("#line4").css({"visibility":"hidden", "display": "none"});
-        $(this).attr("disabled", true);
-        $("#show4").removeAttr("disabled");
-        return false;
-    });
-
-    $('#scoretable').on('click', '#show5' , function () {
-        $("#line5").css({"visibility":"visible", "display": "initial"});
-        $(this).attr("disabled", true);
-        $("#hide5").removeAttr("disabled");
-        return false;
-    });
-    $('#scoretable').on('click', '#hide5' , function () {
-        $("#line5").css({"visibility":"hidden", "display": "none"});
-        $(this).attr("disabled", true);
-        $("#show5").removeAttr("disabled");
-        return false;
     });
 
 </script>

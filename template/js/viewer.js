@@ -71,26 +71,11 @@ angular.module('myapp', [])
         $scope.idx = 1;
         $scope.last_idx = 0;
 
-        $scope.pline = [];
-        for(i=0; i<$scope.numRobots; i++){
-            $scope.pline[i] = "";
-        }
-        console.log($scope.pline);
         /* Set Robots Colors */
-        $scope.robotColor = [];
-        $scope.robotColor[0] = 'img/svg/mickey_red_smile.svg';
-        $scope.robotColor[1] = 'img/svg/mickey_green_smile.svg';
-        $scope.robotColor[2] = 'img/svg/mickey_blue_smile.svg';
-        $scope.robotColor[3] = 'img/svg/mickey_yellow_smile.svg';
-        $scope.robotColor[4] = 'img/svg/mickey_orange_smile.svg';
+        $scope.mickeyColor = ['img/svg/mickey_red_smile.svg','img/svg/mickey_green_smile.svg','img/svg/mickey_blue_smile.svg','img/svg/mickey_yellow_smile.svg','img/svg/mickey_orange_smile.svg'];
 
         /* Set Line Colors */
-        $scope.lineColor = [];
-        $scope.lineColor[0] = '#E04F5F';
-        $scope.lineColor[1] = '#5FBF60';
-        $scope.lineColor[2] = '#29BAF7';
-        $scope.lineColor[3] = '#eaea3d';
-        $scope.lineColor[4] = '#f28d14';
+        $scope.lColor = ['#E04F5F','#5FBF60','#29BAF7','#eaea3d','#f28d14'];
 
         /* Set Maze Colors */
         $scope.groundColor = 'black';
@@ -100,6 +85,49 @@ angular.module('myapp', [])
         $scope.smallWallColor = '#0000ff';
         $scope.gridColor = '#cfd4db';
 
+        /* Line points */
+        $scope.pline = [];
+
+        /* Line Toggled */
+        $scope.slyne = [];
+
+        /* Line Button Text */
+        $scope.toggleText = [];
+
+        /* Line Button Class */
+        $scope.bclass = [];
+
+        /* Robot Color */
+        $scope.robotColor = [];
+
+        /* Line Color */
+        $scope.lineColor = [];
+        
+        for(i=0; i<$scope.numRobots; i++){
+            $scope.pline[i] = "";
+            $scope.bclass[i] = 'btn btn-success'
+            $scope.toggleText[i] = 'Show';
+            $scope.slyne[i] = false;
+            if (i>4){
+                $scope.robotColor[i] = $scope.mickeyColor[0];
+                $scope.lineColor[i] = $scope.lColor[0];
+            }
+            else{
+                $scope.robotColor[i] = $scope.mickeyColor[i];
+                $scope.lineColor[i] = $scope.lColor[i];
+            }
+        }
+
+        $scope.toggle = function(index) {
+            $scope.toggleText[index] = $scope.slyne[index] ? 'Show' : 'Hide';
+            if ($scope.bclass[index] === 'btn btn-success')
+                $scope.bclass[index] = 'btn btn-danger';
+            else
+                $scope.bclass[index] = 'btn btn-success';
+            $scope.slyne[index] = !$scope.slyne[index];  
+        };
+
+        
         var refresh = function(refresh_rate){
             $timeout(tick, refresh_rate);
         }
