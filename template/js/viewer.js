@@ -19,6 +19,8 @@ angular.module('myapp', [])
         var logInfo_obj = angular.fromJson(logInfo);
 
         var b = 0;
+
+        $scope.slow = 0;
         $scope.playvar = 0;
 
         /* Convert wall points to be integrated in SVG */
