@@ -438,6 +438,18 @@ class AuthenticationTestCase(TestCase):
                                'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
 
+        # get simulation for simulate
+        url = "/api/v1/competitions/get_simulation/" + identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data
+        del rsp['simulation_id']
+        del rsp['agents']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
+                               'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
+                               'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
         response = client.get(url)

@@ -12,12 +12,13 @@ RUN apt-get install -y \
 	python 
 #	g++ 
 #	..
-#
-RUN mkdir /code
 
-# This going to get out of here after...
-ADD ./cibertools-v2.2/robsample/ /code/
+RUN mkdir -p /ciber/user_sourcecode
+
+# Adding python module to communicate with simulator
+ADD ./libraries/python/ /ciber/
+RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
 
 RUN groupadd -r lowrights && useradd -r -g lowrights agent
 USER agent
-WORKDIR /code
+WORKDIR /ciber/user_sourcecode
