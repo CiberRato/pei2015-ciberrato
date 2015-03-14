@@ -15,6 +15,7 @@ class GroupEnrolledSimplex:
     def __init__(self, ge):
         self.competition_name = ge.competition.name
         self.group_name = ge.group.name
+        self.valid = ge.valid
 
 
 class AgentSimplex:

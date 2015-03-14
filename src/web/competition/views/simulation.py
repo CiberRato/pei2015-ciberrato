@@ -147,7 +147,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                 for simulation_agent in simulation_agents:
                     if simulation_agent.competition_agent.agent.group != group:
                         return Response({'status': 'Bad Request',
-                                         'message': 'The competition is in '+settings.COLABORATIVA+' mode, the agents must be owned by the same team.'},
+                                         'message': 'The competition is in ' + settings.COLABORATIVA + ' mode, the agents must be owned by the same team.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
             # colaborativa
@@ -163,7 +163,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
                 for simulation_agent in simulation_agents:
                     if simulation_agent.competition_agent.agent.group == group:
                         return Response({'status': 'Bad Request',
-                                         'message': 'The competition is in '+settings.COLABORATIVA+' mode, the agents must be from different teams.'},
+                                         'message': 'The competition is in ' + settings.COLABORATIVA + ' mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
 
             # Reload values
@@ -253,6 +253,8 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         @type  log_json: str
         @param log_json: The json log
+        @type  simulation_identifier: str
+        @param simulation_identifier: The simulation identifier
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -260,7 +262,8 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
             simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
             simulation.log_json = serializer.validated_data['log_json']
             simulation.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'status': 'Created',
+                             'message': 'The log has been uploaded!'}, status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
                          'message': 'The simulation couldn\'t be updated with that data.'},

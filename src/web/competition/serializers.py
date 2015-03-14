@@ -21,10 +21,12 @@ class RoundSerializer(serializers.ModelSerializer):
 class GroupEnrolledSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128)
     group_name = serializers.CharField(max_length=128)
+    valid = serializers.BooleanField()
 
     class Meta:
         model = GroupEnrolled
-        fields = ('competition_name', 'group_name',)
+        fields = ('competition_name', 'group_name', 'valid',)
+        read_only_fields = ('valid',)
 
 
 class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
