@@ -26,10 +26,6 @@
             controller: 'ProfileController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editProfile.html'
-        }).when('/panel/:username/editProfile/deleteAccount',{
-            controller: 'ProfileController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/confirmAccount.html'
         }).when('/panel/:username/myTeams',{
             controller: 'MyTeamsController',
             controllerAs: 'vm',
@@ -46,10 +42,6 @@
             controller: 'EditTeamController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/editTeamProfile.html'
-        }).when('/panel/:name/editTeamProfile/deleteTeam',{
-            controller: 'EditTeamController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/confirmTeam.html'
         }).when('/panel/:name/teamMembers',{
             controller: 'AllTeamsMembersController',
             controllerAs: 'vm',
