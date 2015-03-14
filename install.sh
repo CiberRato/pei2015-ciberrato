@@ -45,7 +45,10 @@ make;)
 echo "	>> Creating docker image based on Dockerfile"
 sudo groupadd docker
 sudo gpasswd -a $USER docker
-sudo service docker.io restart
+if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ]; then
+	sudo alias docker="docker.io"
+fi
+sudo service docker restart
 (cd src/server/;
-sudo docker.io build -t ubuntu/ciberonline .;)
+sudo docker build -t ubuntu/ciberonline .;)
 echo "	Please logout and login again"
