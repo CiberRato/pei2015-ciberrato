@@ -12,6 +12,7 @@ angular.module('myapp', [])
         /* Zoom variable (30->Standard) */
         $scope.zoom = 30;
         $scope.increments = 1;
+        $scope.velButton = '1x';
 
         /* JSON to Object */
         var lab_obj = angular.fromJson(lab);
@@ -118,6 +119,30 @@ angular.module('myapp', [])
             }
         }
 
+        $scope.activeV = function(str) {
+            if (str=='1x'){
+                $scope.velButton = '1x';
+                $scope.refresh_rate=50;
+                $scope.slow=0;
+            }else if (str=='2x'){
+                $scope.velButton = '2x';
+                $scope.refresh_rate=25;
+                $scope.slow=0;
+            }else if (str=='4x'){
+                $scope.velButton = '4x';
+                $scope.refresh_rate=12.5;
+                $scope.slow=0;
+            }else if (str=='18x'){
+                $scope.velButton = '18x';
+                $scope.refresh_rate=400;
+                $scope.slow=1;
+            }else if (str=='14x'){
+                $scope.velButton = '14x';
+                $scope.refresh_rate=100;
+                $scope.slow=0;
+            }
+        }
+
         $scope.toggle = function(index) {
             $scope.toggleText[index] = $scope.slyne[index] ? 'Show' : 'Hide';
             if ($scope.bclass[index] === 'btn btn-success')
@@ -151,7 +176,7 @@ angular.module('myapp', [])
 
         /* Update Viewer Values */
         $scope.updateValues = function(){
-
+            console.log($scope.radioModel);
             $scope.robot = $scope.log[$scope.idx].Robot;
             $scope.time = $scope.log[$scope.idx]._Time;
 

@@ -11,9 +11,9 @@
                     <div class="tab-pane active" id="static">
 
                         <h2>Competitions</h2>
-                        <p>Here is shown in table the list of all competitions that you can enroll.</p>
-
-                        <table class="table table-striped table-hover">
+                        <p ng-if="vm.competitions.length != 0">Here is shown in table the list of all competitions that you can enroll.</p>
+                        <p ng-if="vm.competitions.length == 0">There are no competitions that you can enroll.</p>
+                        <table ng-if="vm.competitions.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Competition Name</th>

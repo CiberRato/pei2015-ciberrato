@@ -28,13 +28,29 @@
 
             function getByUserSuccessFn(data, status, headers, config){
             	vm.team = data.data;
-                vm.team.count = vm.team.length;
                 vm.team.username = username;
+                for(var i=0; i<vm.team.length; i++){
+                    getNumberOfMembers(vm.team[i].name, i);
+                }
             }
 
             function getByUserErrorFn(data, status, headers, config){
                 console.error(data.data);
             	$location.path('/panel/');
+            }
+
+            function getNumberOfMembers(teamName, i){
+                Team.getMembers(teamName).then(getNumberOfMembersSuccessFn, getNumberOfMembersErrorFn);
+
+                function getNumberOfMembersSuccessFn(data, status, headers, config) {
+                    vm.members = data.data;
+                    vm.team[i].allmembers = vm.members.length;
+                }
+
+                function getNumberOfMembersErrorFn(data, status, headers, config){
+                    console.error(data.data);
+                }
+
             }
 		}
 	}
