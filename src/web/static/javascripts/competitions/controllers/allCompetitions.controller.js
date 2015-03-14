@@ -13,7 +13,7 @@
         activate();
 
         function activate(){
-            Competition.getAll().then(getAllSuccessFn, getAllErrorFn);
+            Competition.getAllAble().then(getAllSuccessFn, getAllErrorFn);
 
             function getAllSuccessFn(data, status, headers, config){
                 vm.competitions = data.data;
@@ -32,8 +32,9 @@
 
 
                 function getTeamsSuccessFn(data, status, headers, config) {
-                    vm.notValidTeams = data.data;
-                    vm.competitions[i].allTeams = vm.notValidTeams.length;
+                    vm.teams = data.data;
+                    console.log(vm.teams.length);
+                    vm.competitions[i].allTeams = vm.teams.length;
                 }
 
                 function getTeamsErrorFn(data, status, headers, config) {
@@ -43,7 +44,6 @@
             }
 
         }
-
 
     }
 

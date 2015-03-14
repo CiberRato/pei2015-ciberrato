@@ -62,18 +62,14 @@
             controller:'AllCompetitionsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/actualCompetitions.html'
+        }).when('/panel/myCompetitions/:username',{
+            //controller:'DetailCompetitionController',
+            //controllerAs:'vm',
+           // templateUrl: '/static/templates/panel/myCompetitions.html'
         }).when('/panel/competitions/:name',{
             controller:'DetailCompetitionController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competitionDetails.html'
-        }).when('/panel/competitions/:name/confirmCompetition',{
-            controller:'DetailCompetitionController',
-            controllerAs:'vm',
-            templateUrl: '/static/templates/panel/confirmJoin.html'
-        }).when('/panel/competitions/:name/confirmErrorCompetition',{
-            controller:'DetailCompetitionController',
-            controllerAs:'vm',
-            templateUrl: '/static/templates/panel/confirmJoinError.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

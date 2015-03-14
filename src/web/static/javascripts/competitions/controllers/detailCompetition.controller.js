@@ -13,6 +13,7 @@
         var competitionName = $routeParams.name;
         vm.enroll = enroll;
         vm.removeInscription = removeInscription;
+        vm.change_page = change_page;
 
         activate();
 
@@ -39,14 +40,13 @@
                     vm.competitionTeamsInfo = data.data;
                     var confirm;
                     var k = 0;
-                    var m = 0;
                     vm.teamsToShow = [];
                     vm.myTeams = [];
                     for (var i = 0; i < vm.userAdmin.length; i++) {
                         confirm = false;
                         for (var j = 0; j < vm.competitionTeamsInfo.length; j++) {
                             vm.competitionTeamsInfo[j].canRemove = false;
-                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].name) {
+                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].group.name) {
                                 confirm = true;
                                 vm.competitionTeamsInfo[j].canRemove = true;
                             }
@@ -56,6 +56,10 @@
                             k++;
                         }
                     }
+                    console.log(vm.teamsToShow);
+                    console.log(vm.userAdmin);
+
+
 
                 }
 
@@ -115,6 +119,10 @@
                 $location.path('/panel/competitions/'+ competitionName + '/');
             }
 
+        }
+
+        function change_page(){
+            $location.path('/panel/' + vm.username + '/createTeam')
         }
 
     }
