@@ -419,12 +419,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         # save simulation logs (only server by server)
+        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/ciberOnline_log.json.zip', 'r')
         url = "/api/v1/competitions/simulation_log/"
-        data = {'simulation_identifier': identifier, 'log_json': '{OK}'}
+        data = {'simulation_identifier': identifier, 'log_json': f}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 200)
         simulation = Simulation.objects.get(identifier=identifier)
-        self.assertEqual(simulation.log_json, '{OK}')
+        self.assertEqual(simulation.log_json is None, False)
+        simulation.log_json.delete()
 
         # get simulation for simulate
         url = "/api/v1/competitions/get_simulations/"
