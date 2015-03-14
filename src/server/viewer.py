@@ -11,7 +11,7 @@ def main():
 	log_name = "ciberOnline_log"
 
 	log = open("log", "w") # log file used to view prints of this program
-	log.write("viewer started")
+	log.write("viewer started\n")
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -23,12 +23,37 @@ def main():
 	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
 	itemlist = parametersXML.getElementsByTagName('Parameters')
 	simTime = itemlist[0].attributes['SimTime'].value
-	log.write("SimTime: "+ simTime+"\n")
 
+	# Write params, grid and lab to the json Log
 	log_file = open(log_name, "w")
+	data = data.split("<Lab")
+	data[1] = "<Lab" + data[1]
+	data[1] = data[1].split("<Grid")
+	data[1][1] = "<Grid" + data[1][1]
 
-	## uncomment next line to save params, lab and grid to log file
-	#log_file.write(data)
+	json_obj = xmltodict.parse(data[0])
+	json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+
+	json_data = json_data.replace("@", "_")
+	json_data = json_data.replace('"#text": "\\""', "")
+	log_file.write(json_data+"\n")
+
+	json_obj = xmltodict.parse(data[1][0])
+	json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+
+	json_data = json_data.replace("@", "_")
+	json_data = json_data.replace('"#text": "\\""', "")
+	log_file.write(json_data+"\n")
+
+	json_obj = xmltodict.parse(data[1][1])
+	json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+
+	json_data = json_data.replace("@", "_")
+	json_data = json_data.replace('"#text": "\\""', "")
+	log_file.write(json_data+"\n")
+
+
+
 
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
