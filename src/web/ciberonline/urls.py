@@ -14,7 +14,7 @@ from competition.views.round import AgentsRound, RoundParticipants, RoundGroups,
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
     SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetSimulationAgents, SaveLogs
-from competition.views.view import CompetitionViewSet
+from competition.views.view import CompetitionViewSet, CompetitionStateViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, UploadAgent, \
     DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles
 
@@ -37,6 +37,7 @@ router_groups.register(r'member', MemberInGroupViewSet)
 # COMPETITIONS URLs#
 router_competitions = routers.SimpleRouter()
 router_competitions.register(r'crud', CompetitionViewSet)
+router_competitions.register(r'get', CompetitionStateViewSet)
 # Groups
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)

@@ -11,7 +11,7 @@
         var Competition = {
             getAll: getAll,
             getCompetition: getCompetition,
-            getNotValidTeams: getNotValidTeams,
+            getTeams: getTeams,
             enroll: enroll,
             deleteEnroll: deleteEnroll
 
@@ -20,14 +20,14 @@
         return Competition;
 
         function getAll(){
-            return $http.get('/api/v1/competitions/crud/');
+            return $http.get('/api/v1/competitions/get/All/');
         }
 
         function getCompetition(competitionName){
             return $http.get('/api/v1/competitions/crud/' + competitionName +'/');
         }
 
-        function getNotValidTeams(competitionName){
+        function getTeams(competitionName){
             return $http.get('/api/v1/competitions/groups_not_valid/' + competitionName +'/');
         }
 

@@ -27,6 +27,15 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
         fields = ('competition_name', 'group_name',)
 
 
+class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
+    group = GroupSerializer(read_only=True)
+
+    class Meta:
+        model = GroupEnrolled
+        fields = ('group', 'valid',)
+        read_only_fields = ('group', 'valid')
+
+
 class AgentSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(max_length=128)
     user = AccountSerializer(read_only=True)

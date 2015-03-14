@@ -42,6 +42,22 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', settings.COMPETITIVA)]))
 
+        # get competition Register
+        url = "/api/v1/competitions/get/Register/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Register"},
+                          {"name": "C2", "type_of_competition": "Competitive", "state_of_competition": "Register"}])
+
+        # get all competitions
+        url = "/api/v1/competitions/get/All/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Register"},
+                          {"name": "C2", "type_of_competition": "Competitive", "state_of_competition": "Register"}])
+
         # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
@@ -96,11 +112,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data,
                          {"status": "Updated", "message": "The group inscription has been updated to True ."})
 
-        # list of all groups enrolled and with inscriptions valid in one competition
+        # list of all groups enrolled and with inscriptions valid or not in one competition
         url = "/api/v1/competitions/groups/C1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+        self.assertEqual(response.data, [
+            OrderedDict([('group', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('valid', False)]),
+            OrderedDict([('group', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('valid', False)]),
+            OrderedDict([('group', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('valid', True)])])
 
         # list of all groups enrolled and with inscriptions not valid in one competition
         url = "/api/v1/competitions/groups_not_valid/C1/"
@@ -124,11 +143,14 @@ class AuthenticationTestCase(TestCase):
                                          OrderedDict([('name', u'XPTO2'), ('max_members', 10)]),
                                          OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
 
-        # list of all groups enrolled and with inscriptions valid in one competition
+        # list of all groups enrolled and with inscriptions valid or not in one competition
         url = "/api/v1/competitions/groups/C1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.data, [
+            OrderedDict([('group', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('valid', False)]),
+            OrderedDict([('group', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('valid', False)]),
+            OrderedDict([('group', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('valid', False)])])
 
         # delete the group enroll from the competition
         url = "/api/v1/competitions/enroll/C1/?group_name=XPTO3"

@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, GroupEnrolled
-from competition.serializers import RoundSerializer, GroupEnrolledSerializer
+from competition.serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group
@@ -15,7 +15,7 @@ from competition.views.simplex import RoundSimplex, GroupEnrolledSimplex
 
 class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = GroupEnrolledOutputSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -29,9 +29,8 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         @param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
-        valid = GroupEnrolled.objects.filter(valid=True, competition=competition)
-        valid_groups = [g.group for g in valid]
-        serializer = self.serializer_class(valid_groups, many=True)
+        all_groups = GroupEnrolled.objects.filter(competition=competition)
+        serializer = self.serializer_class(all_groups, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -33,10 +33,10 @@
 
             function getUserAdminSuccessFn(data, status, headers, config){
                 vm.userAdmin = data.data;
-                Competition.getNotValidTeams(competitionName).then(getNotValidTeamsSuccessFn, getNotValidTeamsErrorFn);
+                Competition.getTeams(competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
-                function getNotValidTeamsSuccessFn(data, status, headers, config) {
-                    vm.competitionNotValidTeamsInfo = data.data;
+                function getTeamsSuccessFn(data, status, headers, config) {
+                    vm.competitionTeamsInfo = data.data;
                     var confirm;
                     var k = 0;
                     var m = 0;
@@ -44,11 +44,11 @@
                     vm.myTeams = [];
                     for (var i = 0; i < vm.userAdmin.length; i++) {
                         confirm = false;
-                        for (var j = 0; j < vm.competitionNotValidTeamsInfo.length; j++) {
-                            vm.competitionNotValidTeamsInfo[j].canRemove = false;
-                            if (vm.userAdmin[i].name === vm.competitionNotValidTeamsInfo[j].name) {
+                        for (var j = 0; j < vm.competitionTeamsInfo.length; j++) {
+                            vm.competitionTeamsInfo[j].canRemove = false;
+                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].name) {
                                 confirm = true;
-                                vm.competitionNotValidTeamsInfo[j].canRemove = true;
+                                vm.competitionTeamsInfo[j].canRemove = true;
                             }
                         }
                         if (confirm === false) {
@@ -59,7 +59,7 @@
 
                 }
 
-                function getNotValidTeamsErrorFn(data, status, headers, config) {
+                function getTeamsErrorFn(data, status, headers, config) {
                     console.error(data.data);
                     $location.url('/panel/');
                 }
