@@ -1,8 +1,3 @@
-if [ $(id -u) != "0" ]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
-fi
-
 if [ "$1" = "--help" ]; then
 	echo "Please use this script under a Debian distribution"
 	echo ""
@@ -18,7 +13,7 @@ if [ "$1" = "--env" ]; then
 fi
 
 echo "	>> Installing general dependencies"
-apt-get install -y	python \
+sudo apt-get install -y	python \
 			build-essential \
 			g++ \
 			qt4-dev-tools \
@@ -26,15 +21,19 @@ apt-get install -y	python \
 			python-virtualenv \
 			docker.io
 (cd src/web; 
-if [ "$ENV" ]; then
-echo "	>> Configuring virtual environment"
+if [ "$ENV" ]; 
+then
+	echo "	>> Configuring virtual environment"
 	if [ ! -d "environment" ]; then
 		virtualenv environment
 	fi
-source environment/bin/activate;
+	source environment/bin/activate;
+	echo "	>> Installing python dependencies"
+	pip install -r requirements.txt;
+else
+	echo "	>> Installing python dependencies"
+	sudo pip install -r requirements.txt;
 fi
-echo "	>> Installing python dependencies"
-pip install -r requirements.txt;
 echo "	>> Migrating Django applications"
 python manage.py migrate;
 if [ "$ENV" ]; then
@@ -42,9 +41,11 @@ if [ "$ENV" ]; then
 fi)
 echo "	>> Compiling cibertools"
 (cd src/server/cibertools-v2.2/;
-make --quiet;)
+make;)
 echo "	>> Creating docker image based on Dockerfile"
-groupadd docker
-gpasswd -a ${USERNAME} docker
-#(cd src/server/;
-#docker build -t ubuntu/ciberonline;)
+sudo groupadd docker
+sudo gpasswd -a $USER docker
+sudo service docker.io restart
+(cd src/server/;
+sudo docker.io build -t ubuntu/ciberonline .;)
+echo "	Please logout and login again"
