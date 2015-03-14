@@ -94,7 +94,7 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
         if kwargs.get('pk') in state:
             queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk'))
-        elif kwargs.get('pk') is 'All':
+        elif kwargs.get('pk') == 'All':
             queryset = Competition.objects.all()
         else:
             return Response({'status': 'Bad Request',
