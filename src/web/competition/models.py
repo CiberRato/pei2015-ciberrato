@@ -137,4 +137,4 @@ class Simulation(models.Model):
         get_latest_by = "created_at"
 
     def __unicode__(self):
-        return self.agent_path
+        return self.identifier
