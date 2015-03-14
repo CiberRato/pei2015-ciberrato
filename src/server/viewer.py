@@ -5,10 +5,11 @@ from xml.dom import minidom
 from collections import OrderedDict
 import json
 import xmltodict
+import requests
 
 def main():
 	## Log File Name
-	log_name = "ciberOnline_log"
+	log_name = "ciberOnline_log.json"
 
 	log = open("log", "w") # log file used to view prints of this program
 	log.write("viewer started\n")
@@ -51,8 +52,6 @@ def main():
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	log_file.write(json_data+"\n")
-
-
 
 
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -101,12 +100,12 @@ def main():
 	#django_tcp.bind(("127.0.0.1", 7000))
 	#django_tcp.listen(1)
 	#django_s, django_addr = django_tcp.accept()
-	jsonFile = open("test.json", "w")
+
 	while simTime != robotTime:
 		data = simulator_s.recv(4096)
 		# Actualizar o tempo do robot
 		data = data.replace("\x00", "")
-		log.write(data)
+		#log.write(data)
 		robotXML = minidom.parseString(data)
 		itemlist = robotXML.getElementsByTagName('LogInfo')
 		robotTime = itemlist[0].attributes['Time'].value
@@ -123,7 +122,9 @@ def main():
 		# Enviar os dados da simulação para o exterior
 		#django_s.send(data)
 
-	starter_s.send("<EndedSimulation/>")
+	#send django msg telling it's over
+
+	starter_s.send('<EndedSimulation LogFile="' + log_name + '" />')
 
 	log.close()
 	log_file.close()
