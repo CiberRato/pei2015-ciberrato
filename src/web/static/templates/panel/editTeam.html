@@ -28,7 +28,7 @@
                                     <tr>
                                         <th>Members</th>
                                         <th>Admin</th>
-                                        <th>Remove</th>
+                                        <th ng-if="vm.member.is_admin==true">Remove</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -36,8 +36,19 @@
                                         <td><a href="panel/{{ value.username }}/memberProfile">{{ value.username }}</a></td>
                                         <td ng-if="value.is_admin==true"><input type="checkbox" name="option1" checked ng-model="value.is_admin" ng-change="vm.removeAdmin(value.username)"></td>
                                         <td ng-if="value.is_admin==false"><input type="checkbox" name="option1" ng-model="value.is_admin" ng-change="vm.addAdmin(value.username)"></td>
-                                        <td ng-if="vm.members.length > 1"><a class="btn btn-primary btn-flat" ng-click="vm.removeMember(value.username)">X</a></td>
-                                        <td ng-if="vm.members.length == 1"><a class="btn btn-primary btn-flat" href="panel/{{vm.team.group.name}}/editTeamProfile/deleteTeam">X</a></td>
+                                        <td ng-if="vm.members.length > 1 && vm.member.is_admin==true"><a class="btn btn-primary btn-flat" ng-click="vm.removeMember(value.username)">X</a></td>
+                                        <td ng-if="vm.members.length == 1 && vm.member.is_admin==true">
+                                            <a class="btn btn-primary btn-flat" data-toggle="modal" href="#confirmTeam">X</a>
+                                            <div class="modal fade hide"  id="confirmTeam">
+                                                <div class="modal-header">
+                                                    <h3 align="center">Your Team ({{vm.team.group.name}}) will be removed!</h3>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <a ng-click="vm.destroy()" class="btn btn-alt btn-danger" data-dismiss="modal">Delete</a>
+                                                    <a data-dismiss="modal" class="btn btn-alt btn-success">Cancel</a>
+                                                </div>
+                                            </div>
+                                        </td>
 
 
                                     </tr>
