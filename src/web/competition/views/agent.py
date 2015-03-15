@@ -3,7 +3,7 @@ import json
 from django.shortcuts import get_object_or_404
 from competition.models import Round, GroupEnrolled, CompetitionAgent, Agent
 from competition.serializers import AgentSerializer, CompetitionAgentSerializer
-from authentication.models import Group, GroupMember
+from authentication.models import Group, GroupMember, Account
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
@@ -224,6 +224,28 @@ class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
         agents = Agent.objects.filter(group=group)
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of agents by username
+        B{URL:} ../api/v1/competitions/agents_by_user/<username>/
+
+        @type  username: str
+        @param username: The user name
+        """
+        user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
+        agents = Agent.objects.filter(user=user)
         serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
