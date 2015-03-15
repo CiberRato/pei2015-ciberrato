@@ -32,19 +32,19 @@ class IsAdminOfGroup(permissions.BasePermission):
                     data = dict(request.data)
                     group_name = data['group_name']
                     group = Group.objects.filter(name=group_name)
-                except AttributeError:
+                except KeyError:
                     return False
             elif view.__class__.__name__ == 'EnrollGroup' and request.method == 'POST':
                 try:
                     group_name = request.data['group_name']
                     group = Group.objects.filter(name=group_name)
-                except AttributeError:
+                except KeyError:
                     return False
             elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'POST':
                 try:
                     group_name = request.data['group_name']
                     group = Group.objects.filter(name=group_name)
-                except AttributeError:
+                except KeyError:
                     return False
             elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'DELETE':
                 try:
