@@ -176,6 +176,20 @@ class AuthenticationTestCase(TestCase):
             [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('rounds', []), ('competitions', []),
              ('group_name', u'XPTO3')]))
 
+        # get agents by group
+        url = "/api/v1/competitions/agents_by_group/XPTO3/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('language', u''), ('rounds', []),
+             ('competitions', []), ('user', OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                                         ('teaching_institution', u'Universidade de Aveiro'),
+                                                         ('first_name', u'Rafael'), ('last_name', u'Ferreira')])),
+             ('group_name', u'XPTO3')]))
+
         # get the agent information about the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(path=url)

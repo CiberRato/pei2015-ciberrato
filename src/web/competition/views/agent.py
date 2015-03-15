@@ -206,3 +206,24 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                          'message': 'The competition agent has been deleted!'},
                         status=status.HTTP_200_OK)
 
+
+class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of agents by group
+        B{URL:} ../api/v1/competitions/agents_by_group/<group_name>/
+
+        @type  group_name: str
+        @param group_name: The group name
+        """
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        agents = Agent.objects.filter(group=group)
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

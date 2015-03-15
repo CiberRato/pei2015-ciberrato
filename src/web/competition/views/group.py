@@ -13,6 +13,7 @@ from groups.permissions import IsAdminOfGroup
 from competition.views.simplex import RoundSimplex, GroupEnrolledSimplex
 from authentication.models import Account
 
+
 class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = GroupEnrolledOutputSerializer
@@ -22,7 +23,7 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled and with valid inscription in the Competition
+        B{Retrieve} the list of a Groups enrolled and with valid inscription or not in the Competition
         B{URL:} ../api/v1/competitions/groups/<competition_name>/
 
         @type  competition_name: str
