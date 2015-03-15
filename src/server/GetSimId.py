@@ -6,16 +6,16 @@ import socket
 class GetSimId(object):
 
 	def __init__(self):
-		starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.starter_tcp.connect(("127.0.0.1", 7500))
 
 	@cherrypy.expose
 	def index(self, **kwargs):
 
 		sim_id = kwargs["simulation_identifier"]
-		# starter_tcp.connect(("127.0.0.1", 7500))
 
-		# starter_tcp.send()
+		self.starter_tcp.send(str(sim_id))
 
 		return "received sim id:" + str(sim_id)
 
