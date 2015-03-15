@@ -12,22 +12,37 @@ from xml.dom import minidom
 
 
 def main():
+	print "Starter is in deamon mode, waiting for simulation.."
+
+	end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	end_point_tcp.bind(("127.0.0.1", 7500))
+	end_point_tcp.listen(1)
+	end_point_c, end_point_add = end_point_tcp.accept()
+
+	data = None
+	while 1:
+		while data == None:
+			data = end_point_c.recv(1024)
+		print "Received simulation with sim_id= " + data + ", starting now.."
+		run(data)
+		data = None
+
+def run(sim_id):
 	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 	HOST = "http://127.0.0.1:8000"
-	sim_id = "0a256950-7a5c-403d-aba3-52e455d197c5"
-	# while 1:
-	# 	# Turn starter into deamon mode
-	# 	pass
-	#result = requests.get(HOST + "/api/v1/competitions/get_simulations/")
 
 	result = requests.get(HOST + "/api/v1/competitions/get_simulation/" + sim_id + "/")
 	simJson = json.loads(result.text)
 	tempFilesList = {}
+	n_agents = 0
+
 	for key in simJson:
 		#Handle agents and simulation id
 		if key == "agents":
+			n_agents = len(simJson[key])
 			continue
 		if key == "simulation_id":
 			sim_id = simJson[key]
@@ -39,7 +54,7 @@ def main():
 		fp.seek(0)
 		tempFilesList[key] = fp
 
-
+	print "n agents" + str(n_agents)
 
 	print "Process ID: ", os.getpid()
 	print "Creating process for simulator.."
@@ -66,7 +81,6 @@ def main():
 
 	print "Viewer ready.."
 
-	n_agents = 5
 	print "Sending message telling viewer how many agents there are..."
 	viewer_c.send('<Robots Amount="'+str(n_agents)+'" />')
 	for i in range(1, n_agents+1, 1):
@@ -95,7 +109,10 @@ def main():
 		data = viewer_c.recv(4096)
 	print "Simulation ended, killing simulator and running agents"
 	print "Posting log to the database.."
+
+	viewer_c.shutdown(socket.SHUT_RDWR)
 	viewer_c.close()
+	viewer_tcp.shutdown(socket.SHUT_RDWR)
 	viewer_tcp.close()
 
 	viewer.wait()
@@ -117,11 +134,11 @@ def main():
 	json_gz.close()
 
 	#save log to the end-point
-	p = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
-	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data=p)
+	data = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
+	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data=data)
 
-	print response.status_code
-	print response.text
+	#print response.status_code
+	#print response.text
 	if response.status_code != 200:
 		print "Error posting to simulation log end-point!!"
 
@@ -133,7 +150,6 @@ def main():
 
 	for key in tempFilesList:
 		tempFilesList[key].close()
-
 
 
 if __name__ == "__main__":
