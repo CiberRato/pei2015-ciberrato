@@ -9,6 +9,7 @@ apt-get install -y	python \
 			g++ \
 			qt4-dev-tools \
 			python-pip \
+			python-cherrypy
 			python-virtualenv \
 			docker.io
 (cd src/web;
