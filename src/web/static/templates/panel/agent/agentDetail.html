@@ -1,0 +1,38 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+                        <h2>{{ vm.agent.agent_name }} ({{vm.agent.group_name}})</h2>
+                            <a data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload Code for this Agent</a>
+                            <div class="modal fade"  id="uploadCode">
+                                <div class="modal-header">
+                                    <h2 align="center">Upload your code</h2>
+                                </div>
+                                <div class="modal-body">
+                                    <section>
+                                        <p>Upload your file code here! Select <strong>Add files</strong> and next choose the file through your browse.</p>
+                                        <p> When the file code is choosen, then upload him clicking on button <strong>Start upload</strong> and after these you can see your file code in the square above, allowing to you to download if you want to see him.
+                                        <div class="plupload"></div>
+                                    </section>
+                                </div>
+                                <div class="modal-footer">
+                                    <a ng-click="vm.enroll()" class="btn btn-alt btn-success" data-dismiss="modal">Join</a>
+                                    <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
+
+                                </div>
+                            </div>
+                    </div>
+
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>

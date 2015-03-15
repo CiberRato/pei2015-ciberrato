@@ -82,6 +82,10 @@
             controller:'MyAgentsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/agent/myAgents.html'
+        }).when('/panel/:name/agentDetail',{
+            controller:'AgentDetailController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/agent/agentDetail.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
