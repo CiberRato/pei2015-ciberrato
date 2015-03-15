@@ -45,7 +45,6 @@
                     for (var i = 0; i < vm.userAdmin.length; i++) {
                         confirm = false;
                         for (var j = 0; j < vm.competitionTeamsInfo.length; j++) {
-                            vm.competitionTeamsInfo[j].canRemove = false;
                             if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].group.name) {
                                 confirm = true;
                                 vm.competitionTeamsInfo[j].canRemove = true;
@@ -56,7 +55,7 @@
                             k++;
                         }
                     }
-                    console.log(vm.teamsToShow);
+                    console.log(vm.competitionTeamsInfo);
                     console.log(vm.userAdmin);
 
 
@@ -78,7 +77,6 @@
 
         function enroll(){
             var x = document.getElementById("select").value;
-            console.log(x);
             Competition.enroll(competitionName,x).then(enrollSuccessFn, enrollErrorFn);
 
             function enrollSuccessFn(data, status, headers, config){

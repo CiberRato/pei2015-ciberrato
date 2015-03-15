@@ -14,7 +14,8 @@
             getCompetition: getCompetition,
             getTeams: getTeams,
             enroll: enroll,
-            deleteEnroll: deleteEnroll
+            deleteEnroll: deleteEnroll,
+            getMyCompetitions: getMyCompetitions
 
         };
 
@@ -36,14 +37,20 @@
         }
 
         function enroll(competitionName, teamName){
+            console.log(teamName + ' ' + competitionName);
             return $http.post('/api/v1/competitions/enroll/',{
                 competition_name: competitionName,
-                group_name: teamName
+                group_name: teamName,
+                valid: false
             });
         }
 
         function deleteEnroll(teamName, competitionName){
             return $http.delete('/api/v1/competitions/enroll/'+ competitionName + '/?group_name=' + teamName);
+        }
+
+        function getMyCompetitions(username){
+            return $http.get('/api/v1/competitions/my_enrolled_groups/' + username + '/');
         }
     }
 

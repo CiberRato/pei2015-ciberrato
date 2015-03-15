@@ -21,39 +21,39 @@
         }).when('/panel/:username/changePassword',{
             controller: 'ProfileController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/changePassword.html'
+            templateUrl: '/static/templates/panel/profile/changePassword.html'
         }).when('/panel/:username/editProfile',{
             controller: 'ProfileController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/editProfile.html'
+            templateUrl: '/static/templates/panel/profile/editProfile.html'
         }).when('/panel/:username/myTeams',{
             controller: 'MyTeamsController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/myTeams.html'
+            templateUrl: '/static/templates/panel/teams/myTeams.html'
         }).when('/panel/:username/createTeam',{
             controller: 'CreateTeamController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/createTeam.html'
+            templateUrl: '/static/templates/panel/teams/createTeam.html'
         }).when('/panel/:name/editTeam',{
             controller: 'TeamController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/editTeam.html'
+            templateUrl: '/static/templates/panel/teams/editTeam.html'
         }).when('/panel/:name/editTeamProfile',{
             controller: 'EditTeamController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/editTeamProfile.html'
+            templateUrl: '/static/templates/panel/teams/editTeamProfile.html'
         }).when('/panel/:name/teamMembers',{
             controller: 'AllTeamsMembersController',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/allTeamsMembers.html'
+            templateUrl: '/static/templates/panel/teams/allTeamsMembers.html'
         }).when('/panel/:username/memberProfile',{
             controller: 'MemberProfile',
             controllerAs: 'vm',
-            templateUrl: '/static/templates/panel/memberProfile.html'
+            templateUrl: '/static/templates/panel/profile/memberProfile.html'
         }).when('/panel/allTeams',{
             controller:'AllTeamsController',
             controllerAs:'vm',
-            templateUrl: '/static/templates/panel/allTeams.html'
+            templateUrl: '/static/templates/panel/teams/allTeams.html'
         }).when('/panel/searchResults/:search',{
             controller:'SearchController',
             controllerAs:'vm',
@@ -61,15 +61,19 @@
         }).when('/panel/competitions',{
             controller:'AllCompetitionsController',
             controllerAs:'vm',
-            templateUrl: '/static/templates/panel/actualCompetitions.html'
+            templateUrl: '/static/templates/panel/competition/actualCompetitions.html'
+        }).when('/panel/allCompetitions',{
+            controller:'AllTogetherCompetitionsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/competition/allCompetitions.html'
         }).when('/panel/myCompetitions/:username',{
-            //controller:'DetailCompetitionController',
-            //controllerAs:'vm',
-           // templateUrl: '/static/templates/panel/myCompetitions.html'
+            controller:'MyCompetitionsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/competition/myCompetitions.html'
         }).when('/panel/competitions/:name',{
             controller:'DetailCompetitionController',
             controllerAs:'vm',
-            templateUrl: '/static/templates/panel/competitionDetails.html'
+            templateUrl: '/static/templates/panel/competition/competitionDetails.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

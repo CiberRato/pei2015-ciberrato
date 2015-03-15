@@ -39,7 +39,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td ng-if="value.canRemove == false"></td>
+                                <td ng-if="value.canRemove != true"></td>
 
                             </tr>
                             </tbody>
@@ -66,6 +66,7 @@
                             <div class="modal-footer">
                                 <a ng-click="vm.enroll()" class="btn btn-alt btn-success" data-dismiss="modal">Join</a>
                                 <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
+
                             </div>
                         </div>
                         <div class="modal fade"  id="confirmJoinError">

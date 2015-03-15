@@ -1,0 +1,38 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>My Competitions</h2>
+                        <p>Here is shown in table the list of all competitions that you had been enrolled.</p>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Competition Name</th>
+                                <th>Type Of Competition</th>
+                                <th>State Of Competition</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.competitions">
+                                <td><a href="panel/competitions/{{ value.name }}">{{value.name}}</a></td>
+                                <td>{{value.type_of_competition}}</td>
+                                <td>{{value.state_of_competition}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>

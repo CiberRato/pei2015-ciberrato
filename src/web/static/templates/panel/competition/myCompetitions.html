@@ -1,0 +1,43 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>My Competitions</h2>
+                        <p>Here is shown in table the list of all competitions that you had been enrolled.</p>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Competition Name</th>
+                                <th>Type Of Competition</th>
+                                <th>State Of Competition</th>
+                                <th>Group Name</th>
+                                <th>Inscription</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.myCompetitions">
+                                <td><a href="panel/competitions/{{ value.competition_name }}">{{value.competition_name}}</a></td>
+                                <td>{{value.type}}</td>
+                                <td>{{value.state}}</td>
+                                <td><a href="panel/{{value.group_name}}/editTeam">{{value.group_name}}</a></td>
+                                <td ng-if="value.valid == false"><span class="label label-important">Not Valid</span></td>
+                                <td ng-if="value.valid == true"><span class="label label-success">>Valid</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>
