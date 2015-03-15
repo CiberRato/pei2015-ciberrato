@@ -74,6 +74,14 @@
             controller:'DetailCompetitionController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/competitionDetails.html'
+        }).when('/panel/createAgent',{
+            controller:'CreateAgentController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/agent/createAgent.html'
+        }).when('/panel/:username/myAgents',{
+            controller:'MyAgentsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/agent/myAgents.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
