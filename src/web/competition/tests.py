@@ -172,9 +172,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+        self.assertEqual(response.data,
+                         OrderedDict([('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         # get agents by group
         url = "/api/v1/competitions/agents_by_group/XPTO3/"
@@ -744,9 +743,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE1'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+        self.assertEqual(response.data,
+                         OrderedDict([('agent_name', u'KAMIKAZE1'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
         a1.is_virtual = True
@@ -757,9 +755,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+        self.assertEqual(response.data,
+                         OrderedDict([('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_virtual = True
@@ -771,8 +768,7 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE3'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+            [('agent_name', u'KAMIKAZE3'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a3 = Agent.objects.get(agent_name="KAMIKAZE3")
         a3.is_virtual = True
@@ -784,8 +780,7 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE4'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+            [('agent_name', u'KAMIKAZE4'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a4 = Agent.objects.get(agent_name="KAMIKAZE4")
         a4.is_virtual = True
@@ -797,8 +792,7 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE5'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+            [('agent_name', u'KAMIKAZE5'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a5 = Agent.objects.get(agent_name="KAMIKAZE5")
         a5.is_virtual = True
@@ -810,8 +804,7 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE6'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+            [('agent_name', u'KAMIKAZE6'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a6 = Agent.objects.get(agent_name="KAMIKAZE6")
         a6.is_virtual = True
@@ -888,9 +881,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE1'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+        self.assertEqual(response.data,
+                         OrderedDict([('agent_name', u'KAMIKAZE1'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
         a1.is_virtual = True
@@ -901,9 +893,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('rounds', []), ('competitions', []),
-             ('group_name', u'XPTO3')]))
+        self.assertEqual(response.data,
+                         OrderedDict([('agent_name', u'KAMIKAZE2'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_virtual = True

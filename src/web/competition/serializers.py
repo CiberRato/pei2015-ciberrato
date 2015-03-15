@@ -41,8 +41,8 @@ class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
 class AgentSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(max_length=128)
     user = AccountSerializer(read_only=True)
-    rounds = RoundSerializer(many=True)
-    competitions = CompetitionSerializer(many=True)
+    rounds = RoundSerializer(many=True, read_only=True)
+    competitions = CompetitionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Agent
