@@ -47,9 +47,9 @@ bool cbViewHandler::startElement( const QString&, const QString&, const QString&
 	{
 		command.type = cbCommand::START;
 	}
-	else if (tag == "Reset") 
+	else if (tag == "Restart") 
 	{
-		command.type = cbCommand::RESET;
+		command.type = cbCommand::RESTART;
 	}
 	else if (tag == "Stop")
 	{
@@ -96,11 +96,11 @@ bool cbViewHandler::endElement( const QString&, const QString&, const QString& q
 			return false;
 		}
 	}
-	else if (tag == "Reset")
+	else if (tag == "Restart")
 	{
-		if (command.type != cbCommand::RESET)
+		if (command.type != cbCommand::RESTART)
 		{
-			cerr << "Missmatched end Reset tag\n";
+			cerr << "Missmatched end Restart tag\n";
 			return false;
 		}
 	}
