@@ -14,6 +14,7 @@
         vm.removeAdmin = removeAdmin;
         vm.addAdmin = addAdmin;
         vm.removeMember = removeMember;
+        vm.destroy = destroy;
         var username;
         var teamName;
         activate();
@@ -151,6 +152,26 @@
                 life: 2500,
                 theme: 'btn-danger'
             });
+        }
+
+        function destroy(){
+            Team.destroy(teamName).then(destroySuccessFn, destroyErrorFn);
+
+            function destroySuccessFn(){
+                $.jGrowl("Team has been deleted.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path("/panel/" + username + "/myTeams");
+            }
+
+            function destroyErrorFn(data){
+                console.error(data.data);
+                $.jGrowl("Team could not be deleted.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+            }
         }
 
     }

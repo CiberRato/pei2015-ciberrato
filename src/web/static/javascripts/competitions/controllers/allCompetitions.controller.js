@@ -33,7 +33,6 @@
 
                 function getTeamsSuccessFn(data, status, headers, config) {
                     vm.teams = data.data;
-                    console.log(vm.teams.length);
                     vm.competitions[i].allTeams = vm.teams.length;
                 }
 
