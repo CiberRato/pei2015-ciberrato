@@ -24,7 +24,7 @@ echo "	>> Compiling cibertools"
 make;)
 echo "	>> Creating docker image based on Dockerfile"
 groupadd docker
-gpasswd -a $USER docker
+gpasswd -a $(who am i | awk '{print $1}') docker
 
 if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ];
 then
