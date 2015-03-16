@@ -18,6 +18,7 @@ from competition.permissions import IsAdmin
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
+from os.path import basename
 
 
 class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -161,7 +162,6 @@ class GetRoundFile(views.APIView):
 
 
 class GetAgentFiles(views.APIView):
-
     def get(self, request, simulation_id, agent_name):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
@@ -183,7 +183,7 @@ class GetAgentFiles(views.APIView):
         temp = tempfile.NamedTemporaryFile()
         with tarfile.open(temp.name, "w:gz") as tar:
             for name in json.loads(agent.locations):
-                tar.add(default_storage.path(name), arcname=default_storage.get_valid_name(name))
+                tar.add(default_storage.path(name), arcname=basename(default_storage.path(name)))
             tar.close()
 
         wrapper = FileWrapper(temp)
