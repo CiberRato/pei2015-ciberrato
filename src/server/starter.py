@@ -1,5 +1,6 @@
 #encoding=utf-8
 import subprocess
+import netifaces
 import tempfile
 import requests
 import socket
@@ -29,6 +30,17 @@ def main():
 		data = None
 
 def run(sim_id):
+	DOCKERIP = None
+	for interface in netifaces.interfaces():
+		if interface.startswith('docker'):
+			DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
+			break
+	if DOCKERIP == None:
+		print "Please check your docker interface."
+		return
+	else:
+		print "Docker interface: %s" % (DOCKERIP, )
+
 	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -88,10 +100,10 @@ def run(sim_id):
 				(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
 		docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 								  "bash -c 'curl " \
-								  "http://172.17.42.1:8000%s" \
+								  "http://%s:8000%s" \
 								  " | tar -xz;" \
-								  " python myrob.py -host 172.17.42.1 -pos %s'" %  \
-								  (agents[i]['files'], agents[i]['pos'], ),
+								  " python myrob.py -host %s -pos %s'" %  \
+								  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
 								  shell = True, stdout = subprocess.PIPE)
 		docker_container = docker.stdout.readline().strip()
 		docker.wait()

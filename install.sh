@@ -9,11 +9,13 @@ apt-get install -y	python \
 			g++ \
 			qt4-dev-tools \
 			python-pip \
+			python-dev \
 			python-virtualenv \
 			docker.io
 (cd src/web;
 echo "	>> Installing python dependencies"
-pip install cherrypy
+pip install cherrypy \
+			netifaces
 pip install -r requirements.txt;
 
 echo "	>> Migrating Django applications"
