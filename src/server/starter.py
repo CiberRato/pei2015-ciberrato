@@ -61,7 +61,7 @@ def run(sim_id):
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
 	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-					"-nogui", \
+					#"-nogui", \
 					"-viewerlog", \
 					"-param", 	tempFilesList["param_list"].name, \
 					"-lab", 	tempFilesList["lab"].name, \
@@ -84,18 +84,26 @@ def run(sim_id):
 	print "Sending message telling viewer how many agents there are..."
 	viewer_c.send('<Robots Amount="'+str(n_agents)+'" />')
 	for i in range(1, n_agents+1, 1):
-		print "Opening Agent - " + str(i)
-		agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
-
-		# print "Creating docker for agent.."
-		# docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline",\
+		#print "Opening Agent - " + str(i)
+		#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
+		print "Creating docker for agent - " + str(i)
+		#docker = subprocess.Popen(["docker", "run", "-d", "ubuntu/ciberonline", "bash", "-c", "'curl http://172.17.42.1:8000/api/v1/competitions/agent_file/0a256950-7a5c-403d-aba3-52e455d197c5/KAMIKAZE/ | tar -xz; python myrob.py -host 172.17.42.1'"], stdout = subprocess.PIPE)
+		docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
+								  "bash -c 'curl " \
+								  "http://172.17.42.1:8000/api/v1/competitions/agent_file/0a256950-7a5c-403d-aba3-52e455d197c5/KAMIKAZE/" \
+								  " | tar -xz;" \
+								  " python myrob.py -host 172.17.42.1'", 
+								  shell = True, stdout = subprocess.PIPE)
+		#docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline",\
 		# 						"python", "./cibertools-v2.2/robsample/robsample_python.py",\
 		# 						"--pos", str(i), "--host", "172.17.42.1"], stdout=subprocess.PIPE)
-		# docker_container = docker.stdout.readline().strip()
-		# docker.wait()
-		# print "Successfully opened container: ", docker_container
+		docker_container = docker.stdout.readline().strip()
+		print docker.stdout.readline()
+		print docker.stdout.readline()
+		docker.wait()
+		print "Successfully opened container: ", docker_container
 
-		print "Successfully opened agent " + str(i) + " with process id: ", agent.pid
+		#print "Successfully opened agent " + str(i) + " with process id: ", agent.pid
 
 	data = viewer_c.recv(4096)
 	while data != "<AllRobotsRegistered/>":
@@ -116,10 +124,11 @@ def run(sim_id):
 	viewer_tcp.close()
 
 	viewer.wait()
-	# proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
-	# proc.wait()
-	# proc = subprocess.Popen(["docker", "rm", docker_container])
-	# proc.wait()
+
+	proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+	proc.wait()
+	proc = subprocess.Popen(["docker", "rm", docker_container])
+	proc.wait()
 
 	simulator.terminate()
 	simulator.wait()
