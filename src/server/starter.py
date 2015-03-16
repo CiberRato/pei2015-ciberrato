@@ -37,7 +37,7 @@ def run(sim_id):
 			break
 	if DOCKERIP == None:
 		print "Please check your docker interface."
-		return
+		exit(-1)
 	else:
 		print "Docker interface: %s" % (DOCKERIP, )
 
@@ -92,7 +92,7 @@ def run(sim_id):
 	viewer_c, viewer_c_addr = viewer_tcp.accept()
 
 	print "Viewer ready, sending message to viewer about the number of agents\n"
-	viewer_c.send('<Robots Amount="'+str(n_agents)+'" />')
+	viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
 	for i in range(n_agents):
 		#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
