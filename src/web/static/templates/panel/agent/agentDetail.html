@@ -9,7 +9,7 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2>{{ vm.agent.agent_name }} ({{vm.agent.group_name}})</h2>
+                        <h2><span id="agent_name">{{ vm.agent.agent_name }}</span> ({{vm.agent.group_name}})</h2>
                             <a data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload Code for this Agent</a>
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">
@@ -17,13 +17,18 @@
                                 </div>
                                 <div class="modal-body">
                                     <section>
-                                        <p>Upload your file code here! Select <strong>Add files</strong> and next choose the file through your browse.</p>
+                                        <p> Upload your file code here! Select <strong>Add files</strong> and next choose the file through your browse.</p>
                                         <p> When the file code is choosen, then upload him clicking on button <strong>Start upload</strong> and after these you can see your file code in the square above, allowing to you to download if you want to see him.
+                                        <select id="selector_language">
+                                            <option value="Python">Python</option>
+                                            <option value="C">C</option>
+                                            <option value="cplusplus">C++</option>
+                                            <option value="Java">Java</option>
+                                        </select>
                                         <div class="plupload"></div>
                                     </section>
                                 </div>
                                 <div class="modal-footer">
-                                    <a ng-click="vm.enroll()" class="btn btn-alt btn-success" data-dismiss="modal">Join</a>
                                     <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
 
                                 </div>
@@ -36,37 +41,6 @@
         </article>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-
-        $('.plupload').pluploadQueue({
-            runtimes : 'html5,gears,flash,silverlight,browserplus',
-            url : 'upload/upload.php',
-            max_file_size : '10mb',
-            chunk_size : '1mb',
-            unique_names : true,
-            resize : {width : 320, height : 240, quality : 90},
-            filters : [
-                {title : "Image files", extensions : "jpg,gif,png"},
-                {title : "Zip files", extensions : "zip"}
-            ],
-            flash_swf_url : 'js/plugins/plUpload/plupload.flash.swf',
-            silverlight_xap_url : 'js/plugins/plUpload/plupload.silverlight.xap'
-        });
-        $(".plupload_header").remove();
-        $(".plupload_progress_container").addClass("progress").addClass('progress-striped');
-        $(".plupload_progress_bar").addClass("bar");
-        $(".plupload_button").each(function(e){
-            if($(this).hasClass("plupload_add")){
-                $(this).attr("class", 'btn btn-primary btn-alt pl_add btn-small');
-            } else {
-                $(this).attr("class", 'btn btn-success btn-alt pl_start btn-small');
-            }
-        });
-
-    });
-</script>
 
 <script>
     $(document).ready(function(){
