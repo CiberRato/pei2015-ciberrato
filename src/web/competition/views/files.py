@@ -69,6 +69,16 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                             status=status.HTTP_404_NOT_FOUND)
 
 
+class GetAllowedLanguages(views.APIView):
+    @staticmethod
+    def get(request):
+        """
+        B{Get} the allowed languages
+        B{URL:} ../api/v1/competitions/allowed_languages/
+        """
+        return Response(JSONRenderer().render(settings.ALLOWED_UPLOAD_LANGUAGES), status=status.HTTP_200_OK)
+
+
 class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
 
@@ -95,7 +105,8 @@ class UploadAgent(views.APIView):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         if 'agent_name' not in request.GET:
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?agent_name=*agent_name*'},
@@ -157,7 +168,8 @@ class UploadAgent(views.APIView):
 class GetRoundFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
 
-    def get(self, request, round_name):
+    @staticmethod
+    def get(request, round_name):
         if 'file' not in request.GET:
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?file=*file*'},
@@ -183,7 +195,8 @@ class GetRoundFile(views.APIView):
 
 
 class GetAgentFiles(views.APIView):
-    def get(self, request, simulation_id, agent_name):
+    @staticmethod
+    def get(request, simulation_id, agent_name):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
 

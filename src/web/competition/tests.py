@@ -269,6 +269,12 @@ class AuthenticationTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
                                'group_name': u'XPTO3'})
 
+        url = "/api/v1/competitions/allowed_languages/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.data),
+                         [["Python", "Python"], ["C", "C"], ["C++", "cplusplus"], ["Java", "Java"]])
+
         # make the code valid, this operation only can be made by the script (server validation)
         agent = Agent.objects.get(agent_name='KAMIKAZE')
         agent.code_valid = True
