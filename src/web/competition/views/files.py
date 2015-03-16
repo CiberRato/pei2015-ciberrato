@@ -19,6 +19,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
 from os.path import basename
+from rest_framework.renderers import JSONRenderer
 
 
 class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -66,6 +67,26 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
             return Response({'status': 'Not found',
                              'message': 'The agent file has not been found!'},
                             status=status.HTTP_404_NOT_FOUND)
+
+
+class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the agent files list
+        B{URL:} ../api/v1/competitions/agent_files/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
+        files = []
+
+        for f in json.loads(agent.locations):
+            files += [basename(f)]
+
+        return Response(JSONRenderer().render(files), status=status.HTTP_200_OK)
 
 
 class UploadAgent(views.APIView):

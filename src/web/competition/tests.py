@@ -4,6 +4,7 @@ from authentication.models import GroupMember
 
 from rest_framework.test import APIClient
 from collections import OrderedDict
+import json
 
 
 class AuthenticationTestCase(TestCase):
@@ -250,6 +251,11 @@ class AuthenticationTestCase(TestCase):
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        url = "/api/v1/competitions/agent_files/KAMIKAZE/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json.loads(response.data)), 3)
 
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(url)
