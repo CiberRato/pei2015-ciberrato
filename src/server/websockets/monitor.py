@@ -48,7 +48,6 @@ def monitor():
 
     while True:
         data = sim_viewer.recv(1024)
-        print data
         if str(data) == "END":
             break
 

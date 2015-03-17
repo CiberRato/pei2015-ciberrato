@@ -16,7 +16,8 @@
                 ws.onmessage = function (evt) {
                     var received_msg = evt.data;
                     //div.innerHTML = div.innerHTML + received_msg;
-                    console.log(JSON.parse(received_msg));
+                    console.log(received_msg);
+                    //console.log(JSON.parse(received_msg));
                 };
                 ws.onclose = function () {
                     div.innerHTML = div.innerHTML + "Connection is closed...";
