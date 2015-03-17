@@ -10,7 +10,8 @@
     function Agent($cookies, $http, $location) {
         var Agent = {
             create: create,
-            getByUser: getByUser
+            getByUser: getByUser,
+            getAgent: getAgent
         };
 
         return Agent;
@@ -25,6 +26,11 @@
 
         function getByUser(username){
             return $http.get('/api/v1/competitions/agents_by_user/' + username + '/');
+        }
+
+        function getAgent(name){
+            return $http.get('/api/v1/competitions/agent/' + name + '/');
+
         }
     }
 })();

@@ -20,13 +20,13 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.agents">
-                                <td>{{ value.agent_name }}</a></td>
+                                <td><a href="panel/{{value.agent_name}}/agentDetail">{{ value.agent_name }}</a></td>
                                 <td><a href="panel/{{value.group_name}}/myTeams">{{value.group_name}}</a></td>
                             </tr>
                             </tbody>
                         </table>
 
-                        <a ng-if="vm.team.length == 0" class="btn btn-alt btn-large btn-primary" href="panel/createAgent">Create your First Agent</a>
+                        <a ng-if="vm.agents.length == 0" class="btn btn-alt btn-large btn-primary" href="panel/createAgent">Create your First Agent</a>
                     </div>
 
                 </section>

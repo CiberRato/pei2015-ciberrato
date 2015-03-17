@@ -4,15 +4,9 @@
 {% compress js %}
 <!-- JS Libs -->
 <script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
-
-<script type="text/javascript" src="{% static 'bower_components/jquery.browser/test/src/jquery.browser.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/plugins/jGrowl/jquery.jgrowl.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-modal.js' %}"></script>
-
-
 <script type="text/javascript" src="{% static 'js/libs/modernizr.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/libs/selectivizr.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/jquery.browser/test/src/jquery.browser.js' %}"></script>
 
 <script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/angular-route/angular-route.js' %}"></script>
@@ -53,15 +47,7 @@
 <script type="text/javascript" src="{% static 'javascripts/agents/services/agents.service.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/agents/controllers/createAgent.controller.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/agents/controllers/myAgents.controller.js' %}"></script>
-
-<script>
-    $(document).ready(function(){
-        // Tooltips
-        $('[title]').tooltip({
-            placement: 'top'
-        });
-    });
-</script>
+<script type="text/javascript" src="{% static 'javascripts/agents/controllers/agentDetail.controller.js' %}"></script>
 
 <!-- Scripts -->
 <script type="text/javascript" src="{% static 'js/navigation.js' %}"></script>
@@ -69,5 +55,11 @@
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-collapse.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-dropdown.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'js/plugins/jGrowl/jquery.jgrowl.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-modal.js' %}"></script>
+<!-- jQuery plUpload -->
+<script type="text/javascript" src="{% static 'js/plugins/plUpload/plupload.full.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/plugins/plUpload/jquery.plupload.queue/jquery.plupload.queue.js' %}"></script>
 
 {% endcompress %}

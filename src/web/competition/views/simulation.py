@@ -105,7 +105,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
     serializer_class = SimulationAgentSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, *args, **kwargs):
         """
@@ -245,6 +245,10 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Simulation.objects.all()
     serializer_class = LogSimulation
+
+    """
+    Must be discussed one simple way of authentication server to server
+    """
 
     def create(self, request, *args, **kwargs):
         """

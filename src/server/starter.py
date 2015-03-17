@@ -1,5 +1,6 @@
 #encoding=utf-8
 import subprocess
+import netifaces
 import tempfile
 import requests
 import socket
@@ -29,6 +30,17 @@ def main():
 		data = None
 
 def run(sim_id):
+	DOCKERIP = None
+	for interface in netifaces.interfaces():
+		if interface.startswith('docker'):
+			DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
+			break
+	if DOCKERIP == None:
+		print "Please check your docker interface."
+		exit(-1)
+	else:
+		print "Docker interface: %s" % (DOCKERIP, )
+
 	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -43,6 +55,7 @@ def run(sim_id):
 		#Handle agents and simulation id
 		if key == "agents":
 			n_agents = len(simJson[key])
+			agents = simJson[key]
 			continue
 		if key == "simulation_id":
 			sim_id = simJson[key]
@@ -54,14 +67,13 @@ def run(sim_id):
 		fp.seek(0)
 		tempFilesList[key] = fp
 
-	print "n agents" + str(n_agents)
-
+	print "Number of agents to be loaded: " + str(n_agents)
 	print "Process ID: ", os.getpid()
-	print "Creating process for simulator.."
+	print "Creating process for simulator"
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
 	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-					"-nogui", \
+					#"-nogui", \
 					"-viewerlog", \
 					"-param", 	tempFilesList["param_list"].name, \
 					"-lab", 	tempFilesList["lab"].name, \
@@ -71,7 +83,7 @@ def run(sim_id):
 	print "Successfully opened process with process id: ", simulator.pid
 	time.sleep(1)
 
-	print "Creating process for viewer.."
+	print "Creating process for viewer"
 	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
 	print "Successfully opened process with process id: ", viewer.pid
 
@@ -79,23 +91,23 @@ def run(sim_id):
 	viewer_tcp.listen(1)
 	viewer_c, viewer_c_addr = viewer_tcp.accept()
 
-	print "Viewer ready.."
+	print "Viewer ready, sending message to viewer about the number of agents\n"
+	viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
-	print "Sending message telling viewer how many agents there are..."
-	viewer_c.send('<Robots Amount="'+str(n_agents)+'" />')
-	for i in range(1, n_agents+1, 1):
-		print "Opening Agent - " + str(i)
-		agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
-
-		# print "Creating docker for agent.."
-		# docker = subprocess.Popen(["docker", "run", "-d", "-P","ubuntu/ciberonline",\
-		# 						"python", "./cibertools-v2.2/robsample/robsample_python.py",\
-		# 						"--pos", str(i), "--host", "172.17.42.1"], stdout=subprocess.PIPE)
-		# docker_container = docker.stdout.readline().strip()
-		# docker.wait()
-		# print "Successfully opened container: ", docker_container
-
-		print "Successfully opened agent " + str(i) + " with process id: ", agent.pid
+	for i in range(n_agents):
+		#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
+		print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
+				(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
+		docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
+								  "bash -c 'curl " \
+								  "http://%s:8000%s" \
+								  " | tar -xz;" \
+								  " python myrob.py -host %s -pos %s'" %  \
+								  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
+								  shell = True, stdout = subprocess.PIPE)
+		docker_container = docker.stdout.readline().strip()
+		docker.wait()
+		print "Successfully opened container: %s\n" % (docker_container, )
 
 	data = viewer_c.recv(4096)
 	while data != "<AllRobotsRegistered/>":
@@ -116,10 +128,11 @@ def run(sim_id):
 	viewer_tcp.close()
 
 	viewer.wait()
-	# proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
-	# proc.wait()
-	# proc = subprocess.Popen(["docker", "rm", docker_container])
-	# proc.wait()
+
+	proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+	proc.wait()
+	proc = subprocess.Popen(["docker", "rm", docker_container])
+	proc.wait()
 
 	simulator.terminate()
 	simulator.wait()
@@ -141,7 +154,6 @@ def run(sim_id):
 	#print response.text
 	if response.status_code != 200:
 		print "Error posting to simulation log end-point!!"
-
 	else:
 		print "Log successfully posted, starter closing now.."
 

@@ -7,11 +7,12 @@
 
 FROM ubuntu
 EXPOSE 6000
+EXPOSE 8000
 RUN apt-get update
 RUN apt-get install -y \
-	python 
-#	g++ 
-#	..
+	curl \
+	wget \
+	python
 
 RUN mkdir -p /ciber/user_sourcecode
 
@@ -19,6 +20,6 @@ RUN mkdir -p /ciber/user_sourcecode
 ADD ./libraries/python/ /ciber/
 RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
 
-RUN groupadd -r lowrights && useradd -r -g lowrights agent
-USER agent
+#RUN groupadd -r lowrights && useradd -r -g lowrights agent
+#USER agent
 WORKDIR /ciber/user_sourcecode

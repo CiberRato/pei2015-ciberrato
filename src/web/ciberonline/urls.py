@@ -3,12 +3,14 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic.base import TemplateView
 
-from authentication.views import AccountViewSet, LoginView, LogoutView
+from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet, AccountGroupsAdminViewSet
+
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
-    CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledGroupsViewSet
+    CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, \
+    MyEnrolledGroupsViewSet
 from competition.views.agent import AssociateAgent, AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet
@@ -17,13 +19,14 @@ from competition.views.simulation import SimulationViewSet, AssociateAgentToSimu
     GetSimulation
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, UploadAgent, \
-    DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles
+    DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles, GetAgentsFiles, GetAllowedLanguages
 
 from rest_framework import routers
 
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
-
+router_accounts.register(r'account_by_first_name', AccountByFirstName)
+router_accounts.register(r'account_by_last_name', AccountByLastName)
 # GROUPS URLs
 router_groups = routers.SimpleRouter()
 router_groups.register(r'members', GroupMembersViewSet)
@@ -52,6 +55,7 @@ router_competitions.register(r'agent', AgentViewSets)
 router_competitions.register(r'associate_agent', AssociateAgent)
 router_competitions.register(r'agents_by_group', AgentsByGroupViewSet)
 router_competitions.register(r'agents_by_user', AgentsByUserViewSet)
+router_competitions.register(r'agent_files', GetAgentsFiles)
 # Round
 router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'valid_round_agents', AgentsRound)
@@ -91,6 +95,10 @@ urlpatterns = patterns('',
                        # upload agent code
                        url(r'^api/v1/competitions/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
+
+                       # get allowed languags
+                       url(r'^api/v1/competitions/allowed_languages/$', GetAllowedLanguages.as_view(),
+                           name="Allowed languages"),
 
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),

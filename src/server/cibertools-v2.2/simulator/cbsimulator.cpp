@@ -718,7 +718,7 @@ void cbSimulator::ViewCommands()
 					//cout << "View command = Start\n";
 					start();
 					break;
-				case cbCommand::RESET:
+				case cbCommand::RESTART:
 					reset();
 					break;
 				case cbCommand::STOP:
