@@ -46,7 +46,7 @@ def monitor():
     sim_viewer_connect = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sim_viewer_connect.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sim_viewer_connect.bind((host, port))
-    sim_viewer_connect.listen()
+    sim_viewer_connect.listen(1)
     sim_viewer, addr = sim_viewer_connect.accept()
 
     while True:
