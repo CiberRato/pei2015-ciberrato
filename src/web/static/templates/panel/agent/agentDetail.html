@@ -9,7 +9,7 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2><span id="agent_name">{{ vm.agent.agent_name }}</span> ({{vm.agent.group_name}})</h2>
+                        <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}})</h2>
                             <a data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload Code for this Agent</a>
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">
@@ -25,8 +25,14 @@
                                             <option value="cplusplus">C++</option>
                                             <option value="Java">Java</option>
                                         </select>
-                                        <div class="plupload"></div>
+
                                     </section>
+                                    <input id="fileupload"
+                                           type="file" name="files[]"
+                                           class="inputFile clickable"
+                                           />
+                                    <button ng-click="vm.uploadFile()"></button>
+
                                 </div>
                                 <div class="modal-footer">
                                     <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
@@ -42,11 +48,4 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function(){
-        // Tooltips
-        $('[title]').tooltip({
-            placement: 'top'
-        });
-    });
-</script>
+

@@ -34,13 +34,9 @@
         function create(){
             var x = document.getElementById("select").value;
             var y = document.getElementById("type").value;
+            console.log(x +'/' + y);
             var type;
-            if(y === "Yes (can't upload code)"){
-                type = true
-            }else{
-                type = false
-            }
-            Agent.create(vm.name, x, type).then(createSuccessFn, createErrorFn);;
+            Agent.create(vm.name, x, y).then(createSuccessFn, createErrorFn);;
         }
 
         function createSuccessFn(data, status, headers, config){
