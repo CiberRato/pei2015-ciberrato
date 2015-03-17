@@ -28,7 +28,7 @@
 
 using std::cerr;
 
-#define REPLYMAXSIZE 4096
+#define REPLYMAXSIZE 8192
 
 cbClient::cbClient() : QUdpSocket()
 {
@@ -42,19 +42,20 @@ cbClient::~cbClient()
 /*!
 	Send the OK reply message to client.
 */
-bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, bool replyback)
+bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cbGrid *grid, cbLab *lab)
 {
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
     /* set peer address and peer port */
     address = a;
 	port = p;
-	if (!replyback)
-		return true;
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Ok\">\n\t");
-	cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
+	if (param != NULL) cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
+	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
+	if (lab != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
+
 	cnt += sprintf(reply+cnt, "</Reply>\n");
 
     /* send reply to client */
