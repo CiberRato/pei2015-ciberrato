@@ -34,8 +34,6 @@
             var language = document.getElementById("selector_language").value;
             var selectedFile = document.getElementById('fileupload').files[0];
 
-            console.log(selectedFile);
-
             Agent.upload(agentName, language, selectedFile);
 
         }
