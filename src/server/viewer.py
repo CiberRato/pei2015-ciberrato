@@ -121,7 +121,7 @@ def main():
 		log_file.write(json_data)
 
 		# Enviar os dados da simulação para o exterior
-		django_tcp.send(data)
+		django_tcp.send(json_data)
 
 	time.sleep(0.001)
 	#send django msg telling it's over
