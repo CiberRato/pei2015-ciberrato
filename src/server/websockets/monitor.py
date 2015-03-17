@@ -110,7 +110,7 @@ class Server():
                 'tools.websocket.handler_cls': WebSocketHandler
             }
         })
-
+ 
     @staticmethod
     def stop():
         cherrypy.engine.stop()
