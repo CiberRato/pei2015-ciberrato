@@ -17,6 +17,7 @@
                                 <th>Team Name</th>
                                 <th>Number of elements</th>
                                 <th>Max Number of Elements</th>
+                                <th>Agents</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -24,6 +25,8 @@
                                 <td><a href="panel/{{ value.name }}/editTeam">{{ value.name }}</a></td>
                                 <td>{{value.allmembers}}</td>
                                 <td>{{value.max_members}}</td>
+                                <td ng-if="value.allAgents == 0">This team doesn't have any agent</td>
+                                <td ng-if="value.allAgents != 0"><a href="panel/{{value.name}}/allAgents">See Agents</a></td>
                             </tr>
                             </tbody>
                         </table>

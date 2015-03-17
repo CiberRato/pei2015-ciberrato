@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('TeamController', TeamController);
 
-    TeamController.$inject = ['$location', '$routeParams','Team', 'Authentication', 'Profile'];
+    TeamController.$inject = ['$location', '$routeParams','Team', 'Authentication', 'Profile', 'Agent'];
 
-    function TeamController($location, $routeParams, Team, Authentication, Profile){
+    function TeamController($location, $routeParams, Team, Authentication, Profile, Agent){
         var vm = this;
 
         vm.addMember = addMember;
@@ -27,6 +27,7 @@
             Team.getMembers(teamName).then(getMembersSuccessFn, getMembersErrorFn);
             Team.getTeamInformation(teamName, username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
             Profile.get(username).then(getUserSuccessFn, getUserErrorFn);
+            Agent.getByGroup(teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
 
             function getMembersSuccessFn(data, status, headers, config){
                 vm.members = data.data;
@@ -37,6 +38,7 @@
             }
 
             function getMembersErrorFn(data, status, headers, config){
+                console.error(data.data);
                 $location.path('/panel/');
             }
 
@@ -46,6 +48,7 @@
             }
 
             function getUserErrorFn(data, status, headers, config){
+                console.error(data.data);
                 $location.path('/panel/');
             }
 
@@ -56,6 +59,16 @@
             }
 
             function getTeamInformationUserErrorFn(data, status, headers, config){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+
+            function getByGroupSuccessFn(data, status, headers, config){
+                vm.agents = data.data;
+            }
+
+            function getByGroupErrorFn(data, status, headers, config){
+                console.error(data.data);
                 $location.path('/panel/');
             }
         }
@@ -173,6 +186,8 @@
                 });
             }
         }
+
+
 
     }
 })();

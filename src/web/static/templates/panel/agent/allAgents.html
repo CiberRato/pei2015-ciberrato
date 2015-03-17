@@ -1,0 +1,36 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>All Agents ({{vm.teamName}})</h2>
+                        <p>Here is shown in table the list of all agents registered.</p>
+
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Agent Name</th>
+                                <th ng-if="vm.member.is_admin = true">Remove Agent</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.agents">
+                                <td><a href="panel/{{ value.agent_name }}/agentDetail">{{value.agent_name}}</a></td>
+                                <td ng-if="vm.member.is_admin = true"><a class="btn btn-primary btn-flat" ng-click="vm.destroyAgent(value.agent_name)">X</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>
