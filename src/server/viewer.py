@@ -123,10 +123,14 @@ def main():
 		# Enviar os dados da simulação para o exterior
 		django_tcp.send(data)
 
+	time.sleep(0.001)
 	#send django msg telling it's over
+	django_tcp.send("END")
+
 
 	starter_s.send('<EndedSimulation LogFile="' + log_name + '" />')
 
+	django_tcp.close()
 	log.close()
 	log_file.close()
 	starter_s.close()
