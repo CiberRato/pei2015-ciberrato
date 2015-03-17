@@ -2,8 +2,8 @@
 <html>
 <head>
     <script type="text/javascript">
+        var buffering = [];
         function WebSocketTest() {
-            var buffering = [];
             if ("WebSocket" in window) {
                 // alert("WebSocket is supported by your Browser!");
                 // Let us open a web socket
@@ -17,7 +17,8 @@
                     var received_msg = evt.data;
                     //div.innerHTML = div.innerHTML + received_msg;
                     //console.log(received_msg);
-                    console.log(JSON.parse(received_msg));
+                    buffering.push(JSON.parse(received_msg));
+                    console.log(buffering.length);
                 };
                 ws.onclose = function () {
                     div.innerHTML = div.innerHTML + "Connection is closed...";

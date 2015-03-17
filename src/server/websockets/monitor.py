@@ -22,7 +22,7 @@ class Root(object):
 
 # WebSocketManager, this will store the Web Sockets to get access to them
 m = WebSocketManager()
-data_stream = []
+data_stream = ""
 
 if len(sys.argv) == 4:
     socket_host = sys.argv[1]
@@ -51,7 +51,7 @@ def monitor():
         if str(data) == "END":
             break
 
-        data_stream += [data]
+        data_stream += data
         m.broadcast(data)
 
     sim_viewer_connect.shutdown(socket.SHUT_RDWR)
@@ -78,17 +78,14 @@ class WebSocketHandler(WebSocket):
         If is necessary authentication it can be made a /api/ call to see if the user is logged in or retrieve
         a token or something like this ...
         """
-        m.add(self)
-        """
         if str(message) != "OK":
             # Handle the missing package number
             # self.send()
             pass
         elif len(data_stream) > 0:
-            # send missing packages
-            to_send = json.dumps(data_stream)
-            self.send(to_send)
-        """
+            self.send(data_stream)
+
+        m.add(self)
 
 
 class Server():
@@ -110,7 +107,7 @@ class Server():
                 'tools.websocket.handler_cls': WebSocketHandler
             }
         })
- 
+
     @staticmethod
     def stop():
         cherrypy.engine.stop()
