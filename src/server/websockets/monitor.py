@@ -80,7 +80,7 @@ class WebSocketHandler(WebSocket):
         a token or something like this ...
         """
         m.add(self)
-
+        """
         if str(message) != "OK":
             # Handle the missing package number
             # self.send()
@@ -89,6 +89,7 @@ class WebSocketHandler(WebSocket):
             # send missing packages
             to_send = json.dumps(data_stream)
             self.send(to_send)
+        """
 
 
 class Server():
