@@ -136,7 +136,7 @@ double  cbBeaconSensor::sensorAperture    = M_PI;
 void CommandLineError()
 {
     QMessageBox::critical(0,"Error", 
-		    "SYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui] [-viewerlog]",
+		    "SYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui]",
 		    QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
     exit(1);
 }
@@ -231,10 +231,6 @@ int main(int argc, char *argv[])
 			// wait until second pass of command line parsing
             p+=1;
 		}
-        else if (strcmp(argv[p], "-viewerlog") == 0) {
-            // wait until second pass of command line parsing
-            p+=1;
-        }
         else {
             CommandLineError();
 		}
@@ -306,10 +302,6 @@ int main(int argc, char *argv[])
 			nogui = true;
 			p+=1;
 		}
-        else if (strcmp(argv[p], "-viewerlog") == 0) {
-            simulator.setViewerAsLog(true);
-            p+=1;
-        }
         else {
             CommandLineError();
 		}
@@ -356,6 +348,7 @@ int main(int argc, char *argv[])
     if (!nogui) {
 		gui = new cbSimulatorGUI(&simulator);
 		simulator.setGUI(gui);
+        
 		//gui.setMaximumSize(gui.size());
 		//gui.setMinimumSize(gui.size());
 		gui->show();
