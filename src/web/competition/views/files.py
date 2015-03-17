@@ -70,6 +70,9 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
 
 
 class GetAllowedLanguages(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     @staticmethod
     def get(request):
         """
@@ -82,15 +85,26 @@ class GetAllowedLanguages(views.APIView):
 class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
 
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the agent files list
         B{URL:} ../api/v1/competitions/agent_files/<agent_name>/
+        Must be part of the group owner of the agent
 
         @type  agent_name: str
         @param agent_name: The agent name
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
+
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+        if len(group_member) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
         files = []
 
         for f in json.loads(agent.locations):
