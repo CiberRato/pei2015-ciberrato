@@ -127,6 +127,7 @@ def main():
 
 	starter_s.send('<EndedSimulation LogFile="' + log_name + '" />')
 
+	django_tcp.close()
 	log.close()
 	log_file.close()
 	starter_s.close()
