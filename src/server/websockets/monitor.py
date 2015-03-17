@@ -37,9 +37,6 @@ else:
 def monitor():
     global data_stream
 
-    print "Monitor ok! Wait 5 s (debug)"
-    time.sleep(5)
-
     host = "127.0.0.1"
     port = 10000
 
@@ -90,9 +87,7 @@ class WebSocketHandler(WebSocket):
             pass
         elif len(data_stream) > 0:
             # send missing packages
-            print data_stream
             to_send = json.dumps(data_stream)
-            print to_send
             self.send(to_send)
 
 
