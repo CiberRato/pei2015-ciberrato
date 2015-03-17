@@ -17,6 +17,9 @@
                     var received_msg = evt.data;
                     //div.innerHTML = div.innerHTML + received_msg;
                     //console.log(received_msg);
+                    if(buffering.length == 0){
+                        console.log(received_msg);
+                    }
                     buffering.push(JSON.parse(received_msg));
                     console.log(buffering.length);
                 };
