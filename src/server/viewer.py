@@ -113,17 +113,19 @@ def main():
 
 		#Convert to json
 		json_obj = xmltodict.parse(data)
-		json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+		json_data = json.dumps(json_obj)
+
+		#json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
 
 		json_data = json_data.replace("@", "_")
-		json_data = json_data.replace('"#text": "\\""', "")
+		#json_data = json_data.replace('"#text": "\\""', "")
 
 		log_file.write(json_data)
 
 		# Enviar os dados da simulação para o exterior
 		django_tcp.send(json_data)
 
-	time.sleep(0.001)
+	time.sleep(0.1)
 	#send django msg telling it's over
 	django_tcp.send("END")
 
