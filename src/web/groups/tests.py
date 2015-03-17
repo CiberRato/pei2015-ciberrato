@@ -82,8 +82,11 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/member/TestGroup/?username=gipmon"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict(
-            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+        self.assertEqual(rsp, {'is_admin': True, 'account': OrderedDict(
+            [('email', u'rf@rf.pt'), ('username', u'gipmon'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
@@ -99,8 +102,12 @@ class GroupsModelsTestCase(TestCase):
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
@@ -108,8 +115,12 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/member/TestGroup/?username=eypo"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
@@ -123,8 +134,12 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/admin/TestGroup/?username=eypo"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'is_admin': True, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': True, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
@@ -132,8 +147,12 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/admin/TestGroup/?username=eypo"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
@@ -154,8 +173,12 @@ class GroupsModelsTestCase(TestCase):
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
 
@@ -305,8 +328,12 @@ class GroupsModelsTestCase(TestCase):
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
 
@@ -314,8 +341,12 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/member/TestGroup/?username=eypo"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'is_admin': False, 'account': OrderedDict(
-            [('id', 2), ('email', u'ey@rf.pt'), ('username', u'eypo'),
+        rsp = dict(response.data)
+        del rsp['account']['updated_at']
+        del rsp['account']['created_at']
+
+        self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
              ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
 
