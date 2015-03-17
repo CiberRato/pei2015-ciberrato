@@ -95,12 +95,13 @@ def main():
 
 	simulator_s.sendto("<Start/>\n" ,(host, port))
 
-	robotTime = 0
-	django_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	django_tcp.bind(("127.0.0.1", 7000))
-	django_tcp.listen(1)
-	django_s, django_addr = django_tcp.accept()
 
+	PORT = 10000
+	django_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	django_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	django_tcp.connect(("127.0.0.1", PORT))
+
+	robotTime = 0
 	while simTime != robotTime:
 		data = simulator_s.recv(4096)
 		# Actualizar o tempo do robot
@@ -120,7 +121,7 @@ def main():
 		log_file.write(json_data)
 
 		# Enviar os dados da simulação para o exterior
-		django_s.send(data)
+		django_tcp.send(data)
 
 	#send django msg telling it's over
 
