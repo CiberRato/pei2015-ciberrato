@@ -30,16 +30,16 @@ def main():
 		data = None
 
 def run(sim_id):
-	DOCKERIP = None
-	for interface in netifaces.interfaces():
-		if interface.startswith('docker'):
-			DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
-			break
-	if DOCKERIP == None:
-		print "Please check your docker interface."
-		exit(-1)
-	else:
-		print "Docker interface: %s" % (DOCKERIP, )
+	# DOCKERIP = None
+	# for interface in netifaces.interfaces():
+	# 	if interface.startswith('docker'):
+	# 		DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
+	# 		break
+	# if DOCKERIP == None:
+	# 	print "Please check your docker interface."
+	# 	exit(-1)
+	# else:
+	# 	print "Docker interface: %s" % (DOCKERIP, )
 
 	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -73,7 +73,7 @@ def run(sim_id):
 	##		CHECK ./simulator --help 				##
 	# Run simulator for LINUX
 	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-					#"-nogui", \
+					"-nogui", \
 					"-viewerlog", \
 					"-param", 	tempFilesList["param_list"].name, \
 					"-lab", 	tempFilesList["lab"].name, \
@@ -95,19 +95,19 @@ def run(sim_id):
 	viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
 	for i in range(n_agents):
-		#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
-		print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
-				(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
-		docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
-								  "bash -c 'curl " \
-								  "http://%s:8000%s" \
-								  " | tar -xz;" \
-								  " python myrob.py -host %s -pos %s'" %  \
-								  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
-								  shell = True, stdout = subprocess.PIPE)
-		docker_container = docker.stdout.readline().strip()
-		docker.wait()
-		print "Successfully opened container: %s\n" % (docker_container, )
+		agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
+		# print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
+		# 		(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
+		# docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
+		# 						  "bash -c 'curl " \
+		# 						  "http://%s:8000%s" \
+		# 						  " | tar -xz;" \
+		# 						  " python myrob.py -host %s -pos %s'" %  \
+		# 						  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
+		# 						  shell = True, stdout = subprocess.PIPE)
+		# docker_container = docker.stdout.readline().strip()
+		# docker.wait()
+		# print "Successfully opened container: %s\n" % (docker_container, )
 
 	data = viewer_c.recv(4096)
 	while data != "<AllRobotsRegistered/>":
@@ -129,10 +129,10 @@ def run(sim_id):
 
 	viewer.wait()
 
-	proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
-	proc.wait()
-	proc = subprocess.Popen(["docker", "rm", docker_container])
-	proc.wait()
+	# proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+	# proc.wait()
+	# proc = subprocess.Popen(["docker", "rm", docker_container])
+	# proc.wait()
 
 	simulator.terminate()
 	simulator.wait()

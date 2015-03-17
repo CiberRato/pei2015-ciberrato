@@ -3,10 +3,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic.base import TemplateView
 
-from authentication.views import AccountViewSet, LoginView, LogoutView
+from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet, AccountGroupsAdminViewSet
+
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
     CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, \
     MyEnrolledGroupsViewSet
@@ -24,7 +25,8 @@ from rest_framework import routers
 
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
-
+router_accounts.register(r'account_by_first_name', AccountByFirstName)
+router_accounts.register(r'account_by_last_name', AccountByLastName)
 # GROUPS URLs
 router_groups = routers.SimpleRouter()
 router_groups.register(r'members', GroupMembersViewSet)

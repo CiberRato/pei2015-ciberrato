@@ -183,9 +183,12 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data[0]
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp, OrderedDict(
             [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('language', u''), ('rounds', []),
-             ('competitions', []), ('user', OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                          ('teaching_institution', u'Universidade de Aveiro'),
                                                          ('first_name', u'Rafael'), ('last_name', u'Ferreira')])),
              ('group_name', u'XPTO3')]))
@@ -197,9 +200,12 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data[0]
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp, OrderedDict(
             [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('language', u''), ('rounds', []),
-             ('competitions', []), ('user', OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                          ('teaching_institution', u'Universidade de Aveiro'),
                                                          ('first_name', u'Rafael'), ('last_name', u'Ferreira')])),
              ('group_name', u'XPTO3')]))
@@ -212,11 +218,13 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
 
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'competitions': [], 'is_virtual': False, 'language': u'',
                                'rounds': [], 'group_name': u'XPTO3',
                                'user': OrderedDict(
-                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                   [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                     ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
                                     ('last_name', u'Ferreira')])})
 
@@ -263,8 +271,11 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [], 'competitions': [], 'user': OrderedDict(
-            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+            [('email', u'rf@rf.pt'), ('username', u'gipmon'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
              ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
                                'group_name': u'XPTO3'})
@@ -295,11 +306,14 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp,
                          {'agent_name': u'KAMIKAZE', 'language': 'Java', 'is_virtual': False, 'group_name': u'XPTO3',
                           'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', settings.COLABORATIVA),
                                                         ('state_of_competition', 'Register')])], 'user': OrderedDict(
-                             [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
                               ('last_name', u'Ferreira')]), 'rounds': [OrderedDict(
                              [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None),
@@ -318,10 +332,16 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/valid_round_participants/R1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        del rsp[1]['created_at']
+        del rsp[1]['updated_at']
+
+        self.assertEqual(rsp, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                         OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 
@@ -349,11 +369,17 @@ class AuthenticationTestCase(TestCase):
         # retrieve the not eligible participantes for one round
         url = "/api/v1/competitions/not_eligible_round_participants/R1/"
         response = client.get(url)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        del rsp[1]['created_at']
+        del rsp[1]['updated_at']
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+        self.assertEqual(response.data, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                         OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 

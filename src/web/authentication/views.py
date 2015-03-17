@@ -1,7 +1,7 @@
 import json
 
-from django.shortcuts import get_object_or_404
-from rest_framework import permissions, viewsets, status, views
+from django.shortcuts import get_object_or_404, get_list_or_404
+from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
 from authentication.models import Account, GroupMember
 from authentication.serializers import AccountSerializer
@@ -105,6 +105,46 @@ class AccountViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Deleted',
                          'message': 'The account has been deleted.'
                         }, status=status.HTTP_200_OK)
+
+
+class AccountByFirstName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} one account by First Name
+        B{URL:} ../api/v1/account_by_first_name/<first_name>/
+
+        @type  first_name: str
+        @param first_name: The first name
+        """
+        account = get_list_or_404(self.queryset, first_name=kwargs.get('pk'))
+        serializer = self.serializer_class(account, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AccountByLastName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} one account by Last Name
+        B{URL:} ../api/v1/account_by_last_name/<last_name>/
+
+        @type  last_name: str
+        @param last_name: The last name
+        """
+        account = get_list_or_404(self.queryset, last_name=kwargs.get('pk'))
+        serializer = self.serializer_class(account, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LoginView(views.APIView):
