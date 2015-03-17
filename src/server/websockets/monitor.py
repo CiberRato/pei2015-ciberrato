@@ -77,7 +77,6 @@ class WebSocketHandler(WebSocket):
         Manager ...
         If is necessary authentication it can be made a /api/ call to see if the user is logged in or retrieve
         a token or something like this ...
-        """
 
         if str(message) != "OK":
             # Handle the missing package number
@@ -87,7 +86,7 @@ class WebSocketHandler(WebSocket):
             # send missing packages
             to_send = json.dumps(data_stream)
             self.send(to_send)
-
+        """
         m.add(self)
 
 
