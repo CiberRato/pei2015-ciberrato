@@ -57,7 +57,7 @@ def monitor():
 
     sim_viewer_connect.shutdown(socket.SHUT_RDWR)
     sim_viewer_connect.close()
-    sim_viewer_connect.shutdown(socket.SHUT_RDWR)
+    sim_viewer.shutdown(socket.SHUT_RDWR)
     sim_viewer.close()
 
     # see who is connected
