@@ -151,13 +151,12 @@ public:
 
 	virtual void sendSensors();
 
-	unsigned int toXml(char *, unsigned int);
+	unsigned int toXml(char *, unsigned int, bool withActions=true);
 
 	inline State state() { return _state; }
     const char *curStateAsString();
 
 	void showAllAttributes();
-	void Log(ostream &Log, bool withactions=true);
 
 signals:
 

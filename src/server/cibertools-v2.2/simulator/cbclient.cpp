@@ -52,6 +52,7 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
 	char reply[REPLYMAXSIZE];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Ok\">\n\t");
+
 	if (param != NULL) cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (lab != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
