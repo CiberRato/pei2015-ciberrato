@@ -5,7 +5,7 @@ import tarfile
 import os
 from django.shortcuts import get_object_or_404
 from competition.models import Round, Simulation, Agent
-from competition.serializers import AgentSerializer
+from competition.serializers import AgentSerializer, FileAgentSerializer
 from authentication.models import GroupMember
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
@@ -84,6 +84,7 @@ class GetAllowedLanguages(views.APIView):
 
 class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
+    serializer_class = FileAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -108,10 +109,17 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         files = []
 
         if agent.locations:
-            for f in json.loads(agent.locations):
-                files += [basename(f)]
+            class AgentFile:
+                def __init__(self, file):
+                    self.file = basename(file)
+                    self.url = "/URL/PARA/SACAR/O/FICHEIRO/"
 
-        return Response(JSONRenderer().render(files), status=status.HTTP_200_OK)
+            for f in json.loads(agent.locations):
+                files += [AgentFile(f)]
+
+        serializer = self.serializer_class(files, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UploadAgent(views.APIView):

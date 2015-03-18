@@ -263,7 +263,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/agent_files/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(json.loads(response.data)), 3)
+        self.assertEqual(len(response.data), 3)
 
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(url)

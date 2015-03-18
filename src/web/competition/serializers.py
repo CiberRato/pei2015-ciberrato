@@ -90,8 +90,15 @@ class LogSimulation(serializers.ModelSerializer):
         read_only_fields = ()
 
 
-class AgentXSerializer(serializers.BaseSerializer):
+class FileAgentSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'file': instance.file,
+            'url': instance.url
+        }
 
+
+class AgentXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         if not instance.files:
             return {
@@ -111,7 +118,6 @@ class AgentXSerializer(serializers.BaseSerializer):
 
 
 class SimulationXSerializer(serializers.BaseSerializer):
-
     def to_representation(self, instance):
         agents = AgentXSerializer(instance.agents, many=True)
         return {
