@@ -267,7 +267,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
             simulation.log_json = serializer.validated_data['log_json']
             simulation.save()
             return Response({'status': 'Created',
-                             'message': 'The log has been uploaded!'}, status=status.HTTP_200_OK)
+                             'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': 'The simulation couldn\'t be updated with that data.'},
