@@ -147,7 +147,6 @@ def run(sim_id):
 	json_gz.add(file_name, arcname="ciberonline")
 	json_gz.close()
 
-	user = Account.objects.get(username="gipmon")
     client = APIClient()
 
     url = "/api/v1/competitions/simulation_log/"
