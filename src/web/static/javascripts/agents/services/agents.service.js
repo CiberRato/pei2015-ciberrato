@@ -40,19 +40,12 @@
         }
 
         function upload(agentName, language, value){
-            console.log(value);
-            $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+            var fd = new FormData();
+            fd.append('file', value);
 
-            // estive a ver na net e ainda tens de ler a porra do ficheiro
-            var r = new FileReader();
-            var file = r.readAsBinaryString(value);
-            console.log(file);
-
-            // usa o debug do django para ver se consegues colocar primeiro ele a ler o 'file'
-            return $http({
-                url: '/api/v1/competitions/upload/agent/?agent_name=' + agentName + '&language=' +language,
-                method: "POST",
-                data: { file: 'test' }
+            return $http.post('/api/v1/competitions/upload/agent/?agent_name=' + agentName + '&language=' +language, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
             })
         }
 
