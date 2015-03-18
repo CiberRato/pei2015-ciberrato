@@ -10,7 +10,25 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}})</h2>
-                            <a data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload Code for this Agent</a>
+                        <p ng-if="vm.files.length != 0">Here is shown in table the list of all uploaded files of this agent.</p>
+                        <p ng-if="vm.files.length == 0">This agent doesn't have any uploaded file.</p>
+                        <a ng-if="vm.files.length == 0" class="btn btn-alt btn-large btn-primary" href="panel/createAgent">Create Agent</a>
+
+                        <table ng-if="vm.files.length != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Remove Agent</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.files">
+                                <td>{{value}}</td>
+                                <td><a class="btn btn-primary btn-flat">X</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                            <a data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload File for this Agent</a>
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">
                                     <h2 align="center">Upload your code</h2>

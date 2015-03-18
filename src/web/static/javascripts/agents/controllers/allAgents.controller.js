@@ -33,6 +33,7 @@
 
             function getTeamInfoSuccessFn(data){
                 vm.member = data;
+                console.log(vm.member.data.is_admin);
             }
             function getTeamInfoErrorFn(data){
                 console.error(data.data);
@@ -48,7 +49,8 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $location.path("/panel/" + vm.teamName + "/allAgents");
+
+                $location.url('/panel/' + vm.teamName + '/allAgents');
             }
 
             function destroyAgentErrorFn(data){

@@ -18,6 +18,7 @@
 
         function activate() {
             Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+            Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
 
             function getAgentSuccessFn(data, status, headers, config) {
                 vm.agent = data.data;
@@ -25,6 +26,17 @@
             }
 
             function getAgentErrorFn(data, status, headers, config) {
+                console.error(data.data);
+                $location.url('/panel/');
+            }
+
+            function getFilesSuccessFn(data, status, headers, config) {
+                vm.files = data.data;
+
+
+            }
+
+            function getFilesErrorFn(data, status, headers, config) {
                 console.error(data.data);
                 $location.url('/panel/');
             }
