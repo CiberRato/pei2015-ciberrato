@@ -121,10 +121,10 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                  'message': 'You must be part of the group.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
+            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition, valid=True)
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
-                                 'message': 'The group must first enroll in the competition.'},
+                                 'message': 'The group must first enroll and with inscription valid.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
             # code valid
