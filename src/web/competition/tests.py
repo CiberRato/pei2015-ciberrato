@@ -416,6 +416,9 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1'})
         self.assertEqual(response.status_code, 200)
 
+        competition_agent.eligible = True
+        competition_agent.save()
+
         # associate an agent to the simulation (only can be made by an admin)
         url = "/api/v1/competitions/associate_agent_to_simulation/"
         data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE', 'pos': 1}
@@ -491,7 +494,7 @@ class AuthenticationTestCase(TestCase):
         data = {'simulation_identifier': identifier, 'log_json': f}
         response = client.post(url, data)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         simulation = Simulation.objects.get(identifier=identifier)
         self.assertEqual(simulation.log_json is None, False)
         simulation.log_json.delete()

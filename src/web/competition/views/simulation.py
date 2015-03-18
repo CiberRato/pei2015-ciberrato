@@ -100,7 +100,7 @@ class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = LogSimulationAgent.objects.all()
     serializer_class = SimulationAgentSerializer
 
@@ -109,7 +109,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} one simulation for one round
+        B{Associate} one agent to one simulation
         B{URL:} ../api/v1/competitions/associate_agent_to_simulation/
 
         @type  round_name: str
@@ -128,6 +128,12 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
 
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+
+            # see if the agent is no more eligible
+            if not competition_agent.eligible:
+                return Response({'status': 'Bad Request',
+                                 'message': 'This agent has already in one simulation!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             simulation = get_object_or_404(Simulation.objects.all(),
                                            identifier=serializer.validated_data['simulation_identifier'])
@@ -175,6 +181,10 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
                                                     pos=serializer.validated_data['pos'])
+
+            competition_agent.eligible = False
+            competition_agent.save()
+
             serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -182,6 +192,9 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
         return Response({'status': 'Bad Request',
                          'message': 'The simulation agent could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        pass
 
 
 class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
