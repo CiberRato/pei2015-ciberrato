@@ -907,7 +907,7 @@ void cbRobot::sendSensors()
 	score, number of collisions, the collision state, removed states, and current position.
 	Return the length of the xml message.
 */
-	
+
 #define LOGWITHMEASURES
 
 unsigned int cbRobot::toXml(char *xml, unsigned int len, bool withActions) // len = buffer size not used
@@ -924,8 +924,8 @@ unsigned int cbRobot::toXml(char *xml, unsigned int len, bool withActions) // le
 	}
 	visitedMask[t]='\0';
 
-	n += sprintf(xml+n, "\t\t<Scores Score=\"%u\" ArrivalTime=\"%u\" ReturningTime=\"%u\" Collisions=\"%u\" \
-						Collision=\"%s\" VisitedMask=\"%s\"/>\n", score, arrivalTime, returningTime, 
+	n += sprintf(xml+n, "\t\t<Scores Score=\"%u\" ArrivalTime=\"%u\" ReturningTime=\"%u\" Collisions=\"%u\" "
+						"Collision=\"%s\" VisitedMask=\"%s\"/>\n", score, arrivalTime, returningTime, 
 						collisionCount, hasCollide() ? "True" : "False", visitedMask);
 
     if(withActions && receivedAction())
