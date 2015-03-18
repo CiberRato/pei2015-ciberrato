@@ -130,7 +130,6 @@ cbSimulator::cbSimulator()
     labScene=0;labView=0;
 
     defaultParam = 0; defaultLab = 0; defaultGrid = 0;
-    viewerAsLog = false;
 
     QXmlInputSource *sourceParam = new QXmlInputSource;
     QXmlInputSource *sourceLab = new QXmlInputSource;
