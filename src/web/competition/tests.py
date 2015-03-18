@@ -291,6 +291,11 @@ class AuthenticationTestCase(TestCase):
         agent.code_valid = True
         agent.save()
 
+        group = Group.objects.get(name="XPTO3")
+        agent_inscription = GroupEnrolled.objects.get(group=group)
+        agent_inscription.valid = True
+        agent_inscription.save()
+
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
         data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE'}
@@ -575,7 +580,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data,
                          [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]),
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
-                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
+                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])])
 
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
@@ -837,6 +842,11 @@ class AuthenticationTestCase(TestCase):
         a6.is_virtual = True
         a6.save()
 
+        group = Group.objects.get(name="XPTO3")
+        agent_inscription = GroupEnrolled.objects.get(group=group)
+        agent_inscription.valid = True
+        agent_inscription.save()
+
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
         data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE1'}
@@ -926,6 +936,11 @@ class AuthenticationTestCase(TestCase):
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_virtual = True
         a2.save()
+
+        group = Group.objects.get(name="XPTO3")
+        agent_inscription = GroupEnrolled.objects.get(group=group)
+        agent_inscription.valid = True
+        agent_inscription.save()
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"

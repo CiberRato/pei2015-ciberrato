@@ -107,8 +107,9 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         files = []
 
-        for f in json.loads(agent.locations):
-            files += [basename(f)]
+        if agent.locations:
+            for f in json.loads(agent.locations):
+                files += [basename(f)]
 
         return Response(JSONRenderer().render(files), status=status.HTTP_200_OK)
 

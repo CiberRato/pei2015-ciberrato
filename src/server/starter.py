@@ -148,7 +148,7 @@ def run(sim_id):
 
 	#save log to the end-point
 	data = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
-	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data=data)
+	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data)
 
 	#print response.status_code
 	#print response.text
