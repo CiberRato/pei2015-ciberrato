@@ -8,18 +8,24 @@ from xml.dom import minidom
 
 
 def test_fileExists():
-	assert os.path.exists('cibertools-v2/robsample/robsample_python.py')
+	assert os.path.exists('cibertools-v2.2/robsample/robsample_python.py')
 
-def test_RobotName():
+def create_simulator():
 	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
 	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	
+
+	return simulator_dummy
+
+def test_RobotName():
+
+
+	simulator_dummy = create_simulator()
 	roboNome = "ciber"
-	agentPath = "robsample_python.py"
+	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 
 	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
 	agent = subprocess.Popen(["python", agentPath, "-robname", roboNome], stdout=subprocess.PIPE)
-
+	
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 
 	parametersXML = minidom.parseString(data.replace("\x00", ""))
@@ -31,7 +37,6 @@ def test_RobotName():
 
 	#para verificar que "esta correcto"
 	roboNome = "sdfkb"
-	agentPath = "robsample_python.py"
 
 	agent = subprocess.Popen(["python", agentPath, "-robname", roboNome], stdout=subprocess.PIPE)
 
@@ -49,7 +54,7 @@ def test_posicao():
 	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	
 	posicao = "2"
-	agentPath = "robsample_python.py"
+	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 
 	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000	
 	agent = subprocess.Popen(["python", agentPath, "-pos", posicao], stdout=subprocess.PIPE)
@@ -65,7 +70,6 @@ def test_posicao():
 
 	#para verificar que "esta correcto"
 	posicao = "1"
-	agentPath = "robsample_python.py"
 
 	agent = subprocess.Popen(["python", agentPath, "-pos", posicao], stdout=subprocess.PIPE)
 
@@ -79,52 +83,54 @@ def test_posicao():
 
 
 def test_host():
-	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	simulator_dummy = create_simulator()
 
-	agentPath = "robsample_python.py"
+	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 	host = "127.0.0.1"
-	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000	
+	simulator_dummy.bind((host, 6000)) # ouvir na porta 6000	
 	agent = subprocess.Popen(["python", agentPath, "-host", host], stdout=subprocess.PIPE)
 
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
-	print host
-	host_addr = ""
-	try:
-	    host_addr = socket.gethostbyname(host)
-	    print host_addr
-	    #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	    simulator_dummy.settimeout(1)
-	    simulator_dummy.connect((host, port))
-	    print host
-	    simulator_dummy.close()
-	except Exception, e:
-		raise
+	print data #só para verificar o que foi recebido
 
-	# result = simulator_dummy.connect_ex(("127.0.0.1", port))
-	# print port
-	# if result == 0:
-	# 	print "Port open"
+	parametersXML = minidom.parseString(data.replace("\x00", ""))
+	assert parametersXML.getElementsByTagName('Robot') != None
 
-	# else:
-	# 	print "Port ERROR"	
+	robotParam = parametersXML.getElementsByTagName('Robot')
 
-#test_host()
+	assert robotParam[0].attributes['Id'] != None
+	assert int(robotParam[0].attributes['Id'].value) >= 0 
+
+	assert robotParam[0].attributes['Name'] != None
+
+	simulator_dummy.close()
 
 
-def create_simulator_dummy():
-	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	
-	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
+
+	simulator_dummy = create_simulator()
+
+	host = "127.0.0.2"
+	simulator_dummy.bind((host, 6000)) # ouvir na porta 6000	
+	agent = subprocess.Popen(["python", agentPath, "-host", host], stdout=subprocess.PIPE)
+
+	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
+
+	parametersXML = minidom.parseString(data.replace("\x00", ""))
+	assert parametersXML.getElementsByTagName('Robot') != None
+
+	robotParam = parametersXML.getElementsByTagName('Robot')
+
+	assert robotParam[0].attributes['Id'] != None
+	assert int(robotParam[0].attributes['Id'].value) >= 0 
+
+	assert robotParam[0].attributes['Name'] != None
+
 
 def test_Parameters():
+	simulator_dummy = create_simulator()
 
-	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	
 	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
-	agentPath = "robsample_python.py"
+	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 
 	agent = subprocess.Popen(["python", agentPath], stdout=subprocess.PIPE)
 
@@ -197,4 +203,4 @@ def test_Parameters():
  		left = MotorsParam[0].attributes['LeftMotor'].value
  		right = MotorsParam[0].attributes['RightMotor'].value
  	except Exception, e:
- 		raise	
+ 		raise			
