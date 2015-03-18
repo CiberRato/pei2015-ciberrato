@@ -14,7 +14,8 @@
             getByUser: getByUser,
             getAgent: getAgent,
             upload: upload,
-            destroy: destroy
+            destroy: destroy,
+            getFiles: getFiles
         };
 
         return Agent;
@@ -46,11 +47,15 @@
             return $http.post('/api/v1/competitions/upload/agent/?agent_name=' + agentName + '&language=' +language, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
-            })
+            });
         }
 
         function destroy(agentName){
-            return $http.delete("/api/v1/competitions/agent/"+ agentName +"/")
+            return $http.delete("/api/v1/competitions/agent/"+ agentName +"/");
+        }
+
+        function getFiles(agentName){
+            return $http.get("/api/v1/competitions/agent_files/" + agentName + "/");
         }
     }
 })();
