@@ -10,7 +10,6 @@ import os
 import sys
 import tarfile
 from xml.dom import minidom
-from rest_framework.test import APIClient
 
 
 def main():
@@ -147,15 +146,9 @@ def run(sim_id):
 	json_gz.add(file_name, arcname="ciberonline")
 	json_gz.close()
 
-	client = APIClient()
-
-	url = "/api/v1/competitions/simulation_log/"
-	data = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
-	response = client.post(url, data)
-
 	#save log to the end-point
-	#data = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
-	#response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data=data)
+	data = {'simulation_identifier': sim_id, 'log_json': open("ciberonline.tar.gz", "rb")}
+	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data)
 
 	#print response.status_code
 	#print response.text
