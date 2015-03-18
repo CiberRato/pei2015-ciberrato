@@ -8,10 +8,12 @@
 
     AgentDetailController.$inject = ['$location', '$routeParams', '$scope', 'Agent'];
 
-    function AgentDetailController($location,$routeParams, $scope, Agent) {
+    function AgentDetailController($location, $routeParams, $scope, Agent) {
         var vm = this;
         vm.uploadFile = uploadFile;
+        vm.deleteUpload = deleteUpload;
         var agentName = $routeParams.name;
+
 
         console.log($scope.files);
         activate();
@@ -32,6 +34,7 @@
 
             function getFilesSuccessFn(data, status, headers, config) {
                 vm.files = data.data;
+                console.log(vm.files);
 
 
             }
@@ -48,6 +51,26 @@
 
             Agent.upload(agentName, language, selectedFile);
 
+        }
+
+        function deleteUpload(fileName){
+            Agent.deleteUpload(agentName, fileName).then(deleteUploadSuccessFn, deleteUploadErrorFn);
+
+            function deleteUploadSuccessFn(){
+                $.jGrowl("File \'" + fileName +"\' has been deleted.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/panel/'+agentName+'/agentDetail');
+            }
+
+            function deleteUploadErrorFn(data){
+                $.jGrowl("File \'" + fileName +"\' can't be deleted.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.log(data.data);
+            }
         }
 
 
