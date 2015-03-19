@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from competition.models import Competition, Round, GroupEnrolled
 from competition.serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer
 from django.db import IntegrityError
@@ -109,9 +109,9 @@ class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericView
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(),
-                                        name=request.GET.get('competition_name', ''))
+            name=request.GET.get('competition_name', ''))
         group = get_object_or_404(Group.objects.all(),
-                                  name=kwargs.get('pk'))
+            name=kwargs.get('pk'))
 
         group_enrolled = get_object_or_404(self.queryset, group=group, competition=competition)
         group_enrolled.valid = not group_enrolled.valid
@@ -178,7 +178,43 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class ToggleGroupValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = GroupEnrolled.objects.all()
+    serializer_class = GroupEnrolledSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Toggle} the Group Enrolled inscription
+        B{URL:} ../api/v1/competitions/toggle_group_inscription/
+
+        @type  competition_name: str
+        @param competition_name: The Competition name
+        @type  group_name: str
+        @param group_name: The Group name
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            competition = get_object_or_404(Competition.objects.all(),
+                name=serializer.validated_data['competition_name'])
+            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            group_enrolled = get_object_or_404(GroupEnrolled.objects.all(), competition=competition, group=group)
+            group_enrolled.valid = not group_enrolled.valid
+            group_enrolled.save()
+
+            return Response({'status': 'Inscription toggled!',
+                             'message': 'Inscription is now: '+str(group_enrolled.valid)},
+                            status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad request',
+                         'message': 'The group can\'t enroll with received data.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
                   mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = GroupEnrolled.objects.all()
     serializer_class = GroupEnrolledSerializer
@@ -197,6 +233,21 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                            many=True)
         return Response(serializer.data)
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} the valid inscriptions in one competition for the group
+        B{URL:} ../api/v1/competitions/enroll/<group_name>/
+
+        @type  competition_name: str
+        @param competition_name: The Competition name
+        @type  group_name: str
+        @param group_name: The Group name
+        """
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group_enrolled = get_list_or_404(GroupEnrolled.objects.all(), group=group, valid=True)
+        serializer = self.serializer_class([GroupEnrolledSimplex(group) for group in group_enrolled], many=True)
+        return Response(serializer.data)
+
     def create(self, request, **kwargs):
         """
         B{Create} a Group Enrolled to a competition
@@ -211,9 +262,9 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                                            name=serializer.validated_data['competition_name'])
+                name=serializer.validated_data['competition_name'])
             group = get_object_or_404(Group.objects.all(),
-                                      name=serializer.validated_data['group_name'])
+                name=serializer.validated_data['group_name'])
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',
