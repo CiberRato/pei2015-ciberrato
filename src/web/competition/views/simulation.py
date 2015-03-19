@@ -136,7 +136,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
                                 status=status.HTTP_400_BAD_REQUEST)
 
             simulation = get_object_or_404(Simulation.objects.all(),
-                                           identifier=serializer.validated_data['simulation_identifier'])
+                identifier=serializer.validated_data['simulation_identifier'])
 
             maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
 
@@ -177,7 +177,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
             simulation = get_object_or_404(Simulation.objects.all(),
-                                           identifier=serializer.validated_data['simulation_identifier'])
+                identifier=serializer.validated_data['simulation_identifier'])
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
                                                     pos=serializer.validated_data['pos'])
@@ -194,7 +194,28 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
-        pass
+        """
+        B{Destroy} one agent to one simulation
+        B{URL:} ../api/v1/competitions/associate_agent_to_simulation/<simulation_identifier>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        @type  pos: int
+        @param pos: The agent position
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        r = get_object_or_404(Round.objects.all(), name=request.data['round_name'])
+        agent = get_object_or_404(Agent.objects.all(), agent_name=request.data['agent_name'])
+        competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+        lsa = get_object_or_404(LogSimulationAgent.objects.all(), competition_agent=competition_agent,
+            simulation=simulation, pos=request.data['pos'])
+        lsa.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The simulation agent has been deleted!'},
+                        status=status.HTTP_200_OK)
 
 
 class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
