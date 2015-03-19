@@ -160,15 +160,16 @@ def run(sim_id):
 	simulator.terminate()
 	simulator.wait()
 
-	gzname = "log_" + sim_id + ".tar.gz"
-	json_gz = tarfile.open(gzname, "w:gz")
-	json_gz.add(file_name, arcname="ciberonline")
+	#compressing json file to tar.gz
+	TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
+	json_gz = tarfile.open(TAR_FILE, "w:gz")
+	json_gz.add(JSON_FILE)
 	json_gz.close()
 
 	#save log to the end-point
 	data = {'simulation_identifier': sim_id}
-	files = {'log_json': open(gzname, "rb")}
-	response = requests.post(HOST + "/api/v1/competitions/simulation_log/", data=data, files=files)
+	files = {'log_json': open(TAR_FILE, "rb")}
+	response = requests.post(POST_SIM_HOST, data=data, files=files)
 
 	#print response.status_code
 	#print response.text
@@ -179,8 +180,8 @@ def run(sim_id):
 
 	print "Log successfully posted, starter closing now.."
 
-	os.remove(file_name)
-	os.remove(gzname)
+	os.remove(JSON_FILE)
+	os.remove(TAR_FILE)
 
 	for key in tempFilesList:
 		tempFilesList[key].close()
