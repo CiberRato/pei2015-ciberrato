@@ -11,6 +11,11 @@
     function DetailCompetitionController($location, $routeParams, Competition, Team, Authentication){
         var vm = this;
         var competitionName = $routeParams.name;
+        var authenticatedAccount = Authentication.getAuthenticatedAccount();
+
+        vm.username = authenticatedAccount.username;
+
+
         vm.enroll = enroll;
         vm.removeInscription = removeInscription;
         vm.change_page = change_page;
@@ -18,8 +23,7 @@
         activate();
 
         function activate(){
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            vm.username = authenticatedAccount.username;
+
             Competition.getCompetition(competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
             Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
 
