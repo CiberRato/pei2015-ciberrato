@@ -344,11 +344,11 @@ class AuthenticationTestCase(TestCase):
         del rsp[1]['updated_at']
 
         self.assertEqual(rsp, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
-                                                      ('teaching_institution', u'Universidade de Aveiro'),
-                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                                         OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                                                      ('teaching_institution', u'Universidade de Aveiro'),
-                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
+                                            ('teaching_institution', u'Universidade de Aveiro'),
+                                            ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                               OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                            ('teaching_institution', u'Universidade de Aveiro'),
+                                            ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 
         # test groups for one round
         url = "/api/v1/competitions/valid_round_groups/R1/"
@@ -524,7 +524,7 @@ class AuthenticationTestCase(TestCase):
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
 
         # delete simulation
-        url = "/api/v1/competitions/associate_agent_to_simulation/"+identifier+"/"
+        url = "/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/"
         data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE', 'pos': 1}
         response = client.delete(path=url, data=data)
         self.assertEqual(response.status_code, 200)
@@ -857,6 +857,13 @@ class AuthenticationTestCase(TestCase):
         agent_inscription = GroupEnrolled.objects.get(group=group)
         agent_inscription.valid = True
         agent_inscription.save()
+
+        # get competitions valid inscriptions
+        url = "/api/v1/competitions/enroll/XPTO3/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])])
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"

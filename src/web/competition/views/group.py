@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from competition.models import Competition, Round, GroupEnrolled
 from competition.serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer
 from django.db import IntegrityError
@@ -178,7 +178,7 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
                   mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = GroupEnrolled.objects.all()
     serializer_class = GroupEnrolledSerializer
@@ -195,6 +195,21 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         serializer = self.serializer_class([GroupEnrolledSimplex(ge=query) for query in GroupEnrolled.objects.all()],
                                            many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} the valid inscriptions in one competition for the group
+        B{URL:} ../api/v1/competitions/enroll/<group_name>/
+
+        @type  competition_name: str
+        @param competition_name: The Competition name
+        @type  group_name: str
+        @param group_name: The Group name
+        """
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group_enrolled = get_list_or_404(GroupEnrolled.objects.all(), group=group, valid=True)
+        serializer = self.serializer_class([GroupEnrolledSimplex(group) for group in group_enrolled], many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):
