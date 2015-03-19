@@ -1,18 +1,31 @@
 #encoding=utf-8
 import socket
 import time
-from xml.dom import minidom
-from collections import OrderedDict
 import json
 import xmltodict
 import requests
+import re
+import sys
+from xml.dom import minidom
+from collections import OrderedDict
 
 def main():
-	## Log File Name
-	log_name = "ciberOnline_log.json"
+	#Load settings
+	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+	settings = json.loads(settings_str)
 
-	log = open("log", "w") # log file used to view prints of this program
-	log.write("viewer started\n")
+	VIEWER_HOST = settings["settings"]["starter_end_point_host"]
+	VIEWER_PORT = settings["settings"]["starter_end_point_port"]
+
+	SIMULATOR_HOST = settings["settings"]["simulator_host"]
+	SIMULATOR_PORT = settings["settings"]["simulator_port"]
+
+	STARTER_HOST = settings["settings"]["starter_viewer_host"]
+	STARTER_PORT = settings["settings"]["starter_viewer_port"]
+
+	if self.wlog:
+		log = open("log", "w") # log file used to view prints of this program
+		log.write("viewer started\n")
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -33,21 +46,21 @@ def main():
 	data[1][1] = "<Grid" + data[1][1]
 
 	json_obj = xmltodict.parse(data[0])
-	json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	log_file.write(json_data+"\n")
 
 	json_obj = xmltodict.parse(data[1][0])
-	json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	log_file.write(json_data+"\n")
 
 	json_obj = xmltodict.parse(data[1][1])
-	json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
+	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
@@ -71,8 +84,6 @@ def main():
 	checkedRobots = []
 	while len(checkedRobots) != int(robotsAmount):
 		data, (host, port) = simulator_s.recvfrom(4096)
-		#starter_s.send(data)
-		#log.write(data)
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
 		robots = robotsXML.getElementsByTagName('Robot')
 		if len(robots):
@@ -96,10 +107,10 @@ def main():
 	simulator_s.sendto("<Start/>\n" ,(host, port))
 
 
-	PORT = 10000
-	django_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	django_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	django_tcp.connect(("127.0.0.1", PORT))
+
+	websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	websocket_tcp.connect(("127.0.0.1", 10000))
 
 	robotTime = 0
 	while simTime != robotTime:
@@ -114,29 +125,31 @@ def main():
 		#Convert to json
 		json_obj = xmltodict.parse(data)
 		json_data = json.dumps(json_obj)
-
-		#json_data = json.dumps(json_obj, indent=4, separators=(',', ': '))
-
 		json_data = json_data.replace("@", "_")
 		#json_data = json_data.replace('"#text": "\\""', "")
 
 		log_file.write(json_data)
 
 		# Enviar os dados da simulação para o exterior
-		django_tcp.send(json_data)
+		websocket_tcp.send(json_data)
 
+	#wait 0.1 seconds to assure the END msg goes on a separate packet
 	time.sleep(0.1)
-	#send django msg telling it's over
-	django_tcp.send("END")
+	#send websocket msg telling it's over
+	websocket_tcp.send("END")
 
 
 	starter_s.send('<EndedSimulation LogFile="' + log_name + '" />')
 
-	django_tcp.close()
+	websocket_tcp.close()
 	log.close()
 	log_file.close()
 	starter_s.close()
 	simulator_s.close()
 
 if __name__ == "__main__":
+	for i in range(0, len(sys.argv)):
+		if sys.argv[i] == "-log"
+			self.wlog = True
+
 	main()
