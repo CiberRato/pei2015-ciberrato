@@ -15,7 +15,8 @@
             getAgent: getAgent,
             upload: upload,
             destroy: destroy,
-            getFiles: getFiles
+            getFiles: getFiles,
+            deleteUpload: deleteUpload
         };
 
         return Agent;
@@ -56,6 +57,10 @@
 
         function getFiles(agentName){
             return $http.get("/api/v1/competitions/agent_files/" + agentName + "/");
+        }
+
+        function deleteUpload(agentName, fileName){
+            return $http.delete('/api/v1/competitions/delete_agent_file/' + agentName + '/?file_name=' +fileName);
         }
     }
 })();
