@@ -147,8 +147,7 @@ def main():
 	#send websocket msg telling it's over
 	websocket_tcp.send("END")
 
-
-	starter_s.send('<EndedSimulation LogFile="' + log_name + '" />')
+	starter_s.send('<EndedSimulation/>')
 
 	if self.wlog:
 		log.close()
