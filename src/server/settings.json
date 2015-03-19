@@ -1,0 +1,48 @@
+///settings file for ciberonline
+///do not change unless necessary
+///please comment using 3 '/'
+
+{
+	///general settings to be used by starter, viewer and other programs that may require so
+	"settings": {
+		///default tmp file name
+		"tmp_file": "ciberOnline_log.json",
+
+		///default file name for the log to be saved
+		"file": "log_<SIM_ID>.tar.gz",
+
+		///host and port for communications between starter and viewer
+		"starter_viewer_host": "127.0.0.1",
+		"starter_viewer_port": 7000,
+
+		///host and port for both starter and GetSimId connection
+		"starter_end_point_host": "127.0.0.1",
+		"starter_end_point_port": 7500,
+
+		///host and port for both starter and GetSimId connection
+		"end_point_host": "127.0.0.1",
+		"end_point_port": 9000,
+
+		///simulator host and port for viewer to send required commands
+		"simulator_host": "127.0.0.1",
+		"simulator_port": 6000,
+
+		///websocket host and port for viewer to send robots data stream
+		"websocket_host": "127.0.0.1",
+		"websocket_port": 10000
+	},
+	"urls":{
+		///url to get a simulation with a sim_id
+		///USAGE: http://127.0.0.1:8000/api/v1/competitions/get_simulation/<SIM_ID>/
+		"get_simulation": "http://127.0.0.1:8000/api/v1/competitions/get_simulation/",
+
+		///url to post the log file after a simulation
+		///PARAMS: data={'simulation_identifier': <SIM_ID>}, files={'log_json': <FILE>}
+		"post_log": "http://127.0.0.1:8000/api/v1/competitions/simulation_log/",
+
+		///url to post a sim_id to be executed
+		///PARAMS: params={'simulation_identifier': <SIM_ID> }
+		"post_sim_id": "http://127.0.0.1:9000/api/v1/simulation_id/"
+	}
+}
+
