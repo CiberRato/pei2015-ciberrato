@@ -523,6 +523,14 @@ class AuthenticationTestCase(TestCase):
                                'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
 
+        # delete simulation
+        url = "/api/v1/competitions/associate_agent_to_simulation/"+identifier+"/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE', 'pos': 1}
+        response = client.delete(path=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation agent has been deleted!'})
+        self.assertEqual(len(LogSimulationAgent.objects.all()), 0)
+
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
         response = client.get(url)
