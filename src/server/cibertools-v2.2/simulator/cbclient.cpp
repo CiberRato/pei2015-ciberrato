@@ -55,7 +55,7 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
 
 	if (param != NULL) cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
-	if (lab != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
+	if (lab != NULL) cnt += lab->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 
 	cnt += sprintf(reply+cnt, "</Reply>\n");
 
