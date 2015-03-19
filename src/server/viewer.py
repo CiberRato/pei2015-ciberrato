@@ -10,6 +10,10 @@ from xml.dom import minidom
 from collections import OrderedDict
 
 def main():
+	wlog = False
+	for i in range(0, len(sys.argv)):
+		if sys.argv[i] == "-log":
+			wlog = True
 	#Load settings
 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 	settings = json.loads(settings_str)
@@ -26,7 +30,7 @@ def main():
 	FILE = settings["settings"]["tmp_file"]
 	#end of loading settings
 
-	if self.wlog:
+	if wlog:
 		log = open("log", "w") # log file used to view prints of this program
 		log.write("viewer started\n")
 
@@ -81,7 +85,7 @@ def main():
 	robots = robotsXML.getElementsByTagName('Robots')
 	robotsAmount = robots[0].attributes['Amount'].value
 
-	if self.wlog:
+	if wlog:
 		log.write("Robots Amount: " + robotsAmount + "\n")
 		log.write("checking Robots\n")
 
@@ -93,15 +97,15 @@ def main():
 		if len(robots):
 			for r in robots:
 				robotID = r.attributes['Id'].value
-				if self.wlog:
+				if wlog:
 					log.write(robotID + "\n	")
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
-				if self.wlog:
+				if wlog:
 					log.write(str(checkedRobots) + "\n	")
 					log.write(str(len(checkedRobots)) + "\n")
 
-	if self.wlog:
+	if wlog:
 		log.write("All Robots are registered\n")
 	starter_s.send("<AllRobotsRegistered/>")
 
@@ -109,7 +113,7 @@ def main():
 	while data != "<StartedAgents/>":
 		data = starter_s.recv(4096)
 
-	if self.wlog:
+	if wlog:
 		log.write("Received start confirmation\n")
 
 	simulator_s.sendto("<Start/>\n" ,(host, port))
@@ -125,7 +129,7 @@ def main():
 		data = simulator_s.recv(4096)
 		# Actualizar o tempo do robot
 		data = data.replace("\x00", "")
-		if self.wlog:
+		if wlog:
 			log.write(data + "\n")
 		robotXML = minidom.parseString(data)
 		itemlist = robotXML.getElementsByTagName('LogInfo')
@@ -149,7 +153,7 @@ def main():
 
 	starter_s.send('<EndedSimulation/>')
 
-	if self.wlog:
+	if wlog:
 		log.close()
 	websocket_tcp.close()
 	log_file.close()
@@ -157,8 +161,4 @@ def main():
 	simulator_s.close()
 
 if __name__ == "__main__":
-	for i in range(0, len(sys.argv)):
-		if sys.argv[i] == "-log"
-			self.wlog = True
-
 	main()

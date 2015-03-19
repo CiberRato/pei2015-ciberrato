@@ -1,5 +1,6 @@
 import requests
 import re
+import json
 
 def main():
 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
