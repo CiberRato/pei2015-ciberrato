@@ -1,0 +1,38 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>Past Competitions</h2>
+                        <p ng-if="vm.competitions.length != 0">Here is shown in table the list of all past competitions that you can watch.</p>
+                        <p ng-if="vm.competitions.length == 0">There are no past competitions that you can watch.</p>
+                        <table ng-if="vm.competitions.length != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Competition Name</th>
+                                <th>Type Of Competition</th>
+                                <th>Number Of Teams</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.competitions">
+                                <td><a href="panel/competitions/{{ value.name }}">{{value.name}}</a></td>
+                                <td>{{value.type_of_competition}}</td>
+                                <td>{{value.allTeams}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>
