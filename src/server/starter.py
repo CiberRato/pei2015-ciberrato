@@ -12,180 +12,190 @@ import tarfile
 import re
 from xml.dom import minidom
 
+class Starter:
 
-def main():
-	#loading settings
-	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-	settings = json.loads(settings_str)
+	def main(self):
+		#loading settings
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
 
-	END_POINT_HOST = settings["settings"]["starter_end_point_host"]
-	END_POINT_PORT = settings["settings"]["starter_end_point_port"]
+		END_POINT_HOST = settings["settings"]["starter_end_point_host"]
+		END_POINT_PORT = settings["settings"]["starter_end_point_port"]
 
-	print "Starter is in deamon mode, waiting for simulation.."
-	end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	end_point_tcp.bind((END_POINT_HOST, END_POINT_PORT))
-	end_point_tcp.listen(1)
-	end_point_c, end_point_add = end_point_tcp.accept()
+		print "Starter is in deamon mode, waiting for simulation.."
+		end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		end_point_tcp.bind((END_POINT_HOST, END_POINT_PORT))
+		end_point_tcp.listen(1)
+		end_point_c, end_point_add = end_point_tcp.accept()
 
-	data = None
-	while 1:
-		while data == None:
-			data = end_point_c.recv(1024)
-		print "Received simulation with sim_id= " + data + ", starting now.."
-		run(data)
-		print "Simulation " + data + " finished successfully.."
 		data = None
+		while 1:
+			while data == None:
+				data = end_point_c.recv(1024)
+			print "Received simulation with sim_id= " + data + ", starting now.."
+			self.run(data)
+			data = None
 
-def run(sim_id):
-	DOCKERIP = None
-	for interface in netifaces.interfaces():
-		if interface.startswith('docker'):
-			DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
-			break
-	if DOCKERIP == None:
-		print "Please check your docker interface."
-		exit(-1)
-	else:
-		print "Docker interface: %s" % (DOCKERIP, )
+	def run(self,sim_id):
+		DOCKERIP = None
+		for interface in netifaces.interfaces():
+			if interface.startswith('docker'):
+				DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
+				break
+		if DOCKERIP == None:
+			print "Please check your docker interface."
+			exit(-1)
+		else:
+			print "Docker interface: %s" % (DOCKERIP, )
 
-	#loading settings
-	GET_SIM_HOST = settings["urls"]["get_simulation"]
+		#loading settings
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
 
-	POST_SIM_HOST = settings["urls"]["get_simulation"]
+		GET_SIM_HOST = settings["urls"]["get_simulation"]
 
-	VIEWER_HOST = settings["settings"]["starter_viewer_host"]
-	VIEWER_PORT = settings["settings"]["starter_viewer_port"]
+		POST_SIM_HOST = settings["urls"]["post_log"]
 
-	JSON_FILE = settings["settings"]["ciberOnline_log.json"]
+		VIEWER_HOST = settings["settings"]["starter_viewer_host"]
+		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
 
-	TAR_FILE = settings["settings"]["log_<SIM_ID>.tar.gz"]
-	#end loading settings
+		JSON_FILE = settings["settings"]["tmp_file"]
 
-	result = requests.get(HOST + sim_id + "/")
-	print result.text
-	simJson = json.loads(result.text)
-	tempFilesList = {}
-	n_agents = 0
+		TAR_FILE = settings["settings"]["file"]
+		#end loading settings
 
-	for key in simJson:
-		#Handle agents and simulation id
-		if key == "agents":
-			n_agents = len(simJson[key])
-			agents = simJson[key]
-			continue
-		if key == "simulation_id":
-			if sim_id != simJson[key]:
-				print "ERROR: sim_id received not the the same in the simulation"
-				return
-			continue
+		result = requests.get(GET_SIM_HOST + sim_id + "/")
+		print result.text
+		simJson = json.loads(result.text)
+		tempFilesList = {}
+		n_agents = 0
+		host = GET_SIM_HOST.split("/api")[0]
 
-		fp = tempfile.NamedTemporaryFile()
-		r = requests.get(HOST + simJson[key])
-		fp.write(r.text)
-		fp.seek(0)
-		tempFilesList[key] = fp
+		for key in simJson:
+			#Handle agents and simulation id
+			if key == "agents":
+				n_agents = len(simJson[key])
+				agents = simJson[key]
+				continue
+			if key == "simulation_id":
+				if sim_id != simJson[key]:
+					print "ERROR: sim_id received not the the same in the simulation"
+					return
+				continue
 
-	print "Number of agents to be loaded: " + str(n_agents)
+			fp = tempfile.NamedTemporaryFile()
+			r = requests.get(host + simJson[key])
+			fp.write(r.text)
+			fp.seek(0)
+			tempFilesList[key] = fp
 
-	print "Process ID: ", os.getpid()
-	print "Creating process for simulator"
-	##		CHECK ./simulator --help 				##
-	# Run simulator for LINUX
-	simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-					"-nogui", \
-					"-viewerlog", \
-					"-param", 	tempFilesList["param_list"].name, \
-					"-lab", 	tempFilesList["lab"].name, \
-					"-grid", 	tempFilesList["grid"].name], \
-					stdout = subprocess.PIPE)
+		print "Number of agents to be loaded: " + str(n_agents)
 
-	print "Successfully opened process with process id: ", simulator.pid
-	time.sleep(1)
+		print "Process ID: ", os.getpid()
 
-	print "Creating process for viewer"
-	viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
-	print "Successfully opened process with process id: ", viewer.pid
+		print "Creating process for Websocket end-point.."
+		websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout=subprocess.PIPE)
+		print "Successfully opened process with process id: ", websocket.pid
 
-	viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		print "Creating process for simulator"
+		##		CHECK ./simulator --help 				##
+		# Run simulator for LINUX
+		simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+						"-nogui", \
+						"-viewerlog", \
+						"-param", 	tempFilesList["param_list"].name, \
+						"-lab", 	tempFilesList["lab"].name, \
+						"-grid", 	tempFilesList["grid"].name], \
+						stdout = subprocess.PIPE)
 
-	viewer_tcp.bind((VIEWER_HOST, VIEWER_PORT))
-	viewer_tcp.listen(1)
-	viewer_c, viewer_c_addr = viewer_tcp.accept()
+		print "Successfully opened process with process id: ", simulator.pid
+		time.sleep(1)
 
-	print "Viewer ready, sending message to viewer about the number of agents\n"
-	viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
+		print "Creating process for viewer"
+		viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
+		print "Successfully opened process with process id: ", viewer.pid
 
-	for i in range(n_agents):
-		#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
-		print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
-				(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
-		docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
-								  "bash -c 'curl " \
-								  "http://%s:8000%s" \
-								  " | tar -xz;" \
-								  " python myrob.py -host %s -pos %s'" %  \
-								  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
-								  shell = True, stdout = subprocess.PIPE)
-		docker_container = docker.stdout.readline().strip()
-		docker.wait()
-		print "Successfully opened container: %s\n" % (docker_container, )
+		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-	data = viewer_c.recv(4096)
-	while data != "<AllRobotsRegistered/>":
+		viewer_tcp.bind((VIEWER_HOST, VIEWER_PORT))
+		viewer_tcp.listen(1)
+		viewer_c, viewer_c_addr = viewer_tcp.accept()
+
+		print "Viewer ready, sending message to viewer about the number of agents\n"
+		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
+
+		for i in range(n_agents):
+			#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
+			print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
+					(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
+			docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
+									  "bash -c 'curl " \
+									  "http://%s:8000%s" \
+									  " | tar -xz;" \
+									  " python myrob.py -host %s -pos %s'" %  \
+									  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
+									  shell = True, stdout = subprocess.PIPE)
+			docker_container = docker.stdout.readline().strip()
+			docker.wait()
+			print "Successfully opened container: %s\n" % (docker_container, )
+
 		data = viewer_c.recv(4096)
+		while data != "<AllRobotsRegistered/>":
+			data = viewer_c.recv(4096)
 
-	print "Sending message to Viewer (everything is ready to start)"
-	viewer_c.send("<StartedAgents/>")
-	print "Waiting for simulation to end.."
-	data = viewer_c.recv(4096)
-	while not data.find("EndedSimulation"):
+		print "Sending message to Viewer (everything is ready to start)"
+		viewer_c.send("<StartedAgents/>")
+		print "Waiting for simulation to end.."
 		data = viewer_c.recv(4096)
-	print "Simulation ended, killing simulator and running agents"
-	print "Posting log to the database.."
+		while not data.find("EndedSimulation"):
+			data = viewer_c.recv(4096)
+		print "Simulation ended, killing simulator and running agents"
+		print "Posting log to the database.."
 
-	viewer_c.shutdown(socket.SHUT_RDWR)
-	viewer_c.close()
-	viewer_tcp.shutdown(socket.SHUT_RDWR)
-	viewer_tcp.close()
+		viewer_c.shutdown(socket.SHUT_RDWR)
+		viewer_c.close()
+		viewer_tcp.shutdown(socket.SHUT_RDWR)
+		viewer_tcp.close()
 
-	viewer.wait()
+		viewer.wait()
 
-	# proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
-	# proc.wait()
-	# proc = subprocess.Popen(["docker", "rm", docker_container])
-	# proc.wait()
+		proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+		proc.wait()
+		proc = subprocess.Popen(["docker", "rm", docker_container])
+		proc.wait()
 
-	simulator.terminate()
-	simulator.wait()
+		simulator.terminate()
+		simulator.wait()
 
-	#compressing json file to tar.gz
-	TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
-	json_gz = tarfile.open(TAR_FILE, "w:gz")
-	json_gz.add(JSON_FILE)
-	json_gz.close()
+		#compressing json file to tar.gz
+		TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
+		json_gz = tarfile.open(TAR_FILE, "w:gz")
+		json_gz.add(JSON_FILE, arcname=TAR_FILE)
+		json_gz.close()
 
-	#save log to the end-point
-	data = {'simulation_identifier': sim_id}
-	files = {'log_json': open(TAR_FILE, "rb")}
-	response = requests.post(POST_SIM_HOST, data=data, files=files)
+		#save log to the end-point
+		data = {'simulation_identifier': sim_id}
+		files = {'log_json': open(TAR_FILE, "rb")}
+		response = requests.post(POST_SIM_HOST, data=data, files=files)
 
-	#print response.status_code
-	#print response.text
-	if response.status_code != 201:
-		print "ERROR: error posting log file to end point"
-		return
+		#print response.status_code
+		#print response.text
+		if response.status_code != 201:
+			print "ERROR: error posting log file to end point"
+			return
 
 
-	print "Log successfully posted, starter closing now.."
+		print "Log successfully posted, starter closing now.."
 
-	os.remove(JSON_FILE)
-	os.remove(TAR_FILE)
+		os.remove(JSON_FILE)
+		os.remove(TAR_FILE)
 
-	for key in tempFilesList:
-		tempFilesList[key].close()
+		for key in tempFilesList:
+			tempFilesList[key].close()
 
+		print "Simulation " + sim_id + " finished successfully.."
 
 
 if __name__ == "__main__":
