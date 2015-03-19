@@ -1,11 +1,13 @@
 import requests
-
+import re
 
 def main():
-	sim_id = "0a256950-7a5c-403d-aba3-52e455d197c5"
-	HOST = "http://127.0.0.1:9000"
-	params = {'simulation_identifier': sim_id }
-	result = requests.post(HOST + "/api/v1/simulation_id/", params)
+	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+	settings = json.loads(settings_str)
+	HOST = settings["url"]["post_sim_id"]
+
+	params = {'simulation_identifier': "0a256950-7a5c-403d-aba3-52e455d197c5" }
+	result = requests.post(HOST, params)
 	print result.text
 
 
