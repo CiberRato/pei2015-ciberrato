@@ -16,7 +16,7 @@ from competition.views.round import AgentsRound, RoundParticipants, RoundGroups,
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
     SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetSimulationAgents, SaveLogs, \
-    GetSimulation
+    GetSimulation, GetSimulationLog
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, UploadAgent, \
     DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles, GetAgentsFiles, GetAllowedLanguages
@@ -100,6 +100,9 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/allowed_languages/$', GetAllowedLanguages.as_view(),
                            name="Allowed languages"),
 
+                       # get simulation log
+                       url(r'^api/v1/competitions/get_simulation_log/(?P<simulation_id>.+)/$', GetSimulationLog.as_view(),
+                           name="Get simulation log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),

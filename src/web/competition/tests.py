@@ -497,6 +497,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         simulation = Simulation.objects.get(identifier=identifier)
         self.assertEqual(simulation.log_json is None, False)
+
+        # get log sent
+        url = "/api/v1/competitions/get_simulation_log/"+identifier+"/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
         simulation.log_json.delete()
 
         # get simulation for simulate

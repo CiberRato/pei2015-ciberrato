@@ -4,11 +4,16 @@ from competition.models import Competition, Round, Simulation, CompetitionAgent,
 from competition.serializers import SimulationXSerializer, \
     SimulationSerializer, \
     SimulationAgentSerializer, LogSimulation
+import os
 from rest_framework import permissions
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 from competition.permissions import IsAdmin
 from django.conf import settings
+from competition.renderers import PlainTextRenderer
+from django.core.files.storage import default_storage
+from django.http import HttpResponse
+from django.core.servers.basehttp import FileWrapper
 from competition.views.simplex import SimulationSimplex, SimulationAgentSimplex, SimulationX
 
 
@@ -306,6 +311,32 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response({'status': 'Bad Request',
                          'message': 'The simulation couldn\'t be updated with that data.'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetSimulationLog(views.APIView):
+    @staticmethod
+    def get(request, simulation_id):
+        """
+        B{Get} simulation json log
+        B{URL:} ../api/v1/competitions/get_simulation_log/<simulation_id>/
+
+        @type  simulation_id: str
+        @param simulation_id: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
+        try:
+            file = default_storage.open(simulation.log_json)
+        except Exception:
+            return Response({'status': 'Bad request',
+                             'message': 'The file doesn\'t exists'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        wrapper = FileWrapper(file)
+        response = HttpResponse(wrapper, content_type="application/x-compressed")
+        response['Content-Disposition'] = 'attachment; filename=' + simulation_id + '.tar.gz'
+        response['Content-Length'] = os.path.getsize(file.name)
+        file.seek(0)
+        return response
 
 
 class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
