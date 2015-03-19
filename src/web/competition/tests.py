@@ -291,10 +291,12 @@ class AuthenticationTestCase(TestCase):
         agent.code_valid = True
         agent.save()
 
-        group = Group.objects.get(name="XPTO3")
-        agent_inscription = GroupEnrolled.objects.get(group=group)
-        agent_inscription.valid = True
-        agent_inscription.save()
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
@@ -847,10 +849,12 @@ class AuthenticationTestCase(TestCase):
         a6.is_virtual = True
         a6.save()
 
-        group = Group.objects.get(name="XPTO3")
-        agent_inscription = GroupEnrolled.objects.get(group=group)
-        agent_inscription.valid = True
-        agent_inscription.save()
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
 
         # get competitions valid inscriptions
         url = "/api/v1/competitions/enroll/XPTO3/"
@@ -949,10 +953,12 @@ class AuthenticationTestCase(TestCase):
         a2.is_virtual = True
         a2.save()
 
-        group = Group.objects.get(name="XPTO3")
-        agent_inscription = GroupEnrolled.objects.get(group=group)
-        agent_inscription.valid = True
-        agent_inscription.save()
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
