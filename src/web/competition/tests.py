@@ -403,7 +403,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['updated_at']
         identifier = rsp['identifier']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the simulation data
@@ -413,7 +413,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         competition_agent.eligible = True
@@ -436,7 +436,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by round
@@ -446,7 +446,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by competition
@@ -456,7 +456,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         # get the simulation groups
@@ -488,35 +488,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
-        # save simulation logs (only server by server)
-        f = open('media/tmp_simulations/ciberOnline_log.json.zip', 'r')
-        url = "/api/v1/competitions/simulation_log/"
-        data = {'simulation_identifier': identifier, 'log_json': f}
-        response = client.post(url, data)
-        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
-        self.assertEqual(response.status_code, 201)
-        simulation = Simulation.objects.get(identifier=identifier)
-        self.assertEqual(simulation.log_json is None, False)
-
-        # get log sent
-        url = "/api/v1/competitions/get_simulation_log/"+identifier+"/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        simulation.log_json.delete()
-
-        # get simulation for simulate
-        url = "/api/v1/competitions/get_simulations/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        rsp = response.data[0]
-        del rsp['simulation_id']
-        del rsp['agents']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
-                               'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
-                               'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
-
         # get simulation for simulate
         url = "/api/v1/competitions/get_simulation/" + identifier + "/"
         response = client.get(url)
@@ -528,6 +499,23 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
                                'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+
+        # save simulation logs (only server by server)
+        f = open('media/tmp_simulations/ciberOnline_log.json.zip', 'r')
+        url = "/api/v1/competitions/simulation_log/"
+        data = {'simulation_identifier': identifier, 'log_json': f}
+        response = client.post(url, data)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
+        self.assertEqual(response.status_code, 201)
+        simulation = Simulation.objects.get(identifier=identifier)
+        self.assertEqual(simulation.log_json is None, False)
+
+        # get log sent
+        url = "/api/v1/competitions/get_simulation_log/" + identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        simulation.log_json.delete()
 
         # delete simulation
         url = "/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/"
