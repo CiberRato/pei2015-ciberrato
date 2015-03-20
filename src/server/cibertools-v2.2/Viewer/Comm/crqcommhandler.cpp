@@ -165,14 +165,14 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 			}
 			break;
 	}
-    return TRUE;
+    return true;
 
 }
 
 bool CRQCommHandler::endElement( const QString&, const QString&, const
 								QString& qName)
 {
-    return TRUE;
+    return true;
 }
 
 CRRobot * CRQCommHandler::getRobot( void )

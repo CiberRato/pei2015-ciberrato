@@ -203,41 +203,6 @@ bool CRQReplyHandler::startElement( const QString&, const QString&,
             break;
     }
     return true;
-/*
-    if( tag == "Reply" )
-    {
-        replyObject = new CRReply;	// falta testar retorno
-        // process attributes
-        const QString status = attr.value( QString( "Status" ));
-        if ( !status.isNull() )
-        {
-            if( status == "Ok" )
-                replyObject->status = true;
-            else
-                replyObject->status = false;
-        }
-    }
-	else if( tag == "Parameters" )
-    {
-        replyObject->parameters = new CRParameters;	// falta testar retorno
-        // process attributes
-        
-    }
-    else if ( tag == "Grid" ) 
-    {
-
-    }
-    else if ( tag == "Lab" )
-    {
-
-    }
-	else
-    {
-        cerr << "Failure request: invalid message...\n";
-        return false;
-    }
-
-	return true;*/
 }
 bool CRQReplyHandler::endElement( const QString&, const QString&, const
                                 QString& qName) {
