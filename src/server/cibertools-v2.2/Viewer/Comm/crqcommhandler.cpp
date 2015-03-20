@@ -170,8 +170,36 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 }
 
 bool CRQCommHandler::endElement( const QString&, const QString&, const
-								QString& qName)
-{
+								QString& qName) {
+        const QString &tag = qName;
+    switch (type)
+    {
+        case 	UNKNOWN:
+        	break;
+        case 	RESTART:
+        		LOGINFO:
+            type = UNKNOWN;
+            break;
+        case 	ROBOT:
+            type = LOGINFO;
+            break;
+        case 	POSITION:
+        		SCORES:
+        		ACTION:
+        		MEASURES:
+            type = ROBOT;
+            break;
+        case 	SENSORS:
+        		LEDS:
+        		BUTTONS:
+            type = MEASURES;
+            break;
+        case 	IRSENSOR:
+        		BEACONSENSOR:
+        		GPS:
+            type = SENSORS;
+            break;
+    }
     return true;
 }
 
