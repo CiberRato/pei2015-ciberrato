@@ -1,5 +1,5 @@
 #/bin/bash
-(cd simulator; ./simulator -nogui)&
+(cd simulator; ./simulator)&
 
 sleep 1
 

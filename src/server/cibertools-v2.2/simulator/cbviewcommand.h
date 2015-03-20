@@ -22,7 +22,7 @@
 
 struct cbCommand
 {
-	enum {UNKNOWN, START, RESTART, STOP, LABRQ, GRIDRQ, ROBOTDEL} type;
+	enum {UNKNOWN, START, RESTART, STOP, ROBOTDEL} type;
 	union 
 	{
 		struct { int id; } robot;

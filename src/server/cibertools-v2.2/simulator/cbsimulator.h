@@ -71,7 +71,6 @@ public:
 	void setReceptionist(cbReceptionist *);
     void setGUI(cbSimulatorGUI *g) { gui=g;}
     void setLogFilename(QString lfn) { logFilename=lfn; logging=true; }
-    void setViewerAsLog(bool v) { viewerAsLog = v; }
 
 	void setReceptionistAt(int port);
 
@@ -203,7 +202,7 @@ protected: // data members
 
 	State curState, nextState;	// current and next states
 
-    bool logging, viewerAsLog;
+    bool logging;
     ostream *logStream;
 	QString logFilename;
 	
@@ -220,7 +219,7 @@ protected: // member functions
 	void ViewCommands();
 	void PanelCommands();
 	void RobotActions();
-	void Log(ostream &, bool withactions=true, bool stateIndependent=false);
+	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
 	void CheckCollisions();
 	void Commit();

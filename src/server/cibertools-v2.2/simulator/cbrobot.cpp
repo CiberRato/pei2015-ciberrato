@@ -907,34 +907,86 @@ void cbRobot::sendSensors()
 	score, number of collisions, the collision state, removed states, and current position.
 	Return the length of the xml message.
 */
-unsigned int cbRobot::toXml(char *xml, unsigned int len) // len = buffer size not used
+
+#define LOGWITHMEASURES
+
+unsigned int cbRobot::toXml(char *xml, unsigned int len, bool withActions) // len = buffer size not used
 {
-	unsigned int n;
-	int t;
-	n = sprintf(xml, "<Robot");
-	/* add attributes */
-	n += sprintf(xml+n, " Name=\"%s\"", name);
-	n += sprintf(xml+n, " Id=\"%d\"", id);
-	n += sprintf(xml+n, " Time=\"%u\"", simulator->curTime());
-	n += sprintf(xml+n, " Score=\"%u\"", score);
-	n += sprintf(xml+n, " ArrivalTime=\"%u\"", arrivalTime);
-	n += sprintf(xml+n, " ReturningTime=\"%u\"", returningTime);
-	n += sprintf(xml+n, " Collisions=\"%u\"", collisionCount);
-    n += sprintf(xml+n, " Collision=\"%s\"", hasCollide() ? "True" : "False");
-
-	n += sprintf(xml+n, " VisitedMask=\"");
+	char visitedMask[256];
+    int t;
+    unsigned int n;
+    n = sprintf(xml, "\t<Robot Name=\"%s\" Id=\"%u\" State=\"%s\">\n", Name(), Id(), StrState[_state]);
+    n += sprintf(xml+n, "\t\t<Pos X=\"%f\" Y=\"%f\" Dir=\"%f\"/>\n", X(), Y(), Degrees());
+	
+	// Determine visitedMask
 	for(t = 0; t < (int) simulator->Lab()->nTargets(); t++) {
-	    n += sprintf(xml+n, "%d", targetVisited[t] ? 1: 0);
+	    visitedMask[t]= '0' + (targetVisited[t] ? 1: 0);
 	}
-	n += sprintf(xml+n, "\"");
+	visitedMask[t]='\0';
 
-	n += sprintf(xml+n, " State=\"%s\">\n", StrState[_state]);
+	n += sprintf(xml+n, "\t\t<Scores Score=\"%u\" ArrivalTime=\"%u\" ReturningTime=\"%u\" Collisions=\"%u\" "
+						"Collision=\"%s\" VisitedMask=\"%s\"/>\n", score, arrivalTime, returningTime, 
+						collisionCount, hasCollide() ? "True" : "False", visitedMask);
 
-	/* add position */
-	double dir = curPos.directionInDegrees();
-	n += sprintf(xml+n, "\t<Position X=\"%g\" Y=\"%g\" Dir=\"%g\"/>\n", curPos.X(), 
-			curPos.Y(), dir);
-	n += sprintf(xml+n, "</Robot>\n");
+    if(withActions && receivedAction())
+    {
+    	n += sprintf(xml+n, "\t\t<Action");
+	    if(receivedLeftMotor())
+	    	n += sprintf(xml+n, " LeftMotor=\"%f\"", LeftMotor().inPower());
+	    if(receivedRightMotor())
+	        n += sprintf(xml+n, " RightMotor=\"%f\"", RightMotor().inPower());
+	    if(receivedEndLed())
+	    	n += sprintf(xml+n, " EndLed=\"%s\"", endLedOn() ? "On":"Off");
+	    if(receivedReturningLed())
+	    	n += sprintf(xml+n, " ReturningLed=\"%s\"", returningLedOn() ? "On":"Off");
+	    if(receivedVisitingLed())
+	    	n += sprintf(xml+n, " VisitingLed=\"%s\"", visitingLedOn() ? "On":"Off");
+	    n += sprintf(xml+n, " />\n");
+	}
+
+#ifdef LOGWITHMEASURES
+	n += sprintf(xml+n, "\t\t<Measures Time=\"%u\">\n", simulator->curTime());
+	/* add sensor information */
+	n += sprintf(xml+n, "\t\t\t<Sensors");
+	n += sprintf(xml+n, " Compass=\"%g\"", compassSensor->Degrees());
+
+	n += sprintf(xml+n, " Collision=\"%s\"", collisionSensor->Value()?"Yes":"No");
+	n += sprintf(xml+n, " Ground=\"%d\">\n", groundSensor->Value());
+
+	for(int i=0; i < NUM_IR_SENSORS; i++)
+		n += sprintf(xml+n,"\t\t\t\t<IRSensor Id=\"%d\" Value=\"%g\"/>\n",
+				i, irSensors[i]->Value());
+
+	for(unsigned int b=0; b < beaconSensors.size(); b++) {
+        if(beaconSensors[b]->Ready()){
+            n += sprintf(xml+n, "\t\t\t\t<BeaconSensor Id=\"%d\" Value=", b);
+	        if(beaconSensors[b]->BeaconVisible())
+	            n += sprintf(xml+n, "\"%g\"", beaconSensors[b]->Degrees());
+	        else
+                n += sprintf(xml+n, "\"NotVisible\"");
+            n += sprintf(xml+n, "/>\n");
+	    }
+	}
+
+    if(GPSOn) {
+	   n += sprintf(xml+n, "\t\t\t\t<GPS X=\"%g\" Y=\"%g\" ", 
+                    GPSSensor->X(), GPSSensor->Y());
+       if(GPSDirOn) n += sprintf(xml+n, " Dir=\"%g\" ", GPSSensor->Degrees());
+       n += sprintf(xml+n, "/>\n");
+    }
+
+	n += sprintf(xml+n, "\t\t\t</Sensors>\n");
+	/* add end led information */
+	n += sprintf(xml+n, "\t\t\t<Leds EndLed=\"%s\" ReturningLed=\"%s\" VisitingLed=\"%s\"/>\n", 
+			    endLed?"On":"Off", returningLed?"On":"Off", visitingLed?"On":"Off");
+	/* add buttons information */
+	n += sprintf(xml+n, "\t\t\t<Buttons Start=\"%s\" Stop=\"%s\"/>\n",
+			simulator->getNextState()==cbSimulator::RUNNING?"On":"Off",
+                        simulator->getNextState()==cbSimulator::STOPPED?"On":"Off");
+	n += sprintf(xml+n, "\t\t</Measures>\n");
+#endif
+
+    n += sprintf(xml+n, "\t</Robot>\n");
 
     if(n > len-1) {
         fprintf(stderr,"cbRobot::toXml message is too long\n");
@@ -992,99 +1044,6 @@ void cbRobot::showAllAttributes()
 	n += sprintf(xml+n, "</Robot>\n");
 
 	cout << xml;
-}
-
-#define LOGWITHMEASURES
-
-void cbRobot::Log(ostream &log, bool withActions)
-{
-	char visitedMask[256];
-    int  t;
-    log << "\t<Robot Name=\"" << Name() <<"\""
-		       << " Id=\"" << Id() << "\"" 
-		       << " State=\"" << StrState[_state] <<"\"" 
-		       << ">\n";
-	log << "\t\t<Pos X=\""<< X()
-	          << "\" Y=\"" << Y() 
-	          << "\" Dir=\"" << Degrees() << "\"/>\n";
-
-	//determine visitedMask
-	for(t = 0; t < (int) simulator->Lab()->nTargets(); t++) {
-	    visitedMask[t]= '0' + (targetVisited[t] ? 1: 0);
-	}
-	visitedMask[t]='\0';
-
-	log << "\t\t<Scores Score=\"" << score << "\""
-		        <<" ArrivalTime=\"" << arrivalTime <<"\""
-		        <<" ReturningTime=\"" << returningTime <<"\""
-		        <<" Collisions=\"" << collisionCount <<"\""
-                <<" Collision=\"" << (hasCollide() ? "True" : "False") << "\""
-		        <<" VisitedMask=\"" << visitedMask << "\""
-		        << "/>\n";
-
-    if( withActions && receivedAction()  )
-    {
-        log << "\t\t<Action";
-	    if(receivedLeftMotor())
-	        log << " LeftMotor=\"" << LeftMotor().inPower() << "\"";
-	    if(receivedRightMotor())
-	        log << " RightMotor=\"" << RightMotor().inPower() << "\""; 
-	    if(receivedEndLed())
-	        log << " EndLed=\"" << (endLedOn()?"On":"Off") << "\"" ;
-	    if(receivedReturningLed())
-	        log << " ReturningLed=\"" << (returningLedOn()?"On":"Off") << "\"" ;
-	    if(receivedVisitingLed())
-	        log << " VisitingLed=\"" << (visitingLedOn()?"On":"Off") << "\"" ;
-	    log << " />\n";
-	}
-
-#ifdef LOGWITHMEASURES
-	char xml[1024*16];
-	unsigned int n;
-	n = sprintf(xml, "\t\t<Measures Time=\"%u\">\n", simulator->curTime());
-	/* add sensor information */
-	n += sprintf(xml+n, "\t\t\t<Sensors");
-	n += sprintf(xml+n, " Compass=\"%g\"", compassSensor->Degrees());
-
-	n += sprintf(xml+n, " Collision=\"%s\"", collisionSensor->Value()?"Yes":"No");
-	n += sprintf(xml+n, " Ground=\"%d\">\n", groundSensor->Value());
-
-	for(int i=0; i < NUM_IR_SENSORS; i++)
-		n += sprintf(xml+n,"\t\t\t\t<IRSensor Id=\"%d\" Value=\"%g\"/>\n",
-				i, irSensors[i]->Value());
-
-	for(unsigned int b=0; b < beaconSensors.size(); b++) {
-        if(beaconSensors[b]->Ready()){
-            n += sprintf(xml+n, "\t\t\t\t<BeaconSensor Id=\"%d\" Value=", b);
-	        if(beaconSensors[b]->BeaconVisible())
-	            n += sprintf(xml+n, "\"%g\"", beaconSensors[b]->Degrees());
-	        else
-                n += sprintf(xml+n, "\"NotVisible\"");
-            n += sprintf(xml+n, "/>\n");
-	    }
-	}
-
-    if(GPSOn) {
-	   n += sprintf(xml+n, "\t\t\t\t<GPS X=\"%g\" Y=\"%g\" ", 
-                    GPSSensor->X(), GPSSensor->Y());
-       if(GPSDirOn) n += sprintf(xml+n, " Dir=\"%g\" ", GPSSensor->Degrees());
-       n += sprintf(xml+n, "/>\n");
-    }
-
-	n += sprintf(xml+n, "\t\t\t</Sensors>\n");
-	/* add end led information */
-	n += sprintf(xml+n, "\t\t\t<Leds EndLed=\"%s\" ReturningLed=\"%s\" VisitingLed=\"%s\"/>\n", 
-			    endLed?"On":"Off", returningLed?"On":"Off", visitingLed?"On":"Off");
-	/* add buttons information */
-	n += sprintf(xml+n, "\t\t\t<Buttons Start=\"%s\" Stop=\"%s\"/>\n",
-			simulator->getNextState()==cbSimulator::RUNNING?"On":"Off",
-                        simulator->getNextState()==cbSimulator::STOPPED?"On":"Off");
-	n += sprintf(xml+n, "\t\t</Measures>\n");
-
-	log << xml;
-#endif
-
-    log << "\t</Robot>\n";
 }
 
 // cbRobotBin

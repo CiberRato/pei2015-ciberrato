@@ -25,60 +25,38 @@
 bool CRQCommHandler::startDocument()
 {
 	// Initialize all elements with null
-	lab = NULL;
-	grid = NULL;
-	gridElement = NULL;
-	wall = NULL;
-	vertice = NULL;
-	beacon = NULL;
-	target = NULL;
 	robot = NULL;
 	type = UNKNOWN;
-
-    return TRUE;
+    return true;
 }
 
 bool CRQCommHandler::endDocument()
 {
-	return TRUE;
+	return true;
 }
 
 bool CRQCommHandler::startElement( const QString&, const QString&,
                                    const QString& qName,
                                    const QXmlAttributes& attr)
 {
+    
     const QString &tag = qName;
-	switch (type) 	//Type defined in .h as enum.
-	{
+	switch (type) { 	//Type defined in .h as enum.
         case UNKNOWN:
-        {
 			// process begin tag 
-            if( tag == "Lab" )
-            {
-                type = LAB;			//Next time startElement will process one LAB
-                lab = new CRLab(); 	// Create a new lab
-                // process attributes
-                const QString name = attr.value(QString("Name"));
-                if( !name.isNull() )
-                    lab->setName( name.toAscii() );
-
-                const QString width = attr.value(QString("Width"));
-                if( !width.isNull() )
-                    lab->setWidth( width.toFloat() );
-
-                const QString height = attr.value(QString("Height"));
-                if( !height.isNull() )
-                    lab->setHeight( height.toFloat() );
+            if ( tag == "LogInfo" ) {
+            	type = LOGINFO;
+            } else if( tag == "Restart" ) {
+            	type = RESTART;
+            } else {
+        		return false;
             }
-
-			else if( tag == "Grid" )
-            {
-                type = GRID;	//Next time startElement will process one GRID
-                grid = new CRGrid();
-            }
-
-			else if( tag == "Robot" )
-            {
+            break;
+        case RESTART:
+        	// TODO
+        	break;
+        case LOGINFO:
+			if(tag == "Robot") {
                 type = ROBOT;  //Next time startElement will process one ROBOT
                 robot = new CRRobot();
                 // process attributs
@@ -89,19 +67,6 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
                 const QString id = attr.value( QString( "Id" ) );
                 if( !id.isNull() )
                     robot->setId( id.toInt() );
-
-                const QString score = attr.value( QString( "Score" ) );
-                if( !score.isNull() )
-                    robot->setScore( score.toInt() );
-
-                const QString collisions =  attr.value( QString( "Collisions" ) );
-                if( !collisions.isNull() )
-                    robot->setCollisions( collisions.toInt() );
-
-                const QString collision =  attr.value( QString( "Collision" ) );
-                if( !collisions.isNull() )
-                    robot->setCollision( collision.toAscii() );
-
                 const QString state =  attr.value( QString( "State" ) );
                 if( !state.isNull() )
                 {
@@ -123,124 +88,14 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
                     else if (state == "Returning" )
                         robot->setState( CRRobot::RETURNING );
                 }
-
-                const QString time =  attr.value( QString( "Time" ) );
-                if( !time.isNull() )
-                    robot->setCurrentTime( time.toInt() );
-
-                const QString arrivalTime =  attr.value( QString( "ArrivalTime" ) );
-                if( !arrivalTime.isNull() )
-                    robot->setArrivalTime( arrivalTime.toInt() );
-
-                const QString returnTime =  attr.value( QString( "ReturningTime" ) );
-                if( !returnTime.isNull() )
-                    robot->setReturnTime( returnTime.toInt() );
-            }
-            else if( tag == "Restart" )
-            {
-                type = RESTART;
-            }
-            else // Not a robot, lab or grid
-            {
-					cerr << "Received one invalid tag!\n";
-                    return FALSE;
+            } else {
+                return false;
             }
             break;
-        } // End of case UNKNOWN
-
-		case LAB:			// if received element was one  Lab
-        {
-    		if (tag == "Wall")
-            {
-                wall = new CRWall;
-
-                /* process attributes */
-                const QString height = attr.value(QString("Height"));
-                if (!height.isNull())
-                    wall->setWallHeight( height.toFloat() );
-            }
-    		else if (tag == "Beacon")
-            {
-                vertice = new CRVertice;
-                beacon = new CRBeacon( *vertice );
-                /* process attributes */
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    vertice->setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    vertice->setY( y.toFloat() );
-
-                const QString height = attr.value(QString("Height"));
-                if (!height.isNull())
-                    lab->addBeacon( *vertice, height.toFloat() );
-                else
-                    lab->addBeacon( *vertice );
-            }
-
-    		else if (tag == "Target")
-            {
-                target = new CRTarget;
-                vertice = new CRVertice;
-                /* process attributes */
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    vertice->setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    vertice->setY( y.toFloat() );
-
-                const QString radius = attr.value(QString("Radius"));
-                if (!radius.isNull())
-                    lab->addTarget( *vertice, radius.toFloat() );
-                else
-                    lab->addTarget( *vertice );
-            }
-    		else if (tag == "Corner")
-            {
-                vertice = new CRVertice;
-                // process attributes
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    vertice->setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    vertice->setY( y.toFloat() );
-            }
-			break;
-			}  // End os element Lab
-
-		case GRID:   // if received element was one Grid
-        {
-			if( tag == "Position" )
-            {
-                gridElement = new CRGridElement();
-                // Process attributs
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    gridElement->position.setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    gridElement->position.setY( y.toFloat() );
-
-                const QString dir = attr.value(QString("Dir"));
-                if (!dir.isNull())
-                    gridElement->direction = dir.toFloat();
-
-                grid->addPosition( gridElement ); // Add one position to the grid
-            }
-			break;
-        } // End of element Grid
-
 		case ROBOT:  // if received element was one 
-        {
-			if( tag == "Position" )
+			if( tag == "Pos" )
             {
-                // Process attributs
+            	type = POSITION;
                 const QString x = attr.value( QString( "X" ));
                 if (!x.isNull())
                     robot->setX( x.toFloat() );
@@ -252,71 +107,108 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
                 const QString dir = attr.value(QString("Dir"));
                 if (!dir.isNull())
                     robot->setDirection( dir.toFloat() );
+            } else if (tag == "Scores") {
+            	type = SCORES;
+            	const QString score = attr.value( QString( "Score" ) );
+                if( !score.isNull() )
+                    robot->setScore( score.toInt() );
+
+                const QString collisions =  attr.value( QString( "Collisions" ) );
+                if( !collisions.isNull() )
+                    robot->setCollisions( collisions.toInt() );            
+
+                const QString arrivalTime =  attr.value( QString( "ArrivalTime" ) );
+                if( !arrivalTime.isNull() )
+                    robot->setArrivalTime( arrivalTime.toInt() );
+
+                const QString returnTime =  attr.value( QString( "ReturningTime" ) );
+                if( !returnTime.isNull() )
+                    robot->setReturnTime( returnTime.toInt() );
+            } else if (tag == "Action") {
+            	type = ACTION;
+            	// Ignoring actions, viewer doesn't use it at the moment
+            } else if (tag == "Measures") {
+            	type = MEASURES;
+
+                const QString time =  attr.value( QString( "Time" ) );
+                if( !time.isNull() )
+                    robot->setCurrentTime( time.toInt() );
+            } else {
+            	return false;
             }
 			break;
-        } // End of element Robot
-        case RESTART: // TODO
-            break;
-	}
+		case MEASURES:
+			if (tag == "Sensors") {
+				type = SENSORS;
 
-    return TRUE;
+				const QString collision =  attr.value( QString( "Collision" ) );
+                if( !collision.isNull() )
+                    robot->setCollision( collision.toAscii() );
+			} else if (tag == "Leds") {
+				type = LEDS;
+			} else if (tag == "Buttons") {
+				type = BUTTONS;
+			} else {
+				return false;
+			}
+			break;
+		case SENSORS:
+			if (tag == "IRSensor") {
+				type = IRSENSOR;
+				// Viewer is not using sensors at the moment
+			} else if (tag == "BeaconSensor") {	
+				type = BEACONSENSOR;
+				// Viewer doesn't use this sensor at the moment
+			} else if (tag == "GPS") {
+				type = GPS;
+				// Viewer doesn't use this sensor at the moment
+			} else {
+				return false;
+			}
+			break;
+	}
+    return true;
 
 }
 
 bool CRQCommHandler::endElement( const QString&, const QString&, const
-								QString& qName)
-{
-	/* process end tag */
-
+								QString& qName) {
     const QString &tag = qName;
-
-	switch (type)
-	{
+    switch (type)
+    {
         case UNKNOWN:
-        {
+        	break;
+        case RESTART:
+        case LOGINFO:
+            type = UNKNOWN;
             break;
-        }
-		case LAB:
-        {
-    		if (tag == "Wall")
-				lab->addWall( wall );
-    		else if (tag == "Corner")
-                wall->addCorner( *vertice );
-
-			break;
-        }
-		case GRID:
-        {
-				// Does Nothing
-			break;
-        }
-		case ROBOT:
-        {
-				// Does Nothing
-			break;
-        }
-		case RESTART:
-        {
-				// Does Nothing
-			break;
-        }
-	}
-    return TRUE;
+        case ROBOT:
+        	vecRobots.push_back(robot);
+            type = LOGINFO;
+            break;
+        case POSITION:
+        case SCORES:
+        case ACTION:
+        case MEASURES:
+            type = ROBOT;
+            break;
+        case SENSORS:
+        case LEDS:
+        case BUTTONS:
+            type = MEASURES;
+            break;
+        case IRSENSOR:
+        case BEACONSENSOR:
+        case GPS:
+            type = SENSORS;
+            break;
+    }
+    return true;
 }
 
-CRLab * CRQCommHandler::getLab( void )
+std::vector<CRRobot *> CRQCommHandler::getRobots( void )
 {
-	return lab;
-}
-
-CRRobot * CRQCommHandler::getRobot( void )
-{
-	return robot;
-}
-
-CRGrid * CRQCommHandler::getGrid( void )
-{
-	return grid;
+	return vecRobots;
 }
 
 void CRQCommHandler::setDocumentLocator(QXmlLocator *)

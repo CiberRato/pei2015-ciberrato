@@ -67,14 +67,6 @@ bool cbViewHandler::startElement( const QString&, const QString&, const QString&
 		const QString &id = attr.value(QString("Id"));
 		if (!id.isNull()) command.robot.id = id.toInt();
 	}
-	else if (tag == "LabReq")
-	{
-		command.type = cbCommand::LABRQ;
-	}
-	else if (tag == "GridReq")
-	{
-		command.type = cbCommand::GRIDRQ;
-	}
 	else
 	{
 		command.type = cbCommand::UNKNOWN;
@@ -109,22 +101,6 @@ bool cbViewHandler::endElement( const QString&, const QString&, const QString& q
 		if (command.type != cbCommand::STOP)
 		{
 			cerr << "Missmatched end Stop tag\n";
-			return false;
-		}
-	}
-	else if (tag == "LabReq")
-	{
-		if (command.type != cbCommand::LABRQ)
-		{
-			cerr << "Missmatched end LabReq tag\n";
-			return false;
-		}
-	}
-	else if (tag == "GridReq")
-	{
-		if (command.type != cbCommand::GRIDRQ)
-		{
-			cerr << "Missmatched end GridReq tag\n";
 			return false;
 		}
 	}

@@ -182,6 +182,33 @@ void CRQComm::replyControler()
                 isConnected = true;
                 // emit signal
                 emit viewerConnected(true);
+
+                if (lab != NULL )   // With this we can replace the last
+                {               //lab received
+                    scene->clear();//function that delete all canvasItems
+                    closeWindows();
+                }
+                
+                lab = reply->lab; // Lab given by handler
+                scene->skin(skinFName);
+                scene->drawLab(lab);      // Draw lab in scene
+                //scene->update();
+                // the score window
+                
+                dataView = new CRQDataView(reply, lab, skinFName, 0);
+                scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
+                dataView->show();
+                // the control window - not supported / no need
+                /*commControlPanel = new CRQControlPanel( scene, this,
+                                skinFName, mainWindow->soundStatus, mainWindow,
+                                "Control Panel");
+                if(control == 'y')
+                    commControlPanel->show();*/
+
+                grid = reply->grid; // Grid given by handler
+                lab->addGrid(grid);         // Add grid to lab
+                scene->drawGrid(lab);   // Draw grid in scene
+                //scene->update();
                 return;
             }
             else
@@ -209,23 +236,8 @@ void CRQComm::SendRequests()
     cout << "CRQComm::sendRequests\n";
 #endif
 
-    //cerr << "Send requests \n";
-    //Lab Request
-    if( writeDatagram( "<LabReq/>", 10, serverAddress, port ) == -1 )
-    {
-		cerr << "Failure writting <LabReq/>" << endl;
-        exit (-1);
-    }
-	//Grid Request
-    if( writeDatagram( "<GridReq/>", 11, serverAddress, port ) == -1 )
-    {
-		cerr << "Failure writting <GRID_REQ/>" << endl;
-        exit (-1);
-    }
-
 	if(autoStart == 'y' && autoConnect == 'y')
         this->sendMessage("<Start/>");
-
 }
 
 /*============================================================================*/
@@ -252,86 +264,24 @@ void CRQComm::dataControler() //Called when the socket receive something
 
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
-        // set commHandler for LAB, GRID and ROBOT
         CRQCommHandler commHandler;
 
         // parse received message with commHandler
         QXmlSimpleReader reader;
         reader.setContentHandler(&commHandler);
-        if(reader.parse(source))
-        {
+        if (reader.parse(source)) {
             objectReceived = commHandler.objectType(); //Object type received
+            
+            vector<CRRobot *> vec = commHandler.getRobots(); // Robot given by handler
 
-            switch (objectReceived)
-            {
-                case CRQCommHandler::LAB:
-                {
-#ifdef DEBUG
-                    cout << "CRQComm::dataControler -- Lab\n";
-#endif
-
-                    if (lab != NULL )   // With this we can replace the last
-                    {				//lab received
-                        scene->clear();//function that delete all canvasItems
-                        closeWindows();
-                    }
-
-                    lab = commHandler.getLab(); // Lab given by handler
-                    scene->skin(skinFName);
-                    scene->drawLab( lab );		// Draw lab in scene
-                    //scene->update();
-                    // the score window
-                    dataView = new CRQDataView( reply, lab, skinFName, 0);
-                    scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
-                    dataView->show();
-
-                    // the control window - not supported / no need
-                    /*commControlPanel = new CRQControlPanel( scene, this,
-                                skinFName, mainWindow->soundStatus, mainWindow,
-                                "Control Panel");
-                    if(control == 'y')
-                        commControlPanel->show();*/
-
-                    break;
-                }
-
-                case CRQCommHandler::GRID:
-                {
-                    grid = commHandler.getGrid(); // Grid given by handler
-                    lab->addGrid( grid );		  // Add grid to lab
-                    scene->drawGrid( lab );	  // Draw grid in scene
-                    //scene->update();
-                    break;
-                }
-
-                case CRQCommHandler::ROBOT:
-                {
-                    robot = commHandler.getRobot(); // Robot given by handler
-                    lab->addRobot( robot );
-                    scene->drawRobot( lab );		// Draw a robot in scene
-                    //scene->update();
-                    if (dataView != NULL)
-                        dataView->update( robot );	// update the info about robot
-                    break;
-                }
-
-                case CRQCommHandler::RESTART:
-                {
-                    closeWindows();
-                    break;
-                }
-
-                case CRQCommHandler::UNKNOWN:
-                {
-                    break;
-                }
-
-            } // End of switch (selecciona o objecto recebido)
-
-        } // End of if (caso o parser tenha funcionado)
-
-        else
-        {
+            for(std::vector<CRRobot *>::iterator it = vec.begin(); it != vec.end(); ++it) {
+			    lab->addRobot(*it);
+	           	scene->drawRobot( lab );		// Draw a robot in scene
+	            //scene->update();
+	            if (dataView != NULL)
+	                dataView->update(*it);	// update the info about robot*/
+			}                    
+        } else {
             cerr << "Invalid message\n";
         }
     }

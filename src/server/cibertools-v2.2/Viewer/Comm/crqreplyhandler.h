@@ -37,6 +37,7 @@ class QXmlLocator;
 class CRQReplyHandler : public QXmlDefaultHandler
 {
 public:
+    enum Type {UNKNOWN, PARAMETERS, LAB, GRID, BEACON, TARGET, WALL, CORNER, POSITION};
 	/*! This function will be called in the begining of the XML document.
 	 */
     bool startDocument();
@@ -49,6 +50,10 @@ public:
 	 */
     bool startElement( const QString&, const QString&, const QString& , 
 					const QXmlAttributes& );
+    /*! This function is called at the end of one tag. Inside, if is necessary, 
+     * some elements are added to anothers.
+     */
+    bool endElement( const QString&, const QString&, const QString& );
 	/*! For internal use only.
 	 */
     void setDocumentLocator(QXmlLocator *);
@@ -56,9 +61,17 @@ public:
 	 */
 	CRReply * reply(); // Returns the reply structure
 
+    Type objectType();
 private:
-
+    Type type;
 	CRReply *replyObject; 
+
+    // used to store only
+    CRGridElement *gridElement;
+    CRWall *wall;
+    CRTarget *target;
+    CRVertice *vertice;
+    CRBeacon *beacon;
 };
 
 #endif 
