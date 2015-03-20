@@ -490,6 +490,15 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
+        # start simulation
+        url = "/api/v1/simulations/start/"
+        data = {'simulation_id': identifier}
+        response = client.post(path=url, data=data)
+        if response.status_code == 200:
+            self.assertEqual(response.data, {'status': 'Simulation started', 'message': 'Please wait that the simulation starts at the simulator!'})
+        elif response.status_code == 400:
+            self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
+
         # get simulation for simulate
         url = "/api/v1/competitions/get_simulation/" + identifier + "/"
         response = client.get(url)

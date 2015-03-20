@@ -112,6 +112,8 @@ NUMBER_AGENTS_BY_SIMULATION = (
     (COMPETITIVA, 3)
 )
 
+START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/simulation_id/"
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist/static'),
     os.path.join(BASE_DIR, 'static'),

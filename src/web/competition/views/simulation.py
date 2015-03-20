@@ -15,6 +15,7 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
 from competition.views.simplex import SimulationSimplex, SimulationAgentSimplex, SimulationX
+import requests
 
 
 class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -211,11 +212,11 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
         @param pos: The agent position
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
-        r = get_object_or_404(Round.objects.all(), name=request.data['round_name'])
-        agent = get_object_or_404(Agent.objects.all(), agent_name=request.data['agent_name'])
+        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=request.data.get('agent_name', ''))
         competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
         lsa = get_object_or_404(LogSimulationAgent.objects.all(), competition_agent=competition_agent,
-            simulation=simulation, pos=request.data['pos'])
+            simulation=simulation, pos=request.data.get('pos', ''))
         lsa.delete()
 
         return Response({'status': 'Deleted',
@@ -378,6 +379,39 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         serializer = self.serializer_class(simulations, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class StartSimulation(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    @staticmethod
+    def post(request):
+        """
+        B{Start} the simulation
+        B{URL:} ../api/v1/competitions/start_simulation/
+
+        @type  simulation_id: str
+        @param simulation_id: The simulation id
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('simulation_id', ''))
+        if simulation_waiting(simulation):
+            params = {'simulation_identifier': "0a256950-7a5c-403d-aba3-52e455d197c5"}
+
+            try:
+                result = requests.post(settings.START_SIM_ENDPOINT, params)
+            except requests.ConnectionError:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The simulator appears to be down!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'status': 'Simulation started',
+                             'message': 'Please wait that the simulation starts at the simulator!'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'Bad Request',
+                             'message': 'The simulation must be in state: waiting!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

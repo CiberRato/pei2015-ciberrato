@@ -1,6 +1,7 @@
 from competition.models import LogSimulationAgent
 from competition.shortcuts import *
 
+
 class RoundSimplex:
     def __init__(self, r):
         self.name = r.name
