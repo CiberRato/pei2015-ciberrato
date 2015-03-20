@@ -37,7 +37,7 @@ class QXmlLocator;
 class CRQReplyHandler : public QXmlDefaultHandler
 {
 public:
-    enum Type {UNKNOWN, PARAMETERS, LAB, GRID};
+    enum Type {UNKNOWN, PARAMETERS, LAB, GRID, BEACON, TARGET, WALL, CORNER, POSITION};
 	/*! This function will be called in the begining of the XML document.
 	 */
     bool startDocument();

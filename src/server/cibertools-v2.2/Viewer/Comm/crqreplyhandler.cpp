@@ -97,14 +97,17 @@ bool CRQReplyHandler::startElement( const QString&, const QString&,
                 const QString height = attr.value(QString("Height"));
                 if( !height.isNull() )
                     replyObject->lab->setHeight( height.toFloat() );
+            } 
+            else {
+                return false;
             }
             break;
         case PARAMETERS:
-
             break;
         case GRID:
             if( tag == "Position" )
             {
+                type = POSITION;
                 gridElement = new CRGridElement();
                 // Process attributs
                 const QString x = attr.value(QString("X"));
@@ -120,11 +123,15 @@ bool CRQReplyHandler::startElement( const QString&, const QString&,
                     gridElement->direction = dir.toFloat();
 
                 replyObject->grid->addPosition( gridElement ); // Add one position to the grid
+            } 
+            else {
+                return false;
             }
             break;
         case LAB:
             if (tag == "Wall")
             {
+                type = WALL;
                 wall = new CRWall;
                 /* process attributes */
                 const QString height = attr.value(QString("Height"));
@@ -133,6 +140,7 @@ bool CRQReplyHandler::startElement( const QString&, const QString&,
             }
             else if (tag == "Beacon")
             {
+                type = BEACON;
                 vertice = new CRVertice;
                 beacon = new CRBeacon( *vertice );
                 /* process attributes */
@@ -153,6 +161,7 @@ bool CRQReplyHandler::startElement( const QString&, const QString&,
 
             else if (tag == "Target")
             {
+                type = TARGET;
                 target = new CRTarget;
                 vertice = new CRVertice;
                 /* process attributes */
@@ -170,17 +179,26 @@ bool CRQReplyHandler::startElement( const QString&, const QString&,
                 else
                     replyObject->lab->addTarget( *vertice );
             }
-            else if (tag == "Corner")
-            {
+            else {
+                return false;
+            }
+            break;
+        case WALL:
+            if (tag == "Corner") {
+                type = CORNER;
                 vertice = new CRVertice;
                 // process attributes
                 const QString x = attr.value(QString("X"));
                 if (!x.isNull())
-                    vertice->setX( x.toFloat() );
+                    vertice->setX(x.toFloat());
 
                 const QString y = attr.value(QString("Y"));
                 if (!y.isNull())
-                    vertice->setY( y.toFloat() );
+                    vertice->setY(y.toFloat());
+                wall->addCorner(*vertice);
+            }
+            else {
+                return false;
             }
             break;
     }
@@ -227,23 +245,32 @@ bool CRQReplyHandler::endElement( const QString&, const QString&, const
     switch (type)
     {
         case UNKNOWN:
-        {
             break;
-        }
+        case PARAMETERS:
+            type = UNKNOWN;
+            break;
         case LAB:
-        {
-            if (tag == "Wall")
-                replyObject->lab->addWall( wall );
-            else if (tag == "Corner")
-                wall->addCorner( *vertice );
-
+            type = UNKNOWN;
             break;
-        }
         case GRID:
-        {
-            // Does Nothing
+            type = UNKNOWN;
             break;
-        }
+        case BEACON:
+            type = LAB;
+            break;
+        case TARGET:
+            type = LAB;
+            break;
+        case WALL:
+            replyObject->lab->addWall(wall);
+            type = LAB;
+            break;
+        case CORNER:
+            type = WALL;
+            break;
+        case POSITION:
+            type = GRID;
+            break;
     }
     return true;
 }

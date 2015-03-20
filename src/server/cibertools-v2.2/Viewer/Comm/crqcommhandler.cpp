@@ -47,28 +47,16 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
                                    const QString& qName,
                                    const QXmlAttributes& attr)
 {
+    /*
     const QString &tag = qName;
 	switch (type) 	//Type defined in .h as enum.
 	{
         case UNKNOWN:
         {
 			// process begin tag 
-            if( tag == "Lab" )
-            {
-                type = LAB;			//Next time startElement will process one LAB
-                lab = new CRLab(); 	// Create a new lab
-                // process attributes
-                const QString name = attr.value(QString("Name"));
-                if( !name.isNull() )
-                    lab->setName( name.toAscii() );
+            if ( tag == "LogInfo" ) {
 
-                const QString width = attr.value(QString("Width"));
-                if( !width.isNull() )
-                    lab->setWidth( width.toFloat() );
-
-                const QString height = attr.value(QString("Height"));
-                if( !height.isNull() )
-                    lab->setHeight( height.toFloat() );
+            } else if( tag == "Lab" )
             }
 
 			else if( tag == "Grid" )
@@ -150,89 +138,12 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 
 		case LAB:			// if received element was one  Lab
         {
-    		if (tag == "Wall")
-            {
-                wall = new CRWall;
-
-                /* process attributes */
-                const QString height = attr.value(QString("Height"));
-                if (!height.isNull())
-                    wall->setWallHeight( height.toFloat() );
-            }
-    		else if (tag == "Beacon")
-            {
-                vertice = new CRVertice;
-                beacon = new CRBeacon( *vertice );
-                /* process attributes */
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    vertice->setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    vertice->setY( y.toFloat() );
-
-                const QString height = attr.value(QString("Height"));
-                if (!height.isNull())
-                    lab->addBeacon( *vertice, height.toFloat() );
-                else
-                    lab->addBeacon( *vertice );
-            }
-
-    		else if (tag == "Target")
-            {
-                target = new CRTarget;
-                vertice = new CRVertice;
-                /* process attributes */
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    vertice->setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    vertice->setY( y.toFloat() );
-
-                const QString radius = attr.value(QString("Radius"));
-                if (!radius.isNull())
-                    lab->addTarget( *vertice, radius.toFloat() );
-                else
-                    lab->addTarget( *vertice );
-            }
-    		else if (tag == "Corner")
-            {
-                vertice = new CRVertice;
-                // process attributes
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    vertice->setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    vertice->setY( y.toFloat() );
-            }
-			break;
+    		
 			}  // End os element Lab
 
 		case GRID:   // if received element was one Grid
         {
-			if( tag == "Position" )
-            {
-                gridElement = new CRGridElement();
-                // Process attributs
-                const QString x = attr.value(QString("X"));
-                if (!x.isNull())
-                    gridElement->position.setX( x.toFloat() );
-
-                const QString y = attr.value(QString("Y"));
-                if (!y.isNull())
-                    gridElement->position.setY( y.toFloat() );
-
-                const QString dir = attr.value(QString("Dir"));
-                if (!dir.isNull())
-                    gridElement->direction = dir.toFloat();
-
-                grid->addPosition( gridElement ); // Add one position to the grid
-            }
+			
 			break;
         } // End of element Grid
 
@@ -258,7 +169,7 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
         case RESTART: // TODO
             break;
 	}
-
+*/
     return TRUE;
 
 }
@@ -266,41 +177,6 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 bool CRQCommHandler::endElement( const QString&, const QString&, const
 								QString& qName)
 {
-	/* process end tag */
-
-    const QString &tag = qName;
-
-	switch (type)
-	{
-        case UNKNOWN:
-        {
-            break;
-        }
-		case LAB:
-        {
-    		if (tag == "Wall")
-				lab->addWall( wall );
-    		else if (tag == "Corner")
-                wall->addCorner( *vertice );
-
-			break;
-        }
-		case GRID:
-        {
-				// Does Nothing
-			break;
-        }
-		case ROBOT:
-        {
-				// Does Nothing
-			break;
-        }
-		case RESTART:
-        {
-				// Does Nothing
-			break;
-        }
-	}
     return TRUE;
 }
 

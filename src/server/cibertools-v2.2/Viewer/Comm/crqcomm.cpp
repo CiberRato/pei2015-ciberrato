@@ -155,6 +155,7 @@ void CRQComm::replyControler()
             cerr << "Failure to read confirmation from the socket " << endl;
             exit (-1);
         }
+        cout << datagram.data() << endl;
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
 
@@ -182,6 +183,33 @@ void CRQComm::replyControler()
                 isConnected = true;
                 // emit signal
                 emit viewerConnected(true);
+
+                if (lab != NULL )   // With this we can replace the last
+                {               //lab received
+                    scene->clear();//function that delete all canvasItems
+                    closeWindows();
+                }
+                
+                lab = reply->lab; // Lab given by handler
+                scene->skin(skinFName);
+                scene->drawLab(lab);      // Draw lab in scene
+                //scene->update();
+                // the score window
+                
+                dataView = new CRQDataView(reply, lab, skinFName, 0);
+                scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
+                dataView->show();
+                // the control window - not supported / no need
+                /*commControlPanel = new CRQControlPanel( scene, this,
+                                skinFName, mainWindow->soundStatus, mainWindow,
+                                "Control Panel");
+                if(control == 'y')
+                    commControlPanel->show();*/
+
+                grid = reply->grid; // Grid given by handler
+                lab->addGrid(grid);         // Add grid to lab
+                scene->drawGrid(lab);   // Draw grid in scene
+                //scene->update();
                 return;
             }
             else
@@ -209,23 +237,8 @@ void CRQComm::SendRequests()
     cout << "CRQComm::sendRequests\n";
 #endif
 
-    //cerr << "Send requests \n";
-    //Lab Request
-    if( writeDatagram( "<LabReq/>", 10, serverAddress, port ) == -1 )
-    {
-		cerr << "Failure writting <LabReq/>" << endl;
-        exit (-1);
-    }
-	//Grid Request
-    if( writeDatagram( "<GridReq/>", 11, serverAddress, port ) == -1 )
-    {
-		cerr << "Failure writting <GRID_REQ/>" << endl;
-        exit (-1);
-    }
-
 	if(autoStart == 'y' && autoConnect == 'y')
         this->sendMessage("<Start/>");
-
 }
 
 /*============================================================================*/
