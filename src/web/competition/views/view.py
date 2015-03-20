@@ -5,6 +5,7 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from competition.permissions import IsAdmin
+from competition.views.simplex import RoundSimplex
 
 
 class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
@@ -104,12 +105,21 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         return Response(serializer.data)
 
 
-class CompetitionRounds(mixins.ListModelMixin, viewsets.GenericViewSet):
+class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = RoundSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def list(self, request, *args, **kwargs):
-        pass
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the competition rounds
+        B{URL:} ../api/v1/competitions/rounds/<competition_name>/
+
+        @type  competition_name: string
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+        serializer = self.serializer_class([RoundSimplex(r) for r in competition.round_set.all()], many=True)
+        return Response(serializer.data)

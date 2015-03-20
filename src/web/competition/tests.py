@@ -634,6 +634,14 @@ class AuthenticationTestCase(TestCase):
         Round.objects.create(name="R2", parent_competition=c)
         Round.objects.create(name="R3", parent_competition=c)
 
+        # get the competition rounds
+        url = "/api/v1/competitions/rounds/C1/"
+        response = client.get(url)
+        self.assertEqual(response.data, [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1')]),
+                                         OrderedDict([('name', u'R2'), ('parent_competition_name', u'C1')]),
+                                         OrderedDict([('name', u'R3'), ('parent_competition_name', u'C1')])])
+        self.assertEqual(response.status_code, 200)
+
         # get group enrolled competitions
         url = "/api/v1/competitions/group_enrolled_competitions/XPTO3/"
         response = client.get(url)
