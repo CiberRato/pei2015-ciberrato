@@ -155,7 +155,6 @@ void CRQComm::replyControler()
             cerr << "Failure to read confirmation from the socket " << endl;
             exit (-1);
         }
-        cout << datagram.data() << endl;
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
 
@@ -262,7 +261,6 @@ void CRQComm::dataControler() //Called when the socket receive something
         {
             cerr << "Failure to read socket " << endl;
         }
-        cout << datagram.data() << endl;
 
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
