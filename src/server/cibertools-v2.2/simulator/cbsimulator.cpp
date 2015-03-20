@@ -952,7 +952,7 @@ void cbSimulator::SendSensors()
 void cbSimulator::UpdateViews()
 {
 	std::ostringstream xmlStream;
-	RobotsToXml(xmlStream, false, false, showPositions);
+	RobotsToXml(xmlStream, false, true, showPositions);
 
 	std::string xmlString = xmlStream.str();
 	if (xmlString.length() != 0) {

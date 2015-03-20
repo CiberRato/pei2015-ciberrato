@@ -27,13 +27,12 @@ bool CRQCommHandler::startDocument()
 	// Initialize all elements with null
 	robot = NULL;
 	type = UNKNOWN;
-
-    return TRUE;
+    return true;
 }
 
 bool CRQCommHandler::endDocument()
 {
-	return TRUE;
+	return true;
 }
 
 bool CRQCommHandler::startElement( const QString&, const QString&,
@@ -42,17 +41,21 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 {
     
     const QString &tag = qName;
+    std::cout << tag.toLatin1().constData() << " - Type: "<< type << endl;
 	switch (type) { 	//Type defined in .h as enum.
         case UNKNOWN:
 			// process begin tag 
             if ( tag == "LogInfo" ) {
             	type = LOGINFO;
             } else if( tag == "Restart" ) {
-            	// TODO
+            	type = RESTART;
             } else {
         		return false;
             }
             break;
+        case RESTART:
+        	// TODO
+        	break;
         case LOGINFO:
 			if(tag == "Robot") {
                 type = ROBOT;  //Next time startElement will process one ROBOT
@@ -171,41 +174,44 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 
 bool CRQCommHandler::endElement( const QString&, const QString&, const
 								QString& qName) {
-        const QString &tag = qName;
+    const QString &tag = qName;
+    std::cout << "exit: " << tag.toLatin1().constData() << " - Type: "<< type << endl;
     switch (type)
     {
-        case 	UNKNOWN:
+        case UNKNOWN:
         	break;
-        case 	RESTART:
-        		LOGINFO:
+        case RESTART:
+        case LOGINFO:
             type = UNKNOWN;
             break;
-        case 	ROBOT:
+        case ROBOT:
+        	vecRobots.push_back(robot);
+        	std::cout << "Entered" << vecRobots.size() << endl;
             type = LOGINFO;
             break;
-        case 	POSITION:
-        		SCORES:
-        		ACTION:
-        		MEASURES:
+        case POSITION:
+        case SCORES:
+        case ACTION:
+        case MEASURES:
             type = ROBOT;
             break;
-        case 	SENSORS:
-        		LEDS:
-        		BUTTONS:
+        case SENSORS:
+        case LEDS:
+        case BUTTONS:
             type = MEASURES;
             break;
-        case 	IRSENSOR:
-        		BEACONSENSOR:
-        		GPS:
+        case IRSENSOR:
+        case BEACONSENSOR:
+        case GPS:
             type = SENSORS;
             break;
     }
     return true;
 }
 
-CRRobot * CRQCommHandler::getRobot( void )
+std::vector<CRRobot *> CRQCommHandler::getRobots( void )
 {
-	return robot;
+	return vecRobots;
 }
 
 void CRQCommHandler::setDocumentLocator(QXmlLocator *)

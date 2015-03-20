@@ -29,6 +29,7 @@
  */
 
 #include <qxml.h>
+#include <vector>
 #include "../Lab/crrobot.h"
 #include "../Lab/crgrid.h"
 #include "../Lab/crlab.h"
@@ -46,8 +47,8 @@ public:
 	/*! \enum Type
 	 *  This enum type represent the object received.
 	 */
-	enum Type {UNKNOWN, LOGINFO, ROBOT, RESTART, POSITION, SCORES, ACTION, MEASURES, SENSORS, 
-					IRSENSOR, BEACONSENSOR, GPS, LEDS, BUTTONS};
+	enum Type {UNKNOWN, LOGINFO, ROBOT, RESTART, POSITION, SCORES, ACTION, 
+				MEASURES, SENSORS, IRSENSOR, BEACONSENSOR, GPS, LEDS, BUTTONS};
 	/*! This function will be called in the begining of the XML document.
 	 */
     bool startDocument();
@@ -58,29 +59,24 @@ public:
 	 * that all parsing is done. According to the tag received, a new object
 	 * will be created.
 	 */
-    bool startElement( const QString&, const QString&, const QString& , 
-					const QXmlAttributes& );
+    bool startElement(const QString&, const QString&, const QString& , 
+					const QXmlAttributes&);
 	/*! This function is called at the end of one tag. Inside, if is necessary, 
 	 * some elements are added to anothers.
 	 */
-    bool endElement( const QString&, const QString&, const QString& );
+    bool endElement(const QString&, const QString&, const QString&);
 	/*! For internal use only.
 	 */
     void setDocumentLocator(QXmlLocator *);
 	/*! This function returns one Lab.
 	 */
-	CRLab * getLab();
-	/*! This function returns one grid.
-	 */
-	CRGrid * getGrid();
-	/*! This function returns one robot.
-	 */
-	CRRobot * getRobot();
+	std::vector<CRRobot *> getRobots();
 	/*! This function returns the type of object received.
 	 */
 	Type objectType();
 
 private:
+	std::vector<CRRobot *> vecRobots;
 	CRRobot *robot;	
 	Type type;
 };

@@ -262,49 +262,30 @@ void CRQComm::dataControler() //Called when the socket receive something
         {
             cerr << "Failure to read socket " << endl;
         }
+        cout << datagram.data() << endl;
 
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
-        // set commHandler for LAB, GRID and ROBOT
         CRQCommHandler commHandler;
 
         // parse received message with commHandler
         QXmlSimpleReader reader;
         reader.setContentHandler(&commHandler);
-        if(reader.parse(source))
-        {
+        if (reader.parse(source)) {
             objectReceived = commHandler.objectType(); //Object type received
+            
+            vector<CRRobot *> vec = commHandler.getRobots(); // Robot given by handler
 
-            switch (objectReceived)
-            {
-                case CRQCommHandler::ROBOT:
-                {
-                    robot = commHandler.getRobot(); // Robot given by handler
-                    lab->addRobot( robot );
-                    scene->drawRobot( lab );		// Draw a robot in scene
-                    //scene->update();
-                    if (dataView != NULL)
-                        dataView->update( robot );	// update the info about robot
-                    break;
-                }
-
-                case CRQCommHandler::RESTART:
-                {
-                    closeWindows();
-                    break;
-                }
-
-                case CRQCommHandler::UNKNOWN:
-                {
-                    break;
-                }
-
-            } // End of switch (selecciona o objecto recebido)
-
-        } // End of if (caso o parser tenha funcionado)
-
-        else
-        {
+            for(std::vector<CRRobot *>::iterator it = vec.begin(); it != vec.end(); ++it) {
+			    lab->addRobot(*it);
+	           	scene->drawRobot( lab );		// Draw a robot in scene
+	            //scene->update();
+	            if (dataView != NULL)
+	                dataView->update(*it);	// update the info about robot*/
+			}            
+            cerr << "Parsed " << vec.size() << endl;
+                    
+        } else {
             cerr << "Invalid message\n";
         }
     }
