@@ -238,8 +238,8 @@
                                 <div class="row" >
                                     <div class ="span1" style="text-align: left;margin-left: 20px; margin-top: 5px">
                                         <div class="btn-group" data-toggle="buttons-checkbox">
-                                            <button class="btn btn-success" id="play" ><span class="awe-play"></span></button>
-                                            <button class="btn btn-danger" id="pause" disabled="true"><span class="awe-pause"></span></button>
+                                            <button class="btn btn-success" id="play"  disabled="true"><span class="awe-play"></span></button>
+                                            <button class="btn btn-danger" id="pause"><span class="awe-pause"></span></button>
                                         </div>
                                     </div>
                                     <div class="span2" style="margin-top: 5px">
@@ -305,7 +305,7 @@
                             <div class="span2 viewer"><h2>{{value.Scores._ReturningTime}}</h2></div>
                             <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
                         </div>
-                         <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
+                        <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
                             <div class="span2 viewer"><h2>{{time}}</h2></div>
                             <div class="span2 viewer"><h2>{{robot.Scores._Collisions}}</h2></div>
                             <div class="span2 viewer"><h2>{{robot._State}}</h2></div>
