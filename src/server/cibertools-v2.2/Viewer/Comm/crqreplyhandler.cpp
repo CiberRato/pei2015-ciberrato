@@ -215,6 +215,7 @@ bool CRQReplyHandler::endElement( const QString&, const QString&, const
         case LAB:
         case GRID:
             type = UNKNOWN;
+            break;
         case BEACON:
         case TARGET:
             type = LAB;
