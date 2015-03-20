@@ -282,9 +282,7 @@ void CRQComm::dataControler() //Called when the socket receive something
 	            //scene->update();
 	            if (dataView != NULL)
 	                dataView->update(*it);	// update the info about robot*/
-			}            
-            cerr << "Parsed " << vec.size() << endl;
-                    
+			}                    
         } else {
             cerr << "Invalid message\n";
         }

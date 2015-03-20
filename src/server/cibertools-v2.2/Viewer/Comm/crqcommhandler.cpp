@@ -41,7 +41,6 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 {
     
     const QString &tag = qName;
-    std::cout << tag.toLatin1().constData() << " - Type: "<< type << endl;
 	switch (type) { 	//Type defined in .h as enum.
         case UNKNOWN:
 			// process begin tag 
@@ -175,7 +174,6 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
 bool CRQCommHandler::endElement( const QString&, const QString&, const
 								QString& qName) {
     const QString &tag = qName;
-    std::cout << "exit: " << tag.toLatin1().constData() << " - Type: "<< type << endl;
     switch (type)
     {
         case UNKNOWN:
@@ -186,7 +184,6 @@ bool CRQCommHandler::endElement( const QString&, const QString&, const
             break;
         case ROBOT:
         	vecRobots.push_back(robot);
-        	std::cout << "Entered" << vecRobots.size() << endl;
             type = LOGINFO;
             break;
         case POSITION:
