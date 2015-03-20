@@ -955,6 +955,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 5)
 
+        # see the agents in the competition
+        url = "/api/v1/competitions/agents_by_competition_group/XPTO3/?competition_name=C1"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+
         # reach maximum agents in competition
         url = "/api/v1/competitions/associate_agent/"
         data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE6'}

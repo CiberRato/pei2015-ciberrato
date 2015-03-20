@@ -1,7 +1,7 @@
 import json
 
-from django.shortcuts import get_object_or_404
-from competition.models import Round, GroupEnrolled, CompetitionAgent, Agent
+from django.shortcuts import get_object_or_404, get_list_or_404
+from competition.models import Round, GroupEnrolled, CompetitionAgent, Agent, Competition
 from competition.serializers import AgentSerializer, CompetitionAgentSerializer
 from competition.permissions import IsAdmin
 from authentication.models import Group, GroupMember, Account
@@ -319,8 +319,7 @@ class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param group_name: The group name
         """
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-        agents = Agent.objects.filter(group=group)
-        serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in group.agent_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -341,7 +340,38 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param username: The user name
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
-        agents = Agent.objects.filter(user=user)
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgentsAssociated(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of agents by competition and group_name
+        B{URL:} ../api/v1/competitions/agents_by_competition_group/<group_name>/?competition_name=<competition_name>
+
+        @type  group_name: str
+        @param group_name: The group name
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group_agents = group.agent_set.all()
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name'))
+
+        agents = []
+        for group_agent in group_agents:
+            competition_agents = CompetitionAgent.objects.filter(competition=competition, agent=group_agent)
+            if len(competition_agents) > 0:
+                agents += [group_agent]
+
         serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
