@@ -277,46 +277,6 @@ void CRQComm::dataControler() //Called when the socket receive something
 
             switch (objectReceived)
             {
-                case CRQCommHandler::LAB:
-                {
-#ifdef DEBUG
-                    cout << "CRQComm::dataControler -- Lab\n";
-#endif
-
-                    if (lab != NULL )   // With this we can replace the last
-                    {				//lab received
-                        scene->clear();//function that delete all canvasItems
-                        closeWindows();
-                    }
-
-                    lab = commHandler.getLab(); // Lab given by handler
-                    scene->skin(skinFName);
-                    scene->drawLab( lab );		// Draw lab in scene
-                    //scene->update();
-                    // the score window
-                    dataView = new CRQDataView( reply, lab, skinFName, 0);
-                    scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
-                    dataView->show();
-
-                    // the control window - not supported / no need
-                    /*commControlPanel = new CRQControlPanel( scene, this,
-                                skinFName, mainWindow->soundStatus, mainWindow,
-                                "Control Panel");
-                    if(control == 'y')
-                        commControlPanel->show();*/
-
-                    break;
-                }
-
-                case CRQCommHandler::GRID:
-                {
-                    grid = commHandler.getGrid(); // Grid given by handler
-                    lab->addGrid( grid );		  // Add grid to lab
-                    scene->drawGrid( lab );	  // Draw grid in scene
-                    //scene->update();
-                    break;
-                }
-
                 case CRQCommHandler::ROBOT:
                 {
                     robot = commHandler.getRobot(); // Robot given by handler

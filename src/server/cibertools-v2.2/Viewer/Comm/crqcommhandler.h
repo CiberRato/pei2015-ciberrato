@@ -80,13 +80,6 @@ public:
 	Type objectType();
 
 private:
-	CRGridElement *gridElement;
-	CRGrid *grid;
-	CRLab *lab;		
-	CRWall *wall;
-	CRVertice *vertice;
-	CRBeacon *beacon;
-	CRTarget *target;
 	CRRobot *robot;	
 	Type type;
 };
