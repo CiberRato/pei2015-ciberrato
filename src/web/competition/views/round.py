@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, CompetitionAgent
-from competition.serializers import RoundSerializer, CompetitionAgentSerializer
+from competition.serializers import RoundSerializer, CompetitionAgentSerializer, AdminRoundSerializer
 from authentication.models import GroupMember
 from authentication.serializers import AccountSerializer
 from groups.serializers import GroupSerializer
@@ -57,7 +57,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the oldest round competition
+        B{Get} the round competition
         B{URL:} ../api/v1/competitions/round/<round_name>/
 
         @type  round_name: str
@@ -82,6 +82,28 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         r.delete()
 
         return Response(status=status.HTTP_200_OK)
+
+
+class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Round.objects.all()
+    serializer_class = AdminRoundSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} the round competition for the admin
+        B{URL:} ../api/v1/competitions/round_admin/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+
+        serializer = self.serializer_class(RoundSimplex(r))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

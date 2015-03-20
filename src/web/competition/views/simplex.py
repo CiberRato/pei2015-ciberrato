@@ -9,7 +9,6 @@ class RoundSimplex:
         self.param_list_path = r.param_list_path
         self.grid_path = r.grid_path
         self.lab_path = r.lab_path
-        self.agents_list = r.agents_list
 
 
 class GroupEnrolledSimplex:

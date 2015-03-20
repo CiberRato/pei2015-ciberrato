@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round
-from competition.serializers import CompetitionSerializer
+from competition.serializers import CompetitionSerializer, RoundSerializer
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from competition.permissions import IsAdmin
-from django.conf import settings
 
 
 class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
@@ -103,3 +102,14 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
+
+
+class CompetitionRounds(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = RoundSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def list(self, request, *args, **kwargs):
+        pass

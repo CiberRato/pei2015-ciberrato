@@ -322,9 +322,9 @@ class AuthenticationTestCase(TestCase):
                                                         ('state_of_competition', 'Register')])], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-                              ('last_name', u'Ferreira')]), 'rounds': [OrderedDict(
-                             [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None),
-                              ('grid_path', None), ('lab_path', None), ('agents_list', [1])])]})
+                              ('last_name', u'Ferreira')]), 'rounds': [OrderedDict([('name', u'R1'),
+                                                                                    ('parent_competition_name',
+                                                                                     u'C1')])]})
 
         # retrieve the agent list of one round
         url = "/api/v1/competitions/valid_round_agents/R1/"
@@ -490,12 +490,20 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
+        # see if the files were registred
+        url = "/api/v1/competitions/round_admin/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # print dict(response.data) # show the round files
+        self.assertEqual(len(dict(response.data)), 5)
+
         # start simulation
         url = "/api/v1/simulations/start/"
         data = {'simulation_id': identifier}
         response = client.post(path=url, data=data)
         if response.status_code == 200:
-            self.assertEqual(response.data, {'status': 'Simulation started', 'message': 'Please wait that the simulation starts at the simulator!'})
+            self.assertEqual(response.data, {'status': 'Simulation started',
+                                             'message': 'Please wait that the simulation starts at the simulator!'})
         elif response.status_code == 400:
             self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
 
@@ -616,7 +624,10 @@ class AuthenticationTestCase(TestCase):
         # get my enrolled groups
         url = "/api/v1/competitions/my_enrolled_groups_competition/gipmon/?competition_name=C1"
         response = client.get(path=url)
-        self.assertEqual([OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]), OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])], response.data)
+        self.assertEqual([OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]),
+                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
+                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])],
+                         response.data)
         self.assertEqual(response.status_code, 200)
 
         c = Competition.objects.get(name="C1")
@@ -626,22 +637,21 @@ class AuthenticationTestCase(TestCase):
         # get group enrolled competitions
         url = "/api/v1/competitions/group_enrolled_competitions/XPTO3/"
         response = client.get(url)
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', 'Collaborative'), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [OrderedDict(
+            [('name', u'C1'), ('type_of_competition', 'Collaborative'), ('state_of_competition', 'Register')])])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
         url = "/api/v1/competitions/earliest_round/C1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'grid_path': None, 'name': u'R1', 'agents_list': [], 'param_list_path': None,
-                                         'lab_path': None, 'parent_competition_name': u'C1'})
+        self.assertEqual(response.data, {'name': u'R1', 'parent_competition_name': u'C1'})
 
         # verify get the first competition round
         url = "/api/v1/competitions/oldest_round/C1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'grid_path': None, 'name': u'R3', 'agents_list': [], 'param_list_path': None,
-                                         'lab_path': None, 'parent_competition_name': u'C1'})
+        self.assertEqual(response.data, {'name': u'R3', 'parent_competition_name': u'C1'})
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -788,9 +798,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict(
-            [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None), ('grid_path', None),
-             ('lab_path', None), ('agents_list', [])])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1')])])
 
         client.force_authenticate(user=None)
 

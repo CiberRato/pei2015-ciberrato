@@ -14,8 +14,17 @@ class RoundSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Round
-        fields = ('name', 'parent_competition_name', 'param_list_path', 'grid_path', 'lab_path', 'agents_list')
-        read_only_fields = ('param_list_path', 'grid_path', 'lab_path', 'agents_list',)
+        fields = ('name', 'parent_competition_name',)
+        read_only_fields = ()
+
+
+class AdminRoundSerializer(serializers.ModelSerializer):
+    parent_competition_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = Round
+        fields = ('name', 'parent_competition_name', 'param_list_path', 'grid_path', 'lab_path',)
+        read_only_fields = ('param_list_path', 'grid_path', 'lab_path',)
 
 
 class GroupEnrolledSerializer(serializers.ModelSerializer):
