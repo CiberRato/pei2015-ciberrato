@@ -1,0 +1,29 @@
+{
+  "Parameters": {
+    "_SimTime": "1000",
+    "_CycleTime": "50",
+    "_MotorsNoise": "1.5",
+    "_BeaconNoise": "2",
+    "_BeaconAperture": "3.15",
+    "_CompassNoise": "0",
+    "_ObstacleNoise": "0",
+    "_BeaconLatency": "1",
+    "_CompassLatency": "1",
+    "_ObstacleLatency": "1",
+    "_GroundLatency": "1",
+    "_CollisionLatency": "1",
+    "_ObstacleRequestable": "off",
+    "_BeaconRequestable": "off",
+    "_GroundRequestable": "off",
+    "_CompassRequestable": "off",
+    "_CollisionRequestable": "off",
+    "_GPS": "off",
+    "_GPSLinNoise": "0",
+    "_GPSDirNoise": "0",
+    "_CollisionRobotPenalty": "1",
+    "_CollisionWallPenalty": "1",
+    "_KeyTime": "1800",
+    "_ScoreSensor": "off",
+    "_ShowActions": "false"
+  }
+}

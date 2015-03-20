@@ -7,23 +7,27 @@ function convertToStringPoints(cornerList, zoom){
     return out;
 }
 
-function isArray(myArray) {
-    return myArray.constructor.toString().indexOf("Array") > -1;
-}
+2
 
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
+        
+        /* Number of Robots */
+        if(isArray(logBuff_obj[0].LogInfo.Robot)){
+            $scope.numRobots = logBuff_obj[0].LogInfo.Robot.length;
+        }
+        else{
+            $scope.numRobots = 1;
+        }
+
         /* Zoom variable (30->Standard) */
         $scope.zoom = 30;
-        $scope.increments = 1;
-        $scope.velButton = '1x';
 
         /* JSON to Object */
         var lab_obj = angular.fromJson(lab);
         var grid_obj = angular.fromJson(grid);
         var parameters_obj = angular.fromJson(parameters);
-        var logInfo_obj = angular.fromJson(logInfo);
-
+        
         var b = 0;
 
         $scope.slow = 0;
@@ -43,9 +47,6 @@ angular.module('myapp', [])
         /* Grid Object */
         $scope.grid = grid_obj.Grid;
 
-        /* Log Object */
-        $scope.log = logInfo_obj.Log.LogInfo;
-
         /* Beacons Object */
         $scope.beacon = lab_obj.Lab.Beacon;
 
@@ -63,31 +64,24 @@ angular.module('myapp', [])
         else
             $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
 
-        /* Number of Robots */
-        if(isArray($scope.log[0].Robot)){
-            $scope.numRobots = $scope.log[0].Robot.length;
-        }
-        else{
-            $scope.numRobots = 1;
-        }
 
         /* Retrieve spawning direction for every robot */
         $scope.dir = [];
         if($scope.numRobots>1){
             for(i=0; i<$scope.numRobots; i++){
-                $scope.dir[i] = parseInt($scope.log[0].Robot[i].Pos._Dir) + 90;
+                $scope.dir[i] = parseInt(logBuff_obj[0].LogInfo.Robot[i].Pos._Dir) + 90;
             }
         }
         else{
-            $scope.dir[0] = parseInt($scope.log[0].Robot.Pos._Dir) + 90;
+             $scope.dir[0] = parseInt(logBuff_obj[0].LogInfo.Robot.Pos._Dir) + 90;
         }
-
+        
 
         /* Robots Object */
-        $scope.robot = $scope.log[0].Robot;
+        $scope.robot = logBuff_obj[0].LogInfo.Robot;
 
         /* Time Value */
-        $scope.time = $scope.log[0]._Time;
+        $scope.time = logBuff_obj[0].LogInfo._Time;
 
         /* Refresh rate value for each iteration */
         $scope.refresh_rate = $scope.param._CycleTime;
@@ -142,30 +136,6 @@ angular.module('myapp', [])
             }
         }
 
-        $scope.activeV = function(str) {
-            if (str=='1x'){
-                $scope.velButton = '1x';
-                $scope.refresh_rate=50;
-                $scope.slow=0;
-            }else if (str=='2x'){
-                $scope.velButton = '2x';
-                $scope.refresh_rate=25;
-                $scope.slow=0;
-            }else if (str=='4x'){
-                $scope.velButton = '4x';
-                $scope.refresh_rate=12.5;
-                $scope.slow=0;
-            }else if (str=='18x'){
-                $scope.velButton = '18x';
-                $scope.refresh_rate=400;
-                $scope.slow=1;
-            }else if (str=='14x'){
-                $scope.velButton = '14x';
-                $scope.refresh_rate=100;
-                $scope.slow=0;
-            }
-        }
-
         $scope.toggle = function(index) {
             $scope.toggleText[index] = $scope.slyne[index] ? 'Show' : 'Hide';
             if ($scope.bclass[index] === 'btn btn-success')
@@ -185,7 +155,6 @@ angular.module('myapp', [])
             try{
                 $scope.updateValues();
 
-                $(".leftGrip").css("left", ($scope.idx*820)/$scope.param._SimTime);
                 if($scope.play){
                     $scope.idx++;
                 }
@@ -199,19 +168,19 @@ angular.module('myapp', [])
 
         /* Update Viewer Values */
         $scope.updateValues = function(){
-            $scope.robot = $scope.log[$scope.idx].Robot;
-            $scope.time = $scope.log[$scope.idx]._Time;
+            $scope.robot = logBuff_obj[$scope.idx].LogInfo.Robot;
+            $scope.time = logBuff_obj[$scope.idx].LogInfo._Time;
 
             /* Update directions of every robot */
-            if($scope.numRobots != 1) {
-                for (i = 0; i < $scope.numRobots; i++) {
-                    $scope.dir[i] = parseInt($scope.log[$scope.idx].Robot[i].Pos._Dir) + 90;
+            if($scope.numRobots != 1){
+                for(i=0; i<$scope.numRobots; i++){
+                    $scope.dir[i] = parseInt(logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
             }
             else{
-                $scope.dir[0] = parseInt($scope.log[$scope.idx].Robot.Pos._Dir) + 90;
+                $scope.dir[0] = parseInt(logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
             }
-
+            
             /* Calculate visited points line */
             if(($scope.last_idx+1)!=$scope.idx){
 
@@ -221,21 +190,21 @@ angular.module('myapp', [])
                 for(b=0;b<$scope.idx;b++){
                     if($scope.numRobots != 1){
                         for(i=0; i<$scope.numRobots; i++){
-                            $scope.pline[i] += $scope.log[b].Robot[i].Pos._X*$scope.zoom + "," + $scope.log[b].Robot[i].Pos._Y*$scope.zoom + " ";
+                            $scope.pline[i] += logBuff_obj[b].LogInfo.Robot[i].Pos._X*$scope.zoom + "," + logBuff_obj[b].LogInfo.Robot[i].Pos._Y*$scope.zoom + " ";
                         }
                     }
                     else{
-                        $scope.pline[0] += $scope.log[b].Robot.Pos._X*$scope.zoom + "," + $scope.log[b].Robot.Pos._Y*$scope.zoom + " ";
+                        $scope.pline[0] += logBuff_obj[b].LogInfo.Robot.Pos._X*$scope.zoom + "," + logBuff_obj[b].LogInfo.Robot.Pos._Y*$scope.zoom + " ";
                     }
                 }
             }else {
-                if($scope.numRobots != 1) {
-                    for (i = 0; i < $scope.numRobots; i++) {
-                        $scope.pline[i] += $scope.log[$scope.idx].Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[i].Pos._Y * $scope.zoom + " ";
+                if($scope.numRobots != 1){    
+                    for(i=0; i<$scope.numRobots; i++){
+                        $scope.pline[i] += logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
                     }
                 }
                 else{
-                    $scope.pline[0] += $scope.log[$scope.idx].Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot.Pos._Y * $scope.zoom + " ";
+                    $scope.pline[0] += logBuff_obj[$scope.idx].LogInfo.Robot.Pos._X * $scope.zoom + "," + logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
                 }
             }
             $scope.last_idx = $scope.idx;
@@ -322,41 +291,62 @@ var parameters;
 var logInfo;
 var grid;
 var lab;
+var logBuff_obj = [];
+
+
+function CiberWebSocket(){
+    if ("WebSocket" in window) {
+        // alert("WebSocket is supported by your Browser!");
+        // Let us open a web socket
+        opened = false;
+
+        var ws = new WebSocket("ws://127.0.0.1:7777/ws");
+        var div = document.getElementById('show');
+
+        ws.onopen = function () {
+            ws.send("OK");
+            opened = true;
+        };
+        ws.onmessage = function (evt) {
+            var received_msg = evt.data;
+            //div.innerHTML = div.innerHTML + received_msg;
+            //console.log(received_msg);
+            logBuff_obj.push(JSON.parse(received_msg));
+            console.log(logBuff_obj.length);
+
+            if(logBuff_obj.length==10){
+                angular.bootstrap(document, ['myapp']);
+                $scope.play();
+                $("#waitawhile").hide("fast");
+                $("#row1").show("slow");
+                $("#row2").show("slow");
+                $("#row3").show("slow");
+                $("#row4").show("slow");
+                $("#row5").show("slow");
+            }
+        };
+        ws.onclose = function () {
+            if(!opened){
+                CiberWebSocket();
+            }
+        };
+    }
+    else {
+        // The browser doesn't support WebSocket
+        alert("WebSocket NOT supported by your Browser!");
+    }
+}
 
 angular.element(document).ready(function(){
-    $.get( "logs/lab_json.txt", function( data ) {
+    $.get( "logs/lab_stream.txt", function( data ) {
         lab = data;
-        $.get( "logs/parameters_json.txt", function( data ) {
+        $.get( "logs/param_stream.txt", function( data ) {
             parameters = data;
-            $.get( "logs/grid_json.txt", function( data ) {
+            $.get( "logs/grid_stream.txt", function( data ) {
                 grid = data;
                 $.get( "logs/log_json.txt", function( data ) {
                     logInfo = data;
-
-                    angular.bootstrap(document, ['myapp']);
-
-                    $("#waitawhile").hide("fast");
-                    $("#row1").show("slow");
-                    $("#row2").show("slow");
-                    $("#row3").show("slow");
-                    $("#row4").show("slow");
-                    $("#row5").show("slow");
-
-                    $('.nstSlider').nstSlider({
-                        "left_grip_selector": ".leftGrip",
-                        "value_changed_callback": function(cause, leftValue, rightValue) {
-                            try{
-                                var scope = angular.element('[ng-controller=ctrl]').scope();
-                                scope.idx = leftValue;
-
-                            }catch(TypeError){}
-                        }
-                    });
-
-                    // Call methods and such...
-                    var highlightMin = Math.random() * 20,
-                        highlightMax = highlightMin + Math.random() * 80;
-                    $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+                    CiberWebSocket();
                 });
             });
         });

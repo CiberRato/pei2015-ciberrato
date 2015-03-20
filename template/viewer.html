@@ -196,11 +196,11 @@
                                                     </g>
                                                 </g>
 
-                                                <g ng-if="param._NBeacons != 1" ng-repeat="(i,o) in beacon track by $index">
+                                                <g ng-if="nBeacon != 1" ng-repeat="(i,o) in beacon track by $index">
                                                     <circle ng-attr-cx="{{o._X*zoom}}" ng-attr-cy="{{o._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
                                                     <image ng-attr-x="{{o._X*zoom-zoom}}" ng-attr-y="{{o._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
                                                 </g>
-                                                <g ng-if="param._NBeacons == 1">
+                                                <g ng-if="nBeacon == 1">
                                                     <circle ng-attr-cx="{{beacon._X*zoom}}" ng-attr-cy="{{beacon._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
                                                     <image ng-attr-x="{{beacon._X*zoom-zoom}}" ng-attr-y="{{beacon._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
                                                 </g>
@@ -212,13 +212,21 @@
                                                     </g>
                                                 </g>
 
-                                                <g ng-repeat="value in robot">
+                                                <g ng-if="numRobots != 1" ng-repeat="value in robot">
                                                     <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
                                                     <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                     <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                     <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
-                                                     <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
+                                                    <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
+                                                </g>
+                                                <g ng-if="numRobots == 1">
+                                                    <polyline ng-show="{{slyne[0]}}" ng-attr-points="{{pline[0]}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
+                                                    <image ng-if="robot.Scores._Collision=='False'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[0]}}"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
+                                                    <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
+                                                    <circle  ng-attr-cx="{{robot.Pos._X*zoom}}" ng-attr-cy="{{robot.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
+
+                                                    <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
                                                 </g>
 
                                             </g>
@@ -238,8 +246,13 @@
                                             <button class="btn btn-info" id="stop" disabled="true"><span class="awe-stop"></span></button>
                                         </div>
                                     </div>
-                                    <div class="span3" style="margin-top: 5px">
-
+                                    
+                                    <div class="span3" style="text-align: right; margin-top: 5px">
+                                        <select id="increments" class="span2">
+                                            <option value="1">1</option>
+                                            <option value="2">10</option>
+                                            <option value="3">100</option>
+                                        </select>
                                     </div>
 
                                     <div class="span2" style="text-align: right; margin-top: 5px; margin-left: 57px">
@@ -281,11 +294,15 @@
                             <div class="span4">Line</div>
 
                         </div>
-                        <div ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
+                        <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
                             <div class="span4 viewer"><h2>{{value._Name}}</h2></div>
                             <div class="span4 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
                             <button ng-click="toggle([$index])" ng-class="bclass[$index]" >{{toggleText[$index]}}</button>
-
+                        </div>
+                        <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
+                            <div class="span4 viewer"><h2>{{robot._Name}}</h2></div>
+                            <div class="span4 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
+                            <button ng-click="toggle([0])" ng-class="bclass[0]" >{{toggleText[0]}}</button>
                         </div>
 
                     </section>
@@ -304,12 +321,20 @@
                             <div class="span2">Remaining</div>
 
                         </div>
-                        <div ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
+                        <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
                             <div class="span2 viewer"><h2>{{time}}</h2></div>
                             <div class="span2 viewer"><h2>{{value.Scores._Collisions}}</h2></div>
                             <div class="span2 viewer"><h2>{{value._State}}</h2></div>
                             <div class="span2 viewer"><h2>{{value.Scores._Score}}</h2></div>
                             <div class="span2 viewer"><h2>{{value.Scores._ReturningTime}}</h2></div>
+                            <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+                        </div>
+                        <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
+                            <div class="span2 viewer"><h2>{{time}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot.Scores._Collisions}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot._State}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot.Scores._Score}}</h2></div>
+                            <div class="span2 viewer"><h2>{{robot.Scores._ReturningTime}}</h2></div>
                             <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
                         </div>
 
@@ -431,17 +456,8 @@
 
                                         </tbody>
                                     </table>
-                                    <div ng-if="playvar == 0 || slow == 1" class="row" >
-                                        <div class ="span3" style="text-align: left;margin-left: 20px; margin-top: 5px">
-                                            <h3>Arrow Keys Increments:</h3>
-                                        </div>
-                                        <div class="span3" style="text-align: right; margin-top: 5px">
-                                            <select id="increments" class="span2">
-                                                <option value="1">1</option>
-                                                <option value="2">10</option>
-                                                <option value="3">100</option>
-                                            </select>
-                                        </div>
+                                    
+                                        
                                     </div>
                                 </div>
                             </div>
