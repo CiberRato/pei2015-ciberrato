@@ -7,7 +7,10 @@ function convertToStringPoints(cornerList, zoom){
     return out;
 }
 
-2
+function isArray(myArray) {
+    return myArray.constructor.toString().indexOf("Array") > -1;
+}
+
 
 angular.module('myapp', [])
     .controller('ctrl', ['$scope', '$timeout', function($scope, $timeout){
@@ -87,7 +90,6 @@ angular.module('myapp', [])
         $scope.refresh_rate = $scope.param._CycleTime;
 
         $scope.idx = 1;
-        $scope.last_idx = 0;
 
         /* Set Robots Colors */
         $scope.mickeyColor = ['img/svg/mickey_red_smile.svg','img/svg/mickey_green_smile.svg','img/svg/mickey_blue_smile.svg','img/svg/mickey_yellow_smile.svg','img/svg/mickey_orange_smile.svg'];
@@ -136,6 +138,7 @@ angular.module('myapp', [])
             }
         }
 
+
         $scope.toggle = function(index) {
             $scope.toggleText[index] = $scope.slyne[index] ? 'Show' : 'Hide';
             if ($scope.bclass[index] === 'btn btn-success')
@@ -177,38 +180,9 @@ angular.module('myapp', [])
                     $scope.dir[i] = parseInt(logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
             }
-            else{
+            else {
                 $scope.dir[0] = parseInt(logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
             }
-            
-            /* Calculate visited points line */
-            if(($scope.last_idx+1)!=$scope.idx){
-
-                for(i=0; i<$scope.numRobots; i++){
-                    $scope.pline[i] = "";
-                }
-                for(b=0;b<$scope.idx;b++){
-                    if($scope.numRobots != 1){
-                        for(i=0; i<$scope.numRobots; i++){
-                            $scope.pline[i] += logBuff_obj[b].LogInfo.Robot[i].Pos._X*$scope.zoom + "," + logBuff_obj[b].LogInfo.Robot[i].Pos._Y*$scope.zoom + " ";
-                        }
-                    }
-                    else{
-                        $scope.pline[0] += logBuff_obj[b].LogInfo.Robot.Pos._X*$scope.zoom + "," + logBuff_obj[b].LogInfo.Robot.Pos._Y*$scope.zoom + " ";
-                    }
-                }
-            }else {
-                if($scope.numRobots != 1){    
-                    for(i=0; i<$scope.numRobots; i++){
-                        $scope.pline[i] += logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
-                    }
-                }
-                else{
-                    $scope.pline[0] += logBuff_obj[$scope.idx].LogInfo.Robot.Pos._X * $scope.zoom + "," + logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
-                }
-            }
-            $scope.last_idx = $scope.idx;
-
         }
 
         $scope.refreshSVG = function(){
@@ -259,6 +233,7 @@ angular.module('myapp', [])
                 refresh($scope.refresh_rate);
             }
         };
+        $scope.play();
 
         $scope.pause = function(){
             if($scope.playvar){
@@ -316,7 +291,7 @@ function CiberWebSocket(){
 
             if(logBuff_obj.length==10){
                 angular.bootstrap(document, ['myapp']);
-                $scope.play();
+
                 $("#waitawhile").hide("fast");
                 $("#row1").show("slow");
                 $("#row2").show("slow");
