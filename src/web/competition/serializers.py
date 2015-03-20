@@ -63,11 +63,12 @@ class CompetitionAgentSerializer(serializers.ModelSerializer):
 
 class SimulationSerializer(serializers.ModelSerializer):
     round_name = serializers.CharField(max_length=128)
+    state = serializers.CharField(max_length=128, read_only=True)
 
     class Meta:
         model = Simulation
-        fields = ('identifier', 'round_name', 'created_at', 'updated_at',)
-        read_only_fields = ('identifier', 'created_at', 'updated_at',)
+        fields = ('identifier', 'round_name', 'state', 'created_at', 'updated_at',)
+        read_only_fields = ('identifier', 'state', 'created_at', 'updated_at',)
 
 
 class SimulationAgentSerializer(serializers.ModelSerializer):
@@ -90,8 +91,15 @@ class LogSimulation(serializers.ModelSerializer):
         read_only_fields = ()
 
 
-class AgentXSerializer(serializers.BaseSerializer):
+class FileAgentSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'file': instance.file,
+            'url': instance.url
+        }
 
+
+class AgentXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         if not instance.files:
             return {
@@ -111,7 +119,6 @@ class AgentXSerializer(serializers.BaseSerializer):
 
 
 class SimulationXSerializer(serializers.BaseSerializer):
-
     def to_representation(self, instance):
         agents = AgentXSerializer(instance.agents, many=True)
         return {

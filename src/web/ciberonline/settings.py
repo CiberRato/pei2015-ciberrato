@@ -95,7 +95,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ALLOWED_UPLOAD_LANGUAGES = (
     ('Python', 'Python'),
     ('C', 'C'),
-    ('cplusplus', 'cplusplus'),
+    ('C++', 'cplusplus'),
     ('Java', 'Java')
 )
 ALLOWED_UPLOAD_SIZE = 5000000  # bytes
@@ -111,6 +111,8 @@ NUMBER_AGENTS_BY_SIMULATION = (
     (COLABORATIVA, 5),
     (COMPETITIVA, 3)
 )
+
+START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/simulation_id/"
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist/static'),

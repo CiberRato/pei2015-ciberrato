@@ -11,6 +11,10 @@
     function DetailCompetitionController($location, $routeParams, Competition, Team, Authentication){
         var vm = this;
         var competitionName = $routeParams.name;
+        var authenticatedAccount = Authentication.getAuthenticatedAccount();
+
+        vm.username = authenticatedAccount.username;
+
         vm.enroll = enroll;
         vm.removeInscription = removeInscription;
         vm.change_page = change_page;
@@ -18,8 +22,7 @@
         activate();
 
         function activate(){
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            vm.username = authenticatedAccount.username;
+
             Competition.getCompetition(competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
             Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
 
@@ -38,6 +41,8 @@
 
                 function getTeamsSuccessFn(data, status, headers, config) {
                     vm.competitionTeamsInfo = data.data;
+                    Competition.getMyTeams(vm.username, competitionName).then(getMyTeamsSuccessFn, getMyTeamsErrorFn);
+
                     var confirm;
                     var k = 0;
                     vm.teamsToShow = [];
@@ -55,10 +60,6 @@
                             k++;
                         }
                     }
-                    console.log(vm.competitionTeamsInfo);
-                    console.log(vm.userAdmin);
-
-
 
                 }
 
@@ -71,6 +72,27 @@
             }
             function getUserAdminErrorFn(data, status, headers, config){
                 console.error(data.data);
+            }
+
+            function getMyTeamsSuccessFn(data){
+                vm.myTeams = data.data;
+                for(var i = 0; i<vm.competitionTeamsInfo.length; i++){
+                    vm.competitionTeamsInfo[i].show=false;
+                    for(var j =0; j<vm.myTeams.length; j++){
+                        if(vm.myTeams[j].group_name === vm.competitionTeamsInfo[i].group.name){
+                            vm.competitionTeamsInfo[i].show=true;
+                        }
+                    }
+                }
+
+                console.log(vm.competitionTeamsInfo);
+
+            }
+
+            function getMyTeamsErrorFn(data){
+                console.error(data.data);
+                $location.url('/panel/');
+
             }
 
         }

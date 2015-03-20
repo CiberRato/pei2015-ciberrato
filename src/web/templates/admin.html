@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="ciberonline">
+<head>
+    <meta charset="utf-8">
+    <title>CiberOnline</title>
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <base href="/" />
+
+
+    {% include 'admin/stylesheets.html' %}
+
+</head>
+
+<body>
+
+{% include 'admin/page_header.html' %}
+
+<!-- Main page container -->
+<section class="container" role="main">
+
+    <!-- Left (navigation) side -->
+    {% include 'admin/left_side.html' %}
+    <!-- Left (navigation) side -->
+
+    <!-- Right (content) side -->
+    <div class="content-block ng-view" role="main"></div>
+    <!-- /Right (content) side -->
+
+</section>
+<!-- /Main page container -->
+
+<!-- Main page footer -->
+{% include 'admin/footer.html' %}
+<!-- /Main page footer -->
+
+{% include 'admin/javascripts.html' %}
+</body>
+</html>

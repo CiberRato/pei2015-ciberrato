@@ -10,8 +10,14 @@
     function Agent($cookies, $http, $location) {
         var Agent = {
             create: create,
+            getByGroup: getByGroup,
             getByUser: getByUser,
-            getAgent: getAgent
+            getAgent: getAgent,
+            upload: upload,
+            destroy: destroy,
+            getFiles: getFiles,
+            deleteUpload: deleteUpload,
+            associate: associate
         };
 
         return Agent;
@@ -23,6 +29,9 @@
                 is_virtual: type
             })
         }
+        function getByGroup(teamName){
+            return $http.get('/api/v1/competitions/agents_by_group/' + teamName + '/');
+        }
 
         function getByUser(username){
             return $http.get('/api/v1/competitions/agents_by_user/' + username + '/');
@@ -31,6 +40,35 @@
         function getAgent(name){
             return $http.get('/api/v1/competitions/agent/' + name + '/');
 
+        }
+
+        function upload(agentName, language, value){
+            var fd = new FormData();
+            fd.append('file', value);
+
+            return $http.post('/api/v1/competitions/upload/agent/?agent_name=' + agentName + '&language=' +language, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            });
+        }
+
+        function destroy(agentName){
+            return $http.delete("/api/v1/competitions/agent/"+ agentName +"/");
+        }
+
+        function getFiles(agentName){
+            return $http.get("/api/v1/competitions/agent_files/" + agentName + "/");
+        }
+
+        function deleteUpload(agentName, fileName){
+            return $http.delete('/api/v1/competitions/delete_agent_file/' + agentName + '/?file_name=' +fileName);
+        }
+
+        function associate(roundName, agentName){
+            return $http.post("/api/v1/competitions/associate_agent/", {
+                round_name: roundName,
+                agent_name: agentName
+            });
         }
     }
 })();

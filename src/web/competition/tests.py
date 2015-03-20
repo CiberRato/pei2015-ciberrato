@@ -4,6 +4,7 @@ from authentication.models import GroupMember
 
 from rest_framework.test import APIClient
 from collections import OrderedDict
+import json
 
 
 class AuthenticationTestCase(TestCase):
@@ -182,9 +183,12 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data[0]
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp, OrderedDict(
             [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('language', u''), ('rounds', []),
-             ('competitions', []), ('user', OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                          ('teaching_institution', u'Universidade de Aveiro'),
                                                          ('first_name', u'Rafael'), ('last_name', u'Ferreira')])),
              ('group_name', u'XPTO3')]))
@@ -196,9 +200,12 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data[0]
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp, OrderedDict(
             [('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('language', u''), ('rounds', []),
-             ('competitions', []), ('user', OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+             ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                          ('teaching_institution', u'Universidade de Aveiro'),
                                                          ('first_name', u'Rafael'), ('last_name', u'Ferreira')])),
              ('group_name', u'XPTO3')]))
@@ -211,19 +218,20 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
 
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'competitions': [], 'is_virtual': False, 'language': u'',
                                'rounds': [], 'group_name': u'XPTO3',
                                'user': OrderedDict(
-                                   [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                   [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                     ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
                                     ('last_name', u'Ferreira')])})
 
 
         # upload agent code
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/myrob_do.py',
-                 'r')
+        f = open('media/tmp_simulations/myrob_do.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
@@ -235,22 +243,27 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=C"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.c', 'r')
+        f = open('media/tmp_simulations/main.c', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=cplusplus"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.cpp', 'r')
+        f = open('media/tmp_simulations/main.cpp', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Java"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/main.java', 'r')
+        f = open('media/tmp_simulations/main.java', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        url = "/api/v1/competitions/agent_files/KAMIKAZE/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)
 
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(url)
@@ -258,16 +271,32 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp, {'agent_name': u'KAMIKAZE', 'rounds': [], 'competitions': [], 'user': OrderedDict(
-            [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+            [('email', u'rf@rf.pt'), ('username', u'gipmon'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
              ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
                                'group_name': u'XPTO3'})
+
+        url = "/api/v1/competitions/allowed_languages/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.data),
+                         [["Python", "Python"], ["C", "C"], ["C++", "cplusplus"], ["Java", "Java"]])
 
         # make the code valid, this operation only can be made by the script (server validation)
         agent = Agent.objects.get(agent_name='KAMIKAZE')
         agent.code_valid = True
         agent.save()
+
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
@@ -284,11 +313,14 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
+        del rsp['user']['updated_at']
+        del rsp['user']['created_at']
+
         self.assertEqual(rsp,
                          {'agent_name': u'KAMIKAZE', 'language': 'Java', 'is_virtual': False, 'group_name': u'XPTO3',
                           'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', settings.COLABORATIVA),
                                                         ('state_of_competition', 'Register')])], 'user': OrderedDict(
-                             [('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
                               ('last_name', u'Ferreira')]), 'rounds': [OrderedDict(
                              [('name', u'R1'), ('parent_competition_name', u'C1'), ('param_list_path', None),
@@ -307,12 +339,18 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/valid_round_participants/R1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
-                                                      ('teaching_institution', u'Universidade de Aveiro'),
-                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                                                      ('teaching_institution', u'Universidade de Aveiro'),
-                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        del rsp[1]['created_at']
+        del rsp[1]['updated_at']
+
+        self.assertEqual(rsp, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
+                                            ('teaching_institution', u'Universidade de Aveiro'),
+                                            ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                               OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                            ('teaching_institution', u'Universidade de Aveiro'),
+                                            ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 
         # test groups for one round
         url = "/api/v1/competitions/valid_round_groups/R1/"
@@ -338,11 +376,17 @@ class AuthenticationTestCase(TestCase):
         # retrieve the not eligible participantes for one round
         url = "/api/v1/competitions/not_eligible_round_participants/R1/"
         response = client.get(url)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        del rsp[1]['created_at']
+        del rsp[1]['updated_at']
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('id', 3), ('email', u'af@rf.pt'), ('username', u'eypo94'),
+        self.assertEqual(response.data, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                                         OrderedDict([('id', 1), ('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                         OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                       ('teaching_institution', u'Universidade de Aveiro'),
                                                       ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
 
@@ -361,7 +405,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['updated_at']
         identifier = rsp['identifier']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the simulation data
@@ -371,8 +415,11 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
+
+        competition_agent.eligible = True
+        competition_agent.save()
 
         # associate an agent to the simulation (only can be made by an admin)
         url = "/api/v1/competitions/associate_agent_to_simulation/"
@@ -391,7 +438,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by round
@@ -401,7 +448,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by competition
@@ -411,7 +458,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
         self.assertEqual(response.status_code, 200)
 
         # get the simulation groups
@@ -424,53 +471,33 @@ class AuthenticationTestCase(TestCase):
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Param.xml', 'r')
+        f = open('media/tmp_simulations/Param.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/grid/?round=R1"
-        f = open(
-            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml',
-            'r')
+        f = open('media/tmp_simulations/Ciber2010_Grid.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/lab/?round=R1"
-        f = open(
-            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Lab.xml',
-            'r')
+        f = open('media/tmp_simulations/Ciber2010_Lab.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
-        # save simulation logs (only server by server)
-        f = open(
-            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/ciberOnline_log.json.zip',
-            'r')
-        url = "/api/v1/competitions/simulation_log/"
-        data = {'simulation_identifier': identifier, 'log_json': f}
-        response = client.post(url, data)
-        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
-        self.assertEqual(response.status_code, 200)
-        simulation = Simulation.objects.get(identifier=identifier)
-        self.assertEqual(simulation.log_json is None, False)
-        simulation.log_json.delete()
-
-        # get simulation for simulate
-        url = "/api/v1/competitions/get_simulations/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        rsp = response.data[0]
-        del rsp['simulation_id']
-        del rsp['agents']
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
-                               'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
-                               'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+        # start simulation
+        url = "/api/v1/simulations/start/"
+        data = {'simulation_id': identifier}
+        response = client.post(path=url, data=data)
+        if response.status_code == 200:
+            self.assertEqual(response.data, {'status': 'Simulation started', 'message': 'Please wait that the simulation starts at the simulator!'})
+        elif response.status_code == 400:
+            self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
 
         # get simulation for simulate
         url = "/api/v1/competitions/get_simulation/" + identifier + "/"
@@ -483,6 +510,31 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
                                'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+
+        # save simulation logs (only server by server)
+        f = open('media/tmp_simulations/ciberOnline_log.json.zip', 'r')
+        url = "/api/v1/competitions/simulation_log/"
+        data = {'simulation_identifier': identifier, 'log_json': f}
+        response = client.post(url, data)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
+        self.assertEqual(response.status_code, 201)
+        simulation = Simulation.objects.get(identifier=identifier)
+        self.assertEqual(simulation.log_json is None, False)
+
+        # get log sent
+        url = "/api/v1/competitions/get_simulation_log/" + identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        simulation.log_json.delete()
+
+        # delete simulation
+        url = "/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/"
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE', 'pos': 1}
+        response = client.delete(path=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation agent has been deleted!'})
+        self.assertEqual(len(LogSimulationAgent.objects.all()), 0)
 
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
@@ -516,6 +568,21 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
 
+        # associate agent to round
+        url = '/api/v1/competitions/associate_agent_admin/'
+        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')]))
+        self.assertEqual(response.status_code, 201)
+
+        # deassociate the agent to the competition
+        url = "/api/v1/competitions/associate_agent_admin/KAMIKAZE/"
+        data = {'round_name': 'R1'}
+        response = client.delete(path=url, data=data)
+        self.assertEqual(response.status_code, response.status_code)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
+        self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
+
         # delete the simulation data
         url = "/api/v1/competitions/simulation/" + identifier + "/"
         response = client.delete(url)
@@ -544,11 +611,23 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data,
                          [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]),
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
-                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
+                          OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])])
+
+        # get my enrolled groups
+        url = "/api/v1/competitions/my_enrolled_groups_competition/gipmon/?competition_name=C1"
+        response = client.get(path=url)
+        self.assertEqual([OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]), OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])], response.data)
+        self.assertEqual(response.status_code, 200)
 
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
         Round.objects.create(name="R3", parent_competition=c)
+
+        # get group enrolled competitions
+        url = "/api/v1/competitions/group_enrolled_competitions/XPTO3/"
+        response = client.get(url)
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', 'Collaborative'), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
         url = "/api/v1/competitions/earliest_round/C1/"
@@ -680,23 +759,19 @@ class AuthenticationTestCase(TestCase):
         client.force_authenticate(user=user)
 
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
-        f = open('/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Param.xml', 'r')
+        f = open('media/tmp_simulations/Param.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         url = "/api/v1/competitions/round/upload/grid/?round=R1"
-        f = open(
-            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Grid.xml',
-            'r')
+        f = open('media/tmp_simulations/Ciber2010_Grid.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         url = "/api/v1/competitions/round/upload/lab/?round=R1"
-        f = open(
-            '/Users/gipmon/Documents/Development/pei2015-ciberonline/src/web/media/tmp_simulations/Ciber2010_Lab.xml',
-            'r')
+        f = open('media/tmp_simulations/Ciber2010_Lab.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
@@ -810,6 +885,20 @@ class AuthenticationTestCase(TestCase):
         a6.is_virtual = True
         a6.save()
 
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
+
+        # get competitions valid inscriptions
+        url = "/api/v1/competitions/enroll/XPTO3/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])])
+
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
         data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE1'}
@@ -899,6 +988,13 @@ class AuthenticationTestCase(TestCase):
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_virtual = True
         a2.save()
+
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"

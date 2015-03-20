@@ -25,12 +25,35 @@ class AuthenticationTestCase(TestCase):
         client.force_authenticate(user=user)
 
         url = "/api/v1/accounts/"
-
         response = client.get(url)
-        self.assertEqual(response.data, [OrderedDict(
-            [('id', 1), ('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
+        rsp = response.data
+        del rsp[0]['updated_at']
+        del rsp[0]['created_at']
+        self.assertEqual(rsp, [OrderedDict(
+            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
              ('first_name', u'unit'), ('last_name', u'test')])])
 
+        url = "/api/v1/account_by_first_name/unit/"
+        response = client.get(url)
+        rsp = response.data
+        del rsp[0]['updated_at']
+        del rsp[0]['created_at']
+        self.assertEqual(rsp, [OrderedDict(
+            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
+             ('first_name', u'unit'), ('last_name', u'test')])])
+        self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/account_by_last_name/test/"
+        response = client.get(url)
+        rsp = response.data
+        del rsp[0]['updated_at']
+        del rsp[0]['created_at']
+        self.assertEqual(rsp, [OrderedDict(
+            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
+             ('first_name', u'unit'), ('last_name', u'test')])])
+        self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/accounts/"
         data = {'email': 'test1@test.com', 'username': 'test1', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA'}
         response = client.post(path=url, data=data, format='json')
@@ -42,8 +65,11 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/accounts/test1/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data),
-                         {'id': 2, 'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
+        rsp = dict(response.data)
+        del rsp['updated_at']
+        del rsp['created_at']
+        self.assertEqual(rsp,
+                         {'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
                           'first_name': u'unit', 'last_name': u'test'})
 
         url = "/api/v1/accounts/test/"
@@ -56,8 +82,11 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/accounts/test/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dict(response.data), {'username': u'test', 'first_name': u'unit', 'last_name': u'test',
-                                               'teaching_institution': u'testUA', 'email': u'test2@test.com', 'id': 1})
+        rsp = dict(response.data)
+        del rsp['updated_at']
+        del rsp['created_at']
+        self.assertEqual(rsp, {'username': u'test', 'first_name': u'unit', 'last_name': u'test',
+                               'teaching_institution': u'testUA', 'email': u'test2@test.com'})
 
         # create a group
         url = "/api/v1/groups/crud/"

@@ -5,9 +5,9 @@
 		.module('ciberonline.teams.controllers')
 		.controller('MyTeamsController', MyTeamsController);
 
-	MyTeamsController.$inject = ['$location', '$routeParams','Team', 'Authentication'];
+	MyTeamsController.$inject = ['$location', '$routeParams','Team', 'Authentication', 'Agent'];
 
-	function MyTeamsController($location, $routeParams, Team, Authentication){
+	function MyTeamsController($location, $routeParams, Team, Authentication, Agent){
 		var vm = this;
 
 		activate();
@@ -31,6 +31,7 @@
                 vm.team.username = username;
                 for(var i=0; i<vm.team.length; i++){
                     getNumberOfMembers(vm.team[i].name, i);
+                    getNumberOfAgents(vm.team[i].name, i);
                 }
             }
 
@@ -51,6 +52,19 @@
                     console.error(data.data);
                 }
 
+            }
+
+            function getNumberOfAgents(teamName, i){
+                Agent.getByGroup(teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
+
+                function getByGroupSuccessFn(data, status, headers, config) {
+                    vm.agents = data.data;
+                    vm.team[i].allAgents = vm.agents.length;
+                }
+
+                function getByGroupErrorFn(data, status, headers, config){
+                    console.error(data.data);
+                }
             }
 		}
 	}

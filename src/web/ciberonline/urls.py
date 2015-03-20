@@ -3,27 +3,31 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic.base import TemplateView
 
-from authentication.views import AccountViewSet, LoginView, LogoutView
+from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet, AccountGroupsAdminViewSet
+
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
-    CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledGroupsViewSet
-from competition.views.agent import AssociateAgent, AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
+    CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, \
+    MyEnrolledGroupsViewSet, ToggleGroupValid, MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
+from competition.views.agent import AssociateAgent, AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, \
+    AssociateAgentAdmin
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulations, GetSimulationAgents, SaveLogs, \
-    GetSimulation
+    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents, SaveLogs, \
+    GetSimulation, GetSimulationLog, StartSimulation
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, UploadAgent, \
-    DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles
+    DeleteUploadedFileAgent, GetRoundFile, GetAgentFiles, GetAgentsFiles, GetAllowedLanguages
 
 from rest_framework import routers
 
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
-
+router_accounts.register(r'account_by_first_name', AccountByFirstName)
+router_accounts.register(r'account_by_last_name', AccountByLastName)
 # GROUPS URLs
 router_groups = routers.SimpleRouter()
 router_groups.register(r'members', GroupMembersViewSet)
@@ -47,11 +51,16 @@ router_competitions.register(r'group_valid', CompetitionGroupValidViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
 router_competitions.register(r'my_enrolled_groups', MyEnrolledGroupsViewSet)
+router_competitions.register(r'my_enrolled_groups_competition', MyEnrolledGroupsInCompetitionViewSet)
+router_competitions.register(r'group_enrolled_competitions', GetEnrolledGroupCompetitionsViewSet)
+router_competitions.register(r'toggle_group_inscription', ToggleGroupValid)
 # Agent
 router_competitions.register(r'agent', AgentViewSets)
 router_competitions.register(r'associate_agent', AssociateAgent)
+router_competitions.register(r'associate_agent_admin', AssociateAgentAdmin)
 router_competitions.register(r'agents_by_group', AgentsByGroupViewSet)
 router_competitions.register(r'agents_by_user', AgentsByUserViewSet)
+router_competitions.register(r'agent_files', GetAgentsFiles)
 # Round
 router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'valid_round_agents', AgentsRound)
@@ -70,7 +79,6 @@ router_competitions.register(r'simulation_agents', GetSimulationAgents)
 router_competitions.register(r'simulation_log', SaveLogs)
 # Simulation => Machine to Machine
 router_competitions.register(r'get_simulation', GetSimulation)
-router_competitions.register(r'get_simulations', GetSimulations)
 # Uploads
 router_competitions.register(r'delete_agent_file', DeleteUploadedFileAgent)
 
@@ -92,6 +100,15 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
 
+                       # get allowed languags
+                       url(r'^api/v1/competitions/allowed_languages/$', GetAllowedLanguages.as_view(),
+                           name="Allowed languages"),
+
+                       # stat simulation
+                       url(r'^api/v1/simulations/start/$', StartSimulation.as_view(), name="Start simulation"),
+                       # get simulation log
+                       url(r'^api/v1/competitions/get_simulation_log/(?P<simulation_id>.+)/$', GetSimulationLog.as_view(),
+                           name="Get simulation log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),

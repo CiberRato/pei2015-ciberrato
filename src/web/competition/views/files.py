@@ -5,7 +5,7 @@ import tarfile
 import os
 from django.shortcuts import get_object_or_404
 from competition.models import Round, Simulation, Agent
-from competition.serializers import AgentSerializer
+from competition.serializers import AgentSerializer, FileAgentSerializer
 from authentication.models import GroupMember
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
@@ -19,6 +19,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
 from os.path import basename
+from rest_framework.renderers import JSONRenderer
 
 
 class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -68,13 +69,67 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                             status=status.HTTP_404_NOT_FOUND)
 
 
+class GetAllowedLanguages(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def get(request):
+        """
+        B{Get} the allowed languages
+        B{URL:} ../api/v1/competitions/allowed_languages/
+        """
+        return Response(JSONRenderer().render(settings.ALLOWED_UPLOAD_LANGUAGES), status=status.HTTP_200_OK)
+
+
+class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = FileAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the agent files list
+        B{URL:} ../api/v1/competitions/agent_files/<agent_name>/
+        Must be part of the group owner of the agent
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
+
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+        if len(group_member) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        files = []
+
+        if agent.locations:
+            class AgentFile:
+                def __init__(self, file):
+                    self.file = basename(file)
+                    self.url = "/URL/PARA/SACAR/O/FICHEIRO/"
+
+            for f in json.loads(agent.locations):
+                files += [AgentFile(f)]
+
+        serializer = self.serializer_class(files, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class UploadAgent(views.APIView):
     parser_classes = (FileUploadParser,)
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def post(self, request):
+    @staticmethod
+    def post(request):
         if 'agent_name' not in request.GET:
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?agent_name=*agent_name*'},
@@ -136,7 +191,8 @@ class UploadAgent(views.APIView):
 class GetRoundFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
 
-    def get(self, request, round_name):
+    @staticmethod
+    def get(request, round_name):
         if 'file' not in request.GET:
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?file=*file*'},
@@ -162,7 +218,8 @@ class GetRoundFile(views.APIView):
 
 
 class GetAgentFiles(views.APIView):
-    def get(self, request, simulation_id, agent_name):
+    @staticmethod
+    def get(request, simulation_id, agent_name):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
 

@@ -1,4 +1,5 @@
 from competition.models import LogSimulationAgent
+from competition.shortcuts import *
 
 
 class RoundSimplex:
@@ -49,6 +50,12 @@ class SimulationSimplex:
         self.identifier = ss.identifier
         self.created_at = ss.created_at
         self.updated_at = ss.updated_at
+        if simulation_done(ss):
+            self.state = "LOG"
+        elif simulation_started(ss):
+            self.state = "STARTED"
+        else:
+            self.state = "WAITING"
 
 
 class SimulationAgentSimplex:

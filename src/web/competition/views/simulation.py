@@ -4,12 +4,18 @@ from competition.models import Competition, Round, Simulation, CompetitionAgent,
 from competition.serializers import SimulationXSerializer, \
     SimulationSerializer, \
     SimulationAgentSerializer, LogSimulation
+import os
 from rest_framework import permissions
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 from competition.permissions import IsAdmin
 from django.conf import settings
+from competition.shortcuts import *
+from django.core.files.storage import default_storage
+from django.http import HttpResponse
+from django.core.servers.basehttp import FileWrapper
 from competition.views.simplex import SimulationSimplex, SimulationAgentSimplex, SimulationX
+import requests
 
 
 class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -100,16 +106,16 @@ class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = LogSimulationAgent.objects.all()
     serializer_class = SimulationAgentSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAdmin(),
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} one simulation for one round
+        B{Associate} one agent to one simulation
         B{URL:} ../api/v1/competitions/associate_agent_to_simulation/
 
         @type  round_name: str
@@ -129,8 +135,14 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
 
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
 
+            # see if the agent is no more eligible
+            if not competition_agent.eligible:
+                return Response({'status': 'Bad Request',
+                                 'message': 'This agent has already in one simulation!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             simulation = get_object_or_404(Simulation.objects.all(),
-                                           identifier=serializer.validated_data['simulation_identifier'])
+                identifier=serializer.validated_data['simulation_identifier'])
 
             maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
 
@@ -171,10 +183,14 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
             simulation = get_object_or_404(Simulation.objects.all(),
-                                           identifier=serializer.validated_data['simulation_identifier'])
+                identifier=serializer.validated_data['simulation_identifier'])
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
                                                     pos=serializer.validated_data['pos'])
+
+            competition_agent.eligible = False
+            competition_agent.save()
+
             serializer = SimulationAgentSerializer(SimulationAgentSimplex(lsa))
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -182,6 +198,30 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, viewsets.GenericViewSe
         return Response({'status': 'Bad Request',
                          'message': 'The simulation agent could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Destroy} one agent to one simulation
+        B{URL:} ../api/v1/competitions/associate_agent_to_simulation/<simulation_identifier>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        @type  pos: int
+        @param pos: The agent position
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=request.data.get('agent_name', ''))
+        competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+        lsa = get_object_or_404(LogSimulationAgent.objects.all(), competition_agent=competition_agent,
+            simulation=simulation, pos=request.data.get('pos', ''))
+        lsa.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The simulation agent has been deleted!'},
+                        status=status.HTTP_200_OK)
 
 
 class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -246,6 +286,10 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Simulation.objects.all()
     serializer_class = LogSimulation
 
+    """
+    Must be discussed one simple way of authentication server to server
+    """
+
     def create(self, request, *args, **kwargs):
         """
         B{Create} the json log
@@ -260,14 +304,52 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         if serializer.is_valid():
             simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
+
+            if not simulation_started(simulation):
+                return Response({'status': 'Bad Request',
+                                 'message': 'The simulation should be stated first!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             simulation.log_json = serializer.validated_data['log_json']
             simulation.save()
             return Response({'status': 'Created',
-                             'message': 'The log has been uploaded!'}, status=status.HTTP_200_OK)
+                             'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': 'The simulation couldn\'t be updated with that data.'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetSimulationLog(views.APIView):
+    @staticmethod
+    def get(request, simulation_id):
+        """
+        B{Get} simulation json log
+        B{URL:} ../api/v1/competitions/get_simulation_log/<simulation_id>/
+
+        @type  simulation_id: str
+        @param simulation_id: The simulation identifier
+        """
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
+
+        if not simulation_done(simulation):
+            return Response({'status': 'Bad request',
+                             'message': 'The simulation must have a log!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            file = default_storage.open(simulation.log_json)
+        except Exception:
+            return Response({'status': 'Bad request',
+                             'message': 'The file doesn\'t exists'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        wrapper = FileWrapper(file)
+        response = HttpResponse(wrapper, content_type="application/x-compressed")
+        response['Content-Disposition'] = 'attachment; filename=' + simulation_id + '.tar.gz'
+        response['Content-Length'] = os.path.getsize(file.name)
+        file.seek(0)
+        return response
 
 
 class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -299,20 +381,37 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetSimulations(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationXSerializer
+class StartSimulation(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
 
-    def list(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request):
         """
-        B{Retrieve} the simulations, machine-to-machine
-        B{URL:} ../api/v1/competitions/get_simulations/
+        B{Start} the simulation
+        B{URL:} ../api/v1/competitions/start_simulation/
+
+        @type  simulation_id: str
+        @param simulation_id: The simulation id
         """
-        simulations = [SimulationX(simulation) for simulation in Simulation.objects.all()]
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('simulation_id', ''))
+        if simulation_waiting(simulation):
+            params = {'simulation_identifier': "0a256950-7a5c-403d-aba3-52e455d197c5"}
 
-        serializer = self.serializer_class(simulations, many=True)
+            try:
+                requests.post(settings.START_SIM_ENDPOINT, params)
+            except requests.ConnectionError:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The simulator appears to be down!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'status': 'Simulation started',
+                             'message': 'Please wait that the simulation starts at the simulator!'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'Bad Request',
+                             'message': 'The simulation must be in state: waiting!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -329,4 +428,7 @@ class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         simulation = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
         serializer = self.serializer_class(SimulationX(simulation))
+        simulation.started = True
+        simulation.save()
+
         return Response(serializer.data, status=status.HTTP_200_OK)

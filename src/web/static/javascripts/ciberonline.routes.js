@@ -66,6 +66,14 @@
             controller:'AllTogetherCompetitionsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/allCompetitions.html'
+        }).when('/panel/pastCompetitions',{
+            controller:'PastCompetitionsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/competition/pastCompetitions.html'
+        }).when('/panel/liveCompetitions',{
+            controller:'LiveCompetitionsController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/competition/liveCompetitions.html'
         }).when('/panel/myCompetitions/:username',{
             controller:'MyCompetitionsController',
             controllerAs:'vm',
@@ -84,8 +92,14 @@
             templateUrl: '/static/templates/panel/agent/myAgents.html'
         }).when('/panel/:name/agentDetail',{
             controller:'AgentDetailController',
-            controllerAs:'vm',
+            controllerAs: 'vm',
             templateUrl: '/static/templates/panel/agent/agentDetail.html'
+        }).when('/panel/:name/allAgents',{
+            controller:'AllAgentController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/agent/allAgents.html'
+        }).when('/admin/',{
+            templateUrl: '/static/templates/admin/index.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
