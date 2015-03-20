@@ -45,7 +45,7 @@ class MyEnrolledGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled and with valid inscription by username
+        B{Retrieve} the list of a Groups enrolled
         B{URL:} ../api/v1/competitions/my_enrolled_groups/<username>/
 
         @type  username: str
@@ -206,12 +206,43 @@ class ToggleGroupValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
             group_enrolled.save()
 
             return Response({'status': 'Inscription toggled!',
-                             'message': 'Inscription is now: '+str(group_enrolled.valid)},
+                             'message': 'Inscription is now: ' + str(group_enrolled.valid)},
                             status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad request',
                          'message': 'The group can\'t enroll with received data.'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyEnrolledGroupsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = GroupEnrolledSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of a Groups enrolled and with valid inscription by username and competition
+        B{URL:} ../api/v1/competitions/my_enrolled_groups_competition/<username>/?competition_name=<competition_name>
+
+        @type  username: str
+        @param username: The username
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+
+        enrolled_groups = []
+        for group in user.groups.all():
+            enrolled_group = GroupEnrolled.objects.filter(group=group, competition=competition, valid=True)
+            if len(enrolled_group) == 1:
+                enrolled_groups += [GroupEnrolledSimplex(enrolled_group[0])]
+
+        serializer = self.serializer_class(enrolled_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,

@@ -589,6 +589,13 @@ class AuthenticationTestCase(TestCase):
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])])
 
+        # get my enrolled groups
+        url = "/api/v1/competitions/my_enrolled_groups_competition/gipmon/?competition_name=C1"
+        response = client.get(path=url)
+        self.assertEqual([OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])],
+                         response.data)
+        self.assertEqual(response.status_code, 200)
+
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
         Round.objects.create(name="R3", parent_competition=c)
