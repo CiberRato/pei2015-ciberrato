@@ -26,6 +26,8 @@
 #include <qxml.h>
 
 #include "cbparameters.h"
+#include "cbgrid.h"
+#include "cblab.h"
 
 /**
  * base class of all representations of clients in the simulator.
@@ -39,7 +41,7 @@ public:
 	cbClient();
 	virtual ~cbClient();
 
-	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param, bool replyback = true);
+	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param = NULL, cbGrid *grid = NULL, cbLab *lab = NULL);
 	virtual bool Refuse(QHostAddress &addr, unsigned short &port);
 
 	bool send(const char *, unsigned int);

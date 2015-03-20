@@ -21,6 +21,13 @@
 #ifndef _CIBER_RATO_CRREPLY_
 #define _CIBER_RATO_CRREPLY_
 
+#include "../Lab/crgrid.h"
+#include "../Lab/crlab.h"
+#include "../Lab/crwall.h"
+#include "../Lab/crtarget.h"
+#include "../Lab/crvertice.h"
+#include "../Lab/crbeacon.h"
+
 /*! \struct crreply
  * \brief This struct represent one reply message.
  */
@@ -34,6 +41,8 @@ typedef struct crreply
 	/*! Simulation parameters. Noise levels, simulation and cycle times, etc.
 	 */
 	struct crparameters *parameters;
+	CRLab *lab;
+	CRGrid *grid;
 } CRReply;
 
 	/*! \struct crparameters

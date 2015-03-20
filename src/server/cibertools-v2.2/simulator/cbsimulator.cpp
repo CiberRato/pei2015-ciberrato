@@ -130,7 +130,6 @@ cbSimulator::cbSimulator()
     labScene=0;labView=0;
 
     defaultParam = 0; defaultLab = 0; defaultGrid = 0;
-    viewerAsLog = false;
 
     QXmlInputSource *sourceParam = new QXmlInputSource;
     QXmlInputSource *sourceLab = new QXmlInputSource;
@@ -555,7 +554,8 @@ void cbSimulator::step()
 {
 	//cout.form("Reading robot actions (%u)\n", curCycle);
 	RobotActions();
-	if(logging) Log(*logStream);
+	if(logging) 
+		RobotsToXml(*logStream, true, false);
 	//cout.form("Checking new registrations (%u)\n", curCycle);
 	CheckIn();
 	//cout.form("Reading view commands (%u)\n", curCycle);
@@ -604,9 +604,6 @@ void cbSimulator::step()
 */
 void cbSimulator::CheckIn()
 {
-	char xmlread[4096*16];
-	char xml[4096*16*3];
-	int size;
 	while (receptionist->CheckIn())
 	{
 		cbClientForm &form = receptionist->Form();
@@ -619,19 +616,7 @@ void cbSimulator::CheckIn()
 				views.resize(cnt+1);
 				views[cnt] = form.client.view;
 
-				if (viewerAsLog) {
-					views[cnt]->Reply(form.addr, form.port, param, false);
-					size = param->toXml(xmlread, sizeof(xmlread));
-					strcat(xml, xmlread);
-					size += lab->toXml(xmlread, sizeof(xmlread));
-					strcat(xml, xmlread);
-					size += grid->toXml(xmlread, sizeof(xmlread));
-					strcat(xml, xmlread);
-
-					views[cnt]->send(xml, size);
-				} else {
-					views[cnt]->Reply(form.addr, form.port, param);
-				}
+				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
 
                 if (curState==INIT) {
 				    nextState=STOPPED;
@@ -966,36 +951,17 @@ void cbSimulator::SendSensors()
 */
 void cbSimulator::UpdateViews()
 {
-	if (viewerAsLog) {
-		std::ostringstream xmlStream;
-		Log(xmlStream, false, true);
+	std::ostringstream xmlStream;
+	RobotsToXml(xmlStream, false, true, showPositions);
 
-		std::string xmlString = xmlStream.str();
-		if (xmlString.length() != 0) {
-			const char* xmlCharA = xmlString.c_str();
-			for (unsigned int j = 0; j < views.size(); j++) {
-				cbView *view = views[j];
-				view->send(xmlCharA, xmlString.length()+1);
-		    }
-	    }
-	}
+	std::string xmlString = xmlStream.str();
+	if (xmlString.length() != 0) {
+		const char* xmlCharA = xmlString.c_str();
 
-	char xml[1024];
-	for (unsigned int i=0; i<robots.size(); i++)
-	{
-		cbRobot *robot = robots[i];
-		if (robot == 0) continue;
-		unsigned int n = robot->toXml(xml, sizeof(xml));
-		
-		if (!viewerAsLog) {
-			for (unsigned int j=0; j<views.size(); j++) {
-				cbView *view = views[j];
-				view->send(xml, n+1);
-			}
+		for (unsigned int j = 0; j < views.size(); j++) {
+			cbView *view = views[j];
+			view->send(xmlCharA, xmlString.length()+1);
 		}
-
-        if (showPositions)
-            gui->writeOnBoard("Position of " + QString(robot->Name()) + " (robot " + QString::number(robot->Id()) + ") sent to Viewer(s):\n" + xml, (int) robot->Id(), 2);
 	}
 }
 
@@ -1008,7 +974,8 @@ void cbSimulator::UpdateState()
 {
     if(simTime() <= curTime() && isTimed()) {
         nextState = FINISHED;
-	    if(logging) Log(*logStream, false); // last loginfo item - should not contain robot actions
+	    if (logging) 
+	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
 	    closeLog();
     }
 
@@ -1029,16 +996,22 @@ void cbSimulator::UpdateState()
 
 }
 
-void cbSimulator::Log(ostream &log, bool withActions, bool stateIndependent)
+void cbSimulator::RobotsToXml(ostream &log, bool withActions, bool stateIndependent, bool guiShowPositions)
 {
+	char buff[1024 * 16];
 	unsigned int n = robots.size();
 	if(curState == RUNNING || stateIndependent) {
 		log << "<LogInfo Time=\"" << curCycle << "\">\n";
 		for (unsigned int i = 0; i<n; i++)
 		{
-			cbRobot *r = robots[i];
-            if(r==0) continue;
-            r->Log(log, withActions);
+			cbRobot *robot = robots[i];
+            if (robot == 0) continue;
+            robot->toXml(buff, sizeof(buff), withActions);
+			log << buff;
+
+            if (guiShowPositions) {
+            	gui->writeOnBoard("Position of " + QString(robot->Name()) + " (robot " + QString::number(robot->Id()) + ") sent to Viewer(s):\n" + buff, (int) robot->Id(), 2);
+            }
 		}
         log << "</LogInfo>\n";
 	}
