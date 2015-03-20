@@ -7,7 +7,7 @@
 
     MyAgentsController.$inject = ['$location', 'Authentication', 'Agent', 'Team'];
 
-    function MyAgentsController($location, Authentication, Agent, Team) {
+    function MyAgentsController($location, Authentication, Agent) {
         var vm = this;
 
         activate();
@@ -24,6 +24,7 @@
 
             function getByUserErrorFn(data) {
                 console.error(data.data);
+                $location.path("/panel/")
             }
 
         }

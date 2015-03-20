@@ -17,7 +17,10 @@
             deleteEnroll: deleteEnroll,
             getMyCompetitions: getMyCompetitions,
             getPast: getPast,
-            getLive: getLive
+            getLive: getLive,
+            getMyTeams: getMyTeams,
+            getCompetitions: getCompetitions,
+            getFirstRound: getFirstRound
 
         };
 
@@ -61,6 +64,18 @@
 
         function getLive(){
             return $http.get('/api/v1/competitions/get/Competition/');
+        }
+
+        function getMyTeams(username, competitionName){
+            return $http.get("/api/v1/competitions/my_enrolled_groups_competition/" +username +"/?competition_name=" +competitionName);
+        }
+
+        function getCompetitions(competitionName){
+            return $http.get("/api/v1/competitions/group_enrolled_competitions/" + competitionName+ "/");
+        }
+
+        function getFirstRound(competitionName){
+            return $http.get("/api/v1/competitions/oldest_round/"+competitionName+"/")
         }
     }
 

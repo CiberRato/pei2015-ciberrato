@@ -98,6 +98,8 @@
             controller:'AllAgentController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/agent/allAgents.html'
+        }).when('/admin/',{
+            templateUrl: '/static/templates/admin/index.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

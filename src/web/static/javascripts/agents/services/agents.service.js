@@ -16,7 +16,8 @@
             upload: upload,
             destroy: destroy,
             getFiles: getFiles,
-            deleteUpload: deleteUpload
+            deleteUpload: deleteUpload,
+            associate: associate
         };
 
         return Agent;
@@ -61,6 +62,13 @@
 
         function deleteUpload(agentName, fileName){
             return $http.delete('/api/v1/competitions/delete_agent_file/' + agentName + '/?file_name=' +fileName);
+        }
+
+        function associate(roundName, agentName){
+            return $http.post("/api/v1/competitions/associate_agent/", {
+                round_name: roundName,
+                agent_name: agentName
+            });
         }
     }
 })();

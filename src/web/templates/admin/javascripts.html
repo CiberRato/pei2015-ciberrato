@@ -1,0 +1,82 @@
+{% load compress %}
+{% load staticfiles %}
+
+{% compress js %}
+<!-- JS Libs -->
+<script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/libs/modernizr.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/libs/selectivizr.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/jquery.browser/test/src/jquery.browser.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/angular-route/angular-route.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/angular-cookies/angular-cookies.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/ciberonline.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/ciberonline.config.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/ciberonline.routes.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/authentication/authentication.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/services/authentication.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/controllers/login.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/controllers/register.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/authentication/controllers/logout.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/profile/profile.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/profile/services/profile.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/profile/controllers/profile.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/teams.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/services/teams.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/createTeam.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/allteams.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/myteams.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/team.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/editTeam.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/memberProfile.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/teams/controllers/allTeamsMembers.controller.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/search/search.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/search/controllers/search.controller.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/competitions/competitions.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/services/competitions.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/allCompetitions.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/detailCompetition.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/myCompetitions.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/alltogetherCompetitions.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/pastCompetitions.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/competitions/controllers/liveCompetitions.controller.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'javascripts/agents/agents.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/agents/services/agents.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/agents/controllers/createAgent.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/agents/controllers/myAgents.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/agents/controllers/agentDetail.controller.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/agents/controllers/allAgents.controller.js' %}"></script>
+
+
+<!-- Scripts -->
+<script type="text/javascript" src="{% static 'js/navigation.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-affix.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-collapse.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-dropdown.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'js/plugins/jGrowl/jquery.jgrowl.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-modal.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'bower_components/angular/angular.js' %}"></script>
+
+<!--only needed if you support non HTML5 FormData browsers.-->
+<script type="text/javascript" src="{% static 'bower_components/ng-file-upload/angular-file-upload-shim.js' %}"></script>
+<script type="text/javascript" src="{% static 'bower_components/ng-file-upload/angular-file-upload.js' %}"></script>
+
+<script>
+    $(document).ready(function(){
+        // Tooltips
+        $('[title]').tooltip({
+            placement: 'top'
+        });
+    });
+</script>
+
+{% endcompress %}

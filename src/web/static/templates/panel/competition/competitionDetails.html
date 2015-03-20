@@ -17,22 +17,24 @@
                             <tr>
                                 <th>Team Name</th>
                                 <th>Number of Agents</th>
-                                <th>State of Inscription</th>
-                                <th>Remove Inscription</th>
+                                <th ng-if="vm.myTeams.length != 0">State of Inscription</th>
+                                <th ng-if="vm.myTeams.length != 0">Remove Inscription</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
                                 <td><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
                                 <td>0</td>
-                                <td ng-if="value.valid == false"><span class="label label-important">Not Valid</span></td>
-                                <td ng-if="value.valid == true"><span class="label label-success">>Valid</span></td>
+                                <td ng-if="value.valid == false && value.show == true"><span class="label label-important">Not Valid</span></td>
+                                <td ng-if="value.valid == true && value.show == true"><span class="label label-success">Valid</span></td>
+                                <td ng-if="value.show == false"></td>
+
                                 <td ng-if="value.canRemove == true && value.valid == false"><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.group.name)">X</a></td>
                                 <td ng-if="value.canRemove == true && value.valid == true">
                                     <a data-toggle="modal"  href="#RemoveError" class="btn btn-primary btn-flat" >X</a>
                                     <div class="modal fade"  id="RemoveError">
                                         <div class="modal-header">
-                                            <h3 align="center">You're Inscription is already validated. To cancel, please contact the administration</h3>
+                                            <p align="center">You're Inscription is already validated. <strong>To cancel, please contact the administration</strong></p>
                                         </div>
                                         <div class="modal-footer">
                                             <a data-dismiss="modal" class="btn btn-alt btn-success">OK</a>
@@ -70,8 +72,8 @@
                             </div>
                         </div>
                         <div class="modal fade"  id="confirmJoinError">
-                            <div class="modal-header">
-                                <h3 align="center">You don't have any created team able to join this competition! Please Create one!</h3>
+                            <div class="modal-body">
+                                <p align="center">You don't have any created team able to join this competition! Please Create one!<p>
                             </div>
                             <div class="modal-footer">
                                 <a data-dismiss="modal" class="btn btn-alt btn-success">OK</a>
