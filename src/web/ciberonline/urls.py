@@ -122,6 +122,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/auth/logout/$', LogoutView.as_view(), name='logout'),
                        url(r'^api-auth/', include('rest_framework.urls',
                                                   namespace='rest_framework')),
+                       url('^admin/.*$', TemplateView.as_view(template_name='admin.html'), name='admin'),
                        url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
                        url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')
