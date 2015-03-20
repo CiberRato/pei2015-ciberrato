@@ -224,7 +224,7 @@ class MyEnrolledGroupsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.G
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled and with valid inscription by username and competition
+        B{Retrieve} the list of a Groups enrolled by username and competition
         B{URL:} ../api/v1/competitions/my_enrolled_groups_competition/<username>/?competition_name=<competition_name>
 
         @type  username: str
@@ -237,7 +237,7 @@ class MyEnrolledGroupsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.G
 
         enrolled_groups = []
         for group in user.groups.all():
-            enrolled_group = GroupEnrolled.objects.filter(group=group, competition=competition, valid=True)
+            enrolled_group = GroupEnrolled.objects.filter(group=group, competition=competition)
             if len(enrolled_group) == 1:
                 enrolled_groups += [GroupEnrolledSimplex(enrolled_group[0])]
 
