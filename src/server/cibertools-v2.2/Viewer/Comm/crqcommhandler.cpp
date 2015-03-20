@@ -24,6 +24,7 @@
 
 bool CRQCommHandler::startDocument()
 {
+	// Initialize all elements with null
 	robot = NULL;
 	type = UNKNOWN;
 
@@ -39,7 +40,132 @@ bool CRQCommHandler::startElement( const QString&, const QString&,
                                    const QString& qName,
                                    const QXmlAttributes& attr)
 {
-    return true;
+    
+    const QString &tag = qName;
+	switch (type) { 	//Type defined in .h as enum.
+        case UNKNOWN:
+			// process begin tag 
+            if ( tag == "LogInfo" ) {
+            	type = LOGINFO;
+            } else if( tag == "Restart" ) {
+            	// TODO
+            } else {
+        		return false;
+            }
+            break;
+        case LOGINFO:
+			if(tag == "Robot") {
+                type = ROBOT;  //Next time startElement will process one ROBOT
+                robot = new CRRobot();
+                // process attributs
+                const QString name = attr.value( QString( "Name" ) );
+                if( !name.isNull() )
+                    robot->setName( name.toAscii() );
+
+                const QString id = attr.value( QString( "Id" ) );
+                if( !id.isNull() )
+                    robot->setId( id.toInt() );
+                const QString state =  attr.value( QString( "State" ) );
+                if( !state.isNull() )
+                {
+                    if (state == "Stopped" )
+                        robot->setState( CRRobot::STOPPED );
+
+                    else if (state == "Running" )
+                        robot->setState( CRRobot::RUNNING );
+
+                    else if (state == "Waiting" )
+                        robot->setState( CRRobot::WAITINGOTHERS );
+
+                    else if (state == "Removed" )
+                        robot->setState( CRRobot::REMOVED );
+
+                    else if (state == "Finished" )
+                        robot->setState( CRRobot::FINISHED );
+
+                    else if (state == "Returning" )
+                        robot->setState( CRRobot::RETURNING );
+                }
+            } else {
+                return false;
+            }
+            break;
+		case ROBOT:  // if received element was one 
+			if( tag == "Pos" )
+            {
+            	type = POSITION;
+                const QString x = attr.value( QString( "X" ));
+                if (!x.isNull())
+                    robot->setX( x.toFloat() );
+
+                const QString y = attr.value(QString("Y"));
+                if (!y.isNull())
+                    robot->setY( y.toFloat() );
+
+                const QString dir = attr.value(QString("Dir"));
+                if (!dir.isNull())
+                    robot->setDirection( dir.toFloat() );
+            } else if (tag == "Scores") {
+            	type = SCORES;
+            	const QString score = attr.value( QString( "Score" ) );
+                if( !score.isNull() )
+                    robot->setScore( score.toInt() );
+
+                const QString collisions =  attr.value( QString( "Collisions" ) );
+                if( !collisions.isNull() )
+                    robot->setCollisions( collisions.toInt() );            
+
+                const QString arrivalTime =  attr.value( QString( "ArrivalTime" ) );
+                if( !arrivalTime.isNull() )
+                    robot->setArrivalTime( arrivalTime.toInt() );
+
+                const QString returnTime =  attr.value( QString( "ReturningTime" ) );
+                if( !returnTime.isNull() )
+                    robot->setReturnTime( returnTime.toInt() );
+            } else if (tag == "Action") {
+            	type = ACTION;
+            	// Ignoring actions, viewer doesn't use it at the moment
+            } else if (tag == "Measures") {
+            	type = MEASURES;
+
+                const QString time =  attr.value( QString( "Time" ) );
+                if( !time.isNull() )
+                    robot->setCurrentTime( time.toInt() );
+            } else {
+            	return false;
+            }
+			break;
+		case MEASURES:
+			if (tag == "Sensors") {
+				type = SENSORS;
+
+				const QString collision =  attr.value( QString( "Collision" ) );
+                if( !collision.isNull() )
+                    robot->setCollision( collision.toAscii() );
+			} else if (tag == "Leds") {
+				type = LEDS;
+			} else if (tag == "Buttons") {
+				type = BUTTONS;
+			} else {
+				return false;
+			}
+			break;
+		case SENSORS:
+			if (tag == "IRSensor") {
+				type = IRSENSOR;
+				// Viewer is not using sensors at the moment
+			} else if (tag == "BeaconSensor") {	
+				type = BEACONSENSOR;
+				// Viewer doesn't use this sensor at the moment
+			} else if (tag == "GPS") {
+				type = GPS;
+				// Viewer doesn't use this sensor at the moment
+			} else {
+				return false;
+			}
+			break;
+	}
+    return TRUE;
 
 }
 

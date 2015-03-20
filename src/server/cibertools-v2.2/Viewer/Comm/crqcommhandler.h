@@ -46,7 +46,8 @@ public:
 	/*! \enum Type
 	 *  This enum type represent the object received.
 	 */
-	enum Type {UNKNOWN, LAB, GRID, ROBOT, RESTART};
+	enum Type {UNKNOWN, LOGINFO, ROBOT, RESTART, POSITION, SCORES, ACTION, MEASURES, SENSORS, 
+					IRSENSOR, BEACONSENSOR, GPS, LEDS, BUTTONS};
 	/*! This function will be called in the begining of the XML document.
 	 */
     bool startDocument();
