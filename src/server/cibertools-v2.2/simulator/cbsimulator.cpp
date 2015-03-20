@@ -710,17 +710,6 @@ void cbSimulator::ViewCommands()
 					//cout << "View command = Stop\n";
 					stop();
 					break;
-				case cbCommand::LABRQ:
-					//cout << "View command = LabReq\n";
-					cnt = lab->toXml(xml, sizeof(xml)-1);
-					//cerr << xml;
-					views[i]->send(xml, cnt+1);
-					break;
-				case cbCommand::GRIDRQ:
-					//cout << "View command = GridReq\n";
-					cnt = grid->toXml(xml, sizeof(xml)-1);
-					views[i]->send(xml, cnt+1);
-					break;
 				case cbCommand::ROBOTDEL:
 					{
 						//cout << "View command = RobotDel\n";
