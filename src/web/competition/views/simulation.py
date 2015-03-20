@@ -399,7 +399,7 @@ class StartSimulation(views.APIView):
             params = {'simulation_identifier': "0a256950-7a5c-403d-aba3-52e455d197c5"}
 
             try:
-                result = requests.post(settings.START_SIM_ENDPOINT, params)
+                requests.post(settings.START_SIM_ENDPOINT, params)
             except requests.ConnectionError:
                 return Response({'status': 'Bad Request',
                                  'message': 'The simulator appears to be down!'},

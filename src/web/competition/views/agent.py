@@ -3,6 +3,7 @@ import json
 from django.shortcuts import get_object_or_404
 from competition.models import Round, GroupEnrolled, CompetitionAgent, Agent
 from competition.serializers import AgentSerializer, CompetitionAgentSerializer
+from competition.permissions import IsAdmin
 from authentication.models import Group, GroupMember, Account
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -196,6 +197,101 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
         # not modified values
         r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+        competition = r.parent_competition
+
+        competition_agent = CompetitionAgent.objects.filter(competition=competition, round=r, agent=agent)
+        competition_agent.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The competition agent has been deleted!'},
+                        status=status.HTTP_200_OK)
+
+
+class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = CompetitionAgent.objects.all()
+    serializer_class = CompetitionAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Associate} an agent
+        B{URL:} ../api/v1/competitions/associate_agent_admin/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            competition = r.parent_competition
+
+            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition, valid=True)
+            if len(group_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The group must first enroll and with inscription valid.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            # code valid
+            if not agent.is_virtual and not agent.code_valid:
+                return Response({'status': 'The agent code is not valid!',
+                                 'message': 'Please submit a valid code first!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # verify limits
+            groups_agent = Agent.objects.filter(group=agent.group)
+            groups_agents_in_round = [agent for agent in groups_agent if
+                                      len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 1]
+
+            numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
+
+            if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
+                return Response({'status': 'Reached the limit of agents',
+                                 'message': 'Reached the number of competition_agents!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # not modified values
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            competition = r.parent_competition
+
+            CompetitionAgent.objects.create(agent=agent, round=r, competition=competition)
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'We cound not associate the agent to the competition.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Delete} the associated agent from the round
+        B{URL:} ../api/v1/competitions/associate_agent_admin/<agent_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+        competition = r.parent_competition
+
+        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
+        if len(group_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'The group must first enroll in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        # not modified values
+        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
         competition = r.parent_competition
 

@@ -11,7 +11,8 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
     CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, \
     MyEnrolledGroupsViewSet, ToggleGroupValid, MyEnrolledGroupsInCompetitionViewSet
-from competition.views.agent import AssociateAgent, AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
+from competition.views.agent import AssociateAgent, AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, \
+    AssociateAgentAdmin
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
@@ -55,6 +56,7 @@ router_competitions.register(r'toggle_group_inscription', ToggleGroupValid)
 # Agent
 router_competitions.register(r'agent', AgentViewSets)
 router_competitions.register(r'associate_agent', AssociateAgent)
+router_competitions.register(r'associate_agent_admin', AssociateAgentAdmin)
 router_competitions.register(r'agents_by_group', AgentsByGroupViewSet)
 router_competitions.register(r'agents_by_user', AgentsByUserViewSet)
 router_competitions.register(r'agent_files', GetAgentsFiles)
