@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from competition.models import Competition, Round, GroupEnrolled
-from competition.serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer
+from competition.serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer, \
+    CompetitionSerializer
 from django.db import IntegrityError
 from django.db import transaction
 from authentication.models import Group
@@ -241,6 +242,33 @@ class MyEnrolledGroupsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.G
                 enrolled_groups += [GroupEnrolledSimplex(enrolled_group[0])]
 
         serializer = self.serializer_class(enrolled_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetEnrolledGroupCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of competitions enrolled and with valid inscription by group
+        B{URL:} ../api/v1/competitions/group_enrolled_competitions/<group_name>/
+
+        @type  group_name: str
+        @param group_name: The group name
+        """
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        groups = GroupEnrolled.objects.filter(group=group, valid=True)
+
+        competitions = []
+        for group_enrolled in groups:
+            competitions += [group_enrolled.competition]
+
+        serializer = self.serializer_class(competitions, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -10,7 +10,7 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
 
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
     CompetitionGroupValidViewSet, CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, \
-    MyEnrolledGroupsViewSet, ToggleGroupValid, MyEnrolledGroupsInCompetitionViewSet
+    MyEnrolledGroupsViewSet, ToggleGroupValid, MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
 from competition.views.agent import AssociateAgent, AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, \
     AssociateAgentAdmin
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
@@ -52,6 +52,7 @@ router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
 router_competitions.register(r'my_enrolled_groups', MyEnrolledGroupsViewSet)
 router_competitions.register(r'my_enrolled_groups_competition', MyEnrolledGroupsInCompetitionViewSet)
+router_competitions.register(r'group_enrolled_competitions', GetEnrolledGroupCompetitionsViewSet)
 router_competitions.register(r'toggle_group_inscription', ToggleGroupValid)
 # Agent
 router_competitions.register(r'agent', AgentViewSets)
