@@ -31,8 +31,7 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         @param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
-        all_groups = GroupEnrolled.objects.filter(competition=competition)
-        serializer = self.serializer_class(all_groups, many=True)
+        serializer = self.serializer_class(competition.groupenrolled_set.all(), many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -56,7 +55,7 @@ class MyEnrolledGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
         enrolled_groups = []
         for group in user.groups.all():
-            for eg in GroupEnrolled.objects.filter(group=group):
+            for eg in group.groupenrolled_set.all():
                 enrolled_groups += [GroupEnrolledSimplex(eg)]
 
         serializer = self.serializer_class(enrolled_groups, many=True)
@@ -109,10 +108,8 @@ class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericView
                              'message': 'Please provide the ?competition_name=<competition_name>'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        competition = get_object_or_404(Competition.objects.all(),
-            name=request.GET.get('competition_name', ''))
-        group = get_object_or_404(Group.objects.all(),
-            name=kwargs.get('pk'))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
 
         group_enrolled = get_object_or_404(self.queryset, group=group, competition=competition)
         group_enrolled.valid = not group_enrolled.valid
@@ -139,14 +136,13 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
         @param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
-        competition_rounds = Round.objects.filter(parent_competition=competition)
 
-        if len(competition_rounds) == 0:
+        if len(competition.round_set.all()) == 0:
             return Response({'status': 'Bad request',
                              'message': 'Not found '},
                             status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(RoundSimplex(competition_rounds.reverse()[0]))
+        serializer = self.serializer_class(RoundSimplex(competition.round_set.all().reverse()[0]))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -167,14 +163,13 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         @param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
-        competition_rounds = Round.objects.filter(parent_competition=competition)
 
-        if len(competition_rounds) == 0:
+        if len(competition.round_set.all()) == 0:
             return Response({'status': 'Bad request',
                              'message': 'Not found '},
                             status=status.HTTP_404_NOT_FOUND)
 
-        serializer = self.serializer_class(RoundSimplex(competition_rounds[0]))
+        serializer = self.serializer_class(RoundSimplex(competition.round_set.all()[0]))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -322,8 +317,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
                 name=serializer.validated_data['competition_name'])
-            group = get_object_or_404(Group.objects.all(),
-                name=serializer.validated_data['group_name'])
+            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',

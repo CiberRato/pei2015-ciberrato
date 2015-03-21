@@ -40,9 +40,8 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         @param file_name: The file name
         """
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
-        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
 
-        if len(group_member) == 0:
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) == 0:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -100,8 +99,7 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
 
-        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
-        if len(group_member) != 1:
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)

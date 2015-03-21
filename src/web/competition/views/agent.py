@@ -116,14 +116,12 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                  'message': 'The group is not accepting agents.'},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
-            group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
-            if len(group_member) != 1:
+            if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'You must be part of the group.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition, valid=True)
-            if len(group_enrolled) != 1:
+            if len(GroupEnrolled.objects.filter(group=agent.group, competition=competition, valid=True)) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'The group must first enroll and with inscription valid.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -182,14 +180,12 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                              'message': 'The group is not accepting agents.'},
                             status=status.HTTP_401_UNAUTHORIZED)
 
-        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
-        if len(group_member) != 1:
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
-        if len(group_enrolled) != 1:
+        if len(GroupEnrolled.objects.filter(group=agent.group, competition=competition)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'The group must first enroll in the competition.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -232,8 +228,7 @@ class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, vie
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
             competition = r.parent_competition
 
-            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition, valid=True)
-            if len(group_enrolled) != 1:
+            if len(GroupEnrolled.objects.filter(group=agent.group, competition=competition, valid=True)) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'The group must first enroll and with inscription valid.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -282,8 +277,7 @@ class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, vie
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
         competition = r.parent_competition
 
-        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=competition)
-        if len(group_enrolled) != 1:
+        if len(GroupEnrolled.objects.filter(group=agent.group, competition=competition)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'The group must first enroll in the competition.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -361,13 +355,11 @@ class AgentsAssociated(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param competition_name: The competition name
         """
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-        group_agents = group.agent_set.all()
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name'))
 
         agents = []
-        for group_agent in group_agents:
-            competition_agents = CompetitionAgent.objects.filter(competition=competition, agent=group_agent)
-            if len(competition_agents) > 0:
+        for group_agent in group.agent_set.all():
+            if len(CompetitionAgent.objects.filter(competition=competition, agent=group_agent)) > 0:
                 agents += [group_agent]
 
         serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)

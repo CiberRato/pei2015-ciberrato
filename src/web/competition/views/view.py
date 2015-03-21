@@ -64,8 +64,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk'))
 
-        rounds = Round.objects.filter(parent_competition=competition)
-        for r in rounds:
+        for r in competition.round_set.all():
             r.delete()
 
         competition.delete()

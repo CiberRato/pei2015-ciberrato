@@ -93,11 +93,9 @@ class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param identifier: The simulation identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
-
         simulations = []
-        lgas = LogSimulationAgent.objects.filter(simulation=simulation)
 
-        for lga in lgas:
+        for lga in simulation.logsimulationagent_set.all():
             simulations += [SimulationAgentSimplex(lga)]
 
         # Competition Agents name
@@ -141,22 +139,20 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
                                  'message': 'This agent has already in one simulation!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            simulation = get_object_or_404(Simulation.objects.all(),
-                identifier=serializer.validated_data['simulation_identifier'])
+            simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
 
             maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
 
             # competitiva
             if competition_agent.competition.type_of_competition == settings.COLABORATIVA:
                 # see if the simulation has already the number max of agents
-                simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
-                if len(simulation_agents) >= maxs[settings.COLABORATIVA]:
+                if len(simulation.logsimulationagent_set.all()) >= maxs[settings.COLABORATIVA]:
                     return Response({'status': 'Bad Request',
                                      'message': 'The simulation reached the number max of participants.'},
                                     status=status.HTTP_400_BAD_REQUEST)
                 # all the agents must be part of the same team
                 group = agent.group
-                for simulation_agent in simulation_agents:
+                for simulation_agent in simulation.logsimulationagent_set.all():
                     if simulation_agent.competition_agent.agent.group != group:
                         return Response({'status': 'Bad Request',
                                          'message': 'The competition is in ' + settings.COLABORATIVA + ' mode, the agents must be owned by the same team.'},
@@ -165,14 +161,13 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
             # colaborativa
             if competition_agent.competition.type_of_competition == settings.COMPETITIVA:
                 # see if the simulation has already the number max of agents
-                simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
-                if len(simulation_agents) >= maxs[settings.COMPETITIVA]:
+                if len(simulation.logsimulationagent_set.all()) >= maxs[settings.COMPETITIVA]:
                     return Response({'status': 'Bad Request',
                                      'message': 'The simulation reached the number max of participants.'},
                                     status=status.HTTP_400_BAD_REQUEST)
                 # all the agents must be from different teams
                 group = agent.group
-                for simulation_agent in simulation_agents:
+                for simulation_agent in simulation.logsimulationagent_set.all():
                     if simulation_agent.competition_agent.agent.group == group:
                         return Response({'status': 'Bad Request',
                                          'message': 'The competition is in ' + settings.COLABORATIVA + ' mode, the agents must be from different teams.'},
@@ -182,8 +177,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
-            simulation = get_object_or_404(Simulation.objects.all(),
-                identifier=serializer.validated_data['simulation_identifier'])
+            simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
                                                     pos=serializer.validated_data['pos'])
@@ -240,12 +234,10 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param agent_name: The agent name
         """
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(agent=agent)
         simulations = []
 
-        for competition_agent in competition_agents:
-            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
-            for lga in lgas:
+        for competition_agent in agent.competitionagent_set.all():
+            for lga in LogSimulationAgent.objects.filter(competition_agent=competition_agent):
                 simulations += [SimulationSimplex(lga.simulation)]
 
         serializer = self.serializer_class(simulations, many=True)
@@ -269,12 +261,10 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r)
         simulations = []
 
-        for competition_agent in competition_agents:
-            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
-            for lga in lgas:
+        for competition_agent in r.competitionagent_set.all():
+            for lga in LogSimulationAgent.objects.filter(competition_agent=competition_agent):
                 simulations += [SimulationSimplex(lga.simulation)]
 
         serializer = self.serializer_class(simulations, many=True)
@@ -368,12 +358,10 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         @param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(competition=competition)
         simulations = []
 
-        for competition_agent in competition_agents:
-            lgas = LogSimulationAgent.objects.filter(competition_agent=competition_agent)
-            for lga in lgas:
+        for competition_agent in competition.competitionagent_set.all():
+            for lga in LogSimulationAgent.objects.filter(competition_agent=competition_agent):
                 simulations += [SimulationSimplex(lga.simulation)]
 
         serializer = self.serializer_class(simulations, many=True)
