@@ -135,8 +135,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                 status=status.HTTP_400_BAD_REQUEST)
 
             # verify limits
-            groups_agent = Agent.objects.filter(group=agent.group)
-            groups_agents_in_round = [agent for agent in groups_agent if
+            groups_agents_in_round = [agent for agent in agent.group.agent_set.all() if
                                       len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 1]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
@@ -246,8 +245,7 @@ class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, vie
                                 status=status.HTTP_400_BAD_REQUEST)
 
             # verify limits
-            groups_agent = Agent.objects.filter(group=agent.group)
-            groups_agents_in_round = [agent for agent in groups_agent if
+            groups_agents_in_round = [agent for agent in agent.group.agent_set.all() if
                                       len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 1]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)

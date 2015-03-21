@@ -207,7 +207,7 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/members/XPTO2/"
         response = client.get(url)
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.data, {u'detail': u'Not found'})
+        self.assertEqual(response.data, {u'detail': u'Not found.'})
 
         # no GroupMembers instances
         # two from the SetUp

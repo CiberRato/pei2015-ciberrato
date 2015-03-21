@@ -600,7 +600,7 @@ class AuthenticationTestCase(TestCase):
         # retrieve the simulation data
         url = "/api/v1/competitions/simulation/" + identifier + "/"
         response = client.get(url)
-        self.assertEqual(response.data, {u'detail': u'Not found'})
+        self.assertEqual(response.data, {u'detail': u'Not found.'})
 
         # destroy the agent
         url = "/api/v1/competitions/agent/KAMIKAZE/"
@@ -611,7 +611,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/agent/KAMIKAZE/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.data, {"detail": "Not found"})
+        self.assertEqual(response.data, {u'detail': u'Not found.'})
 
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)

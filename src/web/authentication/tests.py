@@ -104,7 +104,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/accounts/test/"
         response = client.get(url)
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.data, {u'detail': u'Not found'})
+        self.assertEqual(response.data, {u'detail': u'Not found.'})
 
         client.login(email='test@test.com')
         client.logout()

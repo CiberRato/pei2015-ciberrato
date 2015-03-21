@@ -160,7 +160,7 @@ class UploadAgent(views.APIView):
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        file_obj = request.data['file']
+        file_obj = request.data.get('file', '')
 
         # language agent
         agent.language = request.GET.get('language', '')
@@ -270,7 +270,7 @@ class UploadRoundXMLView(views.APIView):
 
         r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''))
 
-        return self.file_save_xml(request.data['file'], r, )
+        return self.file_save_xml(request.data.get('file', ''), r, )
 
     def file_save_xml(self, file_obj, r):
         if getattr(r, self.file_to_save, None) is not None:
