@@ -3,6 +3,7 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
+user=$(who am i | awk '{print $1}')
 echo "	>> Installing general dependencies"
 apt-get install -y	python \
 			build-essential \
@@ -19,14 +20,14 @@ pip install cherrypy \
 pip install -r requirements.txt;
 
 echo "	>> Migrating Django applications"
-python manage.py migrate;)
+sudo -u $user python manage.py migrate;)
 
 echo "	>> Compiling cibertools"
 (cd src/server/cibertools-v2.2/;
 make;)
 echo "	>> Creating docker image based on Dockerfile"
 groupadd docker
-gpasswd -a $(who am i | awk '{print $1}') docker
+gpasswd -a $user docker
 
 if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ];
 then
