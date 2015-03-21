@@ -10,7 +10,8 @@
             'ciberonline.teams',
             'ciberonline.search',
             'ciberonline.competitions',
-            'ciberonline.agents'
+            'ciberonline.agents',
+            'ciberonline.rounds'
         ])
         .run(run);
 
