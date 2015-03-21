@@ -11,6 +11,13 @@ class CompetitionSerializer(serializers.ModelSerializer):
         read_only_fields = ('state_of_competition',)
 
 
+class CompetitionStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Competition
+        fields = ('state_of_competition',)
+        read_only_fields = ()
+
+
 class RoundSerializer(serializers.ModelSerializer):
     parent_competition_name = serializers.CharField(max_length=128)
 

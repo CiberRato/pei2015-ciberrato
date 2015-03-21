@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from ..permissions import IsAdmin
 from .simplex import RoundSimplex
 from ..models import Competition
-from ..serializers import CompetitionSerializer, RoundSerializer
+from ..serializers import CompetitionSerializer, RoundSerializer, CompetitionStateSerializer
 
 
 class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
@@ -76,7 +76,38 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
                         status=status.HTTP_200_OK)
 
 
-class CompetitionStateViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = CompetitionStateSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the competition state
+        B{URL:} ../api/v1/competitions/state/<name>/
+
+        @type  state_of_competition: {'Past', 'Register', 'Competition'}
+        @param state_of_competition: dict
+        @type  name: str
+        @param name: the competition name
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+            competition.state_of_competition = serializer.data.get('state_of_competition', '')
+            competition.save()
+
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The competition state could not be update with that information'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
 

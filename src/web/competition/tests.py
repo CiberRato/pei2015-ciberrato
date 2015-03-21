@@ -661,6 +661,20 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {'name': u'R3', 'parent_competition_name': u'C1'})
 
+        # change competition state
+        url = "/api/v1/competitions/state/C1/"
+        data = {'state_of_competition': 'Competition'}
+        response = client.put(path=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, OrderedDict([(u'state_of_competition', 'Competition')]))
+
+        # get competition Competition
+        url = "/api/v1/competitions/get/Competition/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data,
+                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Competition"}])
+
         r3 = Round.objects.get(name="R3")
         r3.delete()
 
