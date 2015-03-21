@@ -1,14 +1,18 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, CompetitionAgent
-from competition.serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer
-from authentication.models import GroupMember
-from authentication.serializers import AccountSerializer
-from groups.serializers import GroupSerializer
+
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
-from competition.permissions import IsAdmin
-from competition.views.simplex import RoundSimplex, CompetitionAgentSimplex
+
+from authentication.models import GroupMember
+from authentication.serializers import AccountSerializer
+
+from groups.serializers import GroupSerializer
+
+from ..models import Competition, Round, CompetitionAgent
+from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer
+from ..permissions import IsAdmin
+from .simplex import RoundSimplex, CompetitionAgentSimplex
 
 
 class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,

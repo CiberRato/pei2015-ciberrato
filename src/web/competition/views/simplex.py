@@ -18,23 +18,6 @@ class GroupEnrolledSimplex:
         self.valid = ge.valid
 
 
-class AgentSimplex:
-    def __init__(self, ag):
-        self.agent_name = ag.agent_name
-        self.user = ag.user
-        self.is_virtual = ag.is_virtual
-        self.language = ag.language
-        self.competitions = ag.competitions
-
-        self.rounds = []
-        for r in ag.rounds.all():
-            self.rounds += [RoundSimplex(r)]
-
-        self.group_name = ag.group.name
-        self.created_at = ag.created_at
-        self.updated_at = ag.updated_at
-
-
 class CompetitionAgentSimplex:
     def __init__(self, cas):
         self.round_name = cas.round.name

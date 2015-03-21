@@ -1,5 +1,7 @@
-from competition.models import *
-from groups.serializers import *
+from rest_framework import serializers
+
+from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent
+from groups.serializers import GroupSerializer
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
@@ -45,19 +47,6 @@ class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
         model = GroupEnrolled
         fields = ('group', 'valid',)
         read_only_fields = ('group', 'valid')
-
-
-class AgentSerializer(serializers.ModelSerializer):
-    group_name = serializers.CharField(max_length=128)
-    user = AccountSerializer(read_only=True)
-    rounds = RoundSerializer(many=True, read_only=True)
-    competitions = CompetitionSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Agent
-        fields = ('agent_name', 'is_virtual', 'language', 'rounds', 'competitions', 'user', 'group_name', 'created_at',
-                  'updated_at')
-        read_only_fields = ('user', 'language', 'rounds', 'competitions', 'created_at', 'updated_at',)
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):
@@ -108,14 +97,6 @@ class LogSimulation(serializers.ModelSerializer):
         model = Simulation
         fields = ('simulation_identifier', 'log_json',)
         read_only_fields = ()
-
-
-class FileAgentSerializer(serializers.BaseSerializer):
-    def to_representation(self, instance):
-        return {
-            'file': instance.file,
-            'url': instance.url
-        }
 
 
 class AgentXSerializer(serializers.BaseSerializer):

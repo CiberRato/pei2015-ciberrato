@@ -1,89 +1,19 @@
-import json
+from django.shortcuts import get_object_or_404
+from django.conf import settings
 
-from django.shortcuts import get_object_or_404, get_list_or_404
-from competition.models import Round, GroupEnrolled, CompetitionAgent, Agent, Competition
-from competition.serializers import AgentSerializer, RoundAgentSerializer, CompetitionAgentSerializer
-from competition.permissions import IsAdmin
-from authentication.models import Group, GroupMember, Account
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
-from django.core.files.storage import default_storage
-from groups.permissions import IsAdminOfGroup
-from django.conf import settings
-from competition.views.simplex import AgentSimplex
 
+from authentication.models import Group, GroupMember
 
-class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                    mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Agent.objects.all()
-    serializer_class = AgentSerializer
+from ..models import Round, GroupEnrolled, CompetitionAgent, Competition
+from ..serializers import RoundAgentSerializer, CompetitionAgentSerializer
+from ..permissions import IsAdmin
 
-    def get_permissions(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdminOfGroup(),
-
-    def create(self, request, *args, **kwargs):
-        """
-        B{Create} an agent
-        B{URL:} ../api/v1/competitions/agent/
-
-        @type  agent_name: str
-        @param agent_name: The agent name
-        @type  group_name: str
-        @param group_name: The group name
-        @type  is_virtual: boolean
-        @param is_virtual: True if is virtual or False if is not virtual
-        """
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            user = request.user
-            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
-            agent_name = serializer.validated_data['agent_name']
-            Agent.objects.create(agent_name=agent_name, user=user, group=group,
-                                 is_virtual=serializer.validated_data['is_virtual'])
-
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
-
-        return Response({'status': 'Bad Request',
-                         'message': 'The agent could not be created with received data'},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} information of the agent
-        B{URL:} ../api/v1/competitions/agent/<agent_name>/
-
-        @type  agent_name: str
-        @param agent_name: The agent name
-        """
-        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
-        serializer = AgentSerializer(AgentSimplex(agent))
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        B{Destroy} an agent
-        B{URL:} ../api/v1/competitions/agent/<agent_name>/
-
-        @type  agent_name: str
-        @param agent_name: The agent name
-        """
-        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
-
-        if agent.locations:
-            if len(json.loads(agent.locations)) > 0:
-                for path in json.loads(agent.locations):
-                    default_storage.delete(path)
-
-        agent.delete()
-
-        return Response({'status': 'Deleted',
-                         'message': 'The agent has been deleted'},
-                        status=status.HTTP_200_OK)
+from agent.simplex import AgentSimplex
+from agent.serializers import AgentSerializer
+from agent.models import Agent
 
 
 class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -194,7 +124,8 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
 
-        competition_agent = CompetitionAgent.objects.filter(competition=competition, round=competition.round_set.first(), agent=agent)
+        competition_agent = CompetitionAgent.objects.filter(competition=competition,
+                                                            round=competition.round_set.first(), agent=agent)
         competition_agent.delete()
 
         return Response({'status': 'Deleted',
@@ -292,48 +223,6 @@ class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, vie
         return Response({'status': 'Deleted',
                          'message': 'The competition agent has been deleted!'},
                         status=status.HTTP_200_OK)
-
-
-class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Agent.objects.all()
-    serializer_class = AgentSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Retrieve} the list of agents by group
-        B{URL:} ../api/v1/competitions/agents_by_group/<group_name>/
-
-        @type  group_name: str
-        @param group_name: The group name
-        """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-        serializer = self.serializer_class([AgentSimplex(agent) for agent in group.agent_set.all()], many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Agent.objects.all()
-    serializer_class = AgentSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Retrieve} the list of agents by username
-        B{URL:} ../api/v1/competitions/agents_by_user/<username>/
-
-        @type  username: str
-        @param username: The user name
-        """
-        user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
-        serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AgentsAssociated(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

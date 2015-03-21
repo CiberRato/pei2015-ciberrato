@@ -1,7 +1,5 @@
 from rest_framework import permissions
 
-import sys
-
 
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):

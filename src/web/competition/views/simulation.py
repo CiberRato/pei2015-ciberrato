@@ -1,21 +1,23 @@
 from django.shortcuts import get_object_or_404
-from competition.models import Competition, Round, Simulation, CompetitionAgent, Agent, \
-    LogSimulationAgent
-from competition.serializers import SimulationXSerializer, \
-    SimulationSerializer, \
-    SimulationAgentSerializer, LogSimulation
-import os
-from rest_framework import permissions
-from rest_framework import mixins, viewsets, status, views
-from rest_framework.response import Response
-from competition.permissions import IsAdmin
 from django.conf import settings
-from competition.shortcuts import *
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-from competition.views.simplex import SimulationSimplex, SimulationAgentSimplex, SimulationX
+
 import requests
+import os
+
+from rest_framework import permissions
+from rest_framework import mixins, viewsets, status, views
+from rest_framework.response import Response
+
+from agent.models import Agent
+
+from .simplex import SimulationSimplex, SimulationAgentSimplex, SimulationX
+from ..serializers import SimulationXSerializer, SimulationSerializer, SimulationAgentSerializer, LogSimulation
+from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent
+from ..shortcuts import *
+from ..permissions import IsAdmin
 
 
 class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,

@@ -1,17 +1,21 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
-from competition.models import Competition, Round, GroupEnrolled
-from competition.serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer, \
-    CompetitionSerializer
 from django.db import IntegrityError
 from django.db import transaction
-from authentication.models import Group
-from groups.serializers import GroupSerializer
+
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
-from competition.permissions import IsAdmin
+
+from groups.serializers import GroupSerializer
 from groups.permissions import IsAdminOfGroup
-from competition.views.simplex import RoundSimplex, GroupEnrolledSimplex
+
+from ..permissions import IsAdmin
+from .simplex import RoundSimplex, GroupEnrolledSimplex
+from ..models import Competition, Round, GroupEnrolled
+from ..serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer, \
+    CompetitionSerializer
+
+from authentication.models import Group
 from authentication.models import Account
 
 
