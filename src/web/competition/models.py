@@ -62,7 +62,6 @@ class Round(models.Model):
     param_list_path = models.FileField(max_length=128)
     grid_path = models.FileField(max_length=128)
     lab_path = models.FileField(max_length=128)
-    agents_list = models.ManyToManyField('Agent', through='CompetitionAgent', related_name="round")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -84,9 +83,6 @@ class Agent(models.Model):
     language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
     code_valid = models.BooleanField(default=False)
     is_virtual = models.BooleanField(default=False)
-
-    competitions = models.ManyToManyField('Competition', through='CompetitionAgent', related_name="competition")
-    rounds = models.ManyToManyField('Round', through='CompetitionAgent', related_name="round")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -197,7 +197,7 @@ class GetAgentFiles(views.APIView):
         simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
 
         # see if round is in agent rounds
-        if simulation.round not in agent.rounds.all():
+        if simulation.round not in [cp_agent.round for cp_agent in agent.competitionagent_set.all()]:
             return Response({'status': 'Bad request',
                              'message': 'The agent is not in this round.'},
                             status=status.HTTP_400_BAD_REQUEST)

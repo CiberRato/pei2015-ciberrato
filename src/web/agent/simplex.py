@@ -7,10 +7,10 @@ class AgentSimplex:
         self.user = ag.user
         self.is_virtual = ag.is_virtual
         self.language = ag.language
-        self.competitions = ag.competitions
+        self.competitions = [cp_agent.competition for cp_agent in ag.competitionagent_set.all()]
 
         self.rounds = []
-        for r in ag.rounds.all():
+        for r in [cp_agent.round for cp_agent in ag.competitionagent_set.all()]:
             self.rounds += [RoundSimplex(r)]
 
         self.group_name = ag.group.name
