@@ -20,7 +20,11 @@
             getLive: getLive,
             getMyTeams: getMyTeams,
             getCompetitions: getCompetitions,
-            getFirstRound: getFirstRound
+            getFirstRound: getFirstRound,
+            create: create,
+            createRound: createRound,
+            deleteCompetition: deleteCompetition,
+            validateInscription: validateInscription
 
         };
 
@@ -75,7 +79,34 @@
         }
 
         function getFirstRound(competitionName){
-            return $http.get("/api/v1/competitions/oldest_round/"+competitionName+"/")
+            return $http.get("/api/v1/competitions/oldest_round/"+competitionName+"/");
+        }
+
+        function create(competitionName, type_of_competition){
+            return $http.post("/api/v1/competitions/crud/", {
+                name: competitionName,
+                type_of_competition: type_of_competition
+            });
+        }
+
+        function createRound(roundName, competition){
+            return $http.post("/api/v1/competitions/round/", {
+                name: roundName,
+                parent_competition_name: competition
+            });
+        }
+
+        function deleteCompetition(name){
+            return $http.delete("/api/v1/competitions/crud/" +name+ "/");
+        }
+
+        function validateInscription(teamName, competitionName){
+            console.log('entrei');
+            console.log(teamName + ' ' + competitionName);
+            return $http.post("/api/v1/competitions/toggle_group_inscription/", {
+                competition_name: competitionName,
+                group_name: teamName
+            });
         }
     }
 

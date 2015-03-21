@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('DetailCompetitionController', DetailCompetitionController);
 
-    DetailCompetitionController.$inject = ['$location', '$routeParams', 'Competition', 'Team', 'Authentication'];
+    DetailCompetitionController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Team', 'Authentication'];
 
-    function DetailCompetitionController($location, $routeParams, Competition, Team, Authentication){
+    function DetailCompetitionController($location, $route, $routeParams, Competition, Team, Authentication){
         var vm = this;
         var competitionName = $routeParams.name;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
@@ -18,6 +18,7 @@
         vm.enroll = enroll;
         vm.removeInscription = removeInscription;
         vm.change_page = change_page;
+        vm.validateInscription = validateInscription;
 
         activate();
 
@@ -143,6 +144,19 @@
 
         function change_page(){
             $location.path('/panel/' + vm.username + '/createTeam')
+        }
+
+        function validateInscription(group_name, competition_name){
+            Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
+
+            function validateInscriptionSuccessFn(){
+                console.log('deu');
+                $route.reload();            }
+            function validateInscriptionErrorFn(data){
+                console.error(data.data);
+                $location.path('/admin/');
+            }
+
         }
 
     }

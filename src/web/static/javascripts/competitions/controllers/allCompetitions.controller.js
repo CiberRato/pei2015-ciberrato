@@ -10,6 +10,7 @@
 
     function AllCompetitionsController($location, Competition){
         var vm = this;
+        vm.deleteCompetition = deleteCompetition;
         activate();
 
         function activate(){
@@ -40,6 +41,27 @@
                     console.error(data.data);
                     $location.path('/panel/')
                 }
+            }
+
+        }
+
+        function deleteCompetition(name){
+            Competition.deleteCompetition(name).then(deleteCompetitionSuccessFn, deleteCompetitionErrorFn);
+
+            function deleteCompetitionSuccessFn(){
+                $.jGrowl("Competition has been removed successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/admin/allCompetitions/');
+            }
+
+            function deleteCompetitionErrorFn(){
+                $.jGrowl("Competition can't be removed.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/admin/allCompetitions/');
             }
 
         }

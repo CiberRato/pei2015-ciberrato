@@ -1,6 +1,5 @@
 <div class="content-block" role="main">
 
-
     <!-- Grid row -->
     <div class="row">
 
@@ -18,38 +17,33 @@
                         <!-- Example vertical forms -->
                         <div class="row-fluid">
                             <div class="span4">
-                                <p>In this page you can create your agents.</p>
-                                <p><strong>Type of Agent, is Virtual: </strong></p>
-                                <p>If you want to connect remotely competition choose <strong>Yes</strong>, you won't be able to upload code.</p>
-                                <p>If you want to locally run the competition choose <strong>No</strong>, you will be able to upload code.</p>
+                                <p>In this page you can create your competitions.</p>
                                 <br></br>
                                 <p> When you complete your editions, please click on button <strong>Save changes</strong>.</p>
 
                             </div>
-                            <div class="span8" ng-controller="CreateAgentController">
+                            <div class="span8">
                                 <form role="form" ng-submit="vm.create()">
                                     <fieldset>
                                         <div class="control-group">
-                                            <label class="control-label" for="agentname">Agent Name</label>
+                                            <label class="control-label" for="competitionname">Competition Name</label>
                                             <div class="controls">
-                                                <input id="agentname" type="text" placeholder="name of the agent" name="name" ng-model="vm.name">
+                                                <input id="competitionname" type="text" placeholder="name of the competition" name="name" ng-model="vm.competitionName">
                                             </div>
                                         </div>
                                         <div  class="control-group">
                                             <label class="control-label" for="select">Team of the Agent</label>
                                             <div class="controls">
                                                 <select id="select" name="option">
-                                                    <option ng-repeat="(key, value) in vm.teams">{{value.name}}</option>
+                                                    <option value="Competitive">Competitive</option>
+                                                    <option value="Collaborative">Collaborative</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div  class="control-group">
-                                            <label class="control-label" for="type">Type of the Agent, Is Virtual?</label>
+                                        <div class="control-group">
+                                            <label class="control-label" for="firstroundname">First Round Name</label>
                                             <div class="controls">
-                                                <select id="type" name="option">
-                                                    <option value="false">No (can upload code)</option>
-                                                    <option value="true">Yes (can't upload code)</option>
-                                                </select>
+                                                <input id="firstroundname" type="text" placeholder="name of the first round" name="name" ng-model="vm.firstRound">
                                             </div>
                                         </div>
 

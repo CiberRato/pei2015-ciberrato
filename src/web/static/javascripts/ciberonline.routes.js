@@ -100,6 +100,18 @@
             templateUrl: '/static/templates/panel/agent/allAgents.html'
         }).when('/admin/',{
             templateUrl: '/static/templates/admin/index.html'
+        }).when('/admin/createCompetition',{
+            controller:'CreateCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/createCompetition.html'
+        }).when('/admin/allCompetitions',{
+            controller:'AllCompetitionsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/allCompetitions.html'
+        }).when('/admin/:name/detailCompetition',{
+            controller:'DetailCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/competitionDetails.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
