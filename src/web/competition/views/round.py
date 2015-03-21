@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, CompetitionAgent
-from competition.serializers import RoundSerializer, CompetitionAgentSerializer, AdminRoundSerializer
+from competition.serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer
 from authentication.models import GroupMember
 from authentication.serializers import AccountSerializer
 from groups.serializers import GroupSerializer
@@ -102,7 +102,7 @@ class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
-    serializer_class = CompetitionAgentSerializer
+    serializer_class = RoundAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -125,7 +125,7 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 class AgentsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
-    serializer_class = CompetitionAgentSerializer
+    serializer_class = RoundAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),

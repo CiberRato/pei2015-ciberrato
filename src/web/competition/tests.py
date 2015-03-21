@@ -300,10 +300,10 @@ class AuthenticationTestCase(TestCase):
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE'})
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
 
         # see the information about the agent
@@ -570,7 +570,7 @@ class AuthenticationTestCase(TestCase):
             r.grid_path.delete()
 
         # deassociate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/KAMIKAZE/?round_name=R1"
+        url = "/api/v1/competitions/associate_agent/KAMIKAZE/?competition_name=C1"
         response = client.delete(url)
         self.assertEqual(response.status_code, response.status_code)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
@@ -917,41 +917,41 @@ class AuthenticationTestCase(TestCase):
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE1'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE1'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE1'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE1'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 1)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE2'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE2'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE2'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE2'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 2)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE3'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE3'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE3'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE3'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 3)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE4'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE4'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE4'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE4'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 4)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE5'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE5'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE5'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE5'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 5)
 
@@ -963,7 +963,7 @@ class AuthenticationTestCase(TestCase):
 
         # reach maximum agents in competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE6'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE6'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {'status': 'Reached the limit of agents',
                                          'message': 'Reached the number of competition_agents!'})
@@ -1020,15 +1020,15 @@ class AuthenticationTestCase(TestCase):
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE1'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE1'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'round_name': u'R1', 'agent_name': u'KAMIKAZE1'})
+        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE1'})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(CompetitionAgent.objects.all()), 1)
 
         # reach maximum agents in competition
         url = "/api/v1/competitions/associate_agent/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE2'}
+        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE2'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {'status': 'Reached the limit of agents',
                                          'message': 'Reached the number of competition_agents!'})

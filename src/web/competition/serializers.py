@@ -61,6 +61,16 @@ class AgentSerializer(serializers.ModelSerializer):
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):
+    competition_name = serializers.CharField(max_length=128)
+    agent_name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = CompetitionAgent
+        fields = ('competition_name', 'agent_name', 'created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at',)
+
+
+class RoundAgentSerializer(serializers.ModelSerializer):
     round_name = serializers.CharField(max_length=128)
     agent_name = serializers.CharField(max_length=128)
 

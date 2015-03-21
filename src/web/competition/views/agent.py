@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import get_object_or_404, get_list_or_404
 from competition.models import Round, GroupEnrolled, CompetitionAgent, Agent, Competition
-from competition.serializers import AgentSerializer, CompetitionAgentSerializer
+from competition.serializers import AgentSerializer, RoundAgentSerializer, CompetitionAgentSerializer
 from competition.permissions import IsAdmin
 from authentication.models import Group, GroupMember, Account
 from rest_framework import permissions
@@ -98,8 +98,8 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
         B{Associate} an agent
         B{URL:} ../api/v1/competitions/associate_agent/
 
-        @type  round_name: str
-        @param round_name: The round name
+        @type  competition_name: str
+        @param competition_name: The competition name
         @type  agent_name: str
         @param agent_name: The agent name
         """
@@ -107,9 +107,9 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            competition = get_object_or_404(Competition.objects.all(),
+                name=serializer.validated_data['competition_name'])
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
-            competition = r.parent_competition
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',
@@ -132,9 +132,10 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                  'message': 'Please submit a valid code first!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+
             # verify limits
-            groups_agents_in_round = [agent for agent in agent.group.agent_set.all() if
-                                      len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 1]
+            groups_agents_in_round = [agent for agent in agent.group.agent_set.all() if len(
+                CompetitionAgent.objects.filter(agent=agent, round=competition.round_set.first())) == 1]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
@@ -144,11 +145,11 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                                 status=status.HTTP_400_BAD_REQUEST)
 
             # not modified values
-            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            competition = get_object_or_404(Competition.objects.all(),
+                name=serializer.validated_data['competition_name'])
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
-            competition = r.parent_competition
 
-            CompetitionAgent.objects.create(agent=agent, round=r, competition=competition)
+            CompetitionAgent.objects.create(agent=agent, round=competition.round_set.first(), competition=competition)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -159,21 +160,20 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
     def destroy(self, request, *args, **kwargs):
         """
         B{Delete} the associated agent from the round
-        B{URL:} ../api/v1/competitions/associate_agent/<agent_name>/?round_name?<round_name>
+        B{URL:} ../api/v1/competitions/associate_agent/<agent_name>/?competition_name?<competition_name>
 
-        @type  round_name: str
-        @param round_name: The round name
+        @type  competition_name: str
+        @param competition_name: The competition name
         @type  agent_name: str
         @param agent_name: The agent name
         """
-        if 'round_name' not in request.GET:
+        if 'competition_name' not in request.GET:
             return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?round_name=*round_name*'},
+                             'message': 'Please provide the ?competition_name=*competition_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
-        competition = r.parent_competition
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
         if competition.state_of_competition != "Register":
             return Response({'status': 'Not allowed',
@@ -191,11 +191,10 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
                             status=status.HTTP_403_FORBIDDEN)
 
         # not modified values
-        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
-        competition = r.parent_competition
 
-        competition_agent = CompetitionAgent.objects.filter(competition=competition, round=r, agent=agent)
+        competition_agent = CompetitionAgent.objects.filter(competition=competition, round=competition.round_set.first(), agent=agent)
         competition_agent.delete()
 
         return Response({'status': 'Deleted',
@@ -205,7 +204,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
 class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
-    serializer_class = CompetitionAgentSerializer
+    serializer_class = RoundAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsAdmin(),
