@@ -259,13 +259,7 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        simulations = []
-
-        for competition_agent in r.competitionagent_set.all():
-            for lga in LogSimulationAgent.objects.filter(competition_agent=competition_agent):
-                simulations += [SimulationSimplex(lga.simulation)]
-
-        serializer = self.serializer_class(simulations, many=True)
+        serializer = self.serializer_class([SimulationSimplex(sim) for sim in r.simulation_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -288,9 +282,8 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         simulations = []
 
-        for competition_agent in competition.competitionagent_set.all():
-            for lga in LogSimulationAgent.objects.filter(competition_agent=competition_agent):
-                simulations += [SimulationSimplex(lga.simulation)]
+        for r in competition.round_set.all():
+            simulations += [SimulationSimplex(sim) for sim in r.simulation_set.all()]
 
         serializer = self.serializer_class(simulations, many=True)
 
