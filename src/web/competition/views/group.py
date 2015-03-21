@@ -90,40 +90,6 @@ class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CompetitionGroupValidViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
-    queryset = GroupEnrolled.objects.all()
-    serializer_class = GroupEnrolledSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
-
-    def update(self, request, *args, **kwargs):
-        """
-        B{Update} the group enrolled attribute to valid or to false (it's a toggle)
-        B{URL:} ../api/v1/competitions/group_valid/<group_name>/?competition_name=<competition_name>
-
-        @type  competition_name: str
-        @param competition_name: The competition name
-        @type  group_name: str
-        @param group_name: The group name
-        """
-        if 'competition_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?competition_name=<competition_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-
-        group_enrolled = get_object_or_404(self.queryset, group=group, competition=competition)
-        group_enrolled.valid = not group_enrolled.valid
-        group_enrolled.save()
-
-        return Response({'status': 'Updated',
-                         'message': 'The group inscription has been updated to ' + str(group_enrolled.valid) + ' .'},
-                        status=status.HTTP_200_OK)
-
-
 class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = RoundSerializer
     queryset = Round.objects.all()

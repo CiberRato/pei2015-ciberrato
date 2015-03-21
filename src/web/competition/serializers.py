@@ -32,7 +32,7 @@ class AdminRoundSerializer(serializers.ModelSerializer):
 class GroupEnrolledSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128)
     group_name = serializers.CharField(max_length=128)
-    valid = serializers.BooleanField()
+    valid = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = GroupEnrolled

@@ -108,12 +108,12 @@ class AuthenticationTestCase(TestCase):
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO2'), ('valid', False)]),
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
 
-        # update a group to a valid inscription (this can only be made by an admin)
-        url = "/api/v1/competitions/group_valid/XPTO3/?competition_name=C1"
-        response = client.put(url)
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         {"status": "Updated", "message": "The group inscription has been updated to True ."})
 
         # list of all groups enrolled and with inscriptions valid or not in one competition
         url = "/api/v1/competitions/groups/C1/"
@@ -131,12 +131,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO1'), ('max_members', 10)]),
                                          OrderedDict([('name', u'XPTO2'), ('max_members', 10)])])
 
-        # its a toggle, two calls make this attribute to False
-        url = "/api/v1/competitions/group_valid/XPTO3/?competition_name=C1"
-        response = client.put(url)
+        # only admin
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: False'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         {"status": "Updated", "message": "The group inscription has been updated to False ."})
 
         # list of all groups enrolled and with inscriptions not valid in one competition
         url = "/api/v1/competitions/groups_not_valid/C1/"
