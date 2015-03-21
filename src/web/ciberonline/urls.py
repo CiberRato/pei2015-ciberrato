@@ -15,10 +15,11 @@ from competition.views.cp_agent import AssociateAgent, AssociateAgentAdmin, Agen
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet, RoundViewAdminSet
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents, SaveLogs, \
-    GetSimulation, GetSimulationLog, StartSimulation
+    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents,  StartSimulation
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
+
+from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
 from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFiles, GetAgentsFiles, GetAllowedLanguages
