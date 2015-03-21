@@ -386,7 +386,7 @@ class StartSimulation(views.APIView):
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('simulation_id', ''))
         if simulation_waiting(simulation):
-            params = {'simulation_identifier': "0a256950-7a5c-403d-aba3-52e455d197c5"}
+            params = {'simulation_identifier': simulation.identifier}
 
             try:
                 requests.post(settings.START_SIM_ENDPOINT, params)

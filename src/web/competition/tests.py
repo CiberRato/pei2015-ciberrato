@@ -231,7 +231,7 @@ class AuthenticationTestCase(TestCase):
 
         # upload agent code
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
-        f = open('media/tmp_simulations/myrob_do.py', 'r')
+        f = open('media/tests_files/myrob_do.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
@@ -243,19 +243,19 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=C"
-        f = open('media/tmp_simulations/main.c', 'r')
+        f = open('media/tests_files/main.c', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=cplusplus"
-        f = open('media/tmp_simulations/main.cpp', 'r')
+        f = open('media/tests_files/main.cpp', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Java"
-        f = open('media/tmp_simulations/main.java', 'r')
+        f = open('media/tests_files/main.java', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
@@ -471,21 +471,21 @@ class AuthenticationTestCase(TestCase):
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
-        f = open('media/tmp_simulations/Param.xml', 'r')
+        f = open('media/tests_files/Param.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/grid/?round=R1"
-        f = open('media/tmp_simulations/Ciber2010_Grid.xml', 'r')
+        f = open('media/tests_files/Ciber2010_Grid.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/lab/?round=R1"
-        f = open('media/tmp_simulations/Ciber2010_Lab.xml', 'r')
+        f = open('media/tests_files/Ciber2010_Lab.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
@@ -520,7 +520,7 @@ class AuthenticationTestCase(TestCase):
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
 
         # save simulation logs (only server by server)
-        f = open('media/tmp_simulations/ciberOnline_log.json.zip', 'r')
+        f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
         url = "/api/v1/competitions/simulation_log/"
         data = {'simulation_identifier': identifier, 'log_json': f}
         response = client.post(url, data)
@@ -777,19 +777,19 @@ class AuthenticationTestCase(TestCase):
         client.force_authenticate(user=user)
 
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
-        f = open('media/tmp_simulations/Param.xml', 'r')
+        f = open('media/tests_files/Param.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         url = "/api/v1/competitions/round/upload/grid/?round=R1"
-        f = open('media/tmp_simulations/Ciber2010_Grid.xml', 'r')
+        f = open('media/tests_files/Ciber2010_Grid.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
 
         url = "/api/v1/competitions/round/upload/lab/?round=R1"
-        f = open('media/tmp_simulations/Ciber2010_Lab.xml', 'r')
+        f = open('media/tests_files/Ciber2010_Lab.xml', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
