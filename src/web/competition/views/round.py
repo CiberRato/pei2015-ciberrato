@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from competition.models import Competition, Round, CompetitionAgent
-from competition.serializers import RoundSerializer, CompetitionAgentSerializer, AdminRoundSerializer
+from competition.serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer
 from authentication.models import GroupMember
 from authentication.serializers import AccountSerializer
 from groups.serializers import GroupSerializer
@@ -64,9 +64,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         @param round_name: The round name
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
-
         serializer = self.serializer_class(RoundSimplex(r))
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
@@ -78,9 +76,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         @param name: The round name
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
-
         r.delete()
-
         return Response(status=status.HTTP_200_OK)
 
 
@@ -100,15 +96,13 @@ class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param round_name: The round name
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
-
         serializer = self.serializer_class(RoundSimplex(r))
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
-    serializer_class = CompetitionAgentSerializer
+    serializer_class = RoundAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -131,7 +125,7 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 class AgentsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
-    serializer_class = CompetitionAgentSerializer
+    serializer_class = RoundAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),

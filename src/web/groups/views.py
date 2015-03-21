@@ -58,8 +58,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @type  pk: str
         @param pk: The group name
         """
-        queryset = Group.objects.all()
-        group = get_object_or_404(queryset, name=kwargs.get('pk'))
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class(group)
         return Response(serializer.data)
 
@@ -71,8 +70,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @type  pk: str
         @param pk: The group name
         """
-        queryset = Group.objects.all()
-        group = get_object_or_404(queryset, name=kwargs.get('pk'))
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
         group.delete()
         return Response({'status': 'Deleted',
                          'message': 'The group has been deleted and the group members too.'},
@@ -86,8 +84,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @type  pk: str
         @param pk: The group name
         """
-        queryset = Group.objects.all()
-        group = get_object_or_404(queryset, name=kwargs.get('pk'))
+        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
 
         max_members = request.data.get('max_members', None)
         name = request.data.get('name', None)
@@ -180,10 +177,7 @@ class GroupMembersViewSet(mixins.RetrieveModelMixin,
         B{URL:} ../api/v1/groups/members/<group_name>/
         """
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-
-        queryset = self.queryset.filter(group=group)
-        queryset = [gm.account for gm in queryset]
-
+        queryset = [gm.account for gm in group.groupmember_set.all()]
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
@@ -226,8 +220,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The user is already in the group'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            number_of_members = len(GroupMember.objects.filter(group=group))
-
+            number_of_members = len(group.groupmember_set.all())
             if number_of_members >= group.max_members:
                 return Response({'status': 'Bad request',
                                  'message': 'The group reached the number max of members:' + str(number_of_members)},
@@ -270,8 +263,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         group_member = GroupMember.objects.get(group=group, account=user)
         group_member.delete()
 
-        members = GroupMember.objects.filter(group=group)
-        if len(members) == 0:
+        if len(group.groupmember_set.all()) == 0:
             group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
             group.delete()
 
@@ -346,9 +338,8 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
                              'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        members = GroupMember.objects.filter(group=group)
         num_admins = 0
-        for member in members:
+        for member in group.groupmember_set.all():
             if member.is_admin:
                 num_admins += 1
 
