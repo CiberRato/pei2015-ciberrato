@@ -636,6 +636,25 @@ void cbSimulator::CheckIn()
 				cout << "Panel has been registered\n";
                 gui->appendMessage( "Panel has been registered\n" );
 				break;
+			case cbClientForm::PANELVIEW:
+				cnt = panels.size();
+				panels.resize(cnt+1);
+				panels[cnt] = form.client.panelview;
+				// Doesn't need to reply here
+
+				cnt = views.size();
+				views.resize(cnt+1);
+				views[cnt] = form.client.panelview;
+				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+
+                if (curState==INIT) {
+				    nextState=STOPPED;
+                    if (logging)
+                        openLog(logFilename.toLatin1().constData());
+                }
+				cout << "PanelView has been registered\n";
+                gui->appendMessage( "PanelView has been registered\n" );
+                break;
 			case cbClientForm::ROBOT:
 			case cbClientForm::ROBOTBEACON:
 			{
