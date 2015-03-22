@@ -17,6 +17,7 @@
             createSimulation: createSimulation,
             getAgents: getAgents,
             associateAgent: associateAgent,
+            disassociateAgent: disassociateAgent,
             getSimulationAgents: getSimulationAgents,
             create: create,
             startSimulation: startSimulation
@@ -85,6 +86,12 @@
                 agent_name: agent_name,
                 pos: pos
             });
+        }
+
+        function disassociateAgent(roundName, identifier, agent_name){
+            console.log(roundName);
+            console.log(agent_name);
+            return $http.delete("/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/?round_name=" +roundName+ "&agent_name=" +agent_name);
         }
 
         function create(roundName, competitionName){

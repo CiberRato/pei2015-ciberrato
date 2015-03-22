@@ -16,15 +16,11 @@
             lists: {"Available": [], "Simulation": []}
         };
 
-        // Generate initial model
-        for (var i = 1; i <= 3; ++i) {
-            vm.models.lists.Available.push({label: "Item A" + i});
-            vm.models.lists.Simulation.push({label: "Item B" + i});
-        }
         console.log(vm.models);
 
         vm.createSimulation = createSimulation;
-        vm.associateAgent = associateAgent;
+        vm.moved = moved;
+        vm.getSimulationAgents = getSimulationAgents;
         vm.identifier;
         vm.roundName = $routeParams.name;
         vm.uploadParamList = uploadParamList;
@@ -36,25 +32,71 @@
             Round.getSimulations(vm.roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
             Round.getAgents(vm.roundName).then(getAgentsSuccessFn, getAgentsErrorFn);
 
-            function getSimulationsSuccessFn(data){
+            function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
+                for (var i= 0; i<vm.simulations.length; i++){
+
+                }
+                console.log(vm.simulations);
             }
 
-            function getSimulationsErrorFn(data){
+            function getSimulationsErrorFn(data) {
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
-            function getAgentsSuccessFn(data){
-                vm.agents = data.data;
+            function getAgentsSuccessFn(data) {
+                for (var i = 0; i < data.data.length; ++i) {
+                    vm.models.lists.Available.push({label: data.data[i].agent_name});
+                }
                 console.log(vm.agents);
             }
 
-            function getAgentsErrorFn(data){
+            function getAgentsErrorFn(data) {
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
+        }
+
+        function getSimulationAgents(){
+            Round.getSimulationAgents(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
+
+            console.log(vm.identifier);
+
+            function getSimulationAgentsSuccessFn(data) {
+                vm.models.lists.Simulation = [];
+                for (var i = 0; i < data.data.length; ++i) {
+                    vm.models.lists.Simulation.push({label: data.data[i].agent_name});
+                }
+                console.log(data.data);
+            }
+
+            function getSimulationAgentsErrorFn(data) {
+                console.error(data.data);
+                //$location.path('/panel/');
+            }
+        }
+
+        function moved(agent_name){
+            console.log(isInSimulation(agent_name));
+            if(isInSimulation(agent_name)){
+                associateAgent(agent_name);
+                console.log("associate");
+            }else{
+                disassociateAgent(agent_name);
+                console.log("disaaaaa");
+            }
+            console.log(vm.models);
+        }
+
+        function isInSimulation(agent_name){
+            for (var i=0; i<vm.models.lists.Available.length; i++){
+                if (vm.models.lists.Available[i].label===agent_name){
+                    return false;
+                }
+            }
+            return true;
         }
 
         function createSimulation(){
@@ -78,35 +120,31 @@
             }
         }
 
-        function associateAgent(){
-            var agent_name = document.getElementById("select").value;
+        function associateAgent(agent_name) {
             console.log(vm.identifier);
 
             Round.getSimulationAgents(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
 
             function getSimulationAgentsSuccessFn(data) {
-                vm.simulationAgents = data.data;
-                vm.simulationAgents.count = vm.simulationAgents.length +1;
+                var pos = data.data.length + 1;
 
-                console.log(vm.roundName + ' ' + vm.identifier + ' ' + agent_name + ' ' + vm.simulationAgents.count);
+                console.log(vm.roundName + ' ' + vm.identifier + ' ' + agent_name + ' ' + pos);
 
-                Round.associateAgent(vm.roundName, vm.identifier, agent_name, vm.simulationAgents.count).then(associateAgentSuccessFn, associateAgentErrorFn);
+                Round.associateAgent(vm.roundName, vm.identifier, agent_name, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
-                function associateAgentSuccessFn(){
+                function associateAgentSuccessFn() {
                     $.jGrowl("Agent has been associated successfully.", {
                         life: 2500,
                         theme: 'success'
                     });
-                    $route.reload();
                 }
 
-                function associateAgentErrorFn(data){
+                function associateAgentErrorFn(data) {
                     console.error(data.data);
                     $.jGrowl("Agent can't be associated.", {
                         life: 2500,
                         theme: 'btn-danger'
                     });
-                    $route.reload();
                 }
             }
 
@@ -114,9 +152,27 @@
                 console.error(data.data);
                 $location.path('/panel/');
             }
+        }
 
+        function disassociateAgent(agent_name) {
+            console.log(vm.identifier);
 
+            Round.disassociateAgent(vm.roundName, vm.identifier, agent_name).then(disassociateAgentSuccessFn, disassociateAgentErrorFn);
 
+            function disassociateAgentSuccessFn() {
+                $.jGrowl("Agent has been disassociated successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+            }
+
+            function disassociateAgentErrorFn(data) {
+                console.error(data.data);
+                $.jGrowl("Agent can't be disassociated!.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+            }
         }
 
         function uploadParamList() {
