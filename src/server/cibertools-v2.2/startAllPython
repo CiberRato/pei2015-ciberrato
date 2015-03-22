@@ -11,7 +11,7 @@ sleep 1
 
 sleep 1
 
-(cd Viewer; ./Viewer -autoconnect -autostart)
+#(cd Viewer; ./Viewer -autoconnect -autostart)
 
-killall simulator GUISample
+#killall simulator GUISample
 

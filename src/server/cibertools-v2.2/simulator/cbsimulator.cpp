@@ -610,7 +610,7 @@ void cbSimulator::CheckIn()
 	while (receptionist->CheckIn())
 	{
 		cbClientForm &form = receptionist->Form();
-		int cnt;
+		int cnt, cnt2;
 		switch (form.type)
 		{
 			case cbClientForm::VIEW:
@@ -643,12 +643,12 @@ void cbSimulator::CheckIn()
 				cnt = panels.size();
 				panels.resize(cnt+1);
 				panels[cnt] = form.client.panelview;
-				// Doesn't need to reply here
+				panels[cnt]->Reply(form.addr, form.port, param, grid, lab);
 
 				cnt = views.size();
 				views.resize(cnt+1);
 				views[cnt] = form.client.panelview;
-				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+				views[cnt]->AcceptWithoutReply(form.addr, form.port);
 
                 if (curState==INIT) {
 				    nextState=STOPPED;

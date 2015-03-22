@@ -41,6 +41,7 @@ public:
 	cbClient();
 	virtual ~cbClient();
 
+    virtual bool AcceptWithoutReply(QHostAddress &addr, unsigned short &port);
 	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param = NULL, cbGrid *grid = NULL, cbLab *lab = NULL);
 	virtual bool Refuse(QHostAddress &addr, unsigned short &port);
 
