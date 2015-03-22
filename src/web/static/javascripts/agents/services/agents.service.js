@@ -64,9 +64,9 @@
             return $http.delete('/api/v1/competitions/delete_agent_file/' + agentName + '/?file_name=' +fileName);
         }
 
-        function associate(roundName, agentName){
+        function associate(competitionName, agentName){
             return $http.post("/api/v1/competitions/associate_agent/", {
-                round_name: roundName,
+                competition_name: competitionName,
                 agent_name: agentName
             });
         }

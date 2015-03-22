@@ -109,7 +109,7 @@
 
             function getFirstRoundSuccessFn(data){
                 vm.round  = data;
-                Agent.associate(vm.round.data.name, agentName).then(associateSuccessFn, associateErrorFn);
+                Agent.associate(competitionName, agentName).then(associateSuccessFn, associateErrorFn);
 
                 function associateSuccessFn(){
                     $.jGrowl("Agent \'" + competitionName + "\' has been associated.", {

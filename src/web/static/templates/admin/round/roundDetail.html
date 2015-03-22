@@ -10,6 +10,41 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2>{{vm.roundName}}</h2>
+                        <a data-toggle="modal"  href="#uploadParams">(Upload Params for this Round)</a>
+
+                        <div class="modal fade"  id="uploadParams">
+                            <div class="modal-header">
+                                <h2 align="center">Upload your Params</h2>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Upload Param_List</strong></p>
+                                <input id="ParamListUpload"
+                                       type="file" name="files[]"
+                                       class="inputFile clickable"
+                                        />
+                                <button class="btn btn-alt btn-success" ng-click="vm.uploadParamList()">Upload</button>
+
+                                <p><strong>Upload Grid</strong></p>
+                                <input id="GridUpload"
+                                       type="file" name="files[]"
+                                       class="inputFile clickable"
+                                        />
+                                <button class="btn btn-alt btn-success"  ng-click="vm.uploadGrid()">Upload</button>
+
+                                <p><strong>Upload Lab</strong></p>
+                                <input id="LabUpload"
+                                       type="file" name="files[]"
+                                       class="inputFile clickable"
+                                        />
+                                <button class="btn btn-alt btn-success"  ng-click="vm.uploadLab()">Upload</button>
+
+                            </div>
+                            <div class="modal-footer">
+                                <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
+
+                            </div>
+                        </div>
+                        <p></p>
                         <p ng-if="vm.simulations.length != 0">Here is shown in table the list of all simulations of this round.</p>
                         <p ng-if="vm.simulations.length == 0">This round doesn't have any simulation.</p>
                         <table ng-if="vm.simulations.length != 0" class="table table-striped table-hover">

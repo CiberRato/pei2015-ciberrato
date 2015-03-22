@@ -15,6 +15,9 @@
         vm.associateAgent = associateAgent;
         vm.identifier;
         vm.roundName = $routeParams.name;
+        vm.uploadParamList = uploadParamList;
+        vm.uploadGrid = uploadGrid;
+        vm.uploadLab = uploadLab;
         activate();
 
         function activate() {
@@ -55,9 +58,9 @@
 
             function createSimulationErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Simulation has been created successfully.", {
+                $.jGrowl("Simulation can't be created.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'btn-danger'
                 });
                 $route.reload();
             }
@@ -101,6 +104,76 @@
             }
 
 
+
+        }
+
+        function uploadParamList() {
+            var selectedFile = document.getElementById('ParamListUpload').files[0];
+
+            console.log(selectedFile);
+            Round.uploadParamList(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+
+            function uploadSuccessFn(){
+
+                $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+            }
+
+            function uploadErrorFn(data){
+                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.log(data.data);
+            }
+
+        }
+
+        function uploadGrid() {
+            var selectedFile = document.getElementById('GridUpload').files[0];
+
+            Round.uploadGrid(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+
+            function uploadSuccessFn(){
+
+                $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+            }
+
+            function uploadErrorFn(data){
+                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.log(data.data);
+            }
+
+        }
+
+        function uploadLab() {
+            var selectedFile = document.getElementById('LabUpload').files[0];
+
+            Round.uploadLab(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+
+            function uploadSuccessFn(){
+
+                $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+            }
+
+            function uploadErrorFn(data){
+                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.log(data.data);
+            }
 
         }
 
