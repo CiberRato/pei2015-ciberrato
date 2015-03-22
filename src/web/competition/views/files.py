@@ -71,11 +71,6 @@ class UploadRoundXMLView(views.APIView):
                              'message': 'You can only upload files with size less than 100KB.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if file_obj.content_type != 'application/xml':
-            return Response({'status': 'Bad request',
-                             'message': 'You can only upload XML files.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
         path = default_storage.save('competition_files/' + self.folder + '/' + file_obj.name,
                                     ContentFile(file_obj.read()))
 

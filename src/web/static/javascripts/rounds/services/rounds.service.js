@@ -34,11 +34,10 @@
         function uploadParamList(roundName, value){
             var fd = new FormData();
             fd.append('file', value);
-            console.log(fd);
 
             return $http.post('/api/v1/competitions/round/upload/param_list/?round=' + roundName, fd, {
                 transformRequest: angular.identity,
-                headers: {'Content-Type': 'application/xml'}
+                headers: {'Content-Type': undefined}
             });
         }
 
@@ -48,7 +47,7 @@
 
             return $http.post('/api/v1/competitions/round/upload/grid/?round=' + roundName, fd, {
                 transformRequest: angular.identity,
-                headers: {'Content-Type': 'application/xml'}
+                headers: {'Content-Type': undefined}
             });
         }
 
@@ -58,7 +57,7 @@
 
             return $http.post('/api/v1/competitions/round/upload/lab/?round=' + roundName, fd, {
                 transformRequest: angular.identity,
-                headers: {'Content-Type': 'application/xml'}
+                headers: {'Content-Type': undefined}
             });
         }
 
