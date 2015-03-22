@@ -7,7 +7,7 @@
 
     CreateCompetitionController.$inject = ['$location', 'Authentication', 'Competition', 'Round'];
 
-    function CreateCompetitionController($location, Authentication, Competition, Rou){
+    function CreateCompetitionController($location, Authentication, Competition, Round){
         var vm = this;
 
         vm.create = create;
