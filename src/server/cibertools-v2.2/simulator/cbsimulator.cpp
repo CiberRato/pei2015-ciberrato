@@ -632,6 +632,9 @@ void cbSimulator::CheckIn()
 				panels.resize(cnt+1);
 				panels[cnt] = form.client.panel;
 				panels[cnt]->Reply(form.addr, form.port, param);
+
+				cout << "Panel has been registered\n";
+                gui->appendMessage( "Panel has been registered\n" );
 				break;
 			case cbClientForm::ROBOT:
 			case cbClientForm::ROBOTBEACON:
@@ -691,9 +694,7 @@ void cbSimulator::stop()
 void cbSimulator::ViewCommands()
 {
 	cbCommand command;
-	char xml[4096*16];
-	unsigned int cnt;
-	for (unsigned int i=0; i<views.size(); i++)
+	for (unsigned int i=0; i < views.size(); i++)
 	{
 		while (views[i]->readCommand(&command))
 		{
@@ -1006,7 +1007,40 @@ void cbSimulator::RobotsToXml(ostream &log, bool withActions, bool stateIndepend
 	}
 }
 
-void cbSimulator::PanelCommands(){}
+void cbSimulator::PanelCommands(){
+	cbPanelCommand command;
+	for (unsigned int i=0; i < panels.size(); i++)
+	{
+		while (panels[i]->readCommand(&command))
+		{
+			switch (command.type)
+			{
+				case cbPanelCommand::START:
+					start();
+					break;
+				case cbPanelCommand::RESTART:
+					reset();
+					break;
+				case cbPanelCommand::STOP:
+					stop();
+					break;
+				case cbPanelCommand::ROBOTDEL:
+					{
+						unsigned int id = command.robot.id;
+						if (id >=1 && id <= robots.size())
+						{
+                            cbRobot *robot = robots[id-1];
+                            if (robot != 0)
+                                robot->remove();
+                        }
+						break;
+					}
+				case cbPanelCommand::UNKNOWN:
+					break;
+			}
+		}
+	}	
+}
 
 void cbSimulator::buildGraph(void)
 {
