@@ -110,3 +110,29 @@ class AuthenticationTestCase(TestCase):
         client.logout()
 
         client.force_authenticate(user=None)
+
+    def test_url_slug(self):
+        client = APIClient()
+
+        # try to create with username error
+        url = "/api/v1/accounts/"
+        data = {'email': 'test1@test.com', 'username': 'test.1', 'first_name': 'unit', 'last_name': 'test',
+                'teaching_institution': 'testUA'}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # try to create with first_name error
+        url = "/api/v1/accounts/"
+        data = {'email': 'test1@test.com', 'username': 'test1', 'first_name': 'un.it', 'last_name': 'test',
+                'teaching_institution': 'testUA'}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # try to create with last_name error
+        url = "/api/v1/accounts/"
+        data = {'email': 'test1@test.com', 'username': 'test1', 'first_name': 'unit', 'last_name': 'tes.t',
+                'teaching_institution': 'testUA'}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        client.force_authenticate(user=None)
