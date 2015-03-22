@@ -27,12 +27,12 @@
             }).then(loginSuccessFn, loginErrorFn);
         }
 
-        function loginSuccessFn(data, status, headers, config){
+        function loginSuccessFn(data){
             Authentication.setAuthenticatedAccount(data.data);
             window.location.assign('/panel/');
         }
 
-        function loginErrorFn(data, status, headers, config){
+        function loginErrorFn(data){
             console.error("Login Failure!");
             console.error(data.data);
             return data;
@@ -50,7 +50,7 @@
             }).then(registerSuccessFn, registerErrorFn);
         }
 
-        function registerSuccessFn(data, status, headers, config){
+        function registerSuccessFn(){
             $.jGrowl("Register Success.", {
                 life: 2500,
                 theme: 'btn-success'
@@ -58,7 +58,7 @@
             $location.path('/idp/login/');
         }
 
-        function registerErrorFn(data, status, headers, config){
+        function registerErrorFn(data){
             console.error(data.data);
             $.jGrowl("Register Error.", {
                 life: 2500,
@@ -92,13 +92,13 @@
                 .then(logoutSuccessFn, logoutErrorFn);
         }
 
-        function logoutSuccessFn(data, status, headers, config){
+        function logoutSuccessFn(){
             Authentication.unauthenticate();
 
             window.location.assign("/");
         }
 
-        function logoutErrorFn(data, status, headers, config){
+        function logoutErrorFn(){
             console.error("Logout Failure!");
         }
     }

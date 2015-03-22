@@ -14,14 +14,21 @@
         activate();
 
         function activate(){
-            Team.getByName(search).then(getAllSuccessFn, getAllErrorFn);
-            Profile.get(search).then(getByUsernameSuccessFn, getByUsernameErrorFn);
-            Profile.getByFirstName(search).then(getByFirstNameSuccessFn, getByFirstNameErrorFn);
-            Profile.getByLastName(search).then(getByLastNameSuccessFn, getByLastNameErrorFn);
-            Competition.getByName(search).then(getAllCompetitionsSuccessFn, getAllCompetitionsErrorFn);
+            Team.getAll().then(getAllSuccessFn, getAllErrorFn);
+            Profile.getAll().then(getAllMembersSuccessFn, getAllMembersErrorFn);
+            Competition.getAll().then(getAllCompetitionsSuccessFn, getAllCompetitionsErrorFn);
 
             function getAllSuccessFn(data){
                 vm.team = data.data;
+                var j = 0;
+                vm.teamsFound = [];
+                console.log(vm.team);
+                for(var i = 0; i<vm.team.length; i++){
+                    if(vm.team[i].name === search){
+                        vm.teamsFound[j] = vm.team[i];
+                        j++;
+                    }
+                }
             }
 
             function getAllErrorFn(data){
@@ -29,35 +36,34 @@
                 $location.path('/panel/');
             }
 
-            function getByUsernameSuccessFn(data){
+            function getAllMembersSuccessFn(data){
                 vm.members = data.data;
+                var j = 0;
+                console.log(vm.members);
+                vm.membersFound =[];
+                for(var i = 0; i<vm.members.length; i++) {
+                    if (vm.members[i].username === search || (vm.members[i].first_name === search.substr(0,search.indexOf(' ')) && vm.members[i].last_name === search.substr(search.indexOf(' ')+1)) || vm.members[i].first_name === search || vm.members[i].last_name === search){
+                        vm.membersFound[j] = vm.members[i];
+                        j++;
+                    }
+                }
             }
 
-            function getByUsernameErrorFn(data){
-                console.error(data.data);
-                $location.path('/panel/');
-            }
-
-            function getByFirstNameSuccessFn(data){
-                vm.members.append(data.data);
-            }
-
-            function getByFirstNameErrorFn(data){
-                console.error(data.data);
-                $location.path('/panel/');
-            }
-
-            function getByLastNameSuccessFn(data){
-                vm.members.append(data.data);
-            }
-
-            function getByLastNameErrorFn(data){
+            function getAllMembersErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
             function getAllCompetitionsSuccessFn(data){
                 vm.competitions = data.data;
+                var j = 0;
+                vm.competitionsFound = [];
+                for(var i = 0; i<vm.competitions.length; i++){
+                    if(vm.competitions[i].name === search){
+                        vm.competitionsFound[j] = vm.competitions[i];
+                        j++;
+                    }
+                }
             }
 
             function getAllCompetitionsErrorFn(data){

@@ -5,9 +5,9 @@
         .module("ciberonline.agents.services")
         .factory("Agent", Agent);
 
-    Agent.$inject = ["$cookies", "$http", "$location"];
+    Agent.$inject = ["$http"];
 
-    function Agent($cookies, $http, $location) {
+    function Agent($http) {
         var Agent = {
             create: create,
             getByGroup: getByGroup,
