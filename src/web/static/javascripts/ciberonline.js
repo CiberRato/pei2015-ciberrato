@@ -11,7 +11,8 @@
             'ciberonline.search',
             'ciberonline.competitions',
             'ciberonline.agents',
-            'ciberonline.rounds'
+            'ciberonline.rounds',
+            'dndLists'
         ])
         .run(run);
 

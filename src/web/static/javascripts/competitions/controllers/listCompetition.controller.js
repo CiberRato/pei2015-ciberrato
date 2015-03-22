@@ -6,11 +6,13 @@
         .module('ciberonline.competitions.controllers')
         .controller('ListCompetitionController', ListCompetitionController);
 
-    ListCompetitionController.$inject = ['$location', '$routeParams', 'Competition', 'Round'];
+    ListCompetitionController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Round'];
 
-    function ListCompetitionController($location, $routeParams, Competition, Round){
+    function ListCompetitionController($location, $route, $routeParams, Competition, Round){
         var vm = this;
         vm.competitionName = $routeParams.name;
+        vm.startSimulation = startSimulation;
+
         activate();
 
         function activate() {
@@ -52,6 +54,29 @@
                 $location.path('/panel/');
             }
         }
+
+        function startSimulation(identifier){
+            console.log(identifier);
+            Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
+
+            function startSimulationSuccessFn(){
+                $.jGrowl("Simulation has been started successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $route.reload();
+            }
+
+            function startSimulationErrorFn(){
+                $.jGrowl("Simulation can't be started.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                $route.reload();
+            }
+
+        }
+
 
     }
 

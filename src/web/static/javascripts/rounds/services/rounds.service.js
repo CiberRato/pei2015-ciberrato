@@ -10,12 +10,16 @@
     function Round($cookies, $http, $location) {
         var Round = {
             createRound: createRound,
-            upload: upload,
+            uploadParamList: uploadParamList,
+            uploadGrid: uploadGrid,
+            uploadLab: uploadLab,
             getSimulations: getSimulations,
             createSimulation: createSimulation,
             getAgents: getAgents,
             associateAgent: associateAgent,
-            getSimulationAgents: getSimulationAgents
+            getSimulationAgents: getSimulationAgents,
+            create: create,
+            startSimulation: startSimulation
         };
 
         return Round;
@@ -27,11 +31,31 @@
             });
         }
 
-        function upload(agentName, language, value){
+        function uploadParamList(roundName, value){
             var fd = new FormData();
             fd.append('file', value);
 
-            return $http.post('/api/v1/competitions/upload/agent/?agent_name=' + agentName + '&language=' +language, fd, {
+            return $http.post('/api/v1/competitions/round/upload/param_list/?round=' + roundName, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            });
+        }
+
+        function uploadGrid(roundName, value){
+            var fd = new FormData();
+            fd.append('file', value);
+
+            return $http.post('/api/v1/competitions/round/upload/grid/?round=' + roundName, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            });
+        }
+
+        function uploadLab(roundName, value){
+            var fd = new FormData();
+            fd.append('file', value);
+
+            return $http.post('/api/v1/competitions/round/upload/lab/?round=' + roundName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             });
@@ -60,6 +84,19 @@
                 simulation_identifier: identifier,
                 agent_name: agent_name,
                 pos: pos
+            });
+        }
+
+        function create(roundName, competitionName){
+            return $http.post("/api/v1/competitions/round/" , {
+                name: roundName,
+                parent_competition_name: competitionName
+            })
+        }
+
+        function startSimulation(identifier){
+            return $http.post("/api/v1/simulations/start/", {
+                simulation_id: identifier
             })
         }
 

@@ -120,6 +120,10 @@
             controller:'DetailRoundController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/round/roundDetail.html'
+        }).when('/admin/:name/createRound',{
+            controller:'CreateRoundController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/round/newRound.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
