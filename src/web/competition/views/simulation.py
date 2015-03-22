@@ -205,6 +205,8 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
         r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
         competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+        competition_agent.eligible = True
+        competition_agent.save()
         lsa = get_object_or_404(LogSimulationAgent.objects.all(), competition_agent=competition_agent,
             simulation=simulation)
         lsa.delete()
