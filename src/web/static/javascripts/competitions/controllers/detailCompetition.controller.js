@@ -26,6 +26,7 @@
 
             Competition.getCompetition(competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
             Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
+            Competition.getAllRounds(competitionName).then(getAllRoundsSuccessFn, getAllRoundsErrorFn);
 
             function getCompetitionSuccessFn(data, status, headers, config){
                 vm.competition = data.data;
@@ -42,6 +43,22 @@
 
                 function getTeamsSuccessFn(data, status, headers, config) {
                     vm.competitionTeamsInfo = data.data;
+                    for(var l = 0; l<vm.competitionTeamsInfo.length; l++) {
+                        getAgents(vm.competitionTeamsInfo[l].group.name, l);
+
+                    }
+                    function getAgents(name, l) {
+                        Competition.agents(name, competitionName).then(agentsSuccessFn, agentsErrorFn);
+
+                        function agentsSuccessFn(data){
+                            vm.competitionTeamsInfo[l].agents = data.data;
+                            console.log(vm.competitionTeamsInfo[l].agents.length);
+                        }
+                        function agentsErrorFn(data, status, headers, config){
+                            console.error(data.data);
+                            $location.url('/panel/');
+                        }
+                    }
                     Competition.getMyTeams(vm.username, competitionName).then(getMyTeamsSuccessFn, getMyTeamsErrorFn);
 
                     var confirm;
@@ -94,6 +111,32 @@
                 console.error(data.data);
                 $location.url('/panel/');
 
+            }
+
+            function getAllRoundsSuccessFn(data){
+                vm.rounds = data.data;
+                for(var i = 0; i<vm.rounds.length; i++){
+                    getSimulations(vm.rounds[i].name, i);
+                }
+            }
+
+            function getSimulations(roundName, i){
+                Round.getSimulations(roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
+
+                function getSimulationsSuccessFn(data){
+                    vm.rounds[i].simulations = data.data;
+                }
+
+                function getSimulationsErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+
+                }
+            }
+
+            function getAllRoundsErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
             }
 
         }

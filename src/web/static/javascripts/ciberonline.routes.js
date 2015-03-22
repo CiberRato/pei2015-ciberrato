@@ -82,6 +82,10 @@
             controller:'DetailCompetitionController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/competitionDetails.html'
+        }).when('/panel/:name',{
+            controller:'ListCompetitionController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/competition/livePastCompetitions.html'
         }).when('/panel/createAgent',{
             controller:'CreateAgentController',
             controllerAs:'vm',
@@ -108,10 +112,6 @@
             controller:'AllTogetherCompetitionsController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html'
-        }).when('/admin/:name/detailCompetition',{
-            controller:'DetailCompetitionController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/admin/competition/competitionDetails.html'
         }).when('/admin/:name/',{
             controller:'ListCompetitionController',
             controllerAs: 'vm',

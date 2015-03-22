@@ -112,7 +112,7 @@
                 Agent.associate(competitionName, agentName).then(associateSuccessFn, associateErrorFn);
 
                 function associateSuccessFn(){
-                    $.jGrowl("Agent \'" + competitionName + "\' has been associated.", {
+                    $.jGrowl("Agent \'" + agentName + "\' has been associated.", {
                         life: 2500,
                         theme: 'success'
                     });
@@ -121,7 +121,7 @@
 
                 function associateErrorFn(data){
                     console.error(data.data);
-                    $.jGrowl("Agent \'" + competitionName + "\' can't be associated twice to one competition.", {
+                    $.jGrowl("Agent \'" + agentName + "\' can't be associated twice to one competition.", {
                         life: 2500,
                         theme: 'btn-danger'
                     });
