@@ -5,9 +5,9 @@
         .module("ciberonline.rounds.services")
         .factory("Round", Round);
 
-    Round.$inject = ["$cookies", "$http", "$location"];
+    Round.$inject = ["$http"];
 
-    function Round($cookies, $http, $location) {
+    function Round($http) {
         var Round = {
             createRound: createRound,
             uploadParamList: uploadParamList,
@@ -92,8 +92,6 @@
         }
 
         function disassociateAgent(roundName, identifier, agent_name){
-            console.log(roundName);
-            console.log(agent_name);
             return $http.delete("/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/?round_name=" +roundName+ "&agent_name=" +agent_name);
         }
 

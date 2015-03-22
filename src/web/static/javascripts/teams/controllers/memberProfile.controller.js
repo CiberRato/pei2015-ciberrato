@@ -18,20 +18,20 @@
             Team.getByUser(username).then(getByUserSuccessFn, getByUserErrorFn);
             Profile.get(username).then(getProfileSuccessFn, getProfileErrorFn);
 
-            function getByUserSuccessFn(data, status, headers, config){
+            function getByUserSuccessFn(data){
                 vm.teams = data.data;
             }
 
-            function getByUserErrorFn(data, status, headers, config){
+            function getByUserErrorFn(){
                 $location.url('/');
             }
 
-            function getProfileSuccessFn(data, status, headers, config) {
+            function getProfileSuccessFn(data) {
                 vm.accountInfo = data.data;
                 vm.gravatar = get_gravatar(vm.accountInfo.email, 60);
             }
 
-            function getProfileErrorFn(data, status, headers, config){
+            function getProfileErrorFn(data){
                 console.error(data.data);
             }
 

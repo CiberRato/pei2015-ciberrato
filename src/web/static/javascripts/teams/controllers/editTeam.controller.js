@@ -22,11 +22,11 @@
 
             Team.getTeam(teamName).then(getTeamSuccessFn, getTeamErrorFn);
 
-            function getTeamSuccessFn(data, status, headers, config){
+            function getTeamSuccessFn(data){
                 vm.team = data.data;
             }
 
-            function getTeamErrorFn(data, status, headers, config){
+            function getTeamErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -35,7 +35,7 @@
         function update(){
             Team.update(vm.team, teamName).then(updateTeamSuccessFn, updateTeamErrorFn);
 
-            function updateTeamSuccessFn(data, status, headers, config){
+            function updateTeamSuccessFn(){
                 $.jGrowl("Team has been updated.", {
                     life: 2500,
                     theme: 'success'
@@ -43,7 +43,7 @@
                 $location.path("/panel/" + username + "/myTeams");
             }
 
-            function updateTeamErrorFn(data, status, headers, config){
+            function updateTeamErrorFn(data){
                 $.jGrowl("Team could not be updated.", {
                     life: 2500,
                     theme: 'btn-danger'
@@ -55,7 +55,7 @@
         function destroy(){
             Team.destroy(teamName).then(destroyTeamSuccessFn, destroyTeamErrorFn);
 
-            function destroyTeamSuccessFn(data, status, headers, config){
+            function destroyTeamSuccessFn(){
                 $.jGrowl("Team has been deleted.", {
                     life: 2500,
                     theme: 'success'
@@ -63,7 +63,7 @@
                 $location.path("/panel/" + username + "/myTeams");
             }
 
-            function destroyTeamErrorFn(data, status, headers, config){
+            function destroyTeamErrorFn(data){
                 $.jGrowl("Team could not be deleted.", {
                     life: 2500,
                     theme: 'btn-danger'

@@ -26,7 +26,7 @@
 
             Team.getByUser(username).then(getByUserSuccessFn, getByUserErrorFn);
 
-            function getByUserSuccessFn(data, status, headers, config){
+            function getByUserSuccessFn(data){
             	vm.team = data.data;
                 vm.team.username = username;
                 for(var i=0; i<vm.team.length; i++){
@@ -35,7 +35,7 @@
                 }
             }
 
-            function getByUserErrorFn(data, status, headers, config){
+            function getByUserErrorFn(data){
                 console.error(data.data);
             	$location.path('/panel/');
             }
@@ -43,12 +43,12 @@
             function getNumberOfMembers(teamName, i){
                 Team.getMembers(teamName).then(getNumberOfMembersSuccessFn, getNumberOfMembersErrorFn);
 
-                function getNumberOfMembersSuccessFn(data, status, headers, config) {
+                function getNumberOfMembersSuccessFn(data) {
                     vm.members = data.data;
                     vm.team[i].allmembers = vm.members.length;
                 }
 
-                function getNumberOfMembersErrorFn(data, status, headers, config){
+                function getNumberOfMembersErrorFn(data){
                     console.error(data.data);
                 }
 
@@ -57,12 +57,12 @@
             function getNumberOfAgents(teamName, i){
                 Agent.getByGroup(teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
 
-                function getByGroupSuccessFn(data, status, headers, config) {
+                function getByGroupSuccessFn(data) {
                     vm.agents = data.data;
                     vm.team[i].allAgents = vm.agents.length;
                 }
 
-                function getByGroupErrorFn(data, status, headers, config){
+                function getByGroupErrorFn(data){
                     console.error(data.data);
                 }
             }

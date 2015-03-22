@@ -5,9 +5,9 @@
         .module("ciberonline.competitions.services")
         .factory("Competition", Competition);
 
-    Competition.$inject = ["$cookies", "$http", "$location"];
+    Competition.$inject = ["$http"];
 
-    function Competition($cookies, $http, $location) {
+    function Competition($http) {
         var Competition = {
             getAll: getAll,
             getAllAble: getAllAble,
@@ -48,7 +48,6 @@
         }
 
         function enroll(competitionName, teamName){
-            console.log(teamName + ' ' + competitionName);
             return $http.post('/api/v1/competitions/enroll/',{
                 competition_name: competitionName,
                 group_name: teamName,
@@ -96,8 +95,6 @@
         }
 
         function validateInscription(teamName, competitionName){
-            console.log('entrei');
-            console.log(teamName + ' ' + competitionName);
             return $http.post("/api/v1/competitions/toggle_group_inscription/", {
                 competition_name: competitionName,
                 group_name: teamName
@@ -109,7 +106,6 @@
         }
 
         function changeState(name, state){
-            console.log(name, state);
             return $http.put("/api/v1/competitions/state/" +name+ "/" , {
                 state_of_competition: state
             });

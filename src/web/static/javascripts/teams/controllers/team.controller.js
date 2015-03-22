@@ -29,7 +29,7 @@
             Profile.get(username).then(getUserSuccessFn, getUserErrorFn);
             Agent.getByGroup(teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
 
-            function getMembersSuccessFn(data, status, headers, config){
+            function getMembersSuccessFn(data){
                 vm.members = data.data;
                 for(var i = 0; i<vm.members.length; i++){
                     Team.getTeamInformation(teamName,vm.members[i].username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
@@ -37,43 +37,43 @@
 
             }
 
-            function getMembersErrorFn(data, status, headers, config){
+            function getMembersErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
-            function getUserSuccessFn(data, status, headers, config){
+            function getUserSuccessFn(data){
                 vm.member = data.data;
                 Team.getTeamInformation(teamName, username).then(getTeamInformationUserSuccessFn, getTeamInformationUserErrorFn);
             }
 
-            function getUserErrorFn(data, status, headers, config){
+            function getUserErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
-            function getTeamInformationUserSuccessFn(data, status, headers, config){
+            function getTeamInformationUserSuccessFn(data){
                 vm.memberInfo = data.data;
                 vm.member.is_admin = vm.memberInfo.is_admin;
 
             }
 
-            function getTeamInformationUserErrorFn(data, status, headers, config){
+            function getTeamInformationUserErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
-            function getByGroupSuccessFn(data, status, headers, config){
+            function getByGroupSuccessFn(data){
                 vm.agents = data.data;
             }
 
-            function getByGroupErrorFn(data, status, headers, config){
+            function getByGroupErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
         }
 
-        function getTeamInformationSuccessFn(data, status, headers, config){
+        function getTeamInformationSuccessFn(data){
             vm.team = data.data;
             for(var i = 0; i < vm.members.length; i++){
                 if(vm.team.account.username === vm.members[i].username) {
@@ -83,7 +83,7 @@
 
         }
 
-        function getTeamInformationErrorFn(data, status, headers, config){
+        function getTeamInformationErrorFn(){
             $location.path('/panel/');
         }
 
@@ -91,7 +91,7 @@
             Team.addMember(vm.username, teamName).then(addMemberSuccessFn, addMemberErrorFn);
         }
 
-        function addMemberSuccessFn(data, status, headers, config){
+        function addMemberSuccessFn(){
             $.jGrowl("Member has been added successfully to the Team.", {
                 life: 2500,
                 theme: 'success'
@@ -99,7 +99,7 @@
             $location.path('/panel/' + teamName + '/editTeam/');
         }
 
-        function addMemberErrorFn(data, status, headers, config){
+        function addMemberErrorFn(data){
             console.error(data.data);
             $.jGrowl("Member could not be added to the Team.", {
                 life: 2500,
@@ -111,7 +111,7 @@
             Team.manageAdmin(teamName, user_name).then(removeAdminSuccessFn, removeAdminErrorFn);
         }
 
-        function removeAdminSuccessFn(data, status, headers, config){
+        function removeAdminSuccessFn(){
             $.jGrowl("Admin has been removed successfully.", {
                 life: 2500,
                 theme: 'success'
@@ -119,7 +119,7 @@
             $location.path('/panel/' + teamName + '/editTeam/');
         }
 
-        function removeAdminErrorFn(data, status, headers, config){
+        function removeAdminErrorFn(data){
             console.error(data.data);
             $.jGrowl("Admin could not be removed.", {
                 life: 2500,
@@ -131,7 +131,7 @@
             Team.manageAdmin(teamName, user_name).then(addAdminSuccessFn, addAdminErrorFn);
         }
 
-        function addAdminSuccessFn(data, status, headers, config){
+        function addAdminSuccessFn(){
             $.jGrowl("Admin has been added successfully.", {
                 life: 2500,
                 theme: 'success'
@@ -139,7 +139,7 @@
             $location.path('/panel/' + teamName + '/editTeam/');
         }
 
-        function addAdminErrorFn(data, status, headers, config){
+        function addAdminErrorFn(data){
             console.error(data.data);
             $.jGrowl("Admin could not be added.", {
                 life: 2500,
@@ -151,7 +151,7 @@
             Team.removeMember(user_name, teamName).then(removeMemberSuccessFn, removeMemberErrorFn);
         }
 
-        function removeMemberSuccessFn(data, status, headers, config){
+        function removeMemberSuccessFn(){
             $.jGrowl("Member has been removed successfully of the Team.", {
                 life: 2500,
                 theme: 'success'
@@ -159,7 +159,7 @@
             $location.path('/panel/' + teamName + '/editTeam/');
         }
 
-        function removeMemberErrorFn(data, status, headers, config) {
+        function removeMemberErrorFn(data) {
             console.error(data.data);
             $.jGrowl("Member could not be removed of the Team.", {
                 life: 2500,

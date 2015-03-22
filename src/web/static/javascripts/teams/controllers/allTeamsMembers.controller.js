@@ -17,12 +17,12 @@
 
             Team.getMembers(teamName).then(getMembersSuccessFn, getMembersErrorFn);
 
-            function getMembersSuccessFn(data, status, headers, config){
+            function getMembersSuccessFn(data){
                 vm.members = data.data;
                 vm.team = teamName;
             }
 
-            function getMembersErrorFn(data, status, headers, config){
+            function getMembersErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }

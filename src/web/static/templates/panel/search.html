@@ -10,47 +10,47 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2>Users</h2>
-                        <p ng-if="vm.members.length != 0">Here is shown in table the list of all users founded.</p>
-                        <p ng-if="vm.members.length == 0">Can't found any user!</p>
-                        <table ng-if="vm.members.length != 0" class="table table-striped table-hover">
+                        <p ng-if="vm.membersFound.length != 0">Here is shown in table the list of all users founded.</p>
+                        <p ng-if="vm.membersFound.length == 0">Can't found any user!</p>
+                        <table ng-if="vm.membersFound.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Username</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.members">
+                            <tr ng-repeat="(key, value) in vm.membersFound">
                                 <td><a href="panel/{{ value.username }}/memberProfile">{{ value.username }}</a></td>
                             </tr>
                             </tbody>
                         </table>
                         <h2>Teams</h2>
-                        <p ng-if="vm.team.length!= 0">Here is shown in table the list of all teams founded.</p>
-                        <p ng-if="vm.team.length == 0">Can't found any team!</p>
-                        <table ng-if="vm.team.length != 0" class="table table-striped table-hover">
+                        <p ng-if="vm.teamsFound.length != 0">Here is shown in table the list of all teams founded.</p>
+                        <p ng-if="vm.teamsFound.length == 0">Can't found any team!</p>
+                        <table ng-if="vm.teamsFound.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Team Name</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.team">
+                            <tr ng-repeat="(key, value) in vm.teamsFound">
                                 <td><a href="panel/{{ value.name }}/teamMembers">{{ value.name }}</a></td>
                             </tr>
                             </tbody>
                         </table>
 
                         <h2>Competitions</h2>
-                        <p ng-if="vm.competitions.length != 0">Here is shown in table the list of all competitions founded.</p>
-                        <p ng-if="vm.competitions.length == 0">Can't found any competition!</p>
-                        <table ng-if="vm.competitions.length != 0" class="table table-striped table-hover">
+                        <p ng-if="vm.competitionsFound.length != 0">Here is shown in table the list of all competitions founded.</p>
+                        <p ng-if="vm.competitionsFound.length == 0">Can't found any competition!</p>
+                        <table ng-if="vm.competitionsFound.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Competition Name</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.competitions">
+                            <tr ng-repeat="(key, value) in vm.competitionsFound">
                                 <td><a href="panel/competitions/{{ value.name }}">{{ value.name }}</a></td>
                             </tr>
                             </tbody>
