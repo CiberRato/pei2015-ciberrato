@@ -16,7 +16,7 @@ HEADERS = \
     cbsimulator.h cbtarget.h cbview.h cbviewcommand.h\
     cbviewhandler.h cbwall.h cbgraph.h cbrobotbeacon.h\
     cbutils.h cbparamdialog.h cbsimulatorGUI.h cbcontrolpanel.h \
-    cbmanagerobots.h \
+    cbmanagerobots.h cbpanelhandler.h cbpanelcommand.h \
     cbrobotinfo.h \
     cblabdialog.h
 
@@ -29,7 +29,7 @@ SOURCES = \
     cbsimulator.cpp cbtarget.cpp cbview.cpp cbviewhandler.cpp\
     cbwall.cpp simulator.cpp cbgraph.cpp cbrobotbeacon.cpp\
     cbutils.cpp cbparamdialog.cpp cbsimulatorGUI.cpp cbcontrolpanel.cpp \
-    cbmanagerobots.cpp \
+    cbmanagerobots.cpp cbpanelhandler.cpp \
     cbrobotinfo.cpp \
     cblabdialog.cpp
 

@@ -38,7 +38,7 @@ bool cbPanelHandler::endDocument()
 	return true;
 }
 
-bool cbPanelHandler::startElement( const QString&, const QString&, const QString& qName, const QXmlAttributes& attr)
+bool cbPanelHandler::startElement(const QString&, const QString&, const QString& qName, const QXmlAttributes& attr)
 {
 	//cout << "cbPanelHandler::startElement:: " << qName << endl;
 	/* process begin tag */
@@ -71,7 +71,7 @@ bool cbPanelHandler::startElement( const QString&, const QString&, const QString
     return true;
 }
 
-bool cbPanelHandler::endElement( const QString&, const QString&, const QString& qName)
+bool cbPanelHandler::endElement(const QString&, const QString&, const QString& qName)
 {
 	//cout << "cbPanelHandler::endElement:: " << qName << endl;
 	/* process end tag */
