@@ -120,14 +120,13 @@ void CRQComm::connect(void)
     cout << "CRQComm::connect\n";
 #endif
 
-    //Registration <VIEW/>
     QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(dataControler()));
     QObject::connect(this, SIGNAL(readyRead()), SLOT(replyControler()));
 
-	port=6000; // CORRIGIR!!!
-    if( writeDatagram("<View/>\n", 9, serverAddress, port ) == -1 )
+	port=6000;
+    if( writeDatagram("<PanelView/>\n", 9, serverAddress, port ) == -1 )
     {
-		cerr << "Failure when writting <View/>" << endl;
+		cerr << "Failure when writting <PanelView/>" << endl;
         exit (-1);
     }
 
