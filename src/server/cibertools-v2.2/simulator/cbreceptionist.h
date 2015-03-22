@@ -35,8 +35,8 @@
 #include <QUdpSocket>
 #include <QHostAddress>
 #include <qxml.h>
-
 #include <iostream>
+#include "cbpanelview.h"
 
 class QXmlSimpleReader;
 
@@ -44,7 +44,6 @@ class cbRobot;
 class cbRobotBeacon;
 class cbView;
 class cbPanel;
-class cbPanelView;
 
 struct cbClientForm
 {

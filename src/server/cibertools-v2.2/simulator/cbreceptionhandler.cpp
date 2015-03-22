@@ -37,6 +37,7 @@ cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
 	robotBeacon = 0;
 	panel = 0;
 	view = 0;
+	panelview = 0;
 	xmlParser=parser;
 }
  
@@ -46,6 +47,7 @@ bool cbReceptionHandler::startDocument()
 	robotBeacon = 0;
 	panel = 0;
 	view = 0;
+	panelview = 0;
     return true;
 }
 
@@ -71,7 +73,7 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	else if (tag == "PanelView")
 	{
 		type = PANELVIEW;
-		panel = new cbPanelView;
+		panelview = new cbPanelView;
 	}
 	else if (tag == "Robot")
 	{
