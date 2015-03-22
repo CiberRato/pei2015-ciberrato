@@ -25,26 +25,28 @@
                             <tr ng-repeat="(key, value) in vm.simulations" >
                                 <td id="identifier">{{value.identifier}}</td>
                                 <td>{{value.state}}</td>
-                                <td><a data-toggle="modal" data-id="@identifier" href="#addAgents">Add Agents</a></td>
+                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier" href="#addAgents">Add Agents</a>
+                                    <div class="modal fade"  id="addAgents">
+                                        <div class="modal-header">
+                                            <h2 align="center">Drag the agents for this simulation</h2>
+                                        </div>
+                                        <div class="modal-body">
+                                            <select id="select" name="option">
+                                                <option ng-repeat="(key, value) in vm.agents">{{value.agent_name}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a ng-click="vm.associateAgent()" data-dismiss="modal" class="btn btn-alt btn-success">Add</a>
+                                            <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
+
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
                         <a ng-click="vm.createSimulation()" class="btn btn-alt btn-large btn-primary">Create Simulation</a>
-                        <div class="modal fade"  id="addAgents">
-                            <div class="modal-header">
-                                <h2 align="center">Drag the agents for this simulation</h2>
-                            </div>
-                            <div class="modal-body">
-                                <select id="select" name="option">
-                                    <option ng-repeat="(key, value) in vm.agents">{{value.agent_name}}</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <a ng-click="vm.associateAgent()" data-dismiss="modal" class="btn btn-alt btn-success">Add</a>
-                                <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
 
-                            </div>
-                        </div>
                     </div>
 
 

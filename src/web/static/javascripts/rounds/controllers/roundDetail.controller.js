@@ -13,7 +13,7 @@
 
         vm.createSimulation = createSimulation;
         vm.associateAgent = associateAgent;
-
+        vm.identifier;
         vm.roundName = $routeParams.name;
         activate();
 
@@ -64,20 +64,18 @@
         }
 
         function associateAgent(){
-            var tdElem = document.getElementById ( "identifier" );
-            var tdText = tdElem.innerHTML;
             var agent_name = document.getElementById("select").value;
-            console.log(tdText);
+            console.log(vm.identifier);
 
-            Round.getSimulationAgents(tdText).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
+            Round.getSimulationAgents(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
 
             function getSimulationAgentsSuccessFn(data) {
                 vm.simulationAgents = data.data;
                 vm.simulationAgents.count = vm.simulationAgents.length +1;
 
-                console.log(vm.roundName + ' ' + tdText + ' ' + agent_name + ' ' + vm.simulationAgents.count);
+                console.log(vm.roundName + ' ' + vm.identifier + ' ' + agent_name + ' ' + vm.simulationAgents.count);
 
-                Round.associateAgent(vm.roundName, tdText, agent_name, vm.simulationAgents.count).then(associateAgentSuccessFn, associateAgentErrorFn);
+                Round.associateAgent(vm.roundName, vm.identifier, agent_name, vm.simulationAgents.count).then(associateAgentSuccessFn, associateAgentErrorFn);
 
                 function associateAgentSuccessFn(){
                     $.jGrowl("Agent has been associated successfully.", {
@@ -91,7 +89,7 @@
                     console.error(data.data);
                     $.jGrowl("Agent can't be associated.", {
                         life: 2500,
-                        theme: 'success'
+                        theme: 'btn-danger'
                     });
                     $route.reload();
                 }
