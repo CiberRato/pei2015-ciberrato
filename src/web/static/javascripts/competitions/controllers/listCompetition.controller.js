@@ -23,7 +23,7 @@
                 vm.competition = data.data;
                 Competition.getTeams(vm.competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
-                function getTeamsSuccessFn(data, status, headers, config) {
+                function getTeamsSuccessFn(data) {
                     vm.competitionTeamsInfo = data.data;
                     for (var l = 0; l < vm.competitionTeamsInfo.length; l++) {
                         getAgents(vm.competitionTeamsInfo[l].group.name, l);
@@ -37,14 +37,14 @@
                             console.log(vm.competitionTeamsInfo[l].agents.length);
                         }
 
-                        function agentsErrorFn(data, status, headers, config) {
+                        function agentsErrorFn(data) {
                             console.error(data.data);
                             $location.url('/panel/');
                         }
                     }
                 }
 
-                function getTeamsErrorFn(data, status, headers, config) {
+                function getTeamsErrorFn(data) {
                     console.error(data.data);
                     $location.url('/panel/');
                 }

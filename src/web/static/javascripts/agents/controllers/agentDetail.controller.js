@@ -6,9 +6,9 @@
         .module('ciberonline.agents.controllers')
         .controller('AgentDetailController', AgentDetailController);
 
-    AgentDetailController.$inject = ['$location', '$routeParams', '$scope', '$route', 'Agent', 'Competition'];
+    AgentDetailController.$inject = ['$location', '$routeParams', '$route', 'Agent', 'Competition'];
 
-    function AgentDetailController($location, $routeParams, $scope, $route,  Agent, Competition) {
+    function AgentDetailController($location, $routeParams, $route,  Agent, Competition) {
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
@@ -22,32 +22,30 @@
             Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
 
 
-            function getAgentSuccessFn(data, status, headers, config) {
+            function getAgentSuccessFn(data) {
                 vm.agent = data.data;
-                console.log(vm.agent);
                 Competition.getCompetitions(vm.agent.group_name).then(getCompetitionsSuccessFn, getCompetitionsErrorFn);
 
 
             }
 
-            function getAgentErrorFn(data, status, headers, config) {
+            function getAgentErrorFn(data) {
                 console.error(data.data);
                 $location.url('/panel/');
             }
 
-            function getFilesSuccessFn(data, status, headers, config) {
+            function getFilesSuccessFn(data) {
                 vm.files = data.data;
 
             }
 
-            function getFilesErrorFn(data, status, headers, config) {
+            function getFilesErrorFn(data) {
                 console.error(data.data);
                 $location.url('/panel/');
             }
 
             function getCompetitionsSuccessFn(data){
                 vm.competitions = data.data;
-                console.log(vm.competitions);
             }
 
             function getCompetitionsErrorFn(data){
@@ -76,7 +74,7 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                console.log(data.data);
+                console.error(data.data);
             }
 
         }
@@ -98,7 +96,7 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                console.log(data.data);
+                console.error(data.data);
             }
 
         }

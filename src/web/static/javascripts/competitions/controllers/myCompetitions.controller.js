@@ -27,7 +27,7 @@
             Competition.getAll().then(getAllSuccessFn, getAllErrorFn);
             Competition.getMyCompetitions(username).then(getMyCompetitionsSuccessFn, getMyCompetitionsErrorFn);
 
-            function getMyCompetitionsSuccessFn(data, status, headers, config){
+            function getMyCompetitionsSuccessFn(data){
                 vm.myCompetitions = data.data;
                 for(var i = 0; i<vm.myCompetitions.length; i++){
                     for(var j = 0; j<vm.competitions.length; j++){
@@ -39,16 +39,16 @@
                 }
             }
 
-            function getMyCompetitionsErrorFn(data, status, headers, config){
+            function getMyCompetitionsErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
 
-            function getAllSuccessFn(data, status, headers, config) {
+            function getAllSuccessFn(data) {
                 vm.competitions = data.data;
             }
 
-            function getAllErrorFn(data, status, headers, config) {
+            function getAllErrorFn(data) {
                 console.error(data.data);
                 $location.path('/panel/')
             }

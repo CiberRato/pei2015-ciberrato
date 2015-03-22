@@ -33,7 +33,6 @@
 
             function getTeamInfoSuccessFn(data){
                 vm.member = data;
-                console.log(vm.member.data.is_admin);
             }
             function getTeamInfoErrorFn(data){
                 console.error(data.data);

@@ -30,12 +30,11 @@
 
             Profile.get(username).then(profileSuccessFn, profileErrorFn);
 
-            function profileSuccessFn(data, status, headers, config){
+            function profileSuccessFn(data){
                 vm.profile = data.data;
-                console.log(vm.profile);
             }
 
-            function profileErrorFn(data, status, headers, config){
+            function profileErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -44,7 +43,7 @@
         function update(){
             Profile.update(vm.profile).then(profileUpdateSuccessFn, profileUpdateErrorFn);
 
-            function profileUpdateSuccessFn(data, status, headers, config){
+            function profileUpdateSuccessFn(){
                 $.jGrowl("Profile has been updated.", {
                     life: 2500,
                     theme: 'success'
@@ -52,7 +51,7 @@
                 window.location.assign("/panel/");
             }
 
-            function profileUpdateErrorFn(data, status, headers, config){
+            function profileUpdateErrorFn(data){
                 $.jGrowl("Profile could not be updated.", {
                     life: 2500,
                     theme: 'btn-danger'
@@ -64,7 +63,7 @@
         function updatePassword(){
             Profile.updatePassword(vm.profile.username,vm.profile.password, vm.profile.confirm_password).then(profilePassSuccessFn, profilePassErrorFn);
 
-            function profilePassSuccessFn(data, status, headers, config){
+            function profilePassSuccessFn(){
                 $.jGrowl("Password has been updated.", {
                     life: 2500,
                     theme: 'success'
@@ -72,7 +71,7 @@
                 window.location.assign("/");
             }
 
-            function profilePassErrorFn(data, status, headers, config){
+            function profilePassErrorFn(data){
                 $.jGrowl("Password could not be updated.", {
                     life: 2500,
                     theme: 'btn-danger'
@@ -84,7 +83,7 @@
         function destroy(){
             Profile.destroy(vm.profile.username).then(destroyProfileSuccessFn, destroyProfileErrorFn);
 
-            function destroyProfileSuccessFn(data, status, headers, config){
+            function destroyProfileSuccessFn(){
                 $.jGrowl("Profile has been deleted.", {
                     life: 2500,
                     theme: 'success'
@@ -92,7 +91,7 @@
                 window.location.assign("/");
             }
 
-            function destroyProfileErrorFn(data, status, headers, config){
+            function destroyProfileErrorFn(data){
                 $.jGrowl("Profile could not be deleted.", {
                     life: 2500,
                     theme: 'btn-danger'

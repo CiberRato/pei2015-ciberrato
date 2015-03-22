@@ -28,20 +28,20 @@
             Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
             Competition.getAllRounds(competitionName).then(getAllRoundsSuccessFn, getAllRoundsErrorFn);
 
-            function getCompetitionSuccessFn(data, status, headers, config){
+            function getCompetitionSuccessFn(data){
                 vm.competition = data.data;
             }
 
-            function getCompetitionErrorFn(data, status, headers, config){
+            function getCompetitionErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
 
-            function getUserAdminSuccessFn(data, status, headers, config){
+            function getUserAdminSuccessFn(data){
                 vm.userAdmin = data.data;
                 Competition.getTeams(competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
-                function getTeamsSuccessFn(data, status, headers, config) {
+                function getTeamsSuccessFn(data) {
                     vm.competitionTeamsInfo = data.data;
                     for(var l = 0; l<vm.competitionTeamsInfo.length; l++) {
                         getAgents(vm.competitionTeamsInfo[l].group.name, l);
@@ -54,7 +54,7 @@
                             vm.competitionTeamsInfo[l].agents = data.data;
                             console.log(vm.competitionTeamsInfo[l].agents.length);
                         }
-                        function agentsErrorFn(data, status, headers, config){
+                        function agentsErrorFn(data){
                             console.error(data.data);
                             $location.url('/panel/');
                         }
@@ -81,14 +81,14 @@
 
                 }
 
-                function getTeamsErrorFn(data, status, headers, config) {
+                function getTeamsErrorFn(data) {
                     console.error(data.data);
                     $location.url('/panel/');
                 }
 
 
             }
-            function getUserAdminErrorFn(data, status, headers, config){
+            function getUserAdminErrorFn(data){
                 console.error(data.data);
             }
 
@@ -145,7 +145,7 @@
             var x = document.getElementById("select").value;
             Competition.enroll(competitionName,x).then(enrollSuccessFn, enrollErrorFn);
 
-            function enrollSuccessFn(data, status, headers, config){
+            function enrollSuccessFn(){
                 $.jGrowl("Team has been joined to the competition.", {
                     life: 2500,
                     theme: 'success'
@@ -153,7 +153,7 @@
                 $location.path('/panel/competitions/'+ competitionName + '/');
             }
 
-            function enrollErrorFn(data, status, headers, config){
+            function enrollErrorFn(data){
                 console.error(data.data);
                 $.jGrowl("Team could not join the competition.", {
                     life: 2500,
@@ -167,7 +167,7 @@
         function removeInscription(teamName){
             Competition.deleteEnroll(teamName, competitionName).then(deleteEnrollSuccessFn, deleteEnrollErrorFn);
 
-            function deleteEnrollSuccessFn(data, status, headers, config){
+            function deleteEnrollSuccessFn(){
                 $.jGrowl("Team has been removed from the competition.", {
                     life: 2500,
                     theme: 'success'
@@ -175,7 +175,7 @@
                 $location.path('/panel/competitions/'+ competitionName + '/');
             }
 
-            function deleteEnrollErrorFn(data, status, headers, config){
+            function deleteEnrollErrorFn(){
                 $.jGrowl("Team can't be removed from the competition.", {
                     life: 2500,
                     theme: 'btn-danger'

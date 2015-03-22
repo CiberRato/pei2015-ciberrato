@@ -13,7 +13,9 @@
             get: get,
             update: update,
             updatePassword: updatePassword,
-            destroy: destroy
+            destroy: destroy,
+            getByFirstName: getByFirstName,
+            getByLastName: getByLastName
         };
 
         return Profile;
@@ -39,6 +41,14 @@
 
         function destroy(username){
             return $http.delete('/api/v1/accounts/' + username + '/');
+        }
+
+        function getByFirstName(name){
+            return $http.get('/api/v1/account_by_first_name/' + name + '/');
+        }
+
+        function getByLastName(name){
+            return $http.get('/api/v1/account_by_last_name/' + name + '/');
         }
 
     }

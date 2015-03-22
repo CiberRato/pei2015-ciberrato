@@ -40,7 +40,6 @@
                 for (var i= 0; i<vm.simulations.length; i++){
 
                 }
-                console.log(vm.simulations);
             }
 
             function getSimulationsErrorFn(data) {
@@ -52,7 +51,6 @@
                 for (var i = 0; i < data.data.length; ++i) {
                     vm.models.lists.Available.push({label: data.data[i].agent_name});
                 }
-                console.log(vm.agents);
             }
 
             function getAgentsErrorFn(data) {
@@ -73,14 +71,11 @@
         function getSimulationAgents(){
             Round.getSimulationAgents(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
 
-            console.log(vm.identifier);
-
             function getSimulationAgentsSuccessFn(data) {
                 vm.models.lists.Simulation = [];
                 for (var i = 0; i < data.data.length; ++i) {
                     vm.models.lists.Simulation.push({label: data.data[i].agent_name});
                 }
-                console.log(data.data);
             }
 
             function getSimulationAgentsErrorFn(data) {
@@ -93,12 +88,9 @@
             console.log(isInSimulation(agent_name));
             if(isInSimulation(agent_name)){
                 associateAgent(agent_name);
-                console.log("associate");
             }else{
                 disassociateAgent(agent_name);
-                console.log("disaaaaa");
             }
-            console.log(vm.models);
         }
 
         function isInSimulation(agent_name){
@@ -139,8 +131,6 @@
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
 
-                console.log(vm.roundName + ' ' + vm.identifier + ' ' + agent_name + ' ' + pos);
-
                 Round.associateAgent(vm.roundName, vm.identifier, agent_name, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
                 function associateAgentSuccessFn() {
@@ -166,7 +156,6 @@
         }
 
         function disassociateAgent(agent_name) {
-            console.log(vm.identifier);
 
             Round.disassociateAgent(vm.roundName, vm.identifier, agent_name).then(disassociateAgentSuccessFn, disassociateAgentErrorFn);
 
@@ -189,7 +178,6 @@
         function uploadParamList() {
             var selectedFile = document.getElementById('ParamListUpload').files[0];
 
-            console.log(selectedFile);
             Round.uploadParamList(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
 
             function uploadSuccessFn(){

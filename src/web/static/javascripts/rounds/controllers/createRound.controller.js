@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('CreateRoundController', CreateRoundController);
 
-    CreateRoundController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Round', 'Authentication'];
+    CreateRoundController.$inject = ['$location', '$route', '$routeParams', 'Round'];
 
-    function CreateRoundController($location, $route, $routeParams, Competition, Round, Authentication){
+    function CreateRoundController($location, $route, $routeParams, Round){
         var vm = this;
 
         vm.create = create;

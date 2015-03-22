@@ -34,12 +34,10 @@
         function create(){
             var x = document.getElementById("select").value;
             var y = document.getElementById("type").value;
-            console.log(x +'/' + y);
-            var type;
             Agent.create(vm.name, x, y).then(createSuccessFn, createErrorFn);;
         }
 
-        function createSuccessFn(data, status, headers, config){
+        function createSuccessFn(){
             $.jGrowl("Agent has been created successfully.", {
                 life: 2500,
                 theme: 'success'
@@ -48,7 +46,7 @@
 
         }
 
-        function createErrorFn(data, status, headers, config){
+        function createErrorFn(data){
             console.error(data.data);
             $.jGrowl("Agent could not be created.", {
                 life: 2500,

@@ -14,63 +14,53 @@
         activate();
 
         function activate(){
-            Team.getAll().then(getAllSuccessFn, getAllErrorFn);
-            Profile.getAll().then(getAllMembersSuccessFn, getAllMembersErrorFn);
-            Competition.getAll().then(getAllCompetitionsSuccessFn, getAllCompetitionsErrorFn);
+            Team.getByName(search).then(getAllSuccessFn, getAllErrorFn);
+            Profile.get(search).then(getByUsernameSuccessFn, getByUsernameErrorFn);
+            Profile.getByFirstName(search).then(getByFirstNameSuccessFn, getByFirstNameErrorFn);
+            Profile.getByLastName(search).then(getByLastNameSuccessFn, getByLastNameErrorFn);
+            Competition.getByName(search).then(getAllCompetitionsSuccessFn, getAllCompetitionsErrorFn);
 
-            function getAllSuccessFn(data, status, headers, config){
+            function getAllSuccessFn(data){
                 vm.team = data.data;
-                var j = 0;
-                vm.teamsFound = [];
-                console.log(vm.team);
-                for(var i = 0; i<vm.team.length; i++){
-                    if(vm.team[i].name === search){
-                        vm.teamsFound[j] = vm.team[i];
-                        j++;
-                    }
-                }
-                console.log(vm.teamsFound);
-                vm.teamsFound.count = vm.teamsFound.length;
             }
 
-            function getAllErrorFn(data, status, headers, config){
+            function getAllErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
-            function getAllMembersSuccessFn(data, status, headers, config){
+            function getByUsernameSuccessFn(data){
                 vm.members = data.data;
-                var j = 0;
-                console.log(vm.members);
-                vm.membersFound =[];
-                for(var i = 0; i<vm.members.length; i++) {
-                    if (vm.members[i].username === search || (vm.members[i].first_name === search.substr(0,search.indexOf(' ')) && vm.members[i].last_name === search.substr(search.indexOf(' ')+1)) || vm.members[i].first_name === search || vm.members[i].last_name === search){
-                        vm.membersFound[j] = vm.members[i];
-                        j++;
-                    }
-                }
-                console.log(vm.membersFound);
-                vm.membersFound.count = vm.membersFound.length;
             }
 
-            function getAllMembersErrorFn(data, status, headers, config){
+            function getByUsernameErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
 
-            function getAllCompetitionsSuccessFn(data, status, headers, config){
-                vm.competitions = data.data;
-                var j = 0;
-                vm.competitionsFound = [];
-                for(var i = 0; i<vm.competitions.length; i++){
-                    if(vm.competitions[i].name === search){
-                        vm.competitionsFound[j] = vm.competitions[i];
-                        j++;
-                    }
-                }
+            function getByFirstNameSuccessFn(data){
+                vm.members.append(data.data);
             }
 
-            function getAllCompetitionsErrorFn(data, status, headers, config){
+            function getByFirstNameErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+
+            function getByLastNameSuccessFn(data){
+                vm.members.append(data.data);
+            }
+
+            function getByLastNameErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+
+            function getAllCompetitionsSuccessFn(data){
+                vm.competitions = data.data;
+            }
+
+            function getAllCompetitionsErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }

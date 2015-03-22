@@ -24,7 +24,6 @@
 
         function create(){
             var x = document.getElementById("select").value;
-            console.log(x + ' ' + vm.competitionName + ' ' + vm.firstRound);
             Competition.create(vm.competitionName, x).then(createSuccessFn, createErrorFn);
 
             function createSuccessFn(){

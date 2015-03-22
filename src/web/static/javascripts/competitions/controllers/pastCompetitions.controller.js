@@ -31,12 +31,12 @@
                 Competition.getTeams(competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
 
-                function getTeamsSuccessFn(data, status, headers, config) {
+                function getTeamsSuccessFn(data) {
                     vm.teams = data.data;
                     vm.competitions[i].allTeams = vm.teams.length;
                 }
 
-                function getTeamsErrorFn(data, status, headers, config) {
+                function getTeamsErrorFn(datag) {
                     console.error(data.data);
                     $location.path('/panel/')
                 }

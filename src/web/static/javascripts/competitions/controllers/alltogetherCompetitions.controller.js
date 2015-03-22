@@ -18,11 +18,11 @@
         function activate(){
             Competition.getAll().then(getAllSuccessFn, getAllErrorFn);
 
-            function getAllSuccessFn(data, status, headers, config){
+            function getAllSuccessFn(data){
                 vm.competitions = data.data;
             }
 
-            function getAllErrorFn(data, status, headers, config){
+            function getAllErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -51,9 +51,7 @@
         }
 
         function changeState(name){
-            console.log(name);
             var x = document.getElementById("select"+name).value;
-            console.log(x);
             Competition.changeState(name, x).then(changeStateSuccessFn, changeStateErrorFn);
 
             function changeStateSuccessFn(){

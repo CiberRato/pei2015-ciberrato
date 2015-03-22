@@ -15,14 +15,14 @@
         function activate(){
             Competition.getAllAble().then(getAllSuccessFn, getAllErrorFn);
 
-            function getAllSuccessFn(data, status, headers, config){
+            function getAllSuccessFn(data){
                 vm.competitions = data.data;
                 for(var i = 0; i<vm.competitions.length; i++){
                     getTeams(vm.competitions[i].name, i);
                 }
             }
 
-            function getAllErrorFn(data, status, headers, config){
+            function getAllErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -31,12 +31,12 @@
                 Competition.getTeams(competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
 
-                function getTeamsSuccessFn(data, status, headers, config) {
+                function getTeamsSuccessFn(data) {
                     vm.teams = data.data;
                     vm.competitions[i].allTeams = vm.teams.length;
                 }
 
-                function getTeamsErrorFn(data, status, headers, config) {
+                function getTeamsErrorFn(data) {
                     console.error(data.data);
                     $location.path('/panel/')
                 }
