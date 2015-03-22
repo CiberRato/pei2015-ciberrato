@@ -22,7 +22,7 @@ class GetRoundFile(views.APIView):
                              'message': 'Please provide the ?file=*file*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        param = request.QUERY_PARAMS.get('file')
+        param = request.QUERY_PARAMS.get('file', '')
 
         if param != 'param_list' and param != 'lab' and param != 'grid':
             return Response({'status': 'Bad request',

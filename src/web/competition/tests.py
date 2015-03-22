@@ -537,9 +537,8 @@ class AuthenticationTestCase(TestCase):
         simulation.log_json.delete()
 
         # delete simulation
-        url = "/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/"
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE', 'pos': 1}
-        response = client.delete(path=url, data=data)
+        url = "/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/?round_name=R1&agent_name=KAMIKAZE"
+        response = client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation agent has been deleted!'})
         self.assertEqual(len(LogSimulationAgent.objects.all()), 0)
