@@ -41,8 +41,8 @@
                                         <td ng-if="vm.members.length == 1 && vm.member.is_admin==true">
                                             <a class="btn btn-primary btn-flat" data-toggle="modal" href="#confirmTeam">X</a>
                                             <div class="modal fade hide"  id="confirmTeam">
-                                                <div class="modal-header">
-                                                    <h3 align="center">Your Team ({{vm.team.group.name}}) will be removed!</h3>
+                                                <div class="modal-body">
+                                                    <p align="center">Your Team <strong>({{vm.team.group.name}})</strong> will be removed!</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <a data-dismiss="modal" ng-click="vm.destroy()" class="btn btn-alt btn-danger" >Delete</a>

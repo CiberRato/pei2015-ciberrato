@@ -56,8 +56,9 @@
                         <div class="row-fluid">
 
                         </div>
-                        <p>Here is shown in table the list of all rounds in this Competition.</p>
-                        <div ng-repeat="(key, value) in vm.rounds" class="span8">
+                        <p ng-if="vm.rounds.length == 0">There are no teams enrolled in this competition.</p>
+                        <p ng-if="vm.rounds.length != 0">Here is shown in table the list of all rounds in this Competition.</p>
+                        <div ng-if="vm.rounds.length != 0" ng-repeat="(key, value) in vm.rounds" class="span8">
                             <div class="tab-pane active" id="static">
                                 <h3><a href="admin/{{value.name}}/roundDetail">{{value.name}} </a></h3>
                                 <p ng-if="value.simulations.length == 0"> This round doesn't have any simulations.</p>

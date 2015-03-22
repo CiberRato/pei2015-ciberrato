@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Round', 'Authentication'];
+    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round'];
 
-    function DetailRoundController($location, $route, $routeParams, Competition, Round, Authentication){
+    function DetailRoundController($location, $route, $routeParams, Round){
         var vm = this;
 
         vm.models = {
@@ -26,6 +26,7 @@
         vm.uploadParamList = uploadParamList;
         vm.uploadGrid = uploadGrid;
         vm.uploadLab = uploadLab;
+        vm.destroy = destroy;
         activate();
 
         function activate() {
@@ -203,7 +204,7 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                console.log(data.data);
+                console.error(data.data);
             }
 
         }
@@ -226,7 +227,7 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                console.log(data.data);
+                console.error(data.data);
             }
 
         }
@@ -249,9 +250,30 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                console.log(data.data);
+                console.error(data.data);
             }
 
+        }
+
+        function destroy(){
+            Round.destroy(vm.roundName).then(destroySuccessFn, destroyErrorFn);
+
+            function destroySuccessFn(){
+                $.jGrowl("Round has been removed.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/admin/' + vm.round.parent_competition_name);
+            }
+
+            function destroyErrorFn(data){
+                $.jGrowl("Round can't be removed.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.error(data.data);
+                $route.reload();
+            }
         }
 
     }

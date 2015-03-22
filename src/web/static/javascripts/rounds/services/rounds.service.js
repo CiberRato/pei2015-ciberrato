@@ -21,7 +21,8 @@
             getSimulationAgents: getSimulationAgents,
             create: create,
             startSimulation: startSimulation,
-            getRound: getRound
+            getRound: getRound,
+            destroy: destroy
         };
 
         return Round;
@@ -110,6 +111,10 @@
 
         function getRound(roundName){
             return $http.get('/api/v1/competitions/round/' + roundName + '/');
+        }
+
+        function destroy(roundName){
+            return $http.delete("/api/v1/competitions/round/" + roundName + "/");
         }
 
     }
