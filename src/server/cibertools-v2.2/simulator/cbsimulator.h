@@ -217,7 +217,6 @@ protected: // data members
 
 protected: // member functions
 	void CheckIn();
-	void ViewCommands();
 	void PanelCommands();
 	void RobotActions();
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
