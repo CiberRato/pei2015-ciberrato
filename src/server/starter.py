@@ -65,6 +65,7 @@ class Starter:
 		TAR_FILE = settings["settings"]["file"]
 		#end loading settings
 
+		print GET_SIM_HOST + sim_id + "/"
 		result = requests.get(GET_SIM_HOST + sim_id + "/")
 		print result.text
 		simJson = json.loads(result.text)
@@ -97,13 +98,12 @@ class Starter:
 		print "Creating process for Websocket end-point.."
 		websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout=subprocess.PIPE)
 		print "Successfully opened process with process id: ", websocket.pid
-
+		time.sleep(1)
 		print "Creating process for simulator"
 		##		CHECK ./simulator --help 				##
 		# Run simulator for LINUX
 		simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
-						"-viewerlog", \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
 						"-grid", 	tempFilesList["grid"].name], \
@@ -111,7 +111,6 @@ class Starter:
 
 		print "Successfully opened process with process id: ", simulator.pid
 		time.sleep(1)
-
 		print "Creating process for viewer"
 		viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
 		print "Successfully opened process with process id: ", viewer.pid
@@ -140,7 +139,6 @@ class Starter:
 			docker_container = docker.stdout.readline().strip()
 			docker.wait()
 			print "Successfully opened container: %s\n" % (docker_container, )
-
 		data = viewer_c.recv(4096)
 		while data != "<AllRobotsRegistered/>":
 			data = viewer_c.recv(4096)
