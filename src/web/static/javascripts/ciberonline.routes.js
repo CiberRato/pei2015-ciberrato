@@ -105,13 +105,21 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/createCompetition.html'
         }).when('/admin/allCompetitions',{
-            controller:'AllCompetitionsController',
+            controller:'AllTogetherCompetitionsController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html'
         }).when('/admin/:name/detailCompetition',{
             controller:'DetailCompetitionController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/competitionDetails.html'
+        }).when('/admin/:name/',{
+            controller:'ListCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/livePastCompetitions.html'
+        }).when('/admin/:name/roundDetail',{
+            controller:'DetailRoundController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/round/roundDetail.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

@@ -19,14 +19,45 @@
                                 <th>Competition Name</th>
                                 <th>Type Of Competition</th>
                                 <th>State Of Competition</th>
+                                <th>Change State Of Competition</th>
                                 <th>Remove Competition</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitions">
-                                <td><a href="admin/{{ value.name }}/detailCompetition/">{{value.name}}</a></td>
+                                <td ng-if="value.state_of_competition == 'Register'"><a href="admin/{{ value.name }}/detailCompetition/">{{value.name}}</a></td>
+                                <td ng-if="value.state_of_competition != 'Register'"><a href="admin/{{ value.name }}/">{{value.name}}</a></td>
                                 <td>{{value.type_of_competition}}</td>
                                 <td>{{value.state_of_competition}}</td>
+                                <td>
+                                    <a data-toggle="modal"  href="#{{value.name}}">Change</a>
+                                    <div class="modal fade"  id="{{value.name}}">
+                                        <div class="modal-header">
+                                            <h2 align="center">New State of Competition</h2>
+                                        </div>
+                                        <div class="modal-body">
+                                            <section>
+                                                <div class="control-group">
+                                                    <label class="control-label" for="select"></label>
+                                                    <select id="select" name="option">
+                                                        <option value="Competition">Competition</option>
+                                                        <option value="Register">Register</option>
+                                                        <option value="Past">Past</option>
+                                                    </select>
+                                                </div>
+
+                                            </section>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a ng-click = "vm.changeState(value.name)" data-dismiss="modal" class="btn btn-alt btn-success">Change {{value.name}}</a>
+                                            <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
+
+                                        </div>
+                                    </div>
+
+
+                                </td>
                                 <td><a ng-click="vm.deleteCompetition(value.name)" class="btn btn-primary btn-flat">X</a></td>
 
                             </tr>

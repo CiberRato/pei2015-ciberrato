@@ -22,9 +22,10 @@
             getCompetitions: getCompetitions,
             getFirstRound: getFirstRound,
             create: create,
-            createRound: createRound,
             deleteCompetition: deleteCompetition,
-            validateInscription: validateInscription
+            validateInscription: validateInscription,
+            getAllRounds: getAllRounds,
+            changeState: changeState
 
         };
 
@@ -89,13 +90,6 @@
             });
         }
 
-        function createRound(roundName, competition){
-            return $http.post("/api/v1/competitions/round/", {
-                name: roundName,
-                parent_competition_name: competition
-            });
-        }
-
         function deleteCompetition(name){
             return $http.delete("/api/v1/competitions/crud/" +name+ "/");
         }
@@ -108,6 +102,17 @@
                 group_name: teamName
             });
         }
+
+        function getAllRounds(competitionName){
+            return $http.get("/api/v1/competitions/rounds/" +competitionName +"/");
+        }
+
+        function changeState(name, state){
+            return $http.put("/api/v1/competitions/state/" +name+ "/" , {
+                state_of_competition: state
+            });
+        }
+
     }
 
 })();

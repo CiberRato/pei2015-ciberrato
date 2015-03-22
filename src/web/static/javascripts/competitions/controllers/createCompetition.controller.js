@@ -5,9 +5,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('CreateCompetitionController', CreateCompetitionController);
 
-    CreateCompetitionController.$inject = ['$location', 'Authentication', 'Competition'];
+    CreateCompetitionController.$inject = ['$location', 'Authentication', 'Competition', 'Round'];
 
-    function CreateCompetitionController($location, Authentication, Competition){
+    function CreateCompetitionController($location, Authentication, Competition, Rou){
         var vm = this;
 
         vm.create = create;
@@ -28,7 +28,7 @@
             Competition.create(vm.competitionName, x).then(createSuccessFn, createErrorFn);
 
             function createSuccessFn(){
-                Competition.createRound(vm.firstRound, vm.competitionName).then(createRoundSuccessFn, createRoundErrorFn);
+                Round.createRound(vm.firstRound, vm.competitionName).then(createRoundSuccessFn, createRoundErrorFn);
 
                 function createRoundSuccessFn(){
                     $.jGrowl("Competition has been created successfully.", {
