@@ -10,7 +10,7 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
 
-                        <h2>My Competitions</h2>
+                        <h2>All Competitions</h2>
                         <p>Here is shown in table the list of all competitions that you had been enrolled.</p>
 
                         <table class="table table-striped table-hover">
@@ -30,8 +30,8 @@
                                 <td>{{value.type_of_competition}}</td>
                                 <td>{{value.state_of_competition}}</td>
                                 <td>
-                                    <a data-toggle="modal"  href="#changeState">Change</a>
-                                    <div class="modal fade"  id="changeState">
+                                    <a data-toggle="modal"  href="#changeState{{key}}">Change</a>
+                                    <div class="modal fade"  id="changeState{{key}}">
                                         <div class="modal-header">
                                             <h2 align="center">New State of Competition</h2>
                                         </div>
@@ -39,7 +39,7 @@
                                             <section>
                                                 <div class="control-group">
                                                     <label class="control-label" for="select"></label>
-                                                    <select id="select" name="option">
+                                                    <select id="select{{value.name}}" name="option">
                                                         <option value="Competition">Competition</option>
                                                         <option value="Register">Register</option>
                                                         <option value="Past">Past</option>
@@ -52,7 +52,6 @@
                                         <div class="modal-footer">
                                             <a ng-click = "vm.changeState(value.name)" data-dismiss="modal" class="btn btn-alt btn-success">Change {{value.name}}</a>
                                             <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
-
                                         </div>
                                     </div>
 

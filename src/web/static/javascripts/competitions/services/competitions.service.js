@@ -108,6 +108,7 @@
         }
 
         function changeState(name, state){
+            console.log(name, state);
             return $http.put("/api/v1/competitions/state/" +name+ "/" , {
                 state_of_competition: state
             });

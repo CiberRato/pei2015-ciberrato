@@ -52,7 +52,7 @@
 
         function changeState(name){
             console.log(name);
-            var x = document.getElementById("select").value;
+            var x = document.getElementById("select"+name).value;
             console.log(x);
             Competition.changeState(name, x).then(changeStateSuccessFn, changeStateErrorFn);
 
