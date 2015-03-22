@@ -12,7 +12,8 @@
             'ciberonline.competitions',
             'ciberonline.agents',
             'ciberonline.rounds',
-            'dndLists'
+            'dndLists',
+            'ciberonline.logviewer'
         ])
         .run(run);
 

@@ -61,6 +61,14 @@
 <script type="text/javascript" src="{% static 'javascripts/rounds/controllers/createRound.controller.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/angular-drag-and-drop-lists.min.js' %}"></script>
 
+<!-- log viewer -->
+<script type='text/javascript' src="{% static 'bower_components/xml2json.js' %}"></script>
+<script type='text/javascript' src="{% static 'js/jquery.nstSlider.js' %}"></script>
+<script type="text/javascript" src ="{% static 'js/viewer/logviewer_jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/logviewer/logviewer.module.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/logviewer/services/logviewer.service.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascripts/logviewer/controllers/log.controller.js' %}"></script>
+
 <!-- Scripts -->
 <script type="text/javascript" src="{% static 'js/navigation.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-affix.js' %}"></script>
@@ -76,209 +84,7 @@
 <!--only needed if you support non HTML5 FormData browsers.-->
 <script type="text/javascript" src="{% static 'bower_components/ng-file-upload/angular-file-upload-shim.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/ng-file-upload/angular-file-upload.js' %}"></script>
-<!--
-<script type='text/javascript' src="{% static 'bower_components/jquery-git.js' %}"></script>
-<script type='text/javascript' src="{% static 'bower_components/xml2json.js' %}"></script>
-<script type="text/javascript" src ="{% static 'js/viewer.js' %}"></script>
--->
-<!--
-<script type='text/javascript' src="{% static 'js/navigation.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-affix.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-alert.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-dropdown.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-tab.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-collapse.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-fileupload.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/bootstrap/bootstrap-inputmask.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/jquery.nstSlider.js' %}"></script>
 
-
-<script>
-    $("#play").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().play();
-        $(this).attr("disabled", true);
-        $("#pause").removeAttr("disabled");
-        $("#stop").removeAttr("disabled");
-        return false;
-    });
-    $("#pause").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().pause();
-        $(this).attr("disabled", true);
-        $("#play").removeAttr("disabled");
-        $("#stop").removeAttr("disabled");
-        return false;
-    });
-    $("#stop").click(function() {
-        angular.element('[ng-controller=ctrl]').scope().stop();
-        $(this).attr("disabled", true);
-        $("#pause").attr("disabled", true);
-        $("#play").removeAttr("disabled");
-        return false;
-    });
-</script>
-
-<script>
-    $(window).keypress(function(e) {
-        if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==1) {
-            angular.element('[ng-controller=ctrl]').scope().pause();
-            $("#pause").attr("disabled", true);
-            $("#play").removeAttr("disabled");
-            $("#stop").removeAttr("disabled");
-            return false;
-        }
-        else if (e.keyCode == 32 && angular.element('[ng-controller=ctrl]').scope().playvar==0) {
-            angular.element('[ng-controller=ctrl]').scope().play();
-            $("#play").attr("disabled", true);
-            $("#pause").removeAttr("disabled");
-            $("#stop").removeAttr("disabled");
-            return false;
-        }
-    });
-</script>
-
-<script>
-    $(document).keydown(function(e) {
-        switch(e.which) {
-            case 37: // left
-                angular.element('[ng-controller=ctrl]').scope().idx-=angular.element('[ng-controller=ctrl]').scope().increments;
-                break;
-
-            case 38: // up
-                break;
-
-            case 39: // right
-                angular.element('[ng-controller=ctrl]').scope().idx+=angular.element('[ng-controller=ctrl]').scope().increments;
-                break;
-
-            case 40: // down
-                break;
-
-            default: return; // exit this handler for other keys
-        }
-        e.preventDefault(); // prevent the default action (scroll / move caret)
-    });
-
-</script>
-
-<script>
-    $("#mazeColor").change(function() {
-        angular.element('[ng-controller=ctrl]').scope().setMazeColor($( "#mazeColor" ).val());
-        return false;
-    });
-
-</script>
-<script>
-    $("#increments").change(function() {
-        angular.element('[ng-controller=ctrl]').scope().setIncrements($("#increments").val());
-        return false;
-    });
-
-</script>
--->
-
-<!-- jQuery TagsInput -->
-<!--
-<script type='text/javascript' src="{% static 'js/plugins/tagsInput/jquery.tagsinput.min.js' %}"></script>
-
-<script>
-    $(document).ready(function() {
-
-        $('.tagsinput').tagsInput();
-
-    });
-</script>
--->
-<!-- jQuery jWYSIWYG -->
-<!--
-<script type='text/javascript' src="{% static 'js/plugins/jWYSIWYG/jquery.wysiwyg.js' %}"></script>
-
-<script>
-    $(document).ready(function() {
-
-        $('.wysiwyg').wysiwyg({
-            controls: {
-                bold          : { visible : true },
-                italic        : { visible : true },
-                underline     : { visible : true },
-                strikeThrough : { visible : true },
-
-                justifyLeft   : { visible : true },
-                justifyCenter : { visible : true },
-                justifyRight  : { visible : true },
-                justifyFull   : { visible : true },
-
-                indent  : { visible : true },
-                outdent : { visible : true },
-
-                subscript   : { visible : true },
-                superscript : { visible : true },
-
-                undo : { visible : true },
-                redo : { visible : true },
-
-                insertOrderedList    : { visible : true },
-                insertUnorderedList  : { visible : true },
-                insertHorizontalRule : { visible : true },
-
-                cut   : { visible : true },
-                copy  : { visible : true },
-                paste : { visible : true }
-            },
-            events: {
-                click: function(event) {
-                    if ($("#click-inform:checked").length > 0) {
-                        event.preventDefault();
-                        alert("You have clicked jWysiwyg content!");
-                    }
-                }
-            }
-        });
-
-    });
-</script>
--->
-
-<!-- Wysihtml5 -->
-<!--
-<script type='text/javascript' src="{% static 'js/plugins/wysihtml5/wysihtml5-0.3.0.js' %}"></script>
-<script type='text/javascript' src="{% static 'js/plugins/wysihtml5/bootstrap-wysihtml5.js' %}"></script>
-
-<script>
-    $(document).ready(function() {
-
-        $('.wysihtml5').wysihtml5();
-
-    });
-</script>
--->
-<!-- Colorpicker -->
-<!--
-<script type='text/javascript' src="{% static 'js/plugins/colorpicker/bootstrap-colorpicker.js' %}"></script>
-
-<script>
-    $(document).ready(function() {
-
-        var preview = $('.colorpicker-preview')[0].style;
-        $('.colorpicker').colorpicker().on('changeColor', function(ev){
-            preview.backgroundColor = ev.color.toHex();
-        });
-
-    });
-</script>
--->
-<!-- Colorpicker -->
-<!--
-<script type='text/javascript' src="{% static 'js/plugins/datepicker/bootstrap-datepicker.js' %}"></script>
-
-<script>
-    $(document).ready(function() {
-
-        $('.datepicker').datepicker();
-
-    });
-</script>
--->
 <script>
     $(document).ready(function(){
         // Tooltips
