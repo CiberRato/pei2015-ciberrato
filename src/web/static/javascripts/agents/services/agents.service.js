@@ -17,7 +17,8 @@
             destroy: destroy,
             getFiles: getFiles,
             deleteUpload: deleteUpload,
-            associate: associate
+            associate: associate,
+            deleteAgent: deleteAgent
         };
 
         return Agent;
@@ -69,6 +70,10 @@
                 competition_name: competitionName,
                 agent_name: agentName
             });
+        }
+
+        function deleteAgent(agentName){
+            return $http.delete("/api/v1/competitions/agent/" + agentName + "/");
         }
     }
 })();

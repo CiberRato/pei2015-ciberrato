@@ -16,12 +16,15 @@
                             <tr>
                                 <th>Agent Name</th>
                                 <th>Group Name</th>
+                                <th>Remove Agent</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.agents">
                                 <td><a href="panel/{{value.agent_name}}/agentDetail">{{ value.agent_name }}</a></td>
                                 <td><a href="panel/{{value.group_name}}/teamMembers">{{value.group_name}}</a></td>
+                                <td><a ng-click="vm.deleteAgent(value.agent_name)" class="btn btn-primary btn-flat">X</a></td>
+
                             </tr>
                             </tbody>
                         </table>

@@ -62,6 +62,10 @@
             controller:'AllCompetitionsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/actualCompetitions.html'
+        }).when('/panel/createAgent',{
+            controller:'CreateAgentController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/agent/createAgent.html'
         }).when('/panel/allCompetitions',{
             controller:'AllTogetherCompetitionsController',
             controllerAs:'vm',
@@ -86,10 +90,6 @@
             controller:'ListCompetitionController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/livePastCompetitions.html'
-        }).when('/panel/createAgent',{
-            controller:'CreateAgentController',
-            controllerAs:'vm',
-            templateUrl: '/static/templates/panel/agent/createAgent.html'
         }).when('/panel/:username/myAgents',{
             controller:'MyAgentsController',
             controllerAs:'vm',
@@ -124,6 +124,10 @@
             controller:'CreateRoundController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/round/newRound.html'
+        }).when('/panel/:identifier/watchSimulation',{
+            controller: 'ctrl',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/viewer/logViewer.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

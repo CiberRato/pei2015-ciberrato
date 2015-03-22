@@ -10,6 +10,7 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2>{{vm.roundName}}</h2>
+
                         <a data-toggle="modal"  href="#uploadParams">(Upload Params for this Round)</a>
 
                         <div class="modal fade"  id="uploadParams">
@@ -97,8 +98,8 @@
                             </tr>
                             </tbody>
                         </table>
-                        <a ng-click="vm.createSimulation()" class="btn btn-alt btn-large btn-primary">Create Simulation</a>
-                        <a href="/admin/{{vm.round.parent_competition_name}}" class="btn btn-alt btn-large btn-primary">Back to Competition</a>
+                        <a ng-click="vm.createSimulation()" class="btn btn-alt btn-large btn-success">Create Simulation</a>
+                        <a href="/admin/{{vm.round.parent_competition_name}}" class="btn btn-alt btn-large btn-danger">Back to Competition</a>
                     </div>
 
 
