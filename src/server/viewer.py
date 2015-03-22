@@ -46,7 +46,7 @@ def main():
 
 	simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
 	# Ler o valor do tempo de simulação e obter as portas
-	data, (host, port) = simulator_s.recvfrom(4096)
+	data, (hostSim, portSim) = simulator_s.recvfrom(4096)
 	# Vem params, grid e lab aqui
 	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
 	itemlist = parametersXML.getElementsByTagName('Parameters')
@@ -110,7 +110,6 @@ def main():
 				if wlog:
 					log.write(str(checkedRobots) + "\n	")
 					log.write(str(len(checkedRobots)) + "\n")
-
 	if wlog:
 		log.write("All Robots are registered\n")
 	starter_s.send("<AllRobotsRegistered/>")
@@ -122,7 +121,7 @@ def main():
 	if wlog:
 		log.write("Received start confirmation\n")
 
-	simulator_s.sendto("<Start/>\n" ,(host, port))
+	simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
 
 
