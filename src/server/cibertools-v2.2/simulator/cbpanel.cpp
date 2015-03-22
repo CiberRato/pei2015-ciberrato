@@ -20,6 +20,13 @@
 
 #include "cbpanel.h"
 
+#include <QUdpSocket>
+#include <QHostAddress>
+
+#include <iostream>
+
+using namespace std;
+
 cbPanel::cbPanel() : cbClient()
 {
 }
@@ -28,3 +35,36 @@ cbPanel::~cbPanel()
 {
 }
 
+bool cbPanel::readCommand(cbPanelCommand *command)
+{
+    /* look for an incoming message */
+
+    char xmlBuff[64];
+    int xmlSize;
+
+    if (!hasPendingDatagrams())
+        return false;
+
+    if ((xmlSize=readDatagram(xmlBuff, 63)) < 0)
+    {
+        cerr << "Error reading from Viewer Socket - " << errorString().toStdString();
+        return false;
+    }
+    else xmlBuff[xmlSize]='\0';
+
+#ifdef DEBUG_VIEW
+    cerr << "cbView: " << xmlBuff << endl;
+#endif
+
+    /* parse xml message */
+    parser.setContentHandler(&handler);
+    source.setData(QByteArray(xmlBuff));
+    if (!parser.parse(source))
+    {
+        cerr << "cbView::Fail parsing xml view message\n";
+        return false;
+    }
+    
+    *command = handler.Command();
+    return true;
+}
