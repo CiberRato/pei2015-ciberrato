@@ -25,7 +25,8 @@
             deleteCompetition: deleteCompetition,
             validateInscription: validateInscription,
             getAllRounds: getAllRounds,
-            changeState: changeState
+            changeState: changeState,
+            agents: agents
 
         };
 
@@ -112,6 +113,10 @@
             return $http.put("/api/v1/competitions/state/" +name+ "/" , {
                 state_of_competition: state
             });
+        }
+
+        function agents(groupName, competitionName){
+            return $http.get("/api/v1/competitions/agents_by_competition_group/" + groupName+ "/?competition_name=" + competitionName)
         }
 
     }

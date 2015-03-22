@@ -25,7 +25,9 @@ struct cbPanelCommand
 	enum {UNKNOWN, START, RESTART, STOP, ROBOTDEL} type;
 	union 
 	{
-		struct { int id; } robot;
+		struct { 
+            int id; 
+        } robot;
 	};
 };
 

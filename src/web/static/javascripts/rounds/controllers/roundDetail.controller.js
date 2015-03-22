@@ -31,6 +31,7 @@
         function activate() {
             Round.getSimulations(vm.roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
             Round.getAgents(vm.roundName).then(getAgentsSuccessFn, getAgentsErrorFn);
+            Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
 
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
@@ -57,6 +58,14 @@
                 $location.path('/panel/');
             }
 
+            function getRoundSuccessFn(data){
+                vm.round = data.data;
+            }
+
+            function getRoundErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
         }
 
         function getSimulationAgents(){

@@ -21,6 +21,7 @@
 
 #include "cbview.h"
 #include "cbpanel.h"
+#include "cbpanelview.h"
 #include "cbrobot.h"
 #include "cbrobotbeacon.h"
 #include "netif.h"
@@ -36,6 +37,7 @@ cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
 	robotBeacon = 0;
 	panel = 0;
 	view = 0;
+	panelview = 0;
 	xmlParser=parser;
 }
  
@@ -45,6 +47,7 @@ bool cbReceptionHandler::startDocument()
 	robotBeacon = 0;
 	panel = 0;
 	view = 0;
+	panelview = 0;
     return true;
 }
 
@@ -66,6 +69,11 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	{
 		type = PANEL;
 		panel = new cbPanel;
+	}
+	else if (tag == "PanelView")
+	{
+		type = PANELVIEW;
+		panelview = new cbPanelView;
 	}
 	else if (tag == "Robot")
 	{
@@ -147,6 +155,14 @@ bool cbReceptionHandler::endElement( const QString&, const QString&, const QStri
 			return false;
 		}
 	}
+	else if (tag == "PanelView") 
+	{
+		if (panelview == 0)
+		{
+			cerr << "PanelView tag arrived but panelview==0\n";
+			return false;
+		}
+	}
 	else if (tag == "Robot")
 	{
 		if (robot == 0)
@@ -202,6 +218,10 @@ cbView *cbReceptionHandler::viewObject()
 	return view;
 }
 
+cbPanelView *cbReceptionHandler::panelViewObject() 
+{
+	return panelview;
+}
 
 bool cbReceptionHandler::parse(void *data, int datasize)
 {

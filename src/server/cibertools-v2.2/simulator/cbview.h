@@ -22,8 +22,6 @@
 #define CBVIEW_H
 
 #include "cbclient.h"
-#include "cbviewhandler.h"
-#include "cbviewcommand.h"
 
 /**
   *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
@@ -37,12 +35,6 @@ class cbView : public cbClient
 public:
 	cbView();
 	~cbView();
-
-	bool readCommand(cbCommand *command);
-
-protected: // class data members
-	cbViewHandler handler;
-
 };
 
 #endif

@@ -38,7 +38,7 @@ bool cbPanelHandler::endDocument()
 	return true;
 }
 
-bool cbPanelHandler::startElement( const QString&, const QString&, const QString& qName, const QXmlAttributes& attr)
+bool cbPanelHandler::startElement(const QString&, const QString&, const QString& qName, const QXmlAttributes& attr)
 {
 	//cout << "cbPanelHandler::startElement:: " << qName << endl;
 	/* process begin tag */
@@ -55,17 +55,13 @@ bool cbPanelHandler::startElement( const QString&, const QString&, const QString
 	{
 		command.type = cbPanelCommand::STOP;
 	}
-	else if (tag == "Robot")
+	else if (tag == "DeleteRobot")
 	{
-		/* process attributes */
-		const QString &removed = attr.value(QString("Removed"));
-		if (!removed.isNull() && removed == "Yes")
-		{
-			command.type = cbPanelCommand::ROBOTDEL;
-			command.robot.id = 0;
-		}
 		const QString &id = attr.value(QString("Id"));
-		if (!id.isNull()) command.robot.id = id.toInt();
+		if (!id.isNull()) {
+			command.type = cbPanelCommand::ROBOTDEL;
+			command.robot.id = id.toInt();
+		}
 	}
 	else
 	{
@@ -75,7 +71,7 @@ bool cbPanelHandler::startElement( const QString&, const QString&, const QString
     return true;
 }
 
-bool cbPanelHandler::endElement( const QString&, const QString&, const QString& qName)
+bool cbPanelHandler::endElement(const QString&, const QString&, const QString& qName)
 {
 	//cout << "cbPanelHandler::endElement:: " << qName << endl;
 	/* process end tag */
@@ -104,7 +100,7 @@ bool cbPanelHandler::endElement( const QString&, const QString&, const QString& 
 			return false;
 		}
 	}
-	else if (tag == "Robot")
+	else if (tag == "DeleteRobot")
 	{
 		if (command.type != cbPanelCommand::ROBOTDEL)
 		{

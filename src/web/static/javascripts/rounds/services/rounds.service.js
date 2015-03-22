@@ -20,7 +20,8 @@
             disassociateAgent: disassociateAgent,
             getSimulationAgents: getSimulationAgents,
             create: create,
-            startSimulation: startSimulation
+            startSimulation: startSimulation,
+            getRound: getRound
         };
 
         return Round;
@@ -105,6 +106,10 @@
             return $http.post("/api/v1/simulations/start/", {
                 simulation_id: identifier
             })
+        }
+
+        function getRound(roundName){
+            return $http.get('/api/v1/competitions/round/' + roundName + '/');
         }
 
     }

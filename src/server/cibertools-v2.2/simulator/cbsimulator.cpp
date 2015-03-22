@@ -559,7 +559,10 @@ void cbSimulator::step()
 	//cout.form("Checking new registrations (%u)\n", curCycle);
 	CheckIn();
 	//cout.form("Reading view commands (%u)\n", curCycle);
-	ViewCommands();
+	
+	// Viewer can't send messages anymore!
+	// There's a PanelView to do that kind of actions.
+	//ViewCommands();
 	PanelCommands();
 
 	if (curState == RUNNING)
@@ -636,6 +639,25 @@ void cbSimulator::CheckIn()
 				cout << "Panel has been registered\n";
                 gui->appendMessage( "Panel has been registered\n" );
 				break;
+			case cbClientForm::PANELVIEW:
+				cnt = panels.size();
+				panels.resize(cnt+1);
+				panels[cnt] = form.client.panelview;
+				// Doesn't need to reply here
+
+				cnt = views.size();
+				views.resize(cnt+1);
+				views[cnt] = form.client.panelview;
+				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+
+                if (curState==INIT) {
+				    nextState=STOPPED;
+                    if (logging)
+                        openLog(logFilename.toLatin1().constData());
+                }
+				cout << "PanelView has been registered\n";
+                gui->appendMessage( "PanelView has been registered\n" );
+                break;
 			case cbClientForm::ROBOT:
 			case cbClientForm::ROBOTBEACON:
 			{
@@ -686,49 +708,6 @@ void cbSimulator::stop()
         nextState = STOPPED;
         emit simRunning(false);
     }
-}
-
-/*!
-	Execute every pending view command.
-*/
-void cbSimulator::ViewCommands()
-{
-	cbCommand command;
-	for (unsigned int i=0; i < views.size(); i++)
-	{
-		while (views[i]->readCommand(&command))
-		{
-			switch (command.type)
-			{
-				case cbCommand::START:
-					//cout << "View command = Start\n";
-					start();
-					break;
-				case cbCommand::RESTART:
-					reset();
-					break;
-				case cbCommand::STOP:
-					//cout << "View command = Stop\n";
-					stop();
-					break;
-				case cbCommand::ROBOTDEL:
-					{
-						//cout << "View command = RobotDel\n";
-						unsigned int id = command.robot.id;
-						if (id >=1 && id <= robots.size())
-						{
-                            cbRobot *robot = robots[id-1];
-                            if (robot != 0)
-                                robot->remove();
-                        }
-						break;
-					}
-				case cbCommand::UNKNOWN:
-					//cout << "View command = Unknown\n";
-					break;
-			}
-		}
-	}
 }
 
 /*!
@@ -1044,7 +1023,7 @@ void cbSimulator::PanelCommands(){
 
 void cbSimulator::buildGraph(void)
 {
-        int g;
+    int g;
 
 	if(graph!=0) delete graph;
 	if(grAux!=0) delete grAux;

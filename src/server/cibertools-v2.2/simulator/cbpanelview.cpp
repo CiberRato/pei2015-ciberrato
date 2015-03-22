@@ -17,16 +17,16 @@
     along with Foobar; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#ifndef _CB_VIEW_COMMAND_
-#define _CB_VIEW_COMMAND_
 
-struct cbCommand
+#include "cbpanelview.h"
+#include <iostream>
+
+using namespace std;
+
+cbPanelView::cbPanelView() : cbPanel(), cbView()
 {
-	enum {UNKNOWN, START, RESTART, STOP, ROBOTDEL} type;
-	union 
-	{
-		struct { int id; } robot;
-	};
-};
+}
 
-#endif
+cbPanelView::~cbPanelView()
+{
+}
