@@ -9,6 +9,13 @@ import sys
 from xml.dom import minidom
 from collections import OrderedDict
 
+def getText(nodelist):
+    rc = []
+    for node in nodelist:
+        if node.nodeType == node.TEXT_NODE:
+            rc.append(node.data)
+    return ''.join(rc)
+
 def main():
 	wlog = False
 	for i in range(0, len(sys.argv)):
@@ -48,26 +55,25 @@ def main():
 	# Write params, grid and lab to the json Log
 	log_file = open(FILE, "w")
 
-	data = data.split("<Lab")
-	data[1] = "<Lab" + data[1]
-	data[1] = data[1].split("<Grid")
-	data[1][1] = "<Grid" + data[1][1]
+	parameters = itemlist[0].toxml()
+	lab = parametersXML.getElementsByTagName('Lab')[0].toxml()
+	grid = parametersXML.getElementsByTagName('Grid')[0].toxml()
 
-	json_obj = xmltodict.parse(data[0])
+	json_obj = xmltodict.parse(parameters)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	log_file.write(json_data+"\n")
 
-	json_obj = xmltodict.parse(data[1][0])
+	json_obj = xmltodict.parse(lab)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	log_file.write(json_data+"\n")
 
-	json_obj = xmltodict.parse(data[1][1])
+	json_obj = xmltodict.parse(grid)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
