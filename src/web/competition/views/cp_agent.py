@@ -43,7 +43,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',
-                                 'message': 'The group is not accepting agents.'},
+                                 'message': 'The competition is not accepting agents.'},
                                 status=status.HTTP_401_UNAUTHORIZED)
 
             if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
@@ -107,7 +107,7 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
         if competition.state_of_competition != "Register":
             return Response({'status': 'Not allowed',
-                             'message': 'The group is not accepting agents.'},
+                             'message': 'The competition is not accepting agents.'},
                             status=status.HTTP_401_UNAUTHORIZED)
 
         if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
@@ -243,7 +243,7 @@ class AgentsAssociated(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param competition_name: The competition name
         """
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name'))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
         agents = []
         for group_agent in group.agent_set.all():

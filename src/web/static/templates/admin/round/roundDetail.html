@@ -52,7 +52,7 @@
                             <tr>
                                 <th>Simulation identifier</th>
                                 <th>State</th>
-                                <th>Add Agents</th>
+                                <th>Manage Agents</th>
 
                             </tr>
                             </thead>
@@ -60,8 +60,8 @@
                             <tr ng-repeat="(key, value) in vm.simulations" >
                                 <td id="identifier">{{value.identifier}}</td>
                                 <td>{{value.state}}</td>
-                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier" href="#addAgents">Add Agents</a>
-                                    <div class="modal fade"  id="addAgents">
+                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationAgents()" href="#addAgents{{key}}">Manage</a>
+                                    <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <h2 align="center">Drag the agents for this simulation</h2>
                                         </div>
@@ -78,7 +78,7 @@
                                                              yourself using the dnd-moved attribute -->
                                                         <li ng-repeat="item in list"
                                                             dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1)"
+                                                            dnd-moved="list.splice($index, 1); vm.moved(item.label);"
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"
@@ -90,9 +90,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <a ng-click="vm.associateAgent()" data-dismiss="modal" class="btn btn-alt btn-success">Add</a>
                                             <a data-dismiss="modal" class="btn btn-alt btn-danger">Close</a>
-
                                         </div>
                                     </div>
                                 </td>

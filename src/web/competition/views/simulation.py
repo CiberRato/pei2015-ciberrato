@@ -200,15 +200,15 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
         @param round_name: The round name
         @type  agent_name: str
         @param agent_name: The agent name
-        @type  pos: int
-        @param pos: The agent position
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
-        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
-        agent = get_object_or_404(Agent.objects.all(), agent_name=request.data.get('agent_name', ''))
+        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
         competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
+        competition_agent.eligible = True
+        competition_agent.save()
         lsa = get_object_or_404(LogSimulationAgent.objects.all(), competition_agent=competition_agent,
-            simulation=simulation, pos=request.data.get('pos', ''))
+            simulation=simulation)
         lsa.delete()
 
         return Response({'status': 'Deleted',
