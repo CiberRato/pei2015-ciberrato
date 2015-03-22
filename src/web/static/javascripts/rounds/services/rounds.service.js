@@ -22,7 +22,8 @@
             create: create,
             startSimulation: startSimulation,
             getRound: getRound,
-            destroy: destroy
+            destroy: destroy,
+            removeSimulation: removeSimulation
         };
 
         return Round;
@@ -115,6 +116,10 @@
 
         function destroy(roundName){
             return $http.delete("/api/v1/competitions/round/" + roundName + "/");
+        }
+
+        function removeSimulation(identifier){
+            return $http.delete("/api/v1/competitions/simulation/" +identifier+"/");
         }
 
     }

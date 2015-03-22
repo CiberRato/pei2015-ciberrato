@@ -27,6 +27,7 @@
         vm.uploadGrid = uploadGrid;
         vm.uploadLab = uploadLab;
         vm.destroy = destroy;
+        vm.removeSimulation = removeSimulation;
         activate();
 
         function activate() {
@@ -273,6 +274,26 @@
                 });
                 console.error(data.data);
                 $route.reload();
+            }
+        }
+
+        function removeSimulation(identifier){
+            Round.removeSimulation(identifier).then(removeSimulationSuccessFn, removeSimulationErrorFn);
+
+            function removeSimulationSuccessFn(){
+                $.jGrowl("Simulation has been removed.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $route.reload();
+            }
+
+            function removeSimulationErrorFn(data){
+                $.jGrowl("Simulation can't be removed.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.error(data.data);
             }
         }
 

@@ -54,6 +54,7 @@
                                 <th>Simulation identifier</th>
                                 <th>State</th>
                                 <th>Manage Agents</th>
+                                <th>Remove Simulation</th>
 
                             </tr>
                             </thead>
@@ -95,6 +96,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td><a class="btn btn-primary btn-flat" ng-click="vm.removeSimulation(value.identifier)">X</a></td>
                             </tr>
                             </tbody>
                         </table>
