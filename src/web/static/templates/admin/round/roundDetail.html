@@ -65,14 +65,33 @@
                                         <div class="modal-header">
                                             <h2 align="center">Drag the agents for this simulation</h2>
                                         </div>
-                                        <div class="modal-body">
-                                            <select id="select" name="option">
-                                                <option ng-repeat="(key, value) in vm.agents">{{value.agent_name}}</option>
-                                            </select>
+                                        <div class="modal-body" style="text-align: center">
+                                            <div class="row" style="padding-left: 40px">
+                                                <div ng-repeat="(listName, list) in vm.models.lists" class="span3 associateAgents">
+                                                    <!-- The dnd-list directive allows to drop elements into it.
+                                                        The dropped data will be added to the referenced list -->
+                                                    <h3>{{listName}}</h3>
+                                                    <ul dnd-list="list">
+                                                        <!-- The dnd-draggable directive makes an element draggable and will
+                                                             transfer the object that was assigned to it. If an element was
+                                                             dragged away, you have to remove it from the original list
+                                                             yourself using the dnd-moved attribute -->
+                                                        <li ng-repeat="item in list"
+                                                            dnd-draggable="item"
+                                                            dnd-moved="list.splice($index, 1)"
+                                                            dnd-effect-allowed="move"
+                                                            dnd-selected="vm.models.selected = item"
+                                                            ng-class="{'selected': vm.models.selected === item}"
+                                                                >
+                                                            {{item.label}}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <a ng-click="vm.associateAgent()" data-dismiss="modal" class="btn btn-alt btn-success">Add</a>
-                                            <a data-dismiss="modal" class="btn btn-alt btn-danger">Cancel</a>
+                                            <a data-dismiss="modal" class="btn btn-alt btn-danger">Close</a>
 
                                         </div>
                                     </div>

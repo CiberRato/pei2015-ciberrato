@@ -11,6 +11,18 @@
     function DetailRoundController($location, $route, $routeParams, Competition, Round, Authentication){
         var vm = this;
 
+        vm.models = {
+            selected: null,
+            lists: {"Available": [], "Simulation": []}
+        };
+
+        // Generate initial model
+        for (var i = 1; i <= 3; ++i) {
+            vm.models.lists.Available.push({label: "Item A" + i});
+            vm.models.lists.Simulation.push({label: "Item B" + i});
+        }
+        console.log(vm.models);
+
         vm.createSimulation = createSimulation;
         vm.associateAgent = associateAgent;
         vm.identifier;
