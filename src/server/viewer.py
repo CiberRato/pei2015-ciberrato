@@ -37,7 +37,7 @@ def main():
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-	simulator_s.sendto("<View/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
+	simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
 	# Ler o valor do tempo de simulação e obter as portas
 	data, (host, port) = simulator_s.recvfrom(4096)
 	# Vem params, grid e lab aqui

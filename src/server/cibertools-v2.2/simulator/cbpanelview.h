@@ -17,38 +17,18 @@
     along with Foobar; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#ifndef _CB_VIEW_HANDLER_
-#define _CB_VIEW_HANDLER_
 
-#include <qxml.h>
+#ifndef CBPANELVIEW_H
+#define CBPANELVIEW_H
 
-#include "cbviewcommand.h"
+#include "cbpanel.h"
+#include "cbview.h"
 
-class QString;
-class QXmlLocator;
-
-class cbView;
-class cbRobot;
-class cbPanel;
-
-/**
- * SAX parser of messages from viewer
- */
-class cbViewHandler : public QXmlDefaultHandler
+class cbPanelView : public cbPanel, public cbView
 {
 public:
-	cbViewHandler();
-
-    bool startDocument();
-    bool endDocument();
-    bool startElement( const QString&, const QString&, const QString& , const QXmlAttributes& );
-    bool endElement( const QString&, const QString&, const QString& );
-	void setDocumentLocator(QXmlLocator *);
-
-	cbCommand	&Command();
-
-private:
-	cbCommand	command;
-};                   
+	cbPanelView();
+	~cbPanelView();
+};
 
 #endif

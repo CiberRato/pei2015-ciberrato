@@ -173,6 +173,11 @@ bool cbReceptionist::CheckIn()
 			form.client.panel = handler.panelObject();
 			cout << "Panel is requesting registration\n";
 			break;
+		case cbReceptionHandler::PANELVIEW:
+			form.type = cbClientForm::PANELVIEW;
+			form.client.panelview = handler.panelViewObject();
+			cout << "PanelView is requesting registration\n";
+			break;
 		default:
 			form.type = cbClientForm::UNKNOWN;
 			break;

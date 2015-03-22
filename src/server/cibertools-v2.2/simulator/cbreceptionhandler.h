@@ -29,6 +29,7 @@ class cbView;
 class cbRobot;
 class cbRobotBeacon;
 class cbPanel;
+class cbPanelView;
 
 /**
  * SAX parser for registering message
@@ -37,7 +38,7 @@ class cbPanel;
 class cbReceptionHandler : public QXmlDefaultHandler
 {
 public:
-	enum Type { UNKNOWN, VIEW, PANEL, ROBOT, ROBOTBEACON};
+	enum Type { UNKNOWN, VIEW, PANEL, PANELVIEW, ROBOT, ROBOTBEACON};
 	cbReceptionHandler(QXmlSimpleReader *xmlParser);
 
     bool parse(void *data, int datasize);
@@ -52,6 +53,7 @@ public:
 	cbRobotBeacon *robotBeaconObject();
 	cbView *viewObject();
 	cbPanel *panelObject();
+    cbPanelView *panelViewObject();
 	Type objectType();
 
 private:
@@ -60,6 +62,7 @@ private:
 
 	cbView *view;
 	cbPanel *panel;
+    cbPanelView *panelview;
 	cbRobot *robot;
 	cbRobotBeacon *robotBeacon;
 	Type type;
