@@ -46,6 +46,7 @@ class cbGrid;
 class cbRobot;
 class cbView;
 class cbPanel;
+class cbPanelView;
 class cbReceptionist;
 
 class cbGraph;

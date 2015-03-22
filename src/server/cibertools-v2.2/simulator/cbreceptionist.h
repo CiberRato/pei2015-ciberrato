@@ -44,17 +44,20 @@ class cbRobot;
 class cbRobotBeacon;
 class cbView;
 class cbPanel;
+class cbPanelView;
 
 struct cbClientForm
 {
-	enum {NOBODY, VIEW, PANEL, ROBOT, ROBOTBEACON, UNKNOWN} type;
+	enum {NOBODY, VIEW, PANEL, PANELVIEW, ROBOT, ROBOTBEACON, UNKNOWN} type;
 	union 
 	{
 		cbRobot *robot;
 		cbRobotBeacon *robotBeacon;
 		cbView *view;
 		cbPanel *panel;
+		cbPanelView *panelview;
 	} client;
+	
 	QHostAddress addr;
 	unsigned short port;
 };
