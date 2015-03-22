@@ -17,23 +17,16 @@
     along with Foobar; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+#ifndef _CB_PANEL_COMMAND_
+#define _CB_PANEL_COMMAND_
 
-#ifndef CBPANEL_H
-#define CBPANEL_H
-
-#include "cbclient.h"
-#include "cbpanelhandler.h"
-#include "cbpanelcommand.h"
-
-class cbPanel : public cbClient
+struct cbPanelCommand
 {
-public:
-	cbPanel();
-	~cbPanel();
-
-    bool readCommand(cbPanelCommand *command);
-protected:
-    cbPanelHandler handler;
+	enum {UNKNOWN, START, RESTART, STOP, ROBOTDEL} type;
+	union 
+	{
+		struct { int id; } robot;
+	};
 };
 
 #endif
