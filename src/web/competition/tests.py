@@ -1049,3 +1049,22 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         client.force_authenticate(user=None)
+
+    def test_url_slug(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+        # create competition
+        url = "/api/v1/competitions/crud/"
+        data = {'name': 'C2.', 'type_of_competition': settings.COMPETITIVA}
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 400)
+
+        # create round
+        url = "/api/v1/competitions/round/"
+        data = {'name': 'C2.', 'parent_competition_name': 'C1'}
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 400)
+
+        client.force_authenticate(user=None)

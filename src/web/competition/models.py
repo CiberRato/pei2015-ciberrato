@@ -1,11 +1,12 @@
 import uuid
+from django.core.validators import validate_slug
 from django.db import models
 from django.conf import settings
 from authentication.models import Account, Group
 
 
 class Competition(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True)
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
 
     TYPE_OF_COMPETITIONS = (
         (settings.COLABORATIVA, settings.COLABORATIVA),
@@ -55,7 +56,7 @@ class GroupEnrolled(models.Model):
 
 
 class Round(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True)
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 
@@ -75,7 +76,7 @@ class Round(models.Model):
 
 
 class Agent(models.Model):
-    agent_name = models.CharField(max_length=128, blank=False, unique=True)
+    agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
     locations = models.CharField(max_length=256)

@@ -377,3 +377,29 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
 
         client.force_authenticate(user=None)
+
+    def test_url_slug(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+
+        # create a group slug
+        url = "/api/v1/groups/crud/"
+        data = {'name': 'Test.Group', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # create a group slug
+        url = "/api/v1/groups/crud/"
+        data = {'name': 'Test*Group', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # create a group slug
+        url = "/api/v1/groups/crud/"
+        data = {'name': 'Test$Group', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        client.force_authenticate(user=None)
