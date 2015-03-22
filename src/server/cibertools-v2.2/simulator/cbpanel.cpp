@@ -38,7 +38,6 @@ cbPanel::~cbPanel()
 bool cbPanel::readCommand(cbPanelCommand *command)
 {
     /* look for an incoming message */
-
     char xmlBuff[64];
     int xmlSize;
 
