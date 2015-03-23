@@ -1,4 +1,4 @@
-<div class="content-block" role="main">
+<div class="content-block" ng-controller="LogViewer" role="main">
 
     <!-- Page header -->
     <h1 id="row5" style="display: none">WebViewer
@@ -76,9 +76,14 @@
                                                     <circle ng-attr-cx="{{v._X*zoom}}" ng-attr-cy="{{v._Y*zoom}}" ng-attr-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
                                                 </g>
                                             </g>
-
                                             <g ng-if="numRobots != 1" ng-repeat="value in robot">
                                                 <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
+                                            </g>
+                                            <g ng-if="numRobots == 1">
+                                                <polyline ng-show="{{slyne[0]}}" ng-attr-points="{{pline[0]}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
+                                            </g>
+
+                                            <g ng-if="numRobots != 1" ng-repeat="value in robot">
                                                 <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                 <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                 <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
@@ -86,7 +91,6 @@
                                                 <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
                                             </g>
                                             <g ng-if="numRobots == 1">
-                                                <polyline ng-show="{{slyne[0]}}" ng-attr-points="{{pline[0]}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
                                                 <image ng-if="robot.Scores._Collision=='False'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[0]}}"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
                                                 <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
                                                 <circle  ng-attr-cx="{{robot.Pos._X*zoom}}" ng-attr-cy="{{robot.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
@@ -331,3 +335,4 @@
         </article>
     </div>
 </div>
+<script type="text/javascript" src ="static/js/viewer/logviewer_jquery.js"></script>

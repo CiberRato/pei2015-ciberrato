@@ -125,8 +125,6 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/round/newRound.html'
         }).when('/panel/:identifier/watchSimulation',{
-            controller: 'LogViewer',
-            controllerAs: 'vm',
             templateUrl: '/static/templates/viewer/logViewer.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'

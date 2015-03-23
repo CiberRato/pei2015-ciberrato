@@ -63,7 +63,8 @@
                 "left_grip_selector": ".leftGrip",
                 "value_changed_callback": function(cause, leftValue, rightValue) {
                     try{
-                        console.log(leftValue);
+                        var scope = angular.element('[ng-controller=ctrl]').scope();
+                        scope.idx = leftValue;
 
                     }catch(TypeError){}
                 },
@@ -333,7 +334,7 @@
 
                 if (id == 1) {
                     $scope.groundColor = 'black';
-                    $scope.cheeseColor = 'img/svg/cheese.svg';
+                    $scope.cheeseColor = 'static/img/svg/cheese.svg';
                     $scope.circleBorder = '#00ffff';
                     $scope.greatWallColor = '#008000';
                     $scope.smallWallColor = '#0000ff';
@@ -342,7 +343,7 @@
                 }
                 if (id == 2) {
                     $scope.groundColor = 'darkgrey';
-                    $scope.cheeseColor = 'img/svg/blackCheese.svg';
+                    $scope.cheeseColor = 'static/img/svg/blackCheese.svg';
                     $scope.circleBorder = '#cfd4db';
                     $scope.greatWallColor = '#353535';
                     $scope.smallWallColor = '#727272';
