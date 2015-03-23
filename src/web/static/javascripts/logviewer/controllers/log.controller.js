@@ -5,10 +5,9 @@
         .module('ciberonline.logviewer.controllers')
         .controller('LogViewer', LogViewer);
 
-    LogViewer.$inject = ['$location', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
+    LogViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
 
-    function LogViewer($location, $routeParams, Round, Authentication, Profile, LogViewer, $timeout){
-        var vm = this;
+    function LogViewer($location, $scope, $routeParams, Round, Authentication, Profile, LogViewer, $timeout){
         var username;
 
         var logInfo;
@@ -58,19 +57,26 @@
             $("#row4").show("slow");
             $("#row5").show("slow");
 
-            // Call methods and such...
-            var highlightMin = Math.random() * 20,
-                highlightMax = highlightMin + Math.random() * 80;
+
+
             $('.nstSlider').nstSlider({
                 "left_grip_selector": ".leftGrip",
                 "value_changed_callback": function(cause, leftValue, rightValue) {
                     try{
-                        var scope = angular.element('[ng-controller=ctrl]').scope();
-                        scope.idx = leftValue;
+                        console.log(leftValue);
 
                     }catch(TypeError){}
+                },
+                "highlight": {
+
                 }
-            }, 'highlight_range', highlightMin, highlightMax);
+            });
+
+            // Call methods and such...
+            var highlightMin = Math.random() * 20,
+                highlightMax = highlightMin + Math.random() * 80;
+            $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+
             console.log("OK");
 
             doIt();
@@ -86,13 +92,11 @@
         function isArray(myArray) {
             return myArray.constructor.toString().indexOf("Array") > -1;
         }
-        function doIt(){
+        function doIt() {
             /* Zoom variable (30->Standard) */
-            vm.zoom = 30;
-            vm.increments = 1;
-            vm.velButton = '1x';
-
-            var i;
+            $scope.zoom = 30;
+            $scope.increments = 1;
+            $scope.velButton = '1x';
 
             /* JSON to Object */
             var lab_obj = angular.fromJson(lab);
@@ -101,287 +105,285 @@
             var logInfo_obj = angular.fromJson(logInfo);
 
             var b = 0;
+            var i = 0;
 
-            vm.slow = 0;
-            vm.playvar = 0;
+            $scope.slow = 0;
+            $scope.playvar = 0;
 
             /* Convert wall points to be integrated in SVG */
-            for(i=0; i<lab_obj.Lab.Wall.length; i++){
-                lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], vm.zoom);
+            for (i = 0; i < lab_obj.Lab.Wall.length; i++) {
+                lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
             }
 
             /* Parameters Object */
-            vm.param=parameters_obj.Parameters;
+            $scope.param = parameters_obj.Parameters;
 
             /* Map Object */
-            console.log(lab_obj.Lab);
-            vm.map = lab_obj.Lab;
-            console.log(vm.map);
+            $scope.map = lab_obj.Lab;
 
             /* Grid Object */
-            vm.grid = grid_obj.Grid;
+            $scope.grid = grid_obj.Grid;
 
             /* Log Object */
-            vm.log = logInfo_obj.Log.LogInfo;
+            $scope.log = logInfo_obj.Log.LogInfo;
 
             /* Beacons Object */
-            vm.beacon = lab_obj.Lab.Beacon;
+            $scope.beacon = lab_obj.Lab.Beacon;
 
             /* Number of Beacons */
-            if(isArray(vm.map.Beacon)){
-                vm.nBeacon = vm.map.Beacon.length;
+            if (isArray($scope.map.Beacon)) {
+                $scope.nBeacon = $scope.map.Beacon.length;
             }
-            else{
-                vm.nBeacon = 1
+            else {
+                $scope.nBeacon = 1
             }
 
             /* Find beacon height */
-            if(vm.nBeacon == 1)
-                vm.beacon_height = lab_obj.Lab.Beacon._Height;
+            if ($scope.nBeacon == 1)
+                $scope.beacon_height = lab_obj.Lab.Beacon._Height;
             else
-                vm.beacon_height = lab_obj.Lab.Beacon[0]._Height;
+                $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
 
             /* Number of Robots */
-            if(isArray(vm.log[0].Robot)){
-                vm.numRobots = vm.log[0].Robot.length;
+            if (isArray($scope.log[0].Robot)) {
+                $scope.numRobots = $scope.log[0].Robot.length;
             }
-            else{
-                vm.numRobots = 1;
+            else {
+                $scope.numRobots = 1;
             }
 
             /* Retrieve spawning direction for every robot */
-            vm.dir = [];
-            if(vm.numRobots>1){
-                for(i=0; i<vm.numRobots; i++){
-                    vm.dir[i] = parseInt(vm.log[0].Robot[i].Pos._Dir) + 90;
+            $scope.dir = [];
+            if ($scope.numRobots > 1) {
+                for (i = 0; i < $scope.numRobots; i++) {
+                    $scope.dir[i] = parseInt($scope.log[0].Robot[i].Pos._Dir) + 90;
                 }
             }
-            else{
-                vm.dir[0] = parseInt(vm.log[0].Robot.Pos._Dir) + 90;
+            else {
+                $scope.dir[0] = parseInt($scope.log[0].Robot.Pos._Dir) + 90;
             }
 
 
             /* Robots Object */
-            vm.robot = vm.log[0].Robot;
+            $scope.robot = $scope.log[0].Robot;
 
             /* Time Value */
-            vm.time = vm.log[0]._Time;
+            $scope.time = $scope.log[0]._Time;
 
             /* Refresh rate value for each iteration */
-            vm.refresh_rate = vm.param._CycleTime;
+            $scope.refresh_rate = $scope.param._CycleTime;
 
-            vm.idx = 1;
-            vm.last_idx = 0;
+            $scope.idx = 1;
+            $scope.last_idx = 0;
 
             /* Set Robots Colors */
-            vm.mickeyColor = ['static/img/svg/mickey_red_smile.svg','static/img/svg/mickey_green_smile.svg','static/img/svg/mickey_blue_smile.svg','static/img/svg/mickey_yellow_smile.svg','static/img/svg/mickey_orange_smile.svg'];
+            $scope.mickeyColor = ['static/img/svg/mickey_red_smile.svg', 'static/img/svg/mickey_green_smile.svg', 'static/img/svg/mickey_blue_smile.svg', 'static/img/svg/mickey_yellow_smile.svg', 'static/img/svg/mickey_orange_smile.svg'];
 
             /* Set Line Colors */
-            vm.lColor = ['#E04F5F','#5FBF60','#29BAF7','#eaea3d','#f28d14'];
+            $scope.lColor = ['#E04F5F', '#5FBF60', '#29BAF7', '#eaea3d', '#f28d14'];
 
             /* Set Maze Colors */
-            vm.groundColor = 'black';
-            vm.cheeseColor = 'static/img/svg/cheese.svg';
-            vm.circleBorder = '#00ffff';
-            vm.greatWallColor = '#008000';
-            vm.smallWallColor = '#0000ff';
-            vm.gridColor = '#cfd4db';
+            $scope.groundColor = 'black';
+            $scope.cheeseColor = 'static/img/svg/cheese.svg';
+            $scope.circleBorder = '#00ffff';
+            $scope.greatWallColor = '#008000';
+            $scope.smallWallColor = '#0000ff';
+            $scope.gridColor = '#cfd4db';
 
             /* Line points */
-            vm.pline = [];
+            $scope.pline = [];
 
             /* Line Toggled */
-            vm.slyne = [];
+            $scope.slyne = [];
 
             /* Line Button Text */
-            vm.toggleText = [];
+            $scope.toggleText = [];
 
             /* Line Button Class */
-            vm.bclass = [];
+            $scope.bclass = [];
 
             /* Robot Color */
-            vm.robotColor = [];
+            $scope.robotColor = [];
 
             /* Line Color */
-            vm.lineColor = [];
+            $scope.lineColor = [];
 
-            for(i=0; i<vm.numRobots; i++){
-                vm.pline[i] = "";
-                vm.bclass[i] = 'btn btn-success'
-                vm.toggleText[i] = 'Show';
-                vm.slyne[i] = false;
-                if (i>4){
-                    vm.robotColor[i] = vm.mickeyColor[0];
-                    vm.lineColor[i] = vm.lColor[0];
+            for (i = 0; i < $scope.numRobots; i++) {
+                $scope.pline[i] = "";
+                $scope.bclass[i] = 'btn btn-success'
+                $scope.toggleText[i] = 'Show';
+                $scope.slyne[i] = false;
+                if (i > 4) {
+                    $scope.robotColor[i] = $scope.mickeyColor[0];
+                    $scope.lineColor[i] = $scope.lColor[0];
                 }
-                else{
-                    vm.robotColor[i] = vm.mickeyColor[i];
-                    vm.lineColor[i] = vm.lColor[i];
+                else {
+                    $scope.robotColor[i] = $scope.mickeyColor[i];
+                    $scope.lineColor[i] = $scope.lColor[i];
                 }
             }
 
-            vm.activeV = function(str) {
-                if (str=='1x'){
-                    vm.velButton = '1x';
-                    vm.refresh_rate=50;
-                    vm.slow=0;
-                }else if (str=='2x'){
-                    vm.velButton = '2x';
-                    vm.refresh_rate=25;
-                    vm.slow=0;
-                }else if (str=='4x'){
-                    vm.velButton = '4x';
-                    vm.refresh_rate=12.5;
-                    vm.slow=0;
-                }else if (str=='18x'){
-                    vm.velButton = '18x';
-                    vm.refresh_rate=400;
-                    vm.slow=1;
-                }else if (str=='14x'){
-                    vm.velButton = '14x';
-                    vm.refresh_rate=100;
-                    vm.slow=0;
+            $scope.activeV = function (str) {
+                if (str == '1x') {
+                    $scope.velButton = '1x';
+                    $scope.refresh_rate = 50;
+                    $scope.slow = 0;
+                } else if (str == '2x') {
+                    $scope.velButton = '2x';
+                    $scope.refresh_rate = 25;
+                    $scope.slow = 0;
+                } else if (str == '4x') {
+                    $scope.velButton = '4x';
+                    $scope.refresh_rate = 12.5;
+                    $scope.slow = 0;
+                } else if (str == '18x') {
+                    $scope.velButton = '18x';
+                    $scope.refresh_rate = 400;
+                    $scope.slow = 1;
+                } else if (str == '14x') {
+                    $scope.velButton = '14x';
+                    $scope.refresh_rate = 100;
+                    $scope.slow = 0;
                 }
-            };
+            }
 
-            vm.toggle = function(index) {
-                vm.toggleText[index] = vm.slyne[index] ? 'Show' : 'Hide';
-                if (vm.bclass[index] === 'btn btn-success')
-                    vm.bclass[index] = 'btn btn-danger';
+            $scope.toggle = function (index) {
+                $scope.toggleText[index] = $scope.slyne[index] ? 'Show' : 'Hide';
+                if ($scope.bclass[index] === 'btn btn-success')
+                    $scope.bclass[index] = 'btn btn-danger';
                 else
-                    vm.bclass[index] = 'btn btn-success';
-                vm.slyne[index] = !vm.slyne[index];
+                    $scope.bclass[index] = 'btn btn-success';
+                $scope.slyne[index] = !$scope.slyne[index];
             };
 
 
-            var refresh = function(refresh_rate){
+            var refresh = function (refresh_rate) {
                 $timeout(tick, refresh_rate);
-            };
+            }
 
             /* Update timeline */
-            var tick = function() {
-                try{
-                    vm.updateValues();
+            var tick = function () {
+                try {
+                    $scope.updateValues();
 
-                    $(".leftGrip").css("left", (vm.idx*820)/vm.param._SimTime);
-                    if(vm.play){
-                        vm.idx++;
+                    $(".leftGrip").css("left", ($scope.idx * 820) / $scope.param._SimTime);
+                    if ($scope.play) {
+                        $scope.idx++;
                     }
-                }catch(TypeError){
-                    vm.pause();
+                } catch (TypeError) {
+                    $scope.pause();
                 }
-                if(vm.playvar){
-                    refresh(vm.refresh_rate);
+                if ($scope.playvar) {
+                    refresh($scope.refresh_rate);
                 }
             };
 
             /* Update Viewer Values */
-            vm.updateValues = function(){
-                vm.robot = vm.log[vm.idx].Robot;
-                vm.time = vm.log[vm.idx]._Time;
+            $scope.updateValues = function () {
+                $scope.robot = $scope.log[$scope.idx].Robot;
+                $scope.time = $scope.log[$scope.idx]._Time;
 
                 /* Update directions of every robot */
-                if(vm.numRobots != 1) {
-                    for (i = 0; i < vm.numRobots; i++) {
-                        vm.dir[i] = parseInt(vm.log[vm.idx].Robot[i].Pos._Dir) + 90;
+                if ($scope.numRobots != 1) {
+                    for (i = 0; i < $scope.numRobots; i++) {
+                        $scope.dir[i] = parseInt($scope.log[$scope.idx].Robot[i].Pos._Dir) + 90;
                     }
                 }
-                else{
-                    vm.dir[0] = parseInt(vm.log[vm.idx].Robot.Pos._Dir) + 90;
+                else {
+                    $scope.dir[0] = parseInt($scope.log[$scope.idx].Robot.Pos._Dir) + 90;
                 }
 
                 /* Calculate visited points line */
-                if((vm.last_idx+1)!=vm.idx){
+                if (($scope.last_idx + 1) != $scope.idx) {
 
-                    for(i=0; i<vm.numRobots; i++){
-                        vm.pline[i] = "";
+                    for (i = 0; i < $scope.numRobots; i++) {
+                        $scope.pline[i] = "";
                     }
-                    for(b=0;b<vm.idx;b++){
-                        if(vm.numRobots != 1){
-                            for(i=0; i<vm.numRobots; i++){
-                                vm.pline[i] += vm.log[b].Robot[i].Pos._X*vm.zoom + "," + vm.log[b].Robot[i].Pos._Y*vm.zoom + " ";
+                    for (b = 0; b < $scope.idx; b++) {
+                        if ($scope.numRobots != 1) {
+                            for (i = 0; i < $scope.numRobots; i++) {
+                                $scope.pline[i] += $scope.log[b].Robot[i].Pos._X * $scope.zoom + "," + $scope.log[b].Robot[i].Pos._Y * $scope.zoom + " ";
                             }
                         }
-                        else{
-                            vm.pline[0] += vm.log[b].Robot.Pos._X*vm.zoom + "," + vm.log[b].Robot.Pos._Y*vm.zoom + " ";
+                        else {
+                            $scope.pline[0] += $scope.log[b].Robot.Pos._X * $scope.zoom + "," + $scope.log[b].Robot.Pos._Y * $scope.zoom + " ";
                         }
                     }
-                }else {
-                    if(vm.numRobots != 1) {
-                        for (i = 0; i < vm.numRobots; i++) {
-                            vm.pline[i] += vm.log[vm.idx].Robot[i].Pos._X * vm.zoom + "," + vm.log[vm.idx].Robot[i].Pos._Y * vm.zoom + " ";
+                } else {
+                    if ($scope.numRobots != 1) {
+                        for (i = 0; i < $scope.numRobots; i++) {
+                            $scope.pline[i] += $scope.log[$scope.idx].Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[i].Pos._Y * $scope.zoom + " ";
                         }
                     }
-                    else{
-                        vm.pline[0] += vm.log[vm.idx].Robot.Pos._X * vm.zoom + "," + vm.log[vm.idx].Robot.Pos._Y * vm.zoom + " ";
+                    else {
+                        $scope.pline[0] += $scope.log[$scope.idx].Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot.Pos._Y * $scope.zoom + " ";
                     }
                 }
-                vm.last_idx = vm.idx;
+                $scope.last_idx = $scope.idx;
 
             };
 
-            vm.refreshSVG = function(){
-                vm.updateValues();
-                $timeout(vm.refreshSVG, 1000);
+            $scope.refreshSVG = function () {
+                $scope.updateValues();
+                $timeout($scope.refreshSVG, 1000);
 
             };
 
-            vm.setMazeColor = function(id){
+            $scope.setMazeColor = function (id) {
 
-                if(id == 1){
-                    vm.groundColor = 'black';
-                    vm.cheeseColor = 'img/svg/cheese.svg';
-                    vm.circleBorder = '#00ffff';
-                    vm.greatWallColor = '#008000';
-                    vm.smallWallColor = '#0000ff';
-                    vm.gridColor = '#cfd4db';
-
-                }
-                if(id == 2){
-                    vm.groundColor = 'darkgrey';
-                    vm.cheeseColor = 'img/svg/blackCheese.svg';
-                    vm.circleBorder = '#cfd4db';
-                    vm.greatWallColor = '#353535';
-                    vm.smallWallColor = '#727272';
-                    vm.gridColor = '#cfd4db';
+                if (id == 1) {
+                    $scope.groundColor = 'black';
+                    $scope.cheeseColor = 'img/svg/cheese.svg';
+                    $scope.circleBorder = '#00ffff';
+                    $scope.greatWallColor = '#008000';
+                    $scope.smallWallColor = '#0000ff';
+                    $scope.gridColor = '#cfd4db';
 
                 }
+                if (id == 2) {
+                    $scope.groundColor = 'darkgrey';
+                    $scope.cheeseColor = 'img/svg/blackCheese.svg';
+                    $scope.circleBorder = '#cfd4db';
+                    $scope.greatWallColor = '#353535';
+                    $scope.smallWallColor = '#727272';
+                    $scope.gridColor = '#cfd4db';
 
-            };
-            vm.setIncrements = function(id){
-
-                if(id == 1){
-                    vm.increments = 1;
-                }
-                if(id == 2){
-                    vm.increments = 10;
-                }
-                if(id == 3){
-                    vm.increments = 100;
                 }
 
             };
+            $scope.setIncrements = function (id) {
 
-            vm.play = function() {
-                if(!vm.playvar){
-                    vm.playvar = 1;
-                    refresh(vm.refresh_rate);
+                if (id == 1) {
+                    $scope.increments = 1;
+                }
+                if (id == 2) {
+                    $scope.increments = 10;
+                }
+                if (id == 3) {
+                    $scope.increments = 100;
+                }
+
+            };
+
+            $scope.play = function () {
+                if (!$scope.playvar) {
+                    $scope.playvar = 1;
+                    refresh($scope.refresh_rate);
                 }
             };
 
-            vm.pause = function(){
-                if(vm.playvar){
-                    vm.playvar = 0;
-                    $timeout(vm.refreshSVG, 1000);
+            $scope.pause = function () {
+                if ($scope.playvar) {
+                    $scope.playvar = 0;
+                    $timeout($scope.refreshSVG, 1000);
                 }
             };
 
-            vm.stop = function(){
-                vm.idx = 0;
-                vm.playvar = 0;
+            $scope.stop = function () {
+                $scope.idx = 0;
+                $scope.playvar = 0;
                 refresh(0);
             };
-            vm.teste = "TEST";
         }
     }
 })();

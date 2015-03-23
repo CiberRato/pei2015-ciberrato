@@ -1,5 +1,6 @@
 $(document ).ready(function() {
     $("#play").click(function() {
+        console.log("OK");
         $(this).attr("disabled", true);
         $("#pause").removeAttr("disabled");
         $("#stop").removeAttr("disabled");
