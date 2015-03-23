@@ -40,11 +40,6 @@
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
             grid = data.data;
-            StreamViewer.getLogViewer().then(getLogSuccessFn, getErrorFn);
-        }
-        function getLogSuccessFn(data){
-            logInfo = data.data;
-            console.log("TENHO TUDO CARALHO!");
             CiberWebSocket();
         }
         function getErrorFn(data){
@@ -73,8 +68,6 @@
                     console.log(logBuff_obj.length);
 
                     if(logBuff_obj.length==10){
-                        angular.bootstrap(document, ['myapp']);
-
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
@@ -341,17 +334,5 @@
                 refresh(0);
             };
         }
-
-        /*.directive('conversation', function() {
-            return {
-                restrict: 'E',
-                replace: true,
-                compile: function(tElement, attr) {
-                    attr.$observe('typeId', function(data) {
-                    }, true);
-
-                }
-            };
-        });*/
     }
 })();
