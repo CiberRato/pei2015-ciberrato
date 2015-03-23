@@ -1,0 +1,188 @@
+<div class="content-block" role="main" ng-controller="StreamViewer">
+
+    <!-- Page header -->
+    <h1 id="row5" style="display: none">WebViewer
+        <a class="fam-help" data-toggle="modal" href="#demoModal"></a></h1>
+    <div class="modal fade hide" id="demoModal" aria-hidden="true" style="display: none;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            <h3>Help</h3>
+        </div>
+        <div class="modal-body">
+            <ul>
+                <li>You can play, pause or stop the viewer as well as chose the velocity of the simulation.</li>
+                <li>Use <i>space</i> key to play or pause simulation and the <i>Left</i> and <i>Right</i> keys to go forward or backward in the timeline.</li>
+                <li>You can choose to show or hide the visited points line of each robot.</li>
+                <li>The sensors data is only available when the viewer is paused or in the lowest velocity.</li>
+            </ul>
+        </div>
+    </div>
+    <!-- /Page header -->
+
+    <div class="row" id="waitawhile">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>Wait a while...</h2>
+                </header>
+                <section>
+                    <div class="row">
+                        <div class="span12" style="text-align: center">
+                            <span class="loading blue" data-original-title="Loading, please wait…">Loading…</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
+        <!-- /Data block -->
+
+    </div>
+
+    <!-- Grid row -->
+    <div class="row" id="row1" style="display: none">
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section>
+                    <div class="row">
+                        <div class="span12 viewer" style="text-align: center; vertical-align: middle">
+                            <svg  ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="background-color: {{groundColor}}" >
+                                <g ng-attr-transform="translate(0,{{map._Height*zoom}})">
+                                    <g transform="scale(1,-1)">
+                                        <g><rect ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
+                                            <g ng-repeat="(key, value) in map">
+
+                                                <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
+                                                    <!-- Parede grande - original verde-->
+                                                    <polygon ng-if="v._Height>=beacon_height" ng-attr-points="{{v.str}}" style=" fill:{{greatWallColor}}" />
+                                                    <!-- Parede grande - original azul-->
+                                                    <polygon ng-if="v._Height<beacon_height" ng-attr-points="{{v.str}}" style=" fill:{{smallWallColor}}" />
+                                                </g>
+                                            </g>
+
+                                            <g ng-if="nBeacon != 1" ng-repeat="(i,o) in beacon track by $index">
+                                                <circle ng-attr-cx="{{o._X*zoom}}" ng-attr-cy="{{o._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                <image ng-attr-x="{{o._X*zoom-zoom}}" ng-attr-y="{{o._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
+                                            </g>
+                                            <g ng-if="nBeacon == 1">
+                                                <circle ng-attr-cx="{{beacon._X*zoom}}" ng-attr-cy="{{beacon._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
+                                                <image ng-attr-x="{{beacon._X*zoom-zoom}}" ng-attr-y="{{beacon._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
+                                            </g>
+
+
+                                            <g ng-repeat="(key, value) in grid">
+                                                <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
+                                                    <circle ng-attr-cx="{{v._X*zoom}}" ng-attr-cy="{{v._Y*zoom}}" ng-attr-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
+                                                </g>
+                                            </g>
+
+                                            <g ng-if="numRobots != 1" ng-repeat="value in robot">
+                                                <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
+                                                <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
+                                                <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
+                                                <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
+
+                                                <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
+                                            </g>
+                                            <g ng-if="numRobots == 1">
+                                                <polyline ng-show="{{slyne[0]}}" ng-attr-points="{{pline[0]}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
+                                                <image ng-if="robot.Scores._Collision=='False'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[0]}}"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
+                                                <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
+                                                <circle  ng-attr-cx="{{robot.Pos._X*zoom}}" ng-attr-cy="{{robot.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
+
+                                                <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
+                                            </g>
+
+
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+
+                            <div class="row" >
+                                <div class ="span1" style="text-align: left;margin-left: 20px; margin-top: 5px">
+                                    <div class="btn-group" data-toggle="buttons-checkbox">
+                                        <button class="btn btn-success" id="play"  disabled="true"><span class="awe-play"></span></button>
+                                        <button class="btn btn-danger" id="pause"><span class="awe-pause"></span></button>
+                                    </div>
+                                </div>
+                                <div class="span2" style="margin-top: 5px">
+                                    <select id="mazeColor" class="span2">
+                                        <option value="1">Standard</option>
+                                        <option value="2">Black&White</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </section>
+            </div>
+        </article>
+
+    </div>
+    <!-- /Grid row -->
+    <div class="row"  id="row2" style="display: none">
+        <article class="span4 data-block">
+            <div class="data-container">
+                <section class="viewer">
+                    <div class="row-fluid demo">
+                        <div class="span4">Name</div>
+                        <div class="span4">Position</div>
+                        <div class="span4">Line</div>
+
+                    </div>
+                    <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
+                        <div class="span4 viewer"><h2>{{value._Name}}</h2></div>
+                        <div class="span4 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
+                        <button ng-click="toggle([$index])" ng-class="bclass[$index]" >{{toggleText[$index]}}</button>
+                    </div>
+                    <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
+                        <div class="span4 viewer"><h2>{{robot._Name}}</h2></div>
+                        <div class="span4 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
+                        <button ng-click="toggle([0])" ng-class="bclass[0]" >{{toggleText[0]}}</button>
+                    </div>
+
+                </section>
+            </div>
+        </article>
+        <!-- Data block -->
+        <article class="span8 data-block">
+            <div class="data-container">
+                <section class="viewer">
+                    <div class="row-fluid demo">
+                        <div class="span2">Time</div>
+                        <div class="span2">Collisions</div>
+                        <div class="span2">State</div>
+                        <div class="span2">Score</div>
+                        <div class="span2">Retur. Time</div>
+                        <div class="span2">Remaining</div>
+
+                    </div>
+                    <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
+                        <div class="span2 viewer"><h2>{{time}}</h2></div>
+                        <div class="span2 viewer"><h2>{{value.Scores._Collisions}}</h2></div>
+                        <div class="span2 viewer"><h2>{{value._State}}</h2></div>
+                        <div class="span2 viewer"><h2>{{value.Scores._Score}}</h2></div>
+                        <div class="span2 viewer"><h2>{{value.Scores._ReturningTime}}</h2></div>
+                        <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+                    </div>
+                    <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
+                        <div class="span2 viewer"><h2>{{time}}</h2></div>
+                        <div class="span2 viewer"><h2>{{robot.Scores._Collisions}}</h2></div>
+                        <div class="span2 viewer"><h2>{{robot._State}}</h2></div>
+                        <div class="span2 viewer"><h2>{{robot.Scores._Score}}</h2></div>
+                        <div class="span2 viewer"><h2>{{robot.Scores._ReturningTime}}</h2></div>
+                        <div class="span2 viewer"><h2>{{param._SimTime-time}}</h2></div>
+                    </div>
+
+
+                </section>
+            </div>
+        </article>
+    </div>
+</div>
+<script type="text/javascript" src ="static/js/viewer/streamviewer_jquery.js"></script>

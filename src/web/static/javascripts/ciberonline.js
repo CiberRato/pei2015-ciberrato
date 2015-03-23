@@ -13,7 +13,8 @@
             'ciberonline.agents',
             'ciberonline.rounds',
             'dndLists',
-            'ciberonline.logviewer'
+            'ciberonline.logviewer',
+            'ciberonline.streamviewer'
         ])
         .run(run);
 

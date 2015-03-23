@@ -126,6 +126,8 @@
             templateUrl: '/static/templates/admin/round/newRound.html'
         }).when('/panel/:identifier/watchSimulation',{
             templateUrl: '/static/templates/viewer/logViewer.html'
+        }).when('/panel/:identifier/liveStream',{
+            templateUrl: '/static/templates/viewer/streamViewer.html'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
