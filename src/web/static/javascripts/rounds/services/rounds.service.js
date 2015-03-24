@@ -122,7 +122,7 @@
         }
 
         function getSimulation(identifier){
-            return $http.get("/api/v1/competition/simulation/" + identifier + "/");
+            return $http.get("/api/v1/competitions/simulation/" + identifier + "/");
         }
 
     }
