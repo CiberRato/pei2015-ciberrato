@@ -181,7 +181,7 @@ class Starter:
 		json_gz.write(LOG_FILE, arcname=LOG_FILE)
 		json_gz.write(PARAM_FILE, arcname=PARAM_FILE)
 		json_gz.write(LAB_FILE, arcname=LAB_FILE)
-		json_gz.write(GRID_FILE, arcname=GRID_FILE)
+		json_gz.write("tmp.json", arcname=GRID_FILE)
 		json_gz.write("tmp.json", arcname="tmp.json")
 
 		json_gz.close()
