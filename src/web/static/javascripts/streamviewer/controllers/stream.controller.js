@@ -11,11 +11,20 @@
         var username;
 
         var parameters;
-        var logInfo;
+        var simulation;
         var grid;
         var lab;
         var logBuff_obj = [];
+        var identifier = $routeParams.identifier;
+        Round.getSimulation(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
+        function getSimulationSuccessFn(data){
+            simulation = data.data;
+        }
 
+        function getSimulationErrorFn(data){
+            console.error(data.data);
+            $location.path('/panel/');
+        }
         getLabJson();
 
         function getLabJson(){
@@ -25,17 +34,17 @@
 
             console.log("ACTIVATED");
 
-            StreamViewer.getLabViewer().then(getLabSuccessFn, getErrorFn);
+            StreamViewer.getLabViewer(simulation.round_name).then(getLabSuccessFn, getErrorFn);
         }
         function getLabSuccessFn(data){
             console.log("TENHO O FICHEIRO: lab!");
             lab = data.data;
-            StreamViewer.getParametersViewer().then(getParametersSuccessFn, getErrorFn);
+            StreamViewer.getParametersViewer(simulation.round_name).then(getParametersSuccessFn, getErrorFn);
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
             parameters = data.data;
-            StreamViewer.getGridViewer().then(getGridSuccessFn, getErrorFn);
+            StreamViewer.getGridViewer(simulation.round_name).then(getGridSuccessFn, getErrorFn);
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");

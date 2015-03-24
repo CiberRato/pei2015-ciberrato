@@ -11,26 +11,22 @@
         var streamViewer = {
             getLabViewer: getLabViewer,
             getParametersViewer: getParametersViewer,
-            getGridViewer: getGridViewer,
-            getLogViewer: getLogViewer
+            getGridViewer: getGridViewer
         };
 
         return streamViewer;
 
-        function getLabViewer(){
-            return $http.get('media/tests_files/logs/lab_stream.txt');
+        function getLabViewer(RoundName){
+            return $http.get('/api/v1/competitions/round_file/' + RoundName + '/?file=lab');
         }
 
-        function getParametersViewer(){
-            return $http.get('media/tests_files/logs/param_stream.txt');
+        function getParametersViewer(RoundName){
+            return $http.get('/api/v1/competitions/round_file/' + RoundName + '/?file=param_list');
         }
 
-        function getGridViewer(){
-            return $http.get('media/tests_files/logs/grid_stream.txt');
+        function getGridViewer(RoundName){
+            return $http.get('/api/v1/competitions/round_file/' + RoundName + '/?file=grid');
         }
 
-        function getLogViewer(){
-            return $http.get('media/tests_files/logs/log_json.txt');
-        }
     }
 })();

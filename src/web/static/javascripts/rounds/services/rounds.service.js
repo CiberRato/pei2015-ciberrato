@@ -23,7 +23,8 @@
             startSimulation: startSimulation,
             getRound: getRound,
             destroy: destroy,
-            removeSimulation: removeSimulation
+            removeSimulation: removeSimulation,
+            getSimulation: getSimulation
         };
 
         return Round;
@@ -118,6 +119,10 @@
 
         function removeSimulation(identifier){
             return $http.delete("/api/v1/competitions/simulation/" +identifier+"/");
+        }
+
+        function getSimulation(identifier){
+            return $http.get("/api/v1/competition/simulation/" + identifier + "/");
         }
 
     }
