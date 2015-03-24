@@ -57,27 +57,6 @@
             $("#row4").show("slow");
             $("#row5").show("slow");
 
-
-
-            $('.nstSlider').nstSlider({
-                "left_grip_selector": ".leftGrip",
-                "value_changed_callback": function(cause, leftValue, rightValue) {
-                    try{
-                        var scope = angular.element('[ng-controller=ctrl]').scope();
-                        scope.idx = leftValue;
-
-                    }catch(TypeError){}
-                },
-                "highlight": {
-
-                }
-            });
-
-            // Call methods and such...
-            var highlightMin = Math.random() * 20,
-                highlightMax = highlightMin + Math.random() * 80;
-            $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
-
             console.log("OK");
 
             doIt();
@@ -121,6 +100,10 @@
 
             /* Map Object */
             $scope.map = lab_obj.Lab;
+
+            /* --- slider --- */
+
+
 
             /* Grid Object */
             $scope.grid = grid_obj.Grid;

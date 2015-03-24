@@ -85,14 +85,14 @@
 
                                             <g ng-if="numRobots != 1" ng-repeat="value in robot">
                                                 <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
-                                                <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
+                                                <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="static/img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                 <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
                                                 <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
                                             </g>
                                             <g ng-if="numRobots == 1">
                                                 <image ng-if="robot.Scores._Collision=='False'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[0]}}"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
-                                                <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
+                                                <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="static/img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
                                                 <circle  ng-attr-cx="{{robot.Pos._X*zoom}}" ng-attr-cy="{{robot.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
                                                 <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
@@ -102,6 +102,7 @@
                                     </g>
                                 </g>
                             </svg>
+
                             <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}}"
                                  data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-left: 20px; margin-top: -5px">
                                 <div class="leftGrip"></div>
@@ -335,4 +336,28 @@
         </article>
     </div>
 </div>
+<script>
+    $('.nstSlider').nstSlider({
+        "left_grip_selector": ".leftGrip",
+        "value_changed_callback": function(cause, leftValue, rightValue) {
+            try{
+                var value = $(".leftGrip").css("left");
+                value = parseInt(value);
+                var scope = angular.element('[ng-controller=LogViewer]').scope();
+                scope.idx = parseInt((value * angular.element('[ng-controller=LogViewer]').scope().param._SimTime) / 820);
+                console.log(scope.idx);
+
+            }catch(TypeError){}
+        },
+        "highlight": {
+
+        }
+    });
+
+    // Call methods and such...
+    var highlightMin = Math.random() * 20,
+            highlightMax = highlightMin + Math.random() * 80;
+    $('.nstSlider').nstSlider('highlight_range', highlightMin, highlightMax);
+
+</script>
 <script type="text/javascript" src ="static/js/viewer/logviewer_jquery.js"></script>
