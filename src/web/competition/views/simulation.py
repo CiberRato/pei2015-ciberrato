@@ -68,6 +68,13 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param identifier: The simulation identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+
+        cp = CompetitionAgent.objects.filter(round=simulation.round)
+
+        for agent in cp:
+            agent.eligible = True
+            agent.save()
+
         simulation.delete()
 
         return Response({'status': 'Deleted',
