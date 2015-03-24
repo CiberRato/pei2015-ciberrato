@@ -80,7 +80,7 @@
                                             <g ng-if="numRobots != 1" ng-repeat="value in robot">
                                                 <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
                                                 <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
-                                                <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
+                                                <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="static/img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
                                                 <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
                                                 <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
@@ -88,7 +88,7 @@
                                             <g ng-if="numRobots == 1">
                                                 <polyline ng-show="{{slyne[0]}}" ng-attr-points="{{pline[0]}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
                                                 <image ng-if="robot.Scores._Collision=='False'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[0]}}"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
-                                                <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
+                                                <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="static/img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
                                                 <circle  ng-attr-cx="{{robot.Pos._X*zoom}}" ng-attr-cy="{{robot.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
 
                                                 <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
@@ -99,21 +99,6 @@
                                     </g>
                                 </g>
                             </svg>
-
-                            <div class="row" >
-                                <div class ="span1" style="text-align: left;margin-left: 20px; margin-top: 5px">
-                                    <div class="btn-group" data-toggle="buttons-checkbox">
-                                        <button class="btn btn-success" id="play"  disabled="true"><span class="awe-play"></span></button>
-                                        <button class="btn btn-danger" id="pause"><span class="awe-pause"></span></button>
-                                    </div>
-                                </div>
-                                <div class="span2" style="margin-top: 5px">
-                                    <select id="mazeColor" class="span2">
-                                        <option value="1">Standard</option>
-                                        <option value="2">Black&White</option>
-                                    </select>
-                                </div>
-                            </div>
 
                         </div>
                     </div>
@@ -130,20 +115,17 @@
             <div class="data-container">
                 <section class="viewer">
                     <div class="row-fluid demo">
-                        <div class="span4">Name</div>
-                        <div class="span4">Position</div>
-                        <div class="span4">Line</div>
+                        <div class="span6">Name</div>
+                        <div class="span6">Position</div>
 
                     </div>
                     <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
-                        <div class="span4 viewer"><h2>{{value._Name}}</h2></div>
-                        <div class="span4 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
-                        <button ng-click="toggle([$index])" ng-class="bclass[$index]" >{{toggleText[$index]}}</button>
+                        <div class="span6 viewer"><h2>{{value._Name}}</h2></div>
+                        <div class="span6 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
                     </div>
                     <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
-                        <div class="span4 viewer"><h2>{{robot._Name}}</h2></div>
-                        <div class="span4 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
-                        <button ng-click="toggle([0])" ng-class="bclass[0]" >{{toggleText[0]}}</button>
+                        <div class="span6 viewer"><h2>{{robot._Name}}</h2></div>
+                        <div class="span6 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
                     </div>
 
                 </section>

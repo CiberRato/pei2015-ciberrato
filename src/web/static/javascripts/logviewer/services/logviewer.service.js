@@ -9,28 +9,13 @@
 
     function LogViewer($http){
         var logViewer = {
-            getLabViewer: getLabViewer,
-            getParametersViewer: getParametersViewer,
-            getGridViewer: getGridViewer,
-            getLogViewer: getLogViewer
+            getLog: getLog
         };
 
         return logViewer;
 
-        function getLabViewer(){
-            return $http.get('media/tests_files/logs/lab_json.txt');
-        }
-
-        function getParametersViewer(){
-            return $http.get('media/tests_files/logs/parameters_json.txt');
-        }
-
-        function getGridViewer(){
-            return $http.get('media/tests_files/logs/grid_json.txt');
-        }
-
-        function getLogViewer(){
-            return $http.get('media/tests_files/logs/log_json.txt');
+        function getLog(identifier){
+            return $http.get('/api/v1/competitions/get_simulation_log/'+identifier+'/');
         }
     }
 })();

@@ -29,6 +29,8 @@
                             <a ng-if="vm.agent.is_virtual == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload File for this Agent</a>
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">x</button>
+
                                     <h2 align="center">Upload your code</h2>
                                 </div>
                                 <div class="modal-body">
@@ -50,7 +52,7 @@
 
                                 </div>
                                 <div class="modal-footer">
-                                    <a data-dismiss="modal" class="btn btn-alt btn-danger">Close</a>
+
                                     <button class="btn btn-alt btn-success" data-dismiss="modal" ng-click="vm.uploadFile()">Upload</button>
 
                                 </div>
@@ -69,6 +71,9 @@
 
 
                 </section>
+                <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Go Back</a>
+
+
             </div>
 
         </article>

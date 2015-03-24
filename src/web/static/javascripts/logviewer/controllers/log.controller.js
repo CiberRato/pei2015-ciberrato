@@ -8,43 +8,26 @@
     LogViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
 
     function LogViewer($location, $scope, $routeParams, Round, Authentication, Profile, LogViewer, $timeout){
-        var username;
-
         var logInfo;
         var lab;
         var parameters;
         var grid;
 
-        getLabJson();
+        var logAll;
+        var identifier = $routeParams.identifier;
 
-        function getLabJson(){
-            // caso precise de autenticação
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            username = authenticatedAccount.username;
+        getLog();
 
+        function getLog(){
             console.log("ACTIVATED");
-
-            LogViewer.getLabViewer().then(getLabSuccessFn, getErrorFn);
-        }
-        function getLabSuccessFn(data){
-            console.log("TENHO O FICHEIRO: lab!");
-            lab = data.data;
-            LogViewer.getParametersViewer().then(getParametersSuccessFn, getErrorFn);
-        }
-        function getParametersSuccessFn(data){
-            console.log("TENHO O FICHEIRO: parameters!");
-            parameters = data.data;
-            LogViewer.getGridViewer().then(getGridSuccessFn, getErrorFn);
-        }
-        function getGridSuccessFn(data){
-            console.log("TENHO O FICHEIRO: grid!");
-            grid = data.data;
-            LogViewer.getLogViewer().then(getLogSuccessFn, getErrorFn);
+            LogViewer.getLog(identifier).then(getLogSuccessFn, getErrorFn);
         }
         function getLogSuccessFn(data){
-            logInfo = data.data;
-            console.log("TENHO TUDO CARALHO!");
-            showViewer();
+            console.log("TENHO O FICHEIRO: LOG!");
+            logAll = data.data;
+            var file = new File(logAll);
+            console.log(file);
+            //showViewer();
         }
         function getErrorFn(data){
             console.log("FODEU tudo!");
@@ -58,7 +41,6 @@
             $("#row5").show("slow");
 
             console.log("OK");
-
             doIt();
         }
         function convertToStringPoints(cornerList, zoom){
