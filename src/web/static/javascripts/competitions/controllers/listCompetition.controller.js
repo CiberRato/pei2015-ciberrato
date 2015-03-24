@@ -108,7 +108,6 @@
             Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
 
             function validateInscriptionSuccessFn(){
-                console.log('deu');
                 $route.reload();            }
             function validateInscriptionErrorFn(data){
                 console.error(data.data);
