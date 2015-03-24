@@ -171,6 +171,8 @@ class Starter:
 		simulator.terminate()
 		simulator.wait()
 
+		tmp_file = open("tmp", "w")
+		tmp_file.close()
 		#compressing json file to tar.gz
 		TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
 		json_gz = zipfile.ZipFile(TAR_FILE, mode='w')
@@ -178,6 +180,8 @@ class Starter:
 		json_gz.write(PARAM_FILE, arcname=PARAM_FILE)
 		json_gz.write(LAB_FILE, arcname=LAB_FILE)
 		json_gz.write(GRID_FILE, arcname=GRID_FILE)
+		json_gz.write("tmp")
+
 		json_gz.close()
 
 		#save log to the end-point
@@ -198,7 +202,8 @@ class Starter:
 		os.remove(PARAM_FILE)
 		os.remove(LAB_FILE)
 		os.remove(GRID_FILE)
-		#os.remove(TAR_FILE)
+		os.remove("tmp")
+		os.remove(TAR_FILE)
 
 		for key in tempFilesList:
 			tempFilesList[key].close()

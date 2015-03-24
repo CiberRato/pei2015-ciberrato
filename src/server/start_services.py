@@ -12,7 +12,7 @@ def main():
 	starter.start()
 	print "Starter has been started.."
 
-	time.sleep(3)
+	time.sleep(0.5)
 	endPoint = EndPoint()
 	endPoint = multiprocessing.Process(target=endPoint.start)
 	endPoint.daemon = True
