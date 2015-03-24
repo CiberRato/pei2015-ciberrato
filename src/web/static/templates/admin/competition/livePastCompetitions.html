@@ -85,7 +85,9 @@
 
                         </div>
                         <div class="span8">
-                            <a ng-if="vm.competition.state_of_competition == 'Competition' || vm.competition.state_of_competition == 'Register'" href="/admin/{{vm.competitionName}}/createRound" class="btn btn-alt btn-large btn-primary">Create Round</a>
+                            <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Go Back</a>
+
+                            <a ng-if="vm.competition.state_of_competition == 'Competition' || vm.competition.state_of_competition == 'Register'" href="/admin/{{vm.competitionName}}/createRound" class="btn btn-alt btn-large btn-success">Create Round</a>
 
                         </div>
 

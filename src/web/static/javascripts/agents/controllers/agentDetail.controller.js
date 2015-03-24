@@ -114,6 +114,7 @@
                         life: 2500,
                         theme: 'success'
                     });
+                    Competition.getCompetitions(vm.agent.group_name).then(getCompetitionsSuccessFn, getCompetitionsErrorFn);
                     $route.reload();
                 }
 

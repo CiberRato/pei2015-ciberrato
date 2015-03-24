@@ -11,6 +11,7 @@
         var vm = this;
 
         vm.deleteAgent = deleteAgent;
+        vm.uploadFile = uploadFile;
 
         activate();
 
@@ -49,6 +50,31 @@
                     theme: 'btn-danger'
                 });
             }
+        }
+
+        function uploadFile(name) {
+            var language = document.getElementById("selector_language").value;
+            var selectedFile = document.getElementById("fileupload"+name).files[0];
+
+            Agent.upload(name, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+
+            function uploadSuccessFn(){
+
+                $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $route.reload();
+            }
+
+            function uploadErrorFn(data){
+                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                console.error(data.data);
+            }
+
         }
     }
 })();

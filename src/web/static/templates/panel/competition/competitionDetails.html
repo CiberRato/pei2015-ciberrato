@@ -23,7 +23,8 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
-                                <td><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
+                                <td ng-if="value.show==true"><a href="panel/{{ value.group.name }}/editTeam">{{value.group.name}}</a></td>
+                                <td ng-if="value.show==false"><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
                                 <td>{{value.agents.length}}</td>
                                 <td ng-if="value.valid == false && value.show == true"><span class="label label-important">Not Valid</span></td>
                                 <td ng-if="value.valid == true && value.show == true"><span class="label label-success">Valid</span></td>
@@ -56,6 +57,8 @@
 
                         <div class="modal fade"  id="confirmJoin">
                             <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+
                                 <h3 align="center">Select a team to join this competition!</h3>
                             </div>
                             <div class="modal-body">
@@ -70,7 +73,6 @@
                             </div>
                             <div class="modal-footer">
                                 <a ng-click="vm.enroll()" class="btn btn-alt btn-success" data-dismiss="modal">Join</a>
-                                <a data-dismiss="modal" class="btn btn-alt btn-danger">Close</a>
 
                             </div>
                         </div>

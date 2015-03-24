@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round'];
+    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'StreamViewer'];
 
-    function DetailRoundController($location, $route, $routeParams, Round){
+    function DetailRoundController($location, $route, $routeParams, Round, StreamViewer){
         var vm = this;
 
         vm.models = {
@@ -34,6 +34,7 @@
             Round.getSimulations(vm.roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
             Round.getAgents(vm.roundName).then(getAgentsSuccessFn, getAgentsErrorFn);
             Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
+            StreamViewer.get
 
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;

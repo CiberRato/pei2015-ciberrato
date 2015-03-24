@@ -42,11 +42,12 @@
                                             <a class="btn btn-primary btn-flat" data-toggle="modal" href="#confirmTeam">X</a>
                                             <div class="modal fade hide"  id="confirmTeam">
                                                 <div class="modal-body">
+                                                    <button type="button" class="close" data-dismiss="modal">×</button>
+
                                                     <p align="center">Your Team <strong>({{vm.team.group.name}})</strong> will be removed!</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <a data-dismiss="modal" ng-click="vm.destroy()" class="btn btn-alt btn-danger" >Delete</a>
-                                                    <a data-dismiss="modal" class="btn btn-alt btn-success">Cancel</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -72,6 +73,8 @@
                                     </fieldset>
 
                                 </form>
+                                <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Go Back</a>
+
                             </div>
                         </div>
                     </div>

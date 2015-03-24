@@ -36,7 +36,7 @@
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
                                         <td>{{value1.identifier}}</td>
                                         <td>{{value1.state}}</td>
-                                        <td><a ng-if="value1.state == 'WAITING'" href="/panel/{{value1.identifier}}/watchSimulation">Didn't Start</a>
+                                        <td><a ng-if="value1.state == 'WAITING'">Didn't Start</a>
                                             <a href="/panel/{{value1.identifier}}/liveStream" ng-if="value1.state == 'STARTED'">Watch Live</a>
                                             <a href="/panel/{{value1.identifier}}/watchSimulation" ng-if="value1.state == 'LOG'">Watch</a>
                                         </td>

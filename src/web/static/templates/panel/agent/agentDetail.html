@@ -26,10 +26,10 @@
                             </tr>
                             </tbody>
                         </table>
-                            <a ng-if="vm.agent.is_virtual == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-primary">Upload File for this Agent</a>
+                            <a ng-if="vm.agent.is_virtual == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-success">Upload File for this Agent</a>
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">x</button>
+                                    <button type="button" class="close" data-dismiss="modal">×</button>
 
                                     <h2 align="center">Upload your code</h2>
                                 </div>
@@ -66,11 +66,12 @@
                         <option ng-repeat="(key, value) in vm.competitions">{{value.name}}</option>
                     </select>
                     <p></p>
-                    <a ng-if="vm.competitions.length != 0" ng-click="vm.associate()" class="btn btn-alt btn-large btn-primary">Associate Agent</a>
+                    <a ng-if="vm.competitions.length != 0" ng-click="vm.associate()" class="btn btn-alt btn-large btn-success">Associate Agent</a>
 
 
 
                 </section>
+                <hr/>
                 <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Go Back</a>
 
 
