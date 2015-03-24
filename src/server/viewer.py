@@ -71,21 +71,21 @@ def main():
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	params_file.write(json_data+"\n")
+	params_file.write(json_data)
 
 	json_obj = xmltodict.parse(lab)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	lab_file.write(json_data+"\n")
+	lab_file.write(json_data)
 
 	json_obj = xmltodict.parse(grid)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	grid_file.write(json_data+"\n")
+	grid_file.write(json_data)
 
 
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
