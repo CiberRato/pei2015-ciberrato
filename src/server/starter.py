@@ -197,7 +197,7 @@ class Starter:
 		os.remove(PARAM_FILE)
 		os.remove(LAB_FILE)
 		os.remove(GRID_FILE)
-		os.remove(TAR_FILE)
+		#os.remove(TAR_FILE)
 
 		for key in tempFilesList:
 			tempFilesList[key].close()
