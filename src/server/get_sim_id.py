@@ -24,16 +24,25 @@ class GetSimId(object):
 
 		return "received sim id:" + str(sim_id)
 
+class EndPoint():
+	def start(self):
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+		HOST = settings["settings"]["end_point_host"]
+		PORT = settings["settings"]["end_point_port"]
+
+		cherrypy.config.update({'server.socket_host': HOST ,\
+								'server.socket_port': PORT })
+		cherrypy.quickstart(GetSimId(), "/api/v1/simulation_id/")
 
 
+# if __name__ == '__main__':
+# 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+# 	settings = json.loads(settings_str)
+# 	HOST = settings["settings"]["end_point_host"]
+# 	PORT = settings["settings"]["end_point_port"]
 
-if __name__ == '__main__':
-	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-	settings = json.loads(settings_str)
-	HOST = settings["settings"]["end_point_host"]
-	PORT = settings["settings"]["end_point_port"]
 
-
-	cherrypy.config.update({'server.socket_host': HOST ,\
-							'server.socket_port': PORT })
-	cherrypy.quickstart(GetSimId(), "/api/v1/simulation_id/")
+# 	cherrypy.config.update({'server.socket_host': HOST ,\
+# 							'server.socket_port': PORT })
+# 	cherrypy.quickstart(GetSimId(), "/api/v1/simulation_id/")
