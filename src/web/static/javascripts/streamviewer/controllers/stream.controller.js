@@ -19,6 +19,7 @@
         Round.getSimulation(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
         function getSimulationSuccessFn(data){
             simulation = data.data;
+            console.log(simulation);
         }
 
         function getSimulationErrorFn(data){
