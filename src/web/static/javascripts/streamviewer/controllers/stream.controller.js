@@ -20,13 +20,14 @@
         function getSimulationSuccessFn(data){
             simulation = data.data;
             console.log(simulation);
+            getLabJson();
         }
 
         function getSimulationErrorFn(data){
             console.error(data.data);
             $location.path('/panel/');
         }
-        getLabJson();
+
 
         function getLabJson(){
             // caso precise de autenticação
