@@ -7,4 +7,7 @@ def simulation_waiting(simulation):
 
 
 def simulation_done(simulation):
-    return (simulation.log_json is not None) and simulation.started
+    try:
+        return (simulation.log_json.url is not None) and simulation.started
+    except AttributeError:
+        return False
