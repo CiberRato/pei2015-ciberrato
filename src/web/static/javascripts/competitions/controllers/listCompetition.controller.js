@@ -12,6 +12,7 @@
         var vm = this;
         vm.competitionName = $routeParams.name;
         vm.startSimulation = startSimulation;
+        vm.validateInscription = validateInscription;
 
         activate();
 
@@ -100,6 +101,17 @@
                     theme: 'btn-danger'
                 });
                 $route.reload();
+            }
+
+        }
+        function validateInscription(group_name, competition_name){
+            Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
+
+            function validateInscriptionSuccessFn(){
+                $route.reload();            }
+            function validateInscriptionErrorFn(data){
+                console.error(data.data);
+                $location.path('/admin/');
             }
 
         }

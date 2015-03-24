@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('DetailCompetitionController', DetailCompetitionController);
 
-    DetailCompetitionController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Team', 'Authentication'];
+    DetailCompetitionController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Team', 'Authentication', 'Round'];
 
-    function DetailCompetitionController($location, $route, $routeParams, Competition, Team, Authentication){
+    function DetailCompetitionController($location, $route, $routeParams, Competition, Team, Authentication, Round){
         var vm = this;
         var competitionName = $routeParams.name;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
