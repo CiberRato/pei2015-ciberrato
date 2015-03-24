@@ -29,8 +29,14 @@
             console.log(unzipper.isZipFile());
             unzipper.readEntries();
             console.log(unzipper.entries);
+
+            logInfo = unzipper.entries[0].data;
+            parameters = unzipper.entries[1].data;
+            lab = unzipper.entries[2].data;
+            grid = unzipper.entries[3].data;
+
             //console.log(file);
-            //showViewer();
+            showViewer();
         }
         function getErrorFn(data){
             console.log("FODEU tudo!");
