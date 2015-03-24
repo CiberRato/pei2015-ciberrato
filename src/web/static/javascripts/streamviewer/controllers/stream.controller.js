@@ -118,7 +118,8 @@
             var parameters_obj = angular.fromJson(parameters);
 
             var b = 0;
-
+            var i = 0;
+            
             $scope.slow = 0;
             $scope.playvar = 0;
 
