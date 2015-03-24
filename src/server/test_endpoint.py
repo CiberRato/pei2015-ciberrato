@@ -10,6 +10,7 @@ def main():
 	params = {'simulation_identifier': "0a256950-7a5c-403d-aba3-52e455d197c5" }
 	result = requests.post(HOST, params)
 	print result.text
+	print result.status_code
 
 
 if __name__ == "__main__":

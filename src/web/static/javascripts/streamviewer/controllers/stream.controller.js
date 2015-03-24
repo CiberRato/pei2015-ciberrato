@@ -58,7 +58,6 @@
                 ws.onopen = function () {
                     ws.send("OK");
                     opened = true;
-                    doIt();
                 };
                 ws.onmessage = function (evt) {
                     var received_msg = evt.data;
@@ -74,6 +73,7 @@
                         $("#row3").show("slow");
                         $("#row4").show("slow");
                         $("#row5").show("slow");
+                        doIt();
                     }
                 };
                 ws.onclose = function () {
@@ -118,6 +118,7 @@
             var parameters_obj = angular.fromJson(parameters);
 
             var b = 0;
+            var i = 0;
 
             $scope.slow = 0;
             $scope.playvar = 0;
@@ -178,14 +179,14 @@
             $scope.idx = 1;
 
             /* Set Robots Colors */
-            $scope.mickeyColor = ['img/svg/mickey_red_smile.svg','img/svg/mickey_green_smile.svg','img/svg/mickey_blue_smile.svg','img/svg/mickey_yellow_smile.svg','img/svg/mickey_orange_smile.svg'];
+            $scope.mickeyColor = ['static/img/svg/mickey_red_smile.svg','static/img/svg/mickey_green_smile.svg','static/img/svg/mickey_blue_smile.svg','static/img/svg/mickey_yellow_smile.svg','static/img/svg/mickey_orange_smile.svg'];
 
             /* Set Line Colors */
             $scope.lColor = ['#E04F5F','#5FBF60','#29BAF7','#eaea3d','#f28d14'];
 
             /* Set Maze Colors */
             $scope.groundColor = 'black';
-            $scope.cheeseColor = 'img/svg/cheese.svg';
+            $scope.cheeseColor = 'static/img/svg/cheese.svg';
             $scope.circleBorder = '#00ffff';
             $scope.greatWallColor = '#008000';
             $scope.smallWallColor = '#0000ff';
@@ -281,7 +282,7 @@
 
                 if(id == 1){
                     $scope.groundColor = 'black';
-                    $scope.cheeseColor = 'img/svg/cheese.svg';
+                    $scope.cheeseColor = 'static/img/svg/cheese.svg';
                     $scope.circleBorder = '#00ffff';
                     $scope.greatWallColor = '#008000';
                     $scope.smallWallColor = '#0000ff';
@@ -290,7 +291,7 @@
                 }
                 if(id == 2){
                     $scope.groundColor = 'darkgrey';
-                    $scope.cheeseColor = 'img/svg/blackCheese.svg';
+                    $scope.cheeseColor = 'static/img/svg/blackCheese.svg';
                     $scope.circleBorder = '#cfd4db';
                     $scope.greatWallColor = '#353535';
                     $scope.smallWallColor = '#727272';

@@ -12,12 +12,12 @@ def main():
 	starter.start()
 	print "Starter has been started.."
 
-	# time.sleep(3)
-	# endPoint = GetSimId()
-	# endPoint = multiprocessing.Process(target=endPoint.__init__)
-	# endPoint.daemon = True
-	# endPoint.start()
-	# print "Get Sim Id End-Point has been started.."
+	time.sleep(3)
+	endPoint = EndPoint()
+	endPoint = multiprocessing.Process(target=endPoint.start)
+	endPoint.daemon = True
+	endPoint.start()
+	print "Get Sim Id End-Point has been started.."
 
 
 	starter.join()
