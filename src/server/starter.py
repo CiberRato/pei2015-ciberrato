@@ -172,23 +172,21 @@ class Starter:
 		simulator.wait()
 
 
-		# tmp_file = open("tmp.json", "w")
-		# tmp_file.write(open(GRID_FILE, "r").read())
-		# tmp_file.close()
 		#compressing json file to tar.gz
-		TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
-		json_gz = zipfile.ZipFile(TAR_FILE, mode='a')
-		json_gz.write(LOG_FILE, arcname=LOG_FILE)
-		json_gz.write(PARAM_FILE, arcname=PARAM_FILE)
-		json_gz.write(LAB_FILE, arcname=LAB_FILE)
-		json_gz.write(GRID_FILE, arcname=GRID_FILE)
+		# TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
+		# json_gz = zipfile.ZipFile(TAR_FILE, mode='a')
+		# json_gz.write(LOG_FILE, arcname=LOG_FILE)
+		# json_gz.write(PARAM_FILE, arcname=PARAM_FILE)
+		# json_gz.write(LAB_FILE, arcname=LAB_FILE)
+		# json_gz.write(GRID_FILE, arcname=GRID_FILE)
 		#json_gz.write("tmp.json", arcname="tmp.json")
 
-		json_gz.close()
+		# json_gz.close()
 
 		#save log to the end-point
 		data = {'simulation_identifier': sim_id}
-		files = {'log_json': open(TAR_FILE, "rb")}
+		#files = {'log_json': open(TAR_FILE, "rb")}
+		files = {'log_json': open(LOG_FILE, "r")}
 		response = requests.post(POST_SIM_HOST, data=data, files=files)
 
 		#print response.status_code
@@ -204,8 +202,7 @@ class Starter:
 		os.remove(PARAM_FILE)
 		os.remove(LAB_FILE)
 		os.remove(GRID_FILE)
-		os.remove("tmp.json")
-		os.remove(TAR_FILE)
+		#os.remove(TAR_FILE)
 
 		for key in tempFilesList:
 			tempFilesList[key].close()
