@@ -10,6 +10,7 @@ import os
 import sys
 import tarfile
 import re
+import zipfile
 from xml.dom import minidom
 
 class Starter:
@@ -172,11 +173,11 @@ class Starter:
 
 		#compressing json file to tar.gz
 		TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
-		json_gz = tarfile.open(TAR_FILE, "w:gz")
-		json_gz.add(LOG_FILE, arcname=LOG_FILE)
-		json_gz.add(PARAM_FILE, arcname=PARAM_FILE)
-		json_gz.add(LAB_FILE, arcname=LAB_FILE)
-		json_gz.add(GRID_FILE, arcname=GRID_FILE)
+		json_gz = zipfile.open(TAR_FILE, "w")
+		json_gz.write(LOG_FILE, arcname=LOG_FILE)
+		json_gz.write(PARAM_FILE, arcname=PARAM_FILE)
+		json_gz.write(LAB_FILE, arcname=LAB_FILE)
+		json_gz.write(GRID_FILE, arcname=GRID_FILE)
 		json_gz.close()
 
 		#save log to the end-point
@@ -197,7 +198,7 @@ class Starter:
 		os.remove(PARAM_FILE)
 		os.remove(LAB_FILE)
 		os.remove(GRID_FILE)
-		os.remove(TAR_FILE)
+		#os.remove(TAR_FILE)
 
 		for key in tempFilesList:
 			tempFilesList[key].close()

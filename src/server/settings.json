@@ -19,7 +19,7 @@
 
 		///default file name for the log to be saved
 		///<SIM_ID> this tag must be kept even if the log name is changed
-		"file": "log_<SIM_ID>.tar.gz",
+		"file": "log_<SIM_ID>.zip",
 
 		///host and port for communications between starter and viewer
 		"starter_viewer_host": "127.0.0.1",
