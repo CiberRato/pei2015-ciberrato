@@ -5,22 +5,25 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'StreamViewer', '$timeout'];
 
     function StreamViewer($location, $scope, $routeParams, Round, Authentication, Profile, StreamViewer, $timeout){
         var username;
-
+        var x2js = new X2JS();
         var parameters;
         var simulation;
         var grid;
         var lab;
-        var logBuff_obj = [];
         var identifier = $routeParams.identifier;
+        $scope.logBuff_obj = [];
+
         Round.getSimulation(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
         function getSimulationSuccessFn(data){
             simulation = data.data;
-            console.log(simulation);
-            getLabJson();
+            //console.log("simulation" + simulation);
+            console.log("ACTIVATED");
+
+            StreamViewer.getLabViewer(simulation.round_name).then(getLabSuccessFn, getErrorFn);
         }
 
         function getSimulationErrorFn(data){
@@ -28,29 +31,22 @@
             $location.path('/panel/');
         }
 
-
-        function getLabJson(){
-            // caso precise de autenticação
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            username = authenticatedAccount.username;
-
-            console.log("ACTIVATED");
-
-            StreamViewer.getLabViewer(simulation.round_name).then(getLabSuccessFn, getErrorFn);
-        }
         function getLabSuccessFn(data){
             console.log("TENHO O FICHEIRO: lab!");
-            lab = data.data;
+            lab = x2js.xml_str2json(data.data);
+            //console.log("lab" + lab);
             StreamViewer.getParametersViewer(simulation.round_name).then(getParametersSuccessFn, getErrorFn);
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
-            parameters = data.data;
+            parameters = x2js.xml_str2json(data.data);
+            //console.log("parameters" + parameters);
             StreamViewer.getGridViewer(simulation.round_name).then(getGridSuccessFn, getErrorFn);
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
-            grid = data.data;
+            grid = x2js.xml_str2json(data.data);
+            //console.log("grid" + grid);
             CiberWebSocket();
         }
         function getErrorFn(data){
@@ -74,10 +70,10 @@
                     var received_msg = evt.data;
                     //div.innerHTML = div.innerHTML + received_msg;
                     //console.log(received_msg);
-                    logBuff_obj.push(JSON.parse(received_msg));
-                    console.log(logBuff_obj.length);
+                    $scope.logBuff_obj.push(JSON.parse(received_msg));
+                    //console.log("BUF" + $scope.logBuff_obj.length);
 
-                    if(logBuff_obj.length==10){
+                    if($scope.logBuff_obj.length==20){
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
@@ -85,11 +81,15 @@
                         $("#row4").show("slow");
                         $("#row5").show("slow");
                         doIt();
+                        $scope.play();
                     }
+                    //console.log("PLAYVAR " + $scope.playvar);
                 };
                 ws.onclose = function () {
                     if(!opened){
                         CiberWebSocket();
+                    }else{
+                        $scope.pause();
                     }
                 };
             }
@@ -113,8 +113,8 @@
         }
 
         function doIt() {
-            if(isArray(logBuff_obj[0].LogInfo.Robot)){
-                $scope.numRobots = logBuff_obj[0].LogInfo.Robot.length;
+            if(isArray($scope.logBuff_obj[0].LogInfo.Robot)){
+                $scope.numRobots = $scope.logBuff_obj[0].LogInfo.Robot.length;
             }
             else{
                 $scope.numRobots = 1;
@@ -125,8 +125,11 @@
 
             /* JSON to Object */
             var lab_obj = angular.fromJson(lab);
+            //console.log("lab_obj" + lab_obj);
             var grid_obj = angular.fromJson(grid);
+            //console.log("grid_obj" + grid_obj);
             var parameters_obj = angular.fromJson(parameters);
+            //console.log("parameters_obj" + parameters_obj);
 
             var b = 0;
             var i = 0;
@@ -170,19 +173,19 @@
             $scope.dir = [];
             if($scope.numRobots>1){
                 for(i=0; i<$scope.numRobots; i++){
-                    $scope.dir[i] = parseInt(logBuff_obj[0].LogInfo.Robot[i].Pos._Dir) + 90;
+                    $scope.dir[i] = parseInt($scope.logBuff_obj[0].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
             }
             else{
-                $scope.dir[0] = parseInt(logBuff_obj[0].LogInfo.Robot.Pos._Dir) + 90;
+                $scope.dir[0] = parseInt($scope.logBuff_obj[0].LogInfo.Robot.Pos._Dir) + 90;
             }
 
 
             /* Robots Object */
-            $scope.robot = logBuff_obj[0].LogInfo.Robot;
+            $scope.robot = $scope.logBuff_obj[0].LogInfo.Robot;
 
             /* Time Value */
-            $scope.time = logBuff_obj[0].LogInfo._Time;
+            $scope.time = $scope.logBuff_obj[0].LogInfo._Time;
 
             /* Refresh rate value for each iteration */
             $scope.refresh_rate = $scope.param._CycleTime;
@@ -256,11 +259,12 @@
                 try{
                     $scope.updateValues();
 
-                    if($scope.play){
+                    if($scope.playvar){
                         $scope.idx++;
                     }
+                    console.log("IDX"+$scope.idx);
                 }catch(TypeError){
-                    $scope.pause();
+
                 }
                 if($scope.playvar){
                     refresh($scope.refresh_rate);
@@ -269,17 +273,17 @@
 
             /* Update Viewer Values */
             $scope.updateValues = function(){
-                $scope.robot = logBuff_obj[$scope.idx].LogInfo.Robot;
-                $scope.time = logBuff_obj[$scope.idx].LogInfo._Time;
+                $scope.robot = $scope.logBuff_obj[$scope.idx].LogInfo.Robot;
+                $scope.time = $scope.logBuff_obj[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */
                 if($scope.numRobots != 1){
                     for(i=0; i<$scope.numRobots; i++){
-                        $scope.dir[i] = parseInt(logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
+                        $scope.dir[i] = parseInt($scope.logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                     }
                 }
                 else {
-                    $scope.dir[0] = parseInt(logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
+                    $scope.dir[0] = parseInt($scope.logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
                 }
             };
 
@@ -331,7 +335,6 @@
                     refresh($scope.refresh_rate);
                 }
             };
-            $scope.play();
 
             $scope.pause = function(){
                 if($scope.playvar){
@@ -340,11 +343,6 @@
                 }
             };
 
-            $scope.stop = function(){
-                $scope.idx = 0;
-                $scope.playvar = 0;
-                refresh(0);
-            };
         }
     }
 })();
