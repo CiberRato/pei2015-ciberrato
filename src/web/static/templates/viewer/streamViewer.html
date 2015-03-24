@@ -115,17 +115,17 @@
             <div class="data-container">
                 <section class="viewer">
                     <div class="row-fluid demo">
-                        <div class="span4">Name</div>
-                        <div class="span4">Position</div>
+                        <div class="span6">Name</div>
+                        <div class="span6">Position</div>
 
                     </div>
                     <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
-                        <div class="span4 viewer"><h2>{{value._Name}}</h2></div>
-                        <div class="span4 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
+                        <div class="span6 viewer"><h2>{{value._Name}}</h2></div>
+                        <div class="span6 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
                     </div>
                     <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
-                        <div class="span4 viewer"><h2>{{robot._Name}}</h2></div>
-                        <div class="span4 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
+                        <div class="span6 viewer"><h2>{{robot._Name}}</h2></div>
+                        <div class="span6 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
                     </div>
 
                 </section>
