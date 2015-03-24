@@ -5,8 +5,17 @@
 {
 	///general settings to be used by starter, viewer and other programs that may require so
 	"settings": {
-		///default tmp file name
-		"tmp_file": "ciberOnline_log.json",
+		///default tmp file name for log info
+		"log_info_file": "ciberOnline_log.json",
+
+		///default tmp file name for lab
+		"lab_file": "ciberOnline_lab.json",
+
+		///default tmp file name for params
+		"params_file": "ciberOnline_params.json",
+
+		///default tmp file name for grid
+		"grid_file": "ciberOnline_grid.json",
 
 		///default file name for the log to be saved
 		///<SIM_ID> this tag must be kept even if the log name is changed

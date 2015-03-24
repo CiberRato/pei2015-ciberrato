@@ -34,7 +34,10 @@ def main():
 	WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 	WEBSOCKET_PORT = settings["settings"]["websocket_port"]
 
-	FILE = settings["settings"]["tmp_file"]
+	LOG_FILE = settings["settings"]["log_info_file"]
+	PARAM_FILE = settings["settings"]["params_file"]
+	LAB_FILE = settings["settings"]["lab_file"]
+	GRID_FILE = settings["settings"]["grid_file"]
 	#end of loading settings
 
 	if wlog:
@@ -53,7 +56,11 @@ def main():
 	simTime = itemlist[0].attributes['SimTime'].value
 
 	# Write params, grid and lab to the json Log
-	log_file = open(FILE, "w")
+	log_file = open(LOG_FILE, "w")
+	params_file = open(PARAM_FILE, "w")
+	lab_file = open(LAB_FILE, "w")
+	grid_file = open(GRID_FILE, "w")
+
 
 	parameters = itemlist[0].toxml()
 	lab = parametersXML.getElementsByTagName('Lab')[0].toxml()
@@ -64,21 +71,21 @@ def main():
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	log_file.write(json_data+"\n")
+	params_file.write(json_data+"\n")
 
 	json_obj = xmltodict.parse(lab)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	log_file.write(json_data+"\n")
+	lab_file.write(json_data+"\n")
 
 	json_obj = xmltodict.parse(grid)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	log_file.write(json_data+"\n")
+	grid_file.write(json_data+"\n")
 
 
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -162,6 +169,9 @@ def main():
 		log.close()
 	websocket_tcp.close()
 	log_file.close()
+	params_file.close()
+	lab_file.close()
+	grid_file.close()
 	starter_s.close()
 	simulator_s.close()
 

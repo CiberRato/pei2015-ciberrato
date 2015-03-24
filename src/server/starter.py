@@ -60,7 +60,10 @@ class Starter:
 		VIEWER_HOST = settings["settings"]["starter_viewer_host"]
 		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
 
-		JSON_FILE = settings["settings"]["tmp_file"]
+		LOG_FILE = settings["settings"]["log_info_file"]
+		PARAM_FILE = settings["settings"]["params_file"]
+		LAB_FILE = settings["settings"]["lab_file"]
+		GRID_FILE = settings["settings"]["grid_file"]
 
 		TAR_FILE = settings["settings"]["file"]
 		#end loading settings
@@ -112,7 +115,7 @@ class Starter:
 		print "Successfully opened process with process id: ", simulator.pid
 		time.sleep(1)
 		print "Creating process for viewer"
-		viewer = subprocess.Popen(["python", "viewer.py", "-log"], stdout=subprocess.PIPE)
+		viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
 		print "Successfully opened process with process id: ", viewer.pid
 
 		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -170,7 +173,10 @@ class Starter:
 		#compressing json file to tar.gz
 		TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
 		json_gz = tarfile.open(TAR_FILE, "w:gz")
-		json_gz.add(JSON_FILE, arcname=TAR_FILE)
+		json_gz.add(LOG_FILE, arcname=LOG_FILE)
+		json_gz.add(PARAM_FILE, arcname=PARAM_FILE)
+		json_gz.add(LAB_FILE, arcname=LAB_FILE)
+		json_gz.add(GRID_FILE, arcname=GRID_FILE)
 		json_gz.close()
 
 		#save log to the end-point
@@ -187,8 +193,11 @@ class Starter:
 
 		print "Log successfully posted, starter closing now.."
 
-		os.remove(JSON_FILE)
-		os.remove(TAR_FILE)
+		os.remove(LOG_FILE)
+		os.remove(PARAM_FILE)
+		os.remove(LAB_FILE)
+		os.remove(GRID_FILE)
+		#os.remove(TAR_FILE)
 
 		for key in tempFilesList:
 			tempFilesList[key].close()
