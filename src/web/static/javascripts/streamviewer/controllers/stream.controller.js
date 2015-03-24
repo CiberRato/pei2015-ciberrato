@@ -58,7 +58,6 @@
                 ws.onopen = function () {
                     ws.send("OK");
                     opened = true;
-                    doIt();
                 };
                 ws.onmessage = function (evt) {
                     var received_msg = evt.data;
@@ -74,6 +73,7 @@
                         $("#row3").show("slow");
                         $("#row4").show("slow");
                         $("#row5").show("slow");
+                        doIt();
                     }
                 };
                 ws.onclose = function () {
