@@ -9,5 +9,5 @@ def simulation_waiting(simulation):
 def simulation_done(simulation):
     try:
         return (simulation.log_json.url is not None) and simulation.started
-    except AttributeError:
+    except ValueError:
         return False
