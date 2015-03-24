@@ -172,6 +172,7 @@ class Starter:
 		simulator.wait()
 
 		tmp_file = open("tmp.json", "w")
+		tmp_file.write("ISTO TEM DE FUNCIONAR")
 		tmp_file.close()
 		#compressing json file to tar.gz
 		TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
