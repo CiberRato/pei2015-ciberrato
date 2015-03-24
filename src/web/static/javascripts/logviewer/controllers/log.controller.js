@@ -25,8 +25,11 @@
         function getLogSuccessFn(data){
             console.log("TENHO O FICHEIRO: LOG!");
             logAll = data.data;
-            var file = new File(logAll);
-            console.log(file);
+            var unzipper = new JSUnzip(logAll);
+            console.log(unzipper.isZipFile());
+            unzipper.readEntries();
+            console.log(unzipper.entries);
+            //console.log(file);
             //showViewer();
         }
         function getErrorFn(data){
