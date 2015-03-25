@@ -249,7 +249,7 @@
             /* Update Viewer Values */
             $scope.updateValues = function () {
                 $scope.robot = $scope.log[$scope.idx].LogInfo.Robot;
-                console.log($scope.robot);
+                //console.log($scope.robot); O QUE É ISTO?
                 $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */

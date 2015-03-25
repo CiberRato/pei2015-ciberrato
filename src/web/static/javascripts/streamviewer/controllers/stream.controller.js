@@ -262,7 +262,7 @@
                     if($scope.playvar){
                         $scope.idx++;
                     }
-                    console.log("IDX"+$scope.idx);
+                    //console.log("IDX"+$scope.idx);
                 }catch(TypeError){
 
                 }
