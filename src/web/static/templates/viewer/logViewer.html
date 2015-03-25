@@ -248,83 +248,140 @@
                                     <tbody>
 
                                     <!-- Position(x,y) -->
-                                    <tr ng-if="robot[0].Pos">
+                                    <tr ng-if="numRobots != 1">
                                         <th>Position(x,y)</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">({{value.Pos._X | number:2}}, {{value.Pos._Y | number:2}})</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1">
+                                        <th>Position(x,y)</th>
+                                        <td style="text-align: center">({{robot.Pos._X | number:2}}, {{robot.Pos._Y | number:2}})</td>
+                                    </tr>
 
                                     <!-- Direction -->
-                                    <tr ng-if="robot[0].Pos">
+                                    <tr ng-if="numRobots != 1">
                                         <th>Direction</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">{{value.Pos._Dir | number:2}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1">
+                                        <th>Direction</th>
+                                        <td style="text-align: center">{{robot.Pos._Dir | number:2}}</td>
+                                    </tr>
 
                                     <!-- Compass -->
-                                    <tr ng-if="robot[0].Measures.Sensors.hasOwnProperty('_Compass')">
+                                    <tr ng-if="numRobots != 1 && robot[0].Measures.Sensors.hasOwnProperty('_Compass')">
                                         <th>Compass</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">{{value.Measures.Sensors._Compass}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Measures.Sensors.hasOwnProperty('_Compass')">
+                                        <th>Compass</th>
+                                        <td style="text-align: center">{{robot.Measures.Sensors._Compass}}</td>
+                                    </tr>
 
                                     <!-- Left Motor -->
-                                    <tr ng-if="robot[0].Action.hasOwnProperty('_LeftMotor')">
+                                    <tr ng-if="numRobots != 1 && robot[0].Action.hasOwnProperty('_LeftMotor')">
                                         <th>Left Motor</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">{{value.Action._LeftMotor}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Action.hasOwnProperty('_LeftMotor')">
+                                        <th>Left Motor</th>
+                                        <td style="text-align: center">{{robot.Action._LeftMotor}}</td>
+                                    </tr>
 
                                     <!-- Right Motor -->
-                                    <tr ng-if="robot[0].Action.hasOwnProperty('_RightMotor')">
+                                    <tr ng-if="numRobots != 1 && robot[0].Action.hasOwnProperty('_RightMotor')">
                                         <th>Right Motor</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">{{value.Action._RightMotor}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Action.hasOwnProperty('_RightMotor')">
+                                        <th>Right Motor</th>
+                                        <td style="text-align: center">{{robot.Action._RightMotor}}</td>
+                                    </tr>
 
                                     <!-- Collision -->
-                                    <tr ng-if="robot[0].Measures.Sensors.hasOwnProperty('_Collision')">
+                                    <tr ng-if="numRobots != 1 && robot[0].Measures.Sensors.hasOwnProperty('_Collision')">
                                         <th>Collision</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">{{value.Measures.Sensors._Collision}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Measures.Sensors.hasOwnProperty('_Collision')">
+                                        <th>Collision</th>
+                                        <td style="text-align: center">{{robot.Measures.Sensors._Collision}}</td>
+                                    </tr>
 
                                     <!-- Ground -->
-                                    <tr ng="robot[0].Measures.Sensors.hasOwnProperty('_Ground')">
+                                    <tr ng-if="numRobots != 1 && robot[0].Measures.Sensors.hasOwnProperty('_Ground')">
                                         <th>Ground</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">{{value.Measures.Sensors._Ground}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Measures.Sensors.hasOwnProperty('_Ground')">
+                                        <th>Ground</th>
+                                        <td style="text-align: center">{{robot.Measures.Sensors._Ground}}</td>
+                                    </tr>
 
                                     <!-- IRSensors -->
-                                    <tr ng-if="robot[0].Measures.Sensors.IRSensor" ng-repeat="(idx, ir) in robot[0].Measures.Sensors.IRSensor">
+                                    <tr ng-if="numRobots != 1 && robot[0].Measures.Sensors.IRSensor" ng-repeat="(idx, ir) in robot[0].Measures.Sensors.IRSensor">
                                         <th>IRSensor {{robot[0].Measures.Sensors.IRSensor[idx]._Id}}</th>
                                         <td ng-repeat="value in robot" style="text-align: center">{{value.Measures.Sensors.IRSensor[idx]._Value}}</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Measures.Sensors.IRSensor" ng-repeat="(idx, ir) in robot.Measures.Sensors.IRSensor">
+                                        <th>IRSensor {{robot.Measures.Sensors.IRSensor[idx]._Id}}</th>
+                                        <td style="text-align: center">{{robot.Measures.Sensors.IRSensor[idx]._Value}}</td>
+                                    </tr>
 
                                     <!-- GPS(x,y) -->
-                                    <tr ng-if="robot[0].Measures.Sensors.GPS">
+                                    <tr ng-if="numRobots != 1 && robot[0].Measures.Sensors.GPS">
                                         <th>GPS(x,y)</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">({{value.Measures.Sensors.GPS._X}}, {{value.Measures.Sensors.GPS._Y}})</td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1 && robot.Measures.Sensors.GPS">
+                                        <th>GPS(x,y)</th>
+                                        <td style="text-align: center">({{robot.Measures.Sensors.GPS._X}}, {{robot.Measures.Sensors.GPS._Y}})</td>
+                                    </tr>
 
                                     <!-- End Led -->
-                                    <tr>
+                                    <tr ng-if="numRobots != 1">
                                         <th>End Led</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">
                                             <span ng-if="value.Measures.Leds._EndLed=='Off'" class="label label-important">OFF</span>
                                             <span ng-if="value.Measures.Leds._EndLed=='On'" class="label label-success">ON</span>
                                         </td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1">
+                                        <th>End Led</th>
+                                        <td style="text-align: center">
+                                            <span ng-if="robot.Measures.Leds._EndLed=='Off'" class="label label-important">OFF</span>
+                                            <span ng-if="robot.Measures.Leds._EndLed=='On'" class="label label-success">ON</span>
+                                        </td>
+                                    </tr>
 
                                     <!-- Returning Led -->
-                                    <tr>
+                                    <tr ng-if="numRobots != 1">
                                         <th>Returning Led</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">
                                             <span ng-if="value.Measures.Leds._ReturningLed=='Off'" class="label label-important">OFF</span>
                                             <span ng-if="value.Measures.Leds._ReturningLed=='On'" class="label label-success">ON</span>
                                         </td>
                                     </tr>
+                                    <tr ng-if="numRobots == 1">
+                                        <th>Returning Led</th>
+                                        <td style="text-align: center">
+                                            <span ng-if="robot.Measures.Leds._ReturningLed=='Off'" class="label label-important">OFF</span>
+                                            <span ng-if="robot.Measures.Leds._ReturningLed=='On'" class="label label-success">ON</span>
+                                        </td>
+                                    </tr>
 
                                     <!-- Visiting Led -->
-                                    <tr>
+                                    <tr ng-if="numRobots != 1">
                                         <th>Visiting Led</th>
                                         <td ng-repeat="value in robot track by $index" style="text-align: center">
                                             <span ng-if="value.Measures.Leds._VisitingLed=='Off'" class="label label-important">OFF</span>
                                             <span ng-if="value.Measures.Leds._VisitingLed=='On'" class="label label-success">ON</span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="numRobots == 1">
+                                        <th>Visiting Led</th>
+                                        <td style="text-align: center">
+                                            <span ng-if="robot.Measures.Leds._VisitingLed=='Off'" class="label label-important">OFF</span>
+                                            <span ng-if="robot.Measures.Leds._VisitingLed=='On'" class="label label-success">ON</span>
                                         </td>
                                     </tr>
 
