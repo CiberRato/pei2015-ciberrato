@@ -13,33 +13,24 @@
         var parameters;
         var grid;
 
-        var logAll;
         var identifier = $routeParams.identifier;
 
-        getLog();
+        LogViewer.getLog(identifier).then(getLogSuccess, getLogError);
 
-        function getLog(){
+        function getLogSuccess(log){
             console.log("ACTIVATED");
-            LogViewer.getLog(identifier).then(getLogSuccessFn, getErrorFn);
-        }
-        function getLogSuccessFn(data){
             console.log("TENHO O FICHEIRO: LOG!");
-            logAll = data.data;
-            var unzipper = new JSUnzip(logAll);
-            console.log(unzipper.isZipFile());
-            unzipper.readEntries();
-            console.log(unzipper.entries);
 
-            logInfo = unzipper.entries[0].data;
-            parameters = unzipper.entries[1].data;
-            lab = unzipper.entries[2].data;
-            grid = unzipper.entries[3].data;
-
-            //console.log(file);
+            log = log.data;
+            //console.log(log);
+            logInfo = log[3];
+            parameters = log[0];
+            lab = log[1];
+            grid = log[2];
             showViewer();
         }
-        function getErrorFn(data){
-            console.log("FODEU tudo!");
+        function getLogError(){
+            console.log("ERROR");
         }
         function showViewer(){
             $("#waitawhile").hide("fast");
@@ -70,10 +61,10 @@
             $scope.velButton = '1x';
 
             /* JSON to Object */
-            var lab_obj = angular.fromJson(lab);
-            var grid_obj = angular.fromJson(grid);
-            var parameters_obj = angular.fromJson(parameters);
-            var logInfo_obj = angular.fromJson(logInfo);
+            var lab_obj = lab;
+            var grid_obj = grid;
+            var parameters_obj = parameters;
+            var logInfo_obj = logInfo;
 
             var b = 0;
             var i = 0;
@@ -81,8 +72,10 @@
             $scope.slow = 0;
             $scope.playvar = 0;
 
+            //console.log(lab_obj);
             /* Convert wall points to be integrated in SVG */
             for (i = 0; i < lab_obj.Lab.Wall.length; i++) {
+                //console.log(lab_obj);
                 lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
             }
 
@@ -91,7 +84,6 @@
 
             /* Map Object */
             $scope.map = lab_obj.Lab;
-
             /* --- slider --- */
 
 
@@ -100,7 +92,7 @@
             $scope.grid = grid_obj.Grid;
 
             /* Log Object */
-            $scope.log = logInfo_obj.Log.LogInfo;
+            $scope.log = logInfo_obj;
 
             /* Beacons Object */
             $scope.beacon = lab_obj.Lab.Beacon;
@@ -120,8 +112,9 @@
                 $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
 
             /* Number of Robots */
-            if (isArray($scope.log[0].Robot)) {
-                $scope.numRobots = $scope.log[0].Robot.length;
+            //console.log($scope.log);
+            if (isArray($scope.log[0].LogInfo.Robot)) {
+                $scope.numRobots = $scope.log[0].LogInfo.Robot.length;
             }
             else {
                 $scope.numRobots = 1;
@@ -131,19 +124,19 @@
             $scope.dir = [];
             if ($scope.numRobots > 1) {
                 for (i = 0; i < $scope.numRobots; i++) {
-                    $scope.dir[i] = parseInt($scope.log[0].Robot[i].Pos._Dir) + 90;
+                    $scope.dir[i] = parseInt($scope.log[0].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
             }
             else {
-                $scope.dir[0] = parseInt($scope.log[0].Robot.Pos._Dir) + 90;
+                $scope.dir[0] = parseInt($scope.log[0].LogInfo.Robot.Pos._Dir) + 90;
             }
 
 
             /* Robots Object */
-            $scope.robot = $scope.log[0].Robot;
+            $scope.robot = $scope.log[0].LogInfo.Robot;
 
             /* Time Value */
-            $scope.time = $scope.log[0]._Time;
+            $scope.time = $scope.log[0].LogInfo._Time;
 
             /* Refresh rate value for each iteration */
             $scope.refresh_rate = $scope.param._CycleTime;
@@ -255,17 +248,18 @@
 
             /* Update Viewer Values */
             $scope.updateValues = function () {
-                $scope.robot = $scope.log[$scope.idx].Robot;
-                $scope.time = $scope.log[$scope.idx]._Time;
+                $scope.robot = $scope.log[$scope.idx].LogInfo.Robot;
+                console.log($scope.robot);
+                $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */
                 if ($scope.numRobots != 1) {
                     for (i = 0; i < $scope.numRobots; i++) {
-                        $scope.dir[i] = parseInt($scope.log[$scope.idx].Robot[i].Pos._Dir) + 90;
+                        $scope.dir[i] = parseInt($scope.log[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                     }
                 }
                 else {
-                    $scope.dir[0] = parseInt($scope.log[$scope.idx].Robot.Pos._Dir) + 90;
+                    $scope.dir[0] = parseInt($scope.log[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
                 }
 
                 /* Calculate visited points line */
@@ -277,21 +271,21 @@
                     for (b = 0; b < $scope.idx; b++) {
                         if ($scope.numRobots != 1) {
                             for (i = 0; i < $scope.numRobots; i++) {
-                                $scope.pline[i] += $scope.log[b].Robot[i].Pos._X * $scope.zoom + "," + $scope.log[b].Robot[i].Pos._Y * $scope.zoom + " ";
+                                $scope.pline[i] += $scope.log[b].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
                             }
                         }
                         else {
-                            $scope.pline[0] += $scope.log[b].Robot.Pos._X * $scope.zoom + "," + $scope.log[b].Robot.Pos._Y * $scope.zoom + " ";
+                            $scope.pline[0] += $scope.log[b].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
                         }
                     }
                 } else {
                     if ($scope.numRobots != 1) {
                         for (i = 0; i < $scope.numRobots; i++) {
-                            $scope.pline[i] += $scope.log[$scope.idx].Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot[i].Pos._Y * $scope.zoom + " ";
+                            $scope.pline[i] += $scope.log[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
                         }
                     }
                     else {
-                        $scope.pline[0] += $scope.log[$scope.idx].Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].Robot.Pos._Y * $scope.zoom + " ";
+                        $scope.pline[0] += $scope.log[$scope.idx].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
                     }
                 }
                 $scope.last_idx = $scope.idx;
