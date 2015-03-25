@@ -84,7 +84,7 @@
                                                 <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
                                             </g>
                                             <g ng-if="numRobots == 1">
-                                                <polyline ng-show="{{slyne[0]}}" ng-attr-points="{{pline[0]}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
+                                                <polyline ng-show="{{'slyne[0]'}}" ng-attr-points="{{pline}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
                                             </g>
 
                                             <g ng-if="numRobots != 1" ng-repeat="value in robot">

@@ -158,9 +158,6 @@
             $scope.smallWallColor = '#0000ff';
             $scope.gridColor = '#cfd4db';
 
-            /* Line points */
-            $scope.pline = [];
-
             /* Line Toggled */
             $scope.slyne = [];
 
@@ -176,20 +173,31 @@
             /* Line Color */
             $scope.lineColor = [];
 
-            for (i = 0; i < $scope.numRobots; i++) {
-                $scope.pline[i] = "";
-                $scope.bclass[i] = 'btn btn-success'
-                $scope.toggleText[i] = 'Show';
-                $scope.slyne[i] = false;
-                if (i > 4) {
-                    $scope.robotColor[i] = $scope.mickeyColor[0];
-                    $scope.lineColor[i] = $scope.lColor[0];
-                }
-                else {
-                    $scope.robotColor[i] = $scope.mickeyColor[i];
-                    $scope.lineColor[i] = $scope.lColor[i];
+            if ($scope.numRobots==1){
+                $scope.pline = "";
+                $scope.bclass[0] = 'btn btn-success'
+                $scope.toggleText[0] = 'Show';
+                $scope.slyne[0] = false;
+                $scope.robotColor[0] = $scope.mickeyColor[0];
+                $scope.lineColor[0] = $scope.lColor[0];
+            }else{
+                $scope.pline = [];
+                for (i = 0; i < $scope.numRobots; i++) {
+                    $scope.pline[i] = "";
+                    $scope.bclass[i] = 'btn btn-success'
+                    $scope.toggleText[i] = 'Show';
+                    $scope.slyne[i] = false;
+                    if (i > 4) {
+                        $scope.robotColor[i] = $scope.mickeyColor[0];
+                        $scope.lineColor[i] = $scope.lColor[0];
+                    }
+                    else {
+                        $scope.robotColor[i] = $scope.mickeyColor[i];
+                        $scope.lineColor[i] = $scope.lColor[i];
+                    }
                 }
             }
+
 
             $scope.activeV = function (str) {
                 if (str == '1x') {
@@ -264,10 +272,14 @@
 
                 /* Calculate visited points line */
                 if (($scope.last_idx + 1) != $scope.idx) {
-
-                    for (i = 0; i < $scope.numRobots; i++) {
-                        $scope.pline[i] = "";
+                    if ($scope.numRobots!=1){
+                        for (i = 0; i < $scope.numRobots; i++) {
+                            $scope.pline[i] = "";
+                        }
+                    }else{
+                        $scope.pline = "";
                     }
+
                     for (b = 0; b < $scope.idx; b++) {
                         if ($scope.numRobots != 1) {
                             for (i = 0; i < $scope.numRobots; i++) {
@@ -275,7 +287,7 @@
                             }
                         }
                         else {
-                            $scope.pline[0] += $scope.log[b].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
+                            $scope.pline += $scope.log[b].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
                         }
                     }
                 } else {
@@ -285,7 +297,7 @@
                         }
                     }
                     else {
-                        $scope.pline[0] += $scope.log[$scope.idx].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
+                        $scope.pline += $scope.log[$scope.idx].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
                     }
                 }
                 $scope.last_idx = $scope.idx;
