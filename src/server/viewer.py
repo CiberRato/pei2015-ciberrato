@@ -141,7 +141,13 @@ def main():
 	websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
 
 	robotTime = 0
+
+	firstTime = True
 	while simTime != robotTime:
+		if not firstTime:
+			log_file.write(",")
+		else:
+			firstTime = False
 		data = simulator_s.recv(4096)
 		# Actualizar o tempo do robot
 		data = data.replace("\x00", "")
