@@ -143,6 +143,7 @@ def main():
 	robotTime = 0
 
 	firstTime = True
+	log_file.write("[")
 	while simTime != robotTime:
 		if not firstTime:
 			log_file.write(",")
@@ -168,6 +169,7 @@ def main():
 		# Enviar os dados da simulação para o exterior
 		websocket_tcp.send(json_data)
 
+	log_file.write("]")
 	#wait 0.1 seconds to assure the END msg goes on a separate packet
 	time.sleep(0.1)
 	#send websocket msg telling it's over
