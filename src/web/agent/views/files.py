@@ -34,7 +34,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent file
-        B{URL:} ../api/v1/competitions/delete_agent_file/<agent_name>/?file_name=<file_name>
+        B{URL:} ../api/v1/agents/delete_agent_file/<agent_name>/?file_name=<file_name>
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -78,7 +78,7 @@ class GetAllowedLanguages(views.APIView):
     def get(request):
         """
         B{Get} the allowed languages
-        B{URL:} ../api/v1/competitions/allowed_languages/
+        B{URL:} ../api/v1/agents/allowed_languages/
         """
         return Response(JSONRenderer().render(settings.ALLOWED_UPLOAD_LANGUAGES), status=status.HTTP_200_OK)
 
@@ -93,7 +93,7 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the agent files list
-        B{URL:} ../api/v1/competitions/agent_files/<agent_name>/
+        B{URL:} ../api/v1/agents/agent_files/<agent_name>/
         Must be part of the group owner of the agent
 
         @type  agent_name: str

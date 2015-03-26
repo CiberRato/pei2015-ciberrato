@@ -28,7 +28,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def create(self, request, *args, **kwargs):
         """
         B{Create} an agent
-        B{URL:} ../api/v1/competitions/agent/
+        B{URL:} ../api/v1/agents/agent/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -55,7 +55,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} information of the agent
-        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+        B{URL:} ../api/v1/agents/agent/<agent_name>/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -68,7 +68,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent
-        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+        B{URL:} ../api/v1/agents/agent/<agent_name>/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -97,7 +97,7 @@ class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of agents by group
-        B{URL:} ../api/v1/competitions/agents_by_group/<group_name>/
+        B{URL:} ../api/v1/agents/agents_by_group/<group_name>/
 
         @type  group_name: str
         @param group_name: The group name
@@ -118,7 +118,7 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of agents by username
-        B{URL:} ../api/v1/competitions/agents_by_user/<username>/
+        B{URL:} ../api/v1/agents/agents_by_user/<username>/
 
         @type  username: str
         @param username: The user name
