@@ -36,6 +36,7 @@
 
             function getFilesSuccessFn(data) {
                 vm.files = data.data;
+                console.log(vm.files);
 
             }
 

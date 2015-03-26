@@ -12,11 +12,12 @@
                         <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}})</h2>
                         <p ng-if="vm.files.length != 0 && vm.agent.is_virtual == false">Here is shown in table the list of all uploaded files of this agent.</p>
                         <p ng-if="vm.files.length == 0 && vm.agent.is_virtual == false">This agent doesn't have any uploaded file.</p>
+
                         <table ng-if="vm.files.length != 0 && vm.agent.is_virtual == false" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>File Name</th>
-                                <th>Remove Agent</th>
+                                <th>Remove File</th>
                             </tr>
                             </thead>
                             <tbody>

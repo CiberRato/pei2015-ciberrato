@@ -12,7 +12,7 @@
 
                 }
 
-                document.write('<img src="' + get_gravatar('{{user.email}}', 60) + '" />');
+                document.write('<a href="/panel/{{user.username}}/memberProfile"><img src="' + get_gravatar('{{user.email}}', 60) + '" /></a>');
             </script>
             <figcaption>
 
