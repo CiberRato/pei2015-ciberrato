@@ -26,7 +26,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
     def create(self, request, *args, **kwargs):
         """
         B{Create} the json log
-        B{URL:} ../api/v1/competitions/simulation_log/
+        B{URL:} ../api/v1/simulations/simulation_log/
 
         @type  log_json: str
         @param log_json: The json log
@@ -58,7 +58,7 @@ class GetSimulationLog(views.APIView):
     def get(request, simulation_id):
         """
         B{Get} simulation json log
-        B{URL:} ../api/v1/competitions/get_simulation_log/<simulation_id>/
+        B{URL:} ../api/v1/simulations/get_simulation_log/<simulation_id>/
 
         @type  simulation_id: str
         @param simulation_id: The simulation identifier
@@ -92,7 +92,7 @@ class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the simulation complete, machine-to-machine
-        B{URL:} ../api/v1/competitions/get_simulation/<simulation_id>/
+        B{URL:} ../api/v1/simulations/get_simulation/<simulation_id>/
 
         @type  simulation_id: str
         @param simulation_id: The simulation id

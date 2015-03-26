@@ -77,9 +77,7 @@ router_competitions.register(r'simulations_by_agent', SimulationByAgent)
 router_competitions.register(r'simulations_by_round', SimulationByRound)
 router_competitions.register(r'simulations_by_competition', SimulationByCompetition)
 router_competitions.register(r'simulation_agents', GetSimulationAgents)
-router_competitions.register(r'simulation_log', SaveLogs)
 # Simulation => Machine to Machine
-router_competitions.register(r'get_simulation', GetSimulation)
 
 # COMPETITIONS URLs#
 
@@ -91,7 +89,10 @@ router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', GetAgentsFiles)
 
-
+# SIMULATION URL's
+router_simulations = routers.SimpleRouter()
+router_simulations.register(r'simulation_log', SaveLogs)
+router_competitions.register(r'get_simulation', GetSimulation)
 
 
 urlpatterns = patterns('',
@@ -117,7 +118,7 @@ urlpatterns = patterns('',
                        # stat simulation
                        url(r'^api/v1/simulations/start/$', StartSimulation.as_view(), name="Start simulation"),
                        # get simulation log
-                       url(r'^api/v1/competitions/get_simulation_log/(?P<simulation_id>.+)/$', GetSimulationLog.as_view(),
+                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$', GetSimulationLog.as_view(),
                            name="Get simulation log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
