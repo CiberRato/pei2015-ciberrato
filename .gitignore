@@ -57,6 +57,9 @@ docs/_build/
 
 .idea/
 
+# Competition files
+src/web/media/
+
 # Cibertools generated source code
 src/server/cibertools-v2.2/GUISample/moc_robview.cpp
 src/server/cibertools-v2.2/GUISample/moc_sampapp.cpp
