@@ -11,9 +11,10 @@
                     <div class="tab-pane active" id="static">
 
                         <h2>All Competitions</h2>
-                        <p>Here is shown in table the list of all competitions that you had been enrolled.</p>
+                        <p ng-if="vm.competitions.length != 0">Here is shown in table the list of all competitions that you had been enrolled.</p>
+                        <p ng-if="vm.competitions.length == 0">There are no competitions created.</p>
 
-                        <table class="table table-striped table-hover">
+                        <table ng-if="vm.competitions.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Competition Name</th>
@@ -62,6 +63,8 @@
                             </tr>
                             </tbody>
                         </table>
+                        <a ng-if="vm.competitions.length == 0" href="/admin/createCompetition" class="btn btn-alt btn-success">Create New Competition</a>
+
                     </div>
                 </section>
             </div>
