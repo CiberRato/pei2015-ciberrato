@@ -1,5 +1,0 @@
-<Grid>
-	<Position X="2.4" Y="12.8" Dir="-90"/>
-	<Position X="1" Y="13.1" Dir="-90"/>
-	<Position X="3.7" Y="12.5" Dir="-90"/>
-</Grid>
