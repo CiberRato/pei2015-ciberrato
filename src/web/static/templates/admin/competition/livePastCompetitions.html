@@ -73,9 +73,12 @@
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
                                     <td>{{value1.identifier}}</td>
                                     <td>{{value1.state}}</td>
-                                    <td><a href="#" ng-if="value1.state == 'WAITING'" ng-click = "vm.startSimulation(value1.identifier)">Start</a>
-                                        <p ng-if="value1.state == 'STARTED'">Start</p>
+                                    <td ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value1.state == 'WAITING'" ng-click = "vm.startSimulation(value1.identifier)">Start</a>
+                                        <p ng-if="value1.state == 'STARTED'">Started</p>
+                                        <p ng-if="value1.state == 'LOG'">Finished</p>
                                     </td>
+
+                                    <td ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
 
                                     </tbody>
                                 </table>
