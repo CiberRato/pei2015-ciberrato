@@ -1,3 +1,7 @@
+*** THIS WAS THE CURRENT STATE OF OUR PROJECT AT MILESTONE 2 ***
+***** CHECK OUR LATEST VERSION AT MASTER BRANCH ******
+***** DATE: 25 MARCH 2015 *****
+
 Project Description: http://xcoa.av.it.pt/~pei2015-ciberonline/
 Project Documentation: http://code.ua.pt/projects/pei2015-ciberonline/wiki
 
