@@ -28,6 +28,7 @@ make;)
 echo "	>> Creating docker image based on Dockerfile"
 groupadd docker
 gpasswd -a $user docker
+sleep 2
 
 if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ];
 then
