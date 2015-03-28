@@ -46,8 +46,6 @@ bool cbPanelHandler::startElement(const QString&, const QString&, const QString&
 {
 	/* process begin tag */
 	const QString &tag = qName;
-	cout << "Testing: " << endl;
-	cout << qName.toUtf8().constData() << endl;
 	if (tag == "Start")
 	{
 		command.type = cbPanelCommand::START;
