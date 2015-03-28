@@ -21,13 +21,17 @@
 
 #include <iostream>
 #include <qstring.h>
+#include "cbparamhandler.h"
+#include "cbgridhandler.h"
+#include "cblabhandler.h"
 
-using std::cerr;
+using namespace std;
 
-cbPanelHandler::cbPanelHandler()
+cbPanelHandler::cbPanelHandler(QString message)
 {
+	this->message = message;
 }
- 
+
 bool cbPanelHandler::startDocument()
 {
     return true;
@@ -40,9 +44,10 @@ bool cbPanelHandler::endDocument()
 
 bool cbPanelHandler::startElement(const QString&, const QString&, const QString& qName, const QXmlAttributes& attr)
 {
-	//cout << "cbPanelHandler::startElement:: " << qName << endl;
 	/* process begin tag */
 	const QString &tag = qName;
+	cout << "Testing: " << endl;
+	cout << qName.toUtf8().constData() << endl;
 	if (tag == "Start")
 	{
 		command.type = cbPanelCommand::START;
@@ -61,6 +66,51 @@ bool cbPanelHandler::startElement(const QString&, const QString&, const QString&
 		if (!id.isNull()) {
 			command.type = cbPanelCommand::ROBOTDEL;
 			command.robot.id = id.toInt();
+		}
+	}
+	else if (tag == "Parameters")
+	{
+		cbParamHandler *paramHandler = new cbParamHandler(NULL);
+		QXmlSimpleReader xmlParser;
+		xmlParser.setContentHandler(paramHandler);
+
+		QXmlInputSource data;
+		data.setData(message);
+		if(xmlParser.parse(data)) {
+		    command.param = paramHandler->parsedParameters();
+			command.type = cbPanelCommand::PARAMETERS;
+		} else {
+			return false;
+		}
+	}
+	else if (tag == "Grid")
+	{
+		cbGridHandler *gridHandler = new cbGridHandler();
+		QXmlSimpleReader xmlParser;
+		xmlParser.setContentHandler(gridHandler);
+
+		QXmlInputSource data;
+		data.setData(message);
+		if(xmlParser.parse(data)) {
+		    command.grid = gridHandler->parsedGrid();
+			command.type = cbPanelCommand::GRID;
+		} else {
+			return false;
+		}
+	}
+	else if (tag == "Lab")
+	{
+		cbLabHandler *labHandler = new cbLabHandler();
+		QXmlSimpleReader xmlParser;
+		xmlParser.setContentHandler(labHandler);
+
+		QXmlInputSource data;
+		data.setData(message);
+		if(xmlParser.parse(data)) {
+		    command.lab = labHandler->parsedLab();
+			command.type = cbPanelCommand::LAB;
+		} else {
+			return false;
 		}
 	}
 	else
@@ -105,6 +155,30 @@ bool cbPanelHandler::endElement(const QString&, const QString&, const QString& q
 		if (command.type != cbPanelCommand::ROBOTDEL)
 		{
 			cerr << "Missmatched end RobotRemove tag\n";
+			return false;
+		}
+	}
+	else if (tag == "Parameters")
+	{
+		if (command.type != cbPanelCommand::PARAMETERS)
+		{
+			cerr << "Missmatched end Parameters tag\n";
+			return false;
+		}
+	}
+	else if (tag == "Grid")
+	{
+		if (command.type != cbPanelCommand::GRID)
+		{
+			cerr << "Missmatched end Grid tag\n";
+			return false;
+		}
+	}
+	else if (tag == "Lab")
+	{
+		if (command.type != cbPanelCommand::LAB)
+		{
+			cerr << "Missmatched end Lab tag\n";
 			return false;
 		}
 	}

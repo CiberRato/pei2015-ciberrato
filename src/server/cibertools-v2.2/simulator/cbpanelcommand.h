@@ -20,11 +20,19 @@
 #ifndef _CB_PANEL_COMMAND_
 #define _CB_PANEL_COMMAND_
 
+class cbGrid;
+class cbParameters;
+class cbLab;
+
 struct cbPanelCommand
 {
-	enum {UNKNOWN, START, RESTART, STOP, ROBOTDEL} type;
+	enum {UNKNOWN, START, RESTART, STOP, ROBOTDEL,
+            GRID, LAB, PARAMETERS} type;
 	union 
 	{
+        cbParameters *param;
+        cbGrid *grid;
+        cbLab *lab;
 		struct { 
             int id; 
         } robot;

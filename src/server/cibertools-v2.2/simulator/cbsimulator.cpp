@@ -610,7 +610,7 @@ void cbSimulator::CheckIn()
 	while (receptionist->CheckIn())
 	{
 		cbClientForm &form = receptionist->Form();
-		int cnt, cnt2;
+		int cnt;
 		switch (form.type)
 		{
 			case cbClientForm::VIEW:
@@ -1014,6 +1014,22 @@ void cbSimulator::PanelCommands(){
                         }
 						break;
 					}
+				case cbPanelCommand::PARAMETERS:
+					setParameters(command.param);
+					break;
+				case cbPanelCommand::LAB:
+					setLab(command.lab);
+					if(grid != 0) {
+				       buildGraph();
+				       setDistMaxFromGridToTarget();
+					}
+
+					break;
+				case cbPanelCommand::GRID:
+					setGrid(command.grid);
+					buildGraph();
+				    setDistMaxFromGridToTarget();
+					break;
 				case cbPanelCommand::UNKNOWN:
 					break;
 			}
@@ -1254,7 +1270,7 @@ bool cbSimulator::changeLab(QString labFilename)
 	delete source;
 
 	//rebuild graph
-	if(grid!=0) {
+	if(grid != 0) {
        buildGraph();
        setDistMaxFromGridToTarget();
 	}
@@ -1340,8 +1356,8 @@ bool cbSimulator::changeParameters(QString paramFilename)
     }
     if ((source = new QXmlInputSource(&srcFile)) == 0)
 	{
-        cerr << "Fail sourcing lab file\n";
-        gui->appendMessage("Fail sourcing lab file", true);
+        cerr << "Fail sourcing parameters file\n";
+        gui->appendMessage("Fail sourcing parameters file", true);
 		return false;
 	}
 

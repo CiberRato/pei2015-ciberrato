@@ -24,6 +24,7 @@
 #include "cbparamhandler.h"
 
 #include <qstring.h>
+#include <iostream>
 
 cbParamHandler::cbParamHandler(cbParameters *parStart)
 {
@@ -35,7 +36,6 @@ cbParamHandler::cbParamHandler(cbParameters *parStart)
  
 bool cbParamHandler::startDocument()
 {
-//	param = 0;
     return TRUE;
 }
 
@@ -49,12 +49,10 @@ bool cbParamHandler::startElement( const QString&, const QString&, const QString
 {
 	/* process begin tag */
 	const QString &tag = qName;
-
 	if (param==0 && tag != "Parameters") return false;
 
 	if (tag == "Parameters")
 	{
-//		param = new cbParameters;
 		/* process attributes */
 		const QString &simtime = attr.value(QString("SimTime"));
 		if (!simtime.isNull()) param->simTime = simtime.toUInt();
@@ -120,6 +118,7 @@ bool cbParamHandler::startElement( const QString&, const QString&, const QString
 
 		const QString &beaconAperture = attr.value(QString("BeaconAperture"));
 		if (!beaconAperture.isNull()) param->beaconAperture = beaconAperture.toDouble();
+
 
         //Scores
         const QString &returnTimePenalty = attr.value(QString("ReturnTimePenalty"));

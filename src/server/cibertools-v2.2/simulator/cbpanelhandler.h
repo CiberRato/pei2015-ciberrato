@@ -21,7 +21,7 @@
 #define _CB_PANEL_HANDLER_
 
 #include <qxml.h>
-
+#include <string>
 #include "cbpanelcommand.h"
 
 class QString;
@@ -37,7 +37,8 @@ class cbPanel;
 class cbPanelHandler : public QXmlDefaultHandler
 {
 public:
-	cbPanelHandler();
+	cbPanelHandler(QString);
+    cbPanelHandler();
 
     bool startDocument();
     bool endDocument();
@@ -48,6 +49,7 @@ public:
 	cbPanelCommand	&Command();
 
 private:
+    QString message;
 	cbPanelCommand	command;
 };                   
 

@@ -22,7 +22,6 @@
 #define CBPANEL_H
 
 #include "cbclient.h"
-#include "cbpanelhandler.h"
 #include "cbpanelcommand.h"
 
 class cbPanel : public cbClient
@@ -32,8 +31,6 @@ public:
 	~cbPanel();
 
     virtual bool readCommand(cbPanelCommand *command);
-protected:
-    cbPanelHandler handler;
 };
 
 #endif
