@@ -46,6 +46,12 @@ bool cbPanelHandler::startElement(const QString&, const QString&, const QString&
 {
 	/* process begin tag */
 	const QString &tag = qName;
+	/* skip all inner tags of grid and lab, they're 
+		being checked by another parser */
+	if (command.type == cbPanelCommand::LAB ||
+		command.type == cbPanelCommand::GRID ||
+		command.type == cbPanelCommand::PARAMETERS)
+		return true;
 	if (tag == "Start")
 	{
 		command.type = cbPanelCommand::START;
@@ -80,9 +86,11 @@ bool cbPanelHandler::startElement(const QString&, const QString&, const QString&
 		} else {
 			return false;
 		}
+
 	}
 	else if (tag == "Grid")
 	{
+		command.type = cbPanelCommand::GRID;
 		cbGridHandler *gridHandler = new cbGridHandler();
 		QXmlSimpleReader xmlParser;
 		xmlParser.setContentHandler(gridHandler);
@@ -91,22 +99,22 @@ bool cbPanelHandler::startElement(const QString&, const QString&, const QString&
 		data.setData(message);
 		if(xmlParser.parse(data)) {
 		    command.grid = gridHandler->parsedGrid();
-			command.type = cbPanelCommand::GRID;
 		} else {
 			return false;
 		}
 	}
 	else if (tag == "Lab")
 	{
+		command.type = cbPanelCommand::LAB;
 		cbLabHandler *labHandler = new cbLabHandler();
 		QXmlSimpleReader xmlParser;
 		xmlParser.setContentHandler(labHandler);
 
 		QXmlInputSource data;
 		data.setData(message);
+	
 		if(xmlParser.parse(data)) {
 		    command.lab = labHandler->parsedLab();
-			command.type = cbPanelCommand::LAB;
 		} else {
 			return false;
 		}
@@ -121,9 +129,14 @@ bool cbPanelHandler::startElement(const QString&, const QString&, const QString&
 
 bool cbPanelHandler::endElement(const QString&, const QString&, const QString& qName)
 {
-	//cout << "cbPanelHandler::endElement:: " << qName << endl;
 	/* process end tag */
 	const QString &tag = qName;
+	/* skip all inner tags of grid and lab, they're 
+		being checked by another parser */
+	if ((tag != "Lab"  && command.type == cbPanelCommand::LAB)  ||
+		(tag != "Grid" && command.type == cbPanelCommand::GRID) ||
+		(tag != "Parameters" && command.type == cbPanelCommand::PARAMETERS))
+		return true;
 	if (tag == "Start")
 	{
 		if (command.type != cbPanelCommand::START)
@@ -177,13 +190,13 @@ bool cbPanelHandler::endElement(const QString&, const QString&, const QString& q
 		if (command.type != cbPanelCommand::LAB)
 		{
 			cerr << "Missmatched end Lab tag\n";
-			return false;
+			//return false;
 		}
 	}
 	else
 	{
 		cerr << "Unknown tag\n";
-		return false;
+		//return false;
 	}
     return true;
 }
