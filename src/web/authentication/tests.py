@@ -26,7 +26,7 @@ class AuthenticationTestCase(TestCase):
 
         url = "/api/v1/accounts/"
         response = client.get(url)
-        rsp = response.data
+        rsp = response.data['results']
         del rsp[0]['updated_at']
         del rsp[0]['created_at']
         self.assertEqual(rsp, [OrderedDict(

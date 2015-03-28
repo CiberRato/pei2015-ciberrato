@@ -57,7 +57,7 @@ class GroupsModelsTestCase(TestCase):
 
         # only one group is stored
         response = client.get(url)
-        self.assertEqual(response.data, [{'name': u'XPTO', 'max_members': 10}])
+        self.assertEqual(response.data, OrderedDict([(u'count', 1), (u'next', None), (u'previous', None), (u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)])])]))
 
         # create a group
         data = {'name': 'TestGroup', 'max_members': 10}
@@ -69,8 +69,7 @@ class GroupsModelsTestCase(TestCase):
         # only two groups must be stored
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO'), ('max_members', 10)]),
-                                         OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
+        self.assertEqual(response.data, OrderedDict([(u'count', 2), (u'next', None), (u'previous', None), (u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)]), OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])]))
 
         # only two groups must be admin
         url = "/api/v1/groups/user_admin/gipmon/"

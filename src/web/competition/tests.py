@@ -169,7 +169,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
 
         # create a agent for group, without code first
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -177,7 +177,7 @@ class AuthenticationTestCase(TestCase):
                          OrderedDict([('agent_name', u'KAMIKAZE'), ('is_virtual', False), ('group_name', u'XPTO3')]))
 
         # get agents by group
-        url = "/api/v1/competitions/agents_by_group/XPTO3/"
+        url = "/api/v1/agents/agents_by_group/XPTO3/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = response.data[0]
@@ -194,7 +194,7 @@ class AuthenticationTestCase(TestCase):
              ('group_name', u'XPTO3')]))
 
         # get agents by user
-        url = "/api/v1/competitions/agents_by_user/gipmon/"
+        url = "/api/v1/agents/agents_by_user/gipmon/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = response.data[0]
@@ -211,7 +211,7 @@ class AuthenticationTestCase(TestCase):
              ('group_name', u'XPTO3')]))
 
         # get the agent information about the agent
-        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
 
@@ -230,42 +230,42 @@ class AuthenticationTestCase(TestCase):
 
 
         # upload agent code
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Python"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&language=Python"
         f = open('media/tests_files/myrob_do.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
         # delete uploaded file
-        url = "/api/v1/competitions/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py"
+        url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=C"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&language=C"
         f = open('media/tests_files/main.c', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=cplusplus"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&language=cplusplus"
         f = open('media/tests_files/main.cpp', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/upload/agent/?agent_name=KAMIKAZE&language=Java"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&language=Java"
         f = open('media/tests_files/main.java', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/competitions/agent_files/KAMIKAZE/"
+        url = "/api/v1/agents/agent_files/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)
 
-        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -280,7 +280,7 @@ class AuthenticationTestCase(TestCase):
              ('last_name', u'Ferreira')]), 'language': 'Java', 'is_virtual': False,
                                'group_name': u'XPTO3'})
 
-        url = "/api/v1/competitions/allowed_languages/"
+        url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.data),
@@ -307,7 +307,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
 
         # see the information about the agent
-        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -508,7 +508,7 @@ class AuthenticationTestCase(TestCase):
             self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
 
         # get simulation for simulate
-        url = "/api/v1/competitions/get_simulation/" + identifier + "/"
+        url = "/api/v1/simulations/get_simulation/" + identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = response.data
@@ -521,7 +521,7 @@ class AuthenticationTestCase(TestCase):
 
         # save simulation logs (only server by server)
         f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
-        url = "/api/v1/competitions/simulation_log/"
+        url = "/api/v1/simulations/simulation_log/"
         data = {'simulation_identifier': identifier, 'log_json': f}
         response = client.post(url, data)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
@@ -602,12 +602,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {u'detail': u'Not found.'})
 
         # destroy the agent
-        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent has been deleted"})
 
-        url = "/api/v1/competitions/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data, {u'detail': u'Not found.'})
@@ -846,7 +846,7 @@ class AuthenticationTestCase(TestCase):
                          [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', False)])])
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -858,7 +858,7 @@ class AuthenticationTestCase(TestCase):
         a1.save()
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -870,7 +870,7 @@ class AuthenticationTestCase(TestCase):
         a2.save()
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE3', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -882,7 +882,7 @@ class AuthenticationTestCase(TestCase):
         a3.save()
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE4', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -894,7 +894,7 @@ class AuthenticationTestCase(TestCase):
         a4.save()
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE5', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -906,7 +906,7 @@ class AuthenticationTestCase(TestCase):
         a5.save()
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE6', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -1004,7 +1004,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The group has enrolled.'})
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
@@ -1016,7 +1016,7 @@ class AuthenticationTestCase(TestCase):
         a1.save()
 
         # create a agent for group
-        url = "/api/v1/competitions/agent/"
+        url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_virtual': False}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)

@@ -92,13 +92,15 @@ router_agents.register(r'agent_files', GetAgentsFiles)
 # SIMULATION URL's
 router_simulations = routers.SimpleRouter()
 router_simulations.register(r'simulation_log', SaveLogs)
-router_competitions.register(r'get_simulation', GetSimulation)
+router_simulations.register(r'get_simulation', GetSimulation)
 
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/groups/', include(router_groups.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
+                       url(r'^api/v1/agents/', include(router_agents.urls)),
+                       url(r'^api/v1/simulations/', include(router_simulations.urls)),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
