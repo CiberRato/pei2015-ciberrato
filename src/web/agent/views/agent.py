@@ -13,6 +13,7 @@ from ..simplex import AgentSimplex
 
 from authentication.models import Group, Account
 from groups.permissions import IsAdminOfGroup
+from competition.serializers import CompetitionSerializer
 
 
 class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -125,5 +126,27 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
         serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = CompetitionSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of competitions that agent is associated
+        B{URL:} ../api/v1/agents/agent_competitions/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+
+        agent = get_object_or_404(Agent.objects.all(), username=kwargs.get('pk'))
+        serializer = self.serializer_class([ac.competition for ac in agent.competitionagent_set], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

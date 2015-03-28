@@ -629,6 +629,9 @@ class AuthenticationTestCase(TestCase):
                          response.data)
         self.assertEqual(response.status_code, 200)
 
+        # get agent competitions
+        url = ""
+
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
         Round.objects.create(name="R3", parent_competition=c)
