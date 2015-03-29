@@ -83,7 +83,7 @@ class GetAllowedLanguages(views.APIView):
         return Response(JSONRenderer().render(settings.ALLOWED_UPLOAD_LANGUAGES), status=status.HTTP_200_OK)
 
 
-class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
     serializer_class = FileAgentSerializer
 
@@ -189,7 +189,7 @@ class UploadAgent(views.APIView):
                         status=status.HTTP_201_CREATED)
 
 
-class GetAgentFiles(views.APIView):
+class GetAgentFilesSERVER(views.APIView):
     @staticmethod
     def get(request, simulation_id, agent_name):
         # agent_name

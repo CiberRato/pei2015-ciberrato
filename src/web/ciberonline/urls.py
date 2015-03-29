@@ -22,7 +22,7 @@ from competition.views.files import UploadParamListView, UploadGridView, UploadL
 from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
 from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
-from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFiles, GetAgentsFiles, GetAllowedLanguages
+from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, GetAllowedLanguages
 
 from rest_framework import routers
 
@@ -88,7 +88,7 @@ router_agents.register(r'agent', AgentViewSets)
 router_agents.register(r'agents_by_group', AgentsByGroupViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
-router_agents.register(r'agent_files', GetAgentsFiles)
+router_agents.register(r'agent_files', GetAgentFilesSERVER)
 
 # SIMULATION URL's
 router_simulations = routers.SimpleRouter()
@@ -128,7 +128,7 @@ urlpatterns = patterns('',
                            name="Get round file"),
                        # get agent files
                        url(r'^api/v1/agents/agent_file/(?P<simulation_id>.+)/(?P<agent_name>.+)/$',
-                           GetAgentFiles.as_view(),
+                           ListAgentsFiles.as_view(),
                            name="Get agent files"),
 
                        # url(r'^api/v1/', include(router.urls)),
