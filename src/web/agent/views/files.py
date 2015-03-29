@@ -2,7 +2,7 @@ import json
 import tempfile
 import tarfile
 
-from os.path import basename, getsize
+from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -112,6 +112,8 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             class AgentFile:
                 def __init__(self, file):
                     self.file = basename(file)
+                    self.last_modification = getmtime(default_storage.path(file))
+                    self.size = getsize(default_storage.path(file))
                     self.url = "/URL/PARA/SACAR/O/FICHEIRO/"
 
             for f in json.loads(agent.locations):

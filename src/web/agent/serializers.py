@@ -2,6 +2,7 @@ from rest_framework import serializers
 from authentication.serializers import AccountSerializer
 from competition.serializers import RoundSerializer, CompetitionSerializer
 from .models import Agent
+import datetime
 
 
 class AgentSerializer(serializers.ModelSerializer):
@@ -21,5 +22,9 @@ class FileAgentSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
             'file': instance.file,
-            'url': instance.url
+            'url': instance.url,
+            'last_modification': datetime.datetime.fromtimestamp(
+                int(instance.last_modification)
+            ).strftime('%Y-%m-%d %H:%M:%S'),
+            'size': instance.size
         }
