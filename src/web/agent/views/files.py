@@ -189,6 +189,40 @@ class UploadAgent(views.APIView):
                         status=status.HTTP_201_CREATED)
 
 
+class GetAllAgentFiles(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def get(request, agent_name):
+        # agent_name
+        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+
+        # see if user owns the agent
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not agent.locations or len(json.loads(agent.locations)) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent doesn\'t have files.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        temp = tempfile.NamedTemporaryFile()
+        with tarfile.open(temp.name, "w:gz") as tar:
+            for name in json.loads(agent.locations):
+                tar.add(default_storage.path(name), arcname=basename(default_storage.path(name)))
+            tar.close()
+
+        wrapper = FileWrapper(temp)
+        response = HttpResponse(wrapper, content_type="application/x-compressed")
+        response['Content-Disposition'] = 'attachment; filename=' + agent_name + '.tar.gz'
+        response['Content-Length'] = getsize(temp.name)
+        temp.seek(0)
+        return response
+
+
 class GetAgentFilesSERVER(views.APIView):
     @staticmethod
     def get(request, simulation_id, agent_name):
