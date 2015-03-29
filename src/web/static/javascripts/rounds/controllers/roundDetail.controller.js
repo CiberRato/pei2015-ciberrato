@@ -28,13 +28,15 @@
         vm.uploadLab = uploadLab;
         vm.destroy = destroy;
         vm.removeSimulation = removeSimulation;
+        vm.uploadAll = uploadAll;
+        vm.reload = reload;
         activate();
 
         function activate() {
             Round.getSimulations(vm.roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
             Round.getAgents(vm.roundName).then(getAgentsSuccessFn, getAgentsErrorFn);
             Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
-            StreamViewer.get
+            Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
@@ -64,6 +66,18 @@
             }
 
             function getRoundErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+
+            function getRoundFilesSuccessFn(data){
+                vm.files = data.data;
+                vm.grid = vm.files.grid;
+                vm.lab = vm.files.lab;
+                vm.param_list = vm.files.param_list;
+            }
+
+            function getRoundFilesErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
@@ -284,6 +298,33 @@
                 });
                 console.error(data.data);
             }
+        }
+
+        function uploadAll(){
+            var selectedFile1 = document.getElementById('ParamListUpload').files[0];
+            console.log(selectedFile1);
+            var selectedFile2 = document.getElementById('GridUpload').files[0];
+            console.log(selectedFile2);
+            var selectedFile3 = document.getElementById('LabUpload').files[0];
+            console.log(selectedFile3);
+            if(selectedFile1 != undefined){
+                uploadParamList();
+            }
+            if(selectedFile2 != undefined){
+                uploadGrid();
+            }
+            if(selectedFile3 != undefined){
+                uploadLab();
+            }
+
+            $route.reload();
+            $('.modal-backdrop').remove();
+        }
+
+        function reload(){
+            $route.reload();
+            $('.modal-backdrop').remove();
+
         }
 
     }

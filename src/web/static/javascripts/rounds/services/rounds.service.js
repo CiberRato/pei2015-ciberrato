@@ -24,7 +24,8 @@
             getRound: getRound,
             destroy: destroy,
             removeSimulation: removeSimulation,
-            getSimulation: getSimulation
+            getSimulation: getSimulation,
+            getFiles: getFiles
         };
 
         return Round;
@@ -123,6 +124,10 @@
 
         function getSimulation(identifier){
             return $http.get("/api/v1/competitions/simulation/" + identifier + "/");
+        }
+
+        function getFiles(roundName){
+            return $http.get("/api/v1/competitions/round_files/" + roundName + "/");
         }
 
     }
