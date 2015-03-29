@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from os.path import basename, getsize
+from django.core.files.storage import default_storage
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -10,7 +12,7 @@ from authentication.serializers import AccountSerializer
 from groups.serializers import GroupSerializer
 
 from ..models import Competition, Round, CompetitionAgent
-from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer
+from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer, RoundFilesSerializer
 from ..permissions import IsAdmin
 from .simplex import RoundSimplex, CompetitionAgentSimplex
 
@@ -47,7 +49,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                                            name=serializer.validated_data['parent_competition_name'])
+                name=serializer.validated_data['parent_competition_name'])
 
             Round.objects.create(name=serializer.validated_data['name'], parent_competition=competition)
 
@@ -246,5 +248,47 @@ class RoundGroupsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
         competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
         competition_groups = [agent.agent.group for agent in competition_agents]
         serializer = self.serializer_class(competition_groups, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Round.objects.all()
+    serializer_class = RoundFilesSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} the files uploaded to the round
+        B{URL:} ../api/v1/competitions/round_files/<round_name>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
+
+        class RoundFiles:
+            def __init__(self, r):
+                if not r.param_list_path:
+                    self.param_list = ('', 0)
+                else:
+                    self.param_list = (
+                    basename(default_storage.path(r.param_list_path)), getsize(default_storage.path(r.param_list_path)))
+
+                if not r.grid_path:
+                    self.grid = ('', 0)
+                else:
+                    self.grid = (
+                        basename(default_storage.path(r.grid_path)), getsize(default_storage.path(r.grid_path)))
+
+                if not r.lab_path:
+                    self.lab = ('', 0)
+                else:
+                    self.lab = (
+                        basename(default_storage.path(r.lab_path)), getsize(default_storage.path(r.lab_path)))
+
+        serializer = self.serializer_class(RoundFiles(r))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
