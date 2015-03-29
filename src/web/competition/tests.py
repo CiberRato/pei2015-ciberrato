@@ -263,6 +263,10 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
+        url = "/api/v1/agents/file/KAMIKAZE/myrob_do.py/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
         # delete uploaded file
         url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py"
         response = client.delete(url)

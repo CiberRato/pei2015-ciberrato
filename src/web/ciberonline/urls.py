@@ -23,7 +23,7 @@ from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
 from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
-    GetAllowedLanguages, GetAllAgentFiles
+    GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
 from rest_framework import routers
 
@@ -130,6 +130,11 @@ urlpatterns = patterns('',
                        # get agent files
                        url(r'^api/v1/agents/agent_file/(?P<simulation_id>.+)/(?P<agent_name>.+)/$',
                            GetAgentFilesSERVER.as_view(),
+                           name="Get agent files SERVER"),
+
+                       # get agent file
+                       url(r'^api/v1/agents/file/(?P<agent_name>.+)/(?P<file_name>.+)/$',
+                           GetAgentFile.as_view(),
                            name="Get agent files SERVER"),
 
                        # get all agent files

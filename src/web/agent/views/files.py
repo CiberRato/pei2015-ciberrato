@@ -114,7 +114,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                     self.file = basename(file)
                     self.last_modification = getmtime(default_storage.path(file))
                     self.size = getsize(default_storage.path(file))
-                    self.url = "/URL/PARA/SACAR/O/FICHEIRO/"
+                    self.url = "/api/v1/agents/file/KAMIKAZE/"+self.file+"/"
 
             for f in json.loads(agent.locations):
                 files += [AgentFile(f)]
@@ -255,3 +255,34 @@ class GetAgentFilesSERVER(views.APIView):
         response['Content-Length'] = getsize(temp.name)
         temp.seek(0)
         return response
+
+
+class GetAgentFile(views.APIView):
+    @staticmethod
+    def get(request, agent_name, file_name):
+        # agent_name
+        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+
+        if not agent.locations or len(json.loads(agent.locations)) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent doesn\'t have files.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # see if user owns the agent
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if agent.locations:
+            for f in json.loads(agent.locations):
+                if file_name == basename(f):
+                    wrapper = FileWrapper(default_storage.open(f))
+                    response = HttpResponse(wrapper, content_type="application/x-compressed")
+                    response['Content-Disposition'] = 'attachment; filename=' + basename(f) + '.tar.gz'
+                    response['Content-Length'] = getsize(default_storage.path(f))
+                    return response
+
+        return Response({'status': 'Bad request',
+                         'message': 'The agent doesn\'t have the file that you requested!'},
+                        status=status.HTTP_400_BAD_REQUEST)
