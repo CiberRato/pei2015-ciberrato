@@ -469,6 +469,12 @@ class AuthenticationTestCase(TestCase):
             [('simulation_identifier', u'' + identifier), ('agent_name', u'KAMIKAZE'), ('round_name', u'R1'),
              ('pos', 1)])])
 
+        # see round files
+        url = "/api/v1/competitions/round_files/R1/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'param_list': {'name': '', 'size': 0}, 'grid': {'name': '', 'size': 0}, 'lab': {'name': '', 'size': 0}})
+
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
         f = open('media/tests_files/Param.xml', 'r')
@@ -489,6 +495,14 @@ class AuthenticationTestCase(TestCase):
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        # see round files
+        url = "/api/v1/competitions/round_files/R1/"
+        response = client.get(path=url)
+        #print response.data
+        #print response.status_code
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)
 
         # see if the files were registred
         url = "/api/v1/competitions/round_admin/R1/"
@@ -675,7 +689,8 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data,
-                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Competition"}])
+                         [{"name": "C1", "type_of_competition": "Collaborative",
+                           "state_of_competition": "Competition"}])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()

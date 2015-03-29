@@ -13,7 +13,7 @@ from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, Co
     MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
 from competition.views.cp_agent import AssociateAgent, AssociateAgentAdmin, AgentsAssociated
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
-    RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet, RoundViewAdminSet
+    RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet, RoundViewAdminSet, RoundFile
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
     SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents,  StartSimulation
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, CompetitionChangeState
@@ -70,6 +70,7 @@ router_competitions.register(r'valid_round_groups', RoundGroups)
 router_competitions.register(r'not_eligible_round_agents', AgentsNotEligible)
 router_competitions.register(r'not_eligible_round_participants', RoundParticipantsNotEligible)
 router_competitions.register(r'not_eligible_round_groups', RoundGroupsNotEligible)
+router_competitions.register(r'round_files', RoundFile)
 # Simulation
 router_competitions.register(r'simulation', SimulationViewSet)
 router_competitions.register(r'associate_agent_to_simulation', AssociateAgentToSimulation)

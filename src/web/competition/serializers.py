@@ -95,3 +95,21 @@ class SimulationAgentSerializer(serializers.ModelSerializer):
         model = LogSimulationAgent
         fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos',)
         read_only_fields = ()
+
+
+class RoundFilesSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'param_list': {
+                'name': instance.param_list[0],
+                'size': instance.param_list[1]
+            },
+            'grid': {
+                'name': instance.grid[0],
+                'size': instance.grid[1]
+            },
+            'lab': {
+                'name': instance.lab[0],
+                'size': instance.lab[1]
+            }
+        }
