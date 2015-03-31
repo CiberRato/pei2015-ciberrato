@@ -21,7 +21,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
-                                <td>{{value.file}}</td>
+                                <td><a href="/api/v1/agents/file/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
                                 <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
                             </tbody>

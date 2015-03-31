@@ -20,6 +20,7 @@
         function activate() {
             Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
             Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
+            Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
 
 
             function getAgentSuccessFn(data) {
@@ -49,6 +50,15 @@
             }
 
             function getCompetitionsErrorFn(data){
+                console.error(data.data);
+                $location.url('/panel/');
+            }
+
+            function getLanguagesSuccessFn(data){
+                vm.languages = data.data;
+            }
+
+            function getLanguagesErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -120,7 +130,7 @@
 
                 function associateErrorFn(data){
                     console.error(data.data);
-                    $.jGrowl("Agent \'" + agentName + "\' can't be associated twice to one competition.", {
+                    $.jGrowl("Agent \'" + agentName + "\' can't be associated to the competition.", {
                         life: 2500,
                         theme: 'btn-danger'
                     });
