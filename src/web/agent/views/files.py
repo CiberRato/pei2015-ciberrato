@@ -1,6 +1,7 @@
 import json
 import tempfile
 import tarfile
+import mimetypes
 
 from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
@@ -278,8 +279,8 @@ class GetAgentFile(views.APIView):
             for f in json.loads(agent.locations):
                 if file_name == basename(f):
                     wrapper = FileWrapper(default_storage.open(f))
-                    response = HttpResponse(wrapper, content_type="application/x-compressed")
-                    response['Content-Disposition'] = 'attachment; filename=' + basename(f) + '.tar.gz'
+                    response = HttpResponse(wrapper, content_type=mimetypes.guess_type(f))
+                    response['Content-Disposition'] = 'attachment; filename=' + basename(f)
                     response['Content-Length'] = getsize(default_storage.path(f))
                     return response
 
