@@ -1,6 +1,7 @@
 import json
 import tempfile
 import tarfile
+from zipfile import ZipFile
 import mimetypes
 
 from os.path import basename, getsize, getmtime
@@ -211,14 +212,14 @@ class GetAllAgentFiles(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         temp = tempfile.NamedTemporaryFile()
-        with tarfile.open(temp.name, "w:gz") as tar:
+        with ZipFile(temp.name, 'w') as z:
             for name in json.loads(agent.locations):
-                tar.add(default_storage.path(name), arcname=basename(default_storage.path(name)))
-            tar.close()
+                z.write(default_storage.path(name), arcname=basename(default_storage.path(name)))
+            z.close()
 
         wrapper = FileWrapper(temp)
-        response = HttpResponse(wrapper, content_type="application/x-compressed")
-        response['Content-Disposition'] = 'attachment; filename=' + agent_name + '.tar.gz'
+        response = HttpResponse(wrapper, content_type="application/zip")
+        response['Content-Disposition'] = 'attachment; filename=' + agent_name + '.zip'
         response['Content-Length'] = getsize(temp.name)
         temp.seek(0)
         return response
