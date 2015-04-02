@@ -84,12 +84,13 @@ class GetAllowedLanguages(views.APIView):
         B{URL:} ../api/v1/agents/allowed_languages/
         """
         class Language:
-            def __init__(self, name):
+            def __init__(self, name, value):
                 self.name = name
+                self.value = value
 
         languages = []
         for key, value in dict(settings.ALLOWED_UPLOAD_LANGUAGES).iteritems():
-            languages += [Language(value)]
+            languages += [Language(key, value)]
 
         serializer = self.serializer_class(languages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

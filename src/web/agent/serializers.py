@@ -33,5 +33,6 @@ class FileAgentSerializer(serializers.BaseSerializer):
 class LanguagesSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
-            'name': instance.name
+            'name': instance.name,
+            'value': instance.value
         }
