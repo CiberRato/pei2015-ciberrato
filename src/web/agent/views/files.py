@@ -16,7 +16,7 @@ from competition.models import Simulation
 
 from authentication.models import GroupMember
 
-from ..serializers import AgentSerializer, FileAgentSerializer
+from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent
 
 from rest_framework import permissions
@@ -73,16 +73,26 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
 
 
 class GetAllowedLanguages(views.APIView):
+    serializer_class = LanguagesSerializer
+
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    @staticmethod
-    def get(request):
+    def get(self, request):
         """
         B{Get} the allowed languages
         B{URL:} ../api/v1/agents/allowed_languages/
         """
-        return Response(JSONRenderer().render(settings.ALLOWED_UPLOAD_LANGUAGES), status=status.HTTP_200_OK)
+        class Language:
+            def __init__(self, name):
+                self.name = name
+
+        languages = []
+        for key, value in dict(settings.ALLOWED_UPLOAD_LANGUAGES).iteritems():
+            languages += [Language(value)]
+
+        serializer = self.serializer_class(languages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

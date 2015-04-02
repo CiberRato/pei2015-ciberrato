@@ -28,3 +28,10 @@ class FileAgentSerializer(serializers.BaseSerializer):
             ).strftime('%Y-%m-%d %H:%M:%S'),
             'size': instance.size
         }
+
+
+class LanguagesSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'name': instance.name
+        }
