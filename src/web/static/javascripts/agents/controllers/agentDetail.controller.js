@@ -66,11 +66,13 @@
 
         function uploadFile() {
             var language = document.getElementById("selector_language").value;
+            console.log(language);
             var selectedFile = document.getElementById('fileupload').files[0];
 
-            Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
-
-            function uploadSuccessFn(){
+            if(selectedFile != undefined) {
+                Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            }
+            function uploadSuccessFn() {
 
                 $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                     life: 2500,
@@ -79,7 +81,7 @@
                 $route.reload();
             }
 
-            function uploadErrorFn(data){
+            function uploadErrorFn(data) {
                 $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
                     life: 2500,
                     theme: 'btn-danger'
