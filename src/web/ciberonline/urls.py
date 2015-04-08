@@ -73,12 +73,12 @@ router_competitions.register(r'not_eligible_round_participants', RoundParticipan
 router_competitions.register(r'not_eligible_round_groups', RoundGroupsNotEligible)
 router_competitions.register(r'round_files', RoundFile)
 # Simulation
-router_competitions.register(r'simulation', SimulationViewSet)
-router_competitions.register(r'associate_agent_to_simulation', AssociateAgentToSimulation)
-router_competitions.register(r'simulations_by_agent', SimulationByAgent)
-router_competitions.register(r'simulations_by_round', SimulationByRound)
-router_competitions.register(r'simulations_by_competition', SimulationByCompetition)
-router_competitions.register(r'simulation_agents', GetSimulationAgents)
+router_competitions.register(r'trial', SimulationViewSet)
+router_competitions.register(r'associate_agent_to_trial', AssociateAgentToSimulation)
+router_competitions.register(r'trials_by_agent', SimulationByAgent)
+router_competitions.register(r'trials_by_round', SimulationByRound)
+router_competitions.register(r'trials_by_competition', SimulationByCompetition)
+router_competitions.register(r'trial_agents', GetSimulationAgents)
 # Simulation => Machine to Machine
 
 # COMPETITIONS URLs#

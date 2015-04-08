@@ -28,8 +28,8 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} one simulation for one round
-        B{URL:} ../api/v1/competitions/simulation/
+        B{Create} one trial for one round
+        B{URL:} ../api/v1/competitions/trial/
 
         @type  round_name: str
         @param round_name: The round name
@@ -48,11 +48,11 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the simulation information
-        B{URL:} ../api/v1/competitions/simulation/<identifier>/
+        B{Get} the trial information
+        B{URL:} ../api/v1/competitions/trial/<identifier>/
 
         @type  identifier: str
-        @param identifier: The simulation identifier
+        @param identifier: The trial identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class(SimulationSimplex(simulation))
@@ -61,11 +61,11 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Destroy} the simulation information
-        B{URL:} ../api/v1/competitions/simulation/<identifier>/
+        B{Destroy} the trial information
+        B{URL:} ../api/v1/competitions/trial/<identifier>/
 
         @type  identifier: str
-        @param identifier: The simulation identifier
+        @param identifier: The trial identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
 
@@ -91,11 +91,11 @@ class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the simulation competition agents
-        B{URL:} ../api/v1/competitions/simulation_agents/<identifier>/
+        B{Get} the trial competition agents
+        B{URL:} ../api/v1/competitions/trial_agents/<identifier>/
 
         @type  identifier: str
-        @param identifier: The simulation identifier
+        @param identifier: The trial identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
         simulations = []
@@ -118,8 +118,8 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
 
     def create(self, request, *args, **kwargs):
         """
-        B{Associate} one agent to one simulation
-        B{URL:} ../api/v1/competitions/associate_agent_to_simulation/
+        B{Associate} one agent to one trial
+        B{URL:} ../api/v1/competitions/associate_agent_to_trial/
 
         @type  round_name: str
         @param round_name: The round name
@@ -200,8 +200,8 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Destroy} one agent to one simulation
-        B{URL:} ../api/v1/competitions/associate_agent_to_simulation/<simulation_identifier>/
+        B{Destroy} one agent to one trial
+        B{URL:} ../api/v1/competitions/associate_agent_to_trial/<trial_identifier>/
 
         @type  round_name: str
         @param round_name: The round name
@@ -232,8 +232,8 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the agent simulations
-        B{URL:} ../api/v1/competitions/simulations_by_agent/<agent_name>/
+        B{Get} the agent trials
+        B{URL:} ../api/v1/competitions/trials_by_agent/<agent_name>/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -259,8 +259,8 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the round simulations
-        B{URL:} ../api/v1/competitions/simulations_by_round/<round_name>/
+        B{Get} the round trials
+        B{URL:} ../api/v1/competitions/trials_by_round/<round_name>/
 
         @type  round_name: str
         @param round_name: The round name
@@ -280,8 +280,8 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the competition simulations
-        B{URL:} ../api/v1/competitions/simulations_by_competition/<competition_name>/
+        B{Get} the competition trials
+        B{URL:} ../api/v1/competitions/trials_by_competition/<competition_name>/
 
         @type  competition_name: str
         @param competition_name: The competition name
@@ -305,14 +305,14 @@ class StartSimulation(views.APIView):
     def post(request):
         """
         B{Start} the simulation
-        B{URL:} ../api/v1/competitions/start_simulation/
+        B{URL:} ../api/v1/competitions/start_trial/
 
-        @type  simulation_id: str
-        @param simulation_id: The simulation id
+        @type  trial_id: str
+        @param trial_id: The trial id
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('simulation_id', ''))
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
         if simulation_waiting(simulation):
-            params = {'simulation_identifier': simulation.identifier}
+            params = {'trial_id': simulation.identifier}
 
             try:
                 requests.post(settings.START_SIM_ENDPOINT, params)
@@ -321,10 +321,10 @@ class StartSimulation(views.APIView):
                                  'message': 'The simulator appears to be down!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({'status': 'Simulation started',
-                             'message': 'Please wait that the simulation starts at the simulator!'},
+            return Response({'status': 'Trial started',
+                             'message': 'Please wait that the trial starts at the simulator!'},
                             status=status.HTTP_200_OK)
         else:
             return Response({'status': 'Bad Request',
-                             'message': 'The simulation must be in state: waiting!'},
+                             'message': 'The trial must be in state: waiting!'},
                             status=status.HTTP_400_BAD_REQUEST)

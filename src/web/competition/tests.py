@@ -291,8 +291,9 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.data),
-                         [["Python", "Python"], ["C", "C"], ["C++", "cplusplus"], ["Java", "Java"]])
+        self.assertEqual(response.data,
+                         [{'name': 'Python', 'value': 'Python'}, {'name': 'C', 'value': 'C'},
+                          {'name': 'Java', 'value': 'Java'}, {'name': 'C++', 'value': 'cplusplus'}])
 
         # make the code valid, this operation only can be made by the script (server validation)
         agent = Agent.objects.get(agent_name='KAMIKAZE')
@@ -405,7 +406,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
 
         # create simulation (only by admin)
-        url = "/api/v1/competitions/simulation/"
+        url = "/api/v1/competitions/trial/"
         data = {'round_name': 'R1'}
         response = client.post(path=url, data=data)
         rsp = dict(response.data)
@@ -417,7 +418,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
 
         # retrieve the simulation data
-        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        url = "/api/v1/competitions/trial/" + identifier + "/"
         response = client.get(url)
         rsp = dict(response.data)
         del rsp['created_at']
@@ -430,7 +431,7 @@ class AuthenticationTestCase(TestCase):
         competition_agent.save()
 
         # associate an agent to the simulation (only can be made by an admin)
-        url = "/api/v1/competitions/associate_agent_to_simulation/"
+        url = "/api/v1/competitions/associate_agent_to_trial/"
         data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE', 'pos': 1}
         response = client.post(path=url, data=data)
         self.assertEqual(dict(response.data),
@@ -440,7 +441,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(LogSimulationAgent.objects.all()), 1)
 
         # get the simulations by agent
-        url = "/api/v1/competitions/simulations_by_agent/KAMIKAZE/"
+        url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/"
         response = client.get(url)
         rsp = response.data[0]
         del rsp['created_at']
@@ -450,7 +451,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by round
-        url = "/api/v1/competitions/simulations_by_round/R1/"
+        url = "/api/v1/competitions/trials_by_round/R1/"
         response = client.get(url)
         rsp = response.data[0]
         del rsp['created_at']
@@ -460,7 +461,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by competition
-        url = "/api/v1/competitions/simulations_by_competition/C1/"
+        url = "/api/v1/competitions/trials_by_competition/C1/"
         response = client.get(url)
         rsp = response.data[0]
         del rsp['created_at']
@@ -470,7 +471,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the simulation groups
-        url = "/api/v1/competitions/simulation_agents/" + identifier + "/"
+        url = "/api/v1/competitions/trial_agents/" + identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict(
@@ -520,12 +521,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(dict(response.data)), 5)
 
         # start simulation
-        url = "/api/v1/simulations/start/"
-        data = {'simulation_id': identifier}
+        url = "/api/v1/competitions/start_trial/"
+        data = {'trial_id': identifier}
         response = client.post(path=url, data=data)
         if response.status_code == 200:
-            self.assertEqual(response.data, {'status': 'Simulation started',
-                                             'message': 'Please wait that the simulation starts at the simulator!'})
+            self.assertEqual(response.data, {'status': 'Trial started',
+                                             'message': 'Please wait that the trial starts at the simulator!'})
         elif response.status_code == 400:
             self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
 
@@ -559,7 +560,7 @@ class AuthenticationTestCase(TestCase):
         simulation.log_json.delete()
 
         # delete simulation
-        url = "/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/?round_name=R1&agent_name=KAMIKAZE"
+        url = "/api/v1/competitions/associate_agent_to_trial/" + identifier + "/?round_name=R1&agent_name=KAMIKAZE"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation agent has been deleted!'})
@@ -613,13 +614,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
 
         # delete the simulation data
-        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        url = "/api/v1/competitions/trial/" + identifier + "/"
         response = client.delete(url)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation has been deleted'})
         self.assertEqual(response.status_code, 200)
 
         # retrieve the simulation data
-        url = "/api/v1/competitions/simulation/" + identifier + "/"
+        url = "/api/v1/competitions/trial/" + identifier + "/"
         response = client.get(url)
         self.assertEqual(response.data, {u'detail': u'Not found.'})
 
