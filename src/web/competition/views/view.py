@@ -163,7 +163,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                               mixins.ListModelMixin, viewsets.GenericViewSet):
+                               mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = TypeOfCompetition.objects.all()
     serializer_class = TypeOfCompetitionSerializer
@@ -214,4 +214,18 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        pass
+        """
+        B{Destroy} the type of competition
+        B{URL:} ../api/v1/competitions/type_of_competition/<type_of_competition_name>/
+
+        @type  type_of_competition_name: str
+        @param type_of_competition_name: The type_of_competition name
+        """
+        queryset = TypeOfCompetition.objects.all()
+        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk'))
+
+        type_of_competition.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The type of competition has been deleted'},
+                        status=status.HTTP_200_OK)

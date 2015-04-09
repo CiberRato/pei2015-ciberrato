@@ -56,6 +56,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, OrderedDict(
             [(u'name', u'IIA'), (u'number_teams_for_trial', 1), (u'number_agents_by_grid', 1)]))
 
+        # delete type of competition
+        url = "/api/v1/competitions/type_of_competition/IIA/"
+        response = client.delete(url)
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The type of competition has been deleted'})
+        self.assertEqual(len(TypeOfCompetition.objects.all()), 2)
+
         # create competition
         url = "/api/v1/competitions/crud/"
         data = {'name': 'C2', 'type_of_competition': competitiva.name}
