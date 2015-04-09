@@ -55,7 +55,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         @param competition_name: The competition name
         """
         queryset = Competition.objects.all()
-        competition = get_object_or_404(queryset, name=kwargs.get('pk'))
+        competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
         serializer = self.serializer_class(competition)
 
         return Response(serializer.data)
@@ -69,7 +69,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         @param competition_name: The competition name
         """
         queryset = Competition.objects.all()
-        competition = get_object_or_404(queryset, name=kwargs.get('pk'))
+        competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
         for r in competition.round_set.all():
             r.delete()
@@ -101,7 +101,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+            competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
             competition.state_of_competition = serializer.data.get('state_of_competition', '')
             competition.save()
 
@@ -129,9 +129,9 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         """
         state = dict(Competition.STATE)
 
-        if kwargs.get('pk') in state:
-            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk'))
-        elif kwargs.get('pk') == 'All':
+        if kwargs.get('pk', '') in state:
+            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', ''))
+        elif kwargs.get('pk', '') == 'All':
             queryset = Competition.objects.all()
         else:
             return Response({'status': 'Bad Request',
@@ -157,7 +157,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  competition_name: string
         @param competition_name: The competition name
         """
-        competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+        competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
         serializer = self.serializer_class([RoundSimplex(r) for r in competition.round_set.all()], many=True)
         return Response(serializer.data)
 
@@ -208,10 +208,40 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         @param type_of_competition_name: The type_of_competition name
         """
         queryset = TypeOfCompetition.objects.all()
-        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk'))
+        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
         serializer = self.serializer_class(type_of_competition)
 
         return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the type of competition
+        B{URL:} ../api/v1/competitions/type_of_competition/<old_type_of_competition_name>/
+
+        @type  old_name: str
+        @param old_name: The type of competition name
+
+        @type  name: str
+        @param name: The type of competition name
+        @type  number_teams_for_trial: Integer
+        @type  number_teams_for_trial: The number of teams allowed by trial
+        @type  number_agents_by_grid: Integer
+        @param number_agents_by_grid: For each team the number of agents allowed by trial
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            type_of_competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+            type_of_competition.name = serializer.validated_data['name']
+            type_of_competition.number_teams_for_trial = serializer.validated_data['number_teams_for_trial']
+            type_of_competition.number_agents_by_grid = serializer.validated_data['number_agents_by_grid']
+            type_of_competition.save()
+
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'The type of competition name could not be update with that information'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -222,7 +252,7 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         @param type_of_competition_name: The type_of_competition name
         """
         queryset = TypeOfCompetition.objects.all()
-        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk'))
+        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
         type_of_competition.delete()
 
