@@ -68,19 +68,47 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                          'message': 'The pole position could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
+    def retrieve(self, request, *args, **kwargs):
+        pass
+
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} the type of competition
-        B{URL:} ../api/v1/competitions/type_of_competition/<type_of_competition_name>/
+        B{URL:} ../api/v1/competitions/pole_position/<competition_name>/?group_name=<group_name>
 
-        @type  type_of_competition_name: str
-        @param type_of_competition_name: The type_of_competition name
+        @type  competition_name: str
+        @param competition_name: The type of competition name
+        @type  group_name: str
+        @type  group_name: The group name
         """
-        queryset = TypeOfCompetition.objects.all()
-        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
 
-        type_of_competition.delete()
+        if competition.state_of_competition == 'Past':
+            return Response({'status': 'Bad Request',
+                             'message': 'The competition is in \'Past\' state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+
+        if len(GroupMember.objects.filter(group=group, account=request.user)) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        group_enrolled = GroupEnrolled.objects.filter(group=group, competition=competition)
+        if len(group_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not group_enrolled[0].valid:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition with valid inscription.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        pole = get_object_or_404(PolePosition.objects.all(), competition=competition, group=group)
+        pole.delete()
 
         return Response({'status': 'Deleted',
-                         'message': 'The type of competition has been deleted'},
+                         'message': 'The pole position has been deleted'},
                         status=status.HTTP_200_OK)

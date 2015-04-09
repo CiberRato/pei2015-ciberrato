@@ -364,6 +364,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
+        # delete pole position
+        url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The pole position has been deleted"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(PolePosition.objects.all()), 0)
+
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
         data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE'}
