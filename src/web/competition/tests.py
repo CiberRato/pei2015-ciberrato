@@ -43,6 +43,13 @@ class AuthenticationTestCase(TestCase):
         competitiva = TypeOfCompetition.objects.get(name='Competitive')
         colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
 
+        # create new type of competition
+        url = "/api/v1/competitions/type_of_competition/"
+        data = {'name': 'IIA', 'number_teams_for_trial': 1, 'number_agents_by_grid': 1}
+        response = client.post(url, data)
+        self.assertEqual(response.data, OrderedDict(
+            [(u'name', u'IIA'), (u'number_teams_for_trial', 1), (u'number_agents_by_grid', 1)]))
+
         # create competition
         url = "/api/v1/competitions/crud/"
         data = {'name': 'C2', 'type_of_competition': competitiva.name}
@@ -525,7 +532,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round_files/R1/"
         response = client.get(path=url)
         # print response.data
-        #print response.status_code
+        # print response.status_code
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)
 
