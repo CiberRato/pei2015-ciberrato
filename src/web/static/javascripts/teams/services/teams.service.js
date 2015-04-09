@@ -20,7 +20,8 @@
             update: update,
             getTeam: getTeam,
             destroy: destroy,
-            getUserAdmin: getUserAdmin
+            getUserAdmin: getUserAdmin,
+            change: change
         };
 
         return Team;
@@ -83,6 +84,10 @@
 
         function getUserAdmin(username){
             return $http.get('api/v1/groups/user_admin/' + username +'/');
+        }
+
+        function change(url){
+            return $http.get(url);
         }
 
     }
