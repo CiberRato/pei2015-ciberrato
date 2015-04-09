@@ -356,6 +356,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
         self.assertEqual(response.status_code, 200)
 
+        """ Pole Positions """
+        # create pole position
+        url = "/api/v1/competitions/pole_position/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        print response
+
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
         data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE'}

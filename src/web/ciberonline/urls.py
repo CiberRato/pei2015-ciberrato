@@ -19,6 +19,7 @@ from competition.views.simulation import SimulationViewSet, AssociateAgentToSimu
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
+from competition.views.pole_position import PolePositionViewSet
 
 from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
@@ -50,6 +51,7 @@ router_competitions.register(r'get', CompetitionStateViewSet)
 router_competitions.register(r'rounds', CompetitionRounds)
 router_competitions.register(r'state', CompetitionChangeState)
 router_competitions.register(r'type_of_competition', TypeOfCompetitionViewSet)
+router_competitions.register(r'pole_position', PolePositionViewSet)
 # Groups
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
