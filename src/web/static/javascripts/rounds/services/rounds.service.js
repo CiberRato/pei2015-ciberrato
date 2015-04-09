@@ -68,11 +68,11 @@
         }
 
         function getSimulations(roundName){
-            return $http.get("/api/v1/competitions/simulations_by_round/" + roundName + "/");
+            return $http.get("/api/v1/competitions/trials_by_round/" + roundName + "/");
         }
 
         function createSimulation(roundName){
-            return $http.post("/api/v1/competitions/simulation/", {
+            return $http.post("/api/v1/competitions/trial/", {
                 round_name: roundName
             });
         }
@@ -81,11 +81,11 @@
         }
 
         function getSimulationAgents(identifier){
-            return $http.get("/api/v1/competitions/simulation_agents/" + identifier + "/");
+            return $http.get("/api/v1/competitions/trial_agents/" + identifier + "/");
         }
 
         function associateAgent(roundName, identifier, agent_name, pos){
-            return $http.post("/api/v1/competitions/associate_agent_to_simulation/", {
+            return $http.post("/api/v1/competitions/associate_agent_to_trial/", {
                 round_name: roundName,
                 simulation_identifier: identifier,
                 agent_name: agent_name,
@@ -94,7 +94,11 @@
         }
 
         function disassociateAgent(roundName, identifier, agent_name){
-            return $http.delete("/api/v1/competitions/associate_agent_to_simulation/" + identifier + "/?round_name=" +roundName+ "&agent_name=" +agent_name);
+            return $http.delete("/api/v1/competitions/associate_agent_to_trial/",{
+                round_name: roundName,
+                simulation_identifier: identifier,
+                agent_name: agent_name
+            });
         }
 
         function create(roundName, competitionName){
@@ -105,8 +109,8 @@
         }
 
         function startSimulation(identifier){
-            return $http.post("/api/v1/simulations/start/", {
-                simulation_id: identifier
+            return $http.post("/api/v1/competitions/start_trial/", {
+                trial_id: identifier
             })
         }
 
@@ -119,11 +123,11 @@
         }
 
         function removeSimulation(identifier){
-            return $http.delete("/api/v1/competitions/simulation/" +identifier+"/");
+            return $http.delete("/api/v1/competitions/trial/" +identifier+"/");
         }
 
         function getSimulation(identifier){
-            return $http.get("/api/v1/competitions/simulation/" + identifier + "/");
+            return $http.get("/api/v1/competitions/trial/" + identifier + "/");
         }
 
         function getFiles(roundName){

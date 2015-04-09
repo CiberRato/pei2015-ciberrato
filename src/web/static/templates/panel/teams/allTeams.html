@@ -11,9 +11,10 @@
                     <div class="tab-pane active" id="static">
 
                         <h2>All teams</h2>
-                        <p>Here is shown in table the list of all teams registered. You may able to see their informations</strong></p>
+                        <p ng-if="vm.team.results.length != 0">Here is shown in table the list of all teams registered. You may able to see their information.</p>
+                        <p ng-if="vm.team.results.length == 0">There are no teams registered.</p>
 
-                        <table class="table table-striped table-hover">
+                        <table ng-if="vm.team.results.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Team Name</th>
@@ -22,14 +23,21 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.team">
+                            <tr ng-repeat="(key, value) in vm.team.results">
                                 <td><a href="panel/{{ value.name }}/teamMembers">{{value.name}}</a></td>
                                 <td>{{value.allmembers}}</td>
                                 <td>{{value.max_members}}</td>
 
                             </tr>
                             </tbody>
+
                         </table>
+                        <nav>
+                            <ul class="pager">
+                                <li ng-if="vm.team.previous != null"><a href="#">Previous</a></li>
+                                <li ng-if="vm.team.next!=null"><a href="#">Next</a></li>
+                            </ul>
+                        </nav>
                     </div>
                 </section>
             </div>
