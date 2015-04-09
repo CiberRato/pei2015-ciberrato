@@ -173,9 +173,6 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
             return permissions.IsAuthenticated(),
         return permissions.IsAuthenticated(), IsAdmin(),
 
-    def list(self, request, *args, **kwargs):
-        pass
-
     def create(self, request, *args, **kwargs):
         """
         B{Create} type of competition

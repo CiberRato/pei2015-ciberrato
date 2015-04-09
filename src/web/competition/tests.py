@@ -63,6 +63,15 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, OrderedDict(
             [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_grid', 1)]))
 
+        # list type of competition
+        url = "/api/v1/competitions/type_of_competition/"
+        response = client.get(url)
+        print response.data
+        self.assertEqual(response.data, OrderedDict([(u'count', 3), (u'next', None), (u'previous', None), (u'results', [
+            OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)]),
+            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)]),
+            OrderedDict([('name', u'IIA'), ('number_teams_for_trial', 2), ('number_agents_by_grid', 1)])])]))
+
         # delete type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
         response = client.delete(url)
