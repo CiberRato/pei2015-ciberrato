@@ -24,13 +24,13 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mi
 
     def create(self, request, *args, **kwargs):
         """
-B{Create} type of competition
-B{URL:} ../api/v1/competitions/pole_position/
+        B{Create} type of competition
+        B{URL:} ../api/v1/competitions/pole_position/
 
-@type  competition_name: str
-@param competition_name: The type of competition name
-@type  group_name: str
-@type  group_name: The group name
+        @type  competition_name: str
+        @param competition_name: The type of competition name
+        @type  group_name: str
+        @type  group_name: The group name
         """
         serializer = self.serializer_class(data=request.data)
 
