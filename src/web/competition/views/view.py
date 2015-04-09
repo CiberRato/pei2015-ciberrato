@@ -200,7 +200,18 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
-        pass
+        """
+        B{Retrieve} the type of competition
+        B{URL:} ../api/v1/competitions/type_of_competition/<type_of_competition_name>/
+
+        @type  type_of_competition_name: str
+        @param type_of_competition_name: The type_of_competition name
+        """
+        queryset = TypeOfCompetition.objects.all()
+        type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk'))
+        serializer = self.serializer_class(type_of_competition)
+
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         pass
