@@ -66,7 +66,6 @@ class AuthenticationTestCase(TestCase):
         # list type of competition
         url = "/api/v1/competitions/type_of_competition/"
         response = client.get(url)
-        print response.data
         self.assertEqual(response.data, OrderedDict([(u'count', 3), (u'next', None), (u'previous', None), (u'results', [
             OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)]),
             OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)]),
@@ -356,6 +355,27 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
         self.assertEqual(response.status_code, 200)
+
+        """ Pole Positions """
+        # create pole position
+        url = "/api/v1/competitions/pole_position/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {"competition_name": "C1", "group_name": "XPTO3"})
+        self.assertEqual(response.status_code, 201)
+
+        # retrieve the pole position
+        url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
+        response = client.get(path=url, data=data)
+        self.assertEqual(response.data, {"competition_name": "C1", "group_name": "XPTO3"})
+        self.assertEqual(response.status_code, 200)
+
+        # delete pole position
+        url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The pole position has been deleted"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(PolePosition.objects.all()), 0)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"

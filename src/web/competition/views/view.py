@@ -14,7 +14,7 @@ from ..serializers import CompetitionSerializer, CompetitionInputSerializer, Rou
 class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                          viewsets.GenericViewSet):
     queryset = Competition.objects.all()
-    serializer_class = CompetitionSerializer
+    serializer_class = CompetitionInputSerializer
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -31,7 +31,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         @type  type_of_competition: The name of the type of competition
         @param type_of_competition: The competition type
         """
-        serializer = CompetitionInputSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             type_of_competition = get_object_or_404(TypeOfCompetition.objects.all(),
@@ -56,7 +56,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
-        serializer = self.serializer_class(competition)
+        serializer = CompetitionSerializer(competition)
 
         return Response(serializer.data)
 

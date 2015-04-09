@@ -102,6 +102,29 @@ class Agent(models.Model):
         return self.agent_name
 
 
+class PolePosition(models.Model):
+    identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
+    competition = models.ForeignKey(Competition, blank=False)
+    group = models.ForeignKey(Group, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('competition', 'group',)
+
+    def __unicode__(self):
+        return self.identifier
+
+
+class AgentInstance(models.Model):
+    agent = models.ForeignKey(Agent, blank=False)
+    pole_position = models.ForeignKey(PolePosition, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class CompetitionAgent(models.Model):
     competition = models.ForeignKey(Competition, blank=False)
     round = models.ForeignKey(Round, blank=False)
