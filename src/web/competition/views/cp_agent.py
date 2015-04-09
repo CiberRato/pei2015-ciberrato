@@ -64,16 +64,17 @@ class AssociateAgent(mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets
 
 
             # verify limits
+            """
             groups_agents_in_round = [agent for agent in agent.group.agent_set.all() if len(
                 CompetitionAgent.objects.filter(agent=agent, round=competition.round_set.first())) == 1]
 
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
-            if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
+            if competition.type_of_competition.num <= len(groups_agents_in_round):
                 return Response({'status': 'Reached the limit of agents',
                                  'message': 'Reached the number of competition_agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
+            """
             # not modified values
             competition = get_object_or_404(Competition.objects.all(),
                 name=serializer.validated_data['competition_name'])
@@ -173,12 +174,14 @@ class AssociateAgentAdmin(mixins.DestroyModelMixin, mixins.CreateModelMixin, vie
             groups_agents_in_round = [agent for agent in agent.group.agent_set.all() if
                                       len(CompetitionAgent.objects.filter(agent=agent, round=r)) == 1]
 
+            """
             numbers = dict(settings.NUMBER_AGENTS_BY_COMPETITION_TYPE)
 
             if numbers[competition.type_of_competition] <= len(groups_agents_in_round):
                 return Response({'status': 'Reached the limit of agents',
                                  'message': 'Reached the number of competition_agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+            """
 
             # not modified values
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])

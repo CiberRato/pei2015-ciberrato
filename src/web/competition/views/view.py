@@ -6,8 +6,8 @@ from rest_framework.response import Response
 
 from ..permissions import IsAdmin
 from .simplex import RoundSimplex
-from ..models import Competition
-from ..serializers import CompetitionSerializer, RoundSerializer, CompetitionStateSerializer
+from ..models import Competition, TypeOfCompetition
+from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, CompetitionStateSerializer
 
 
 class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
@@ -27,13 +27,17 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
 
         @type  name: str
         @param name: The competition name
-        @type  type_of_competition: Colaborativa | Competitiva
+        @type  type_of_competition: The name of the type of competition
         @param type_of_competition: The competition type
         """
-        serializer = self.serializer_class(data=request.data)
+        serializer = CompetitionInputSerializer(data=request.data)
 
         if serializer.is_valid():
-            Competition.objects.create(**serializer.validated_data)
+            type_of_competition = get_object_or_404(TypeOfCompetition.objects.all(),
+                                                    name=serializer.validated_data['type_of_competition'])
+
+            Competition.objects.create(name=serializer.validated_data['name'],
+                                       type_of_competition=type_of_competition)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 

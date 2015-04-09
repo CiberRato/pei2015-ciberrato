@@ -146,6 +146,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
 
             simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
 
+            """
             maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
 
             # competitiva
@@ -177,6 +178,7 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
                         return Response({'status': 'Bad Request',
                                          'message': 'The competition is in ' + settings.COLABORATIVA + ' mode, the agents must be from different teams.'},
                                         status=status.HTTP_400_BAD_REQUEST)
+            """
 
             # Reload values
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])

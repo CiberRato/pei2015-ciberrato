@@ -34,12 +34,15 @@ class Competition(models.Model):
 
 
 class TypeOfCompetition(models.Model):
-    nome = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
     number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
     number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
 
     class Meta:
-        unique_together = ('nome', 'number_teams_for_trial', 'number_agents_by_grid',)
+        unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_grid',)
+
+    def __unicode__(self):
+        return self.name
 
 
 class GroupEnrolled(models.Model):

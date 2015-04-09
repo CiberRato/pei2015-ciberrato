@@ -4,7 +4,6 @@ from authentication.models import GroupMember
 
 from rest_framework.test import APIClient
 from collections import OrderedDict
-import json
 
 
 class AuthenticationTestCase(TestCase):
@@ -13,7 +12,11 @@ class AuthenticationTestCase(TestCase):
         g2 = Group.objects.create(name="XPTO2", max_members=10)
         g3 = Group.objects.create(name="XPTO3", max_members=10)
 
-        c = Competition.objects.create(name="C1", type_of_competition=settings.COLABORATIVA)
+        TypeOfCompetition.objects.create(name='Competitive', number_teams_for_trial=3, number_agents_by_grid=1)
+        colaborativa = TypeOfCompetition.objects.create(name='Collaborative', number_teams_for_trial=1,
+                                                        number_agents_by_grid=5)
+
+        c = Competition.objects.create(name="C1", type_of_competition=colaborativa)
         r = Round.objects.create(name="R1", parent_competition=c)
 
         a1 = Account.objects.create(email="rf@rf.pt", username="gipmon", first_name="Rafael", last_name="Ferreira",
@@ -36,28 +39,40 @@ class AuthenticationTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=user)
 
+        # competitive and colaborative methods
+        competitiva = TypeOfCompetition.objects.get(name='Competitive')
+        colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
+
         # create competition
         url = "/api/v1/competitions/crud/"
-        data = {'name': 'C2', 'type_of_competition': settings.COMPETITIVA}
+        data = {'name': 'C2', 'type_of_competition': competitiva.name}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', settings.COMPETITIVA)]))
+        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', competitiva.name)]))
 
         # get competition Register
         url = "/api/v1/competitions/get/Register/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data,
-                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Register"},
-                          {"name": "C2", "type_of_competition": "Competitive", "state_of_competition": "Register"}])
+                         [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+                             [('name', u'Collaborative'), ('number_teams_for_trial', 1),
+                              ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
+                             [('name', u'C2'), ('type_of_competition', OrderedDict(
+                                 [('name', u'Competitive'), ('number_teams_for_trial', 3),
+                                  ('number_agents_by_grid', 1)])), ('state_of_competition', 'Register')])])
 
         # get all competitions
         url = "/api/v1/competitions/get/All/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data,
-                         [{"name": "C1", "type_of_competition": "Collaborative", "state_of_competition": "Register"},
-                          {"name": "C2", "type_of_competition": "Competitive", "state_of_competition": "Register"}])
+                         [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+                             [('name', u'Collaborative'), ('number_teams_for_trial', 1),
+                              ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
+                             [('name', u'C2'), ('type_of_competition', OrderedDict(
+                                 [('name', u'Competitive'), ('number_teams_for_trial', 3),
+                                  ('number_agents_by_grid', 1)])), ('state_of_competition', 'Register')])])
 
         # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
@@ -327,13 +342,13 @@ class AuthenticationTestCase(TestCase):
 
         self.assertEqual(rsp,
                          {'agent_name': u'KAMIKAZE', 'language': 'Java', 'is_virtual': False, 'group_name': u'XPTO3',
-                          'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', settings.COLABORATIVA),
-                                                        ('state_of_competition', 'Register')])], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-                              ('last_name', u'Ferreira')]), 'rounds': [OrderedDict([('name', u'R1'),
-                                                                                    ('parent_competition_name',
-                                                                                     u'C1')])]})
+                          'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+                              [('name', u'Collaborative'), ('number_teams_for_trial', 1),
+                               ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')])],
+                          'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                               ('teaching_institution', u'Universidade de Aveiro'),
+                                               ('first_name', u'Rafael'), ('last_name', u'Ferreira')]),
+                          'rounds': [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1')])]})
 
         # retrieve the agent list of one round
         url = "/api/v1/competitions/valid_round_agents/R1/"
@@ -482,7 +497,8 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round_files/R1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'param_list': {'name': '', 'size': 0}, 'grid': {'name': '', 'size': 0}, 'lab': {'name': '', 'size': 0}})
+        self.assertEqual(response.data, {'param_list': {'name': '', 'size': 0}, 'grid': {'name': '', 'size': 0},
+                                         'lab': {'name': '', 'size': 0}})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"
@@ -508,7 +524,7 @@ class AuthenticationTestCase(TestCase):
         # see round files
         url = "/api/v1/competitions/round_files/R1/"
         response = client.get(path=url)
-        #print response.data
+        # print response.data
         #print response.status_code
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)
@@ -670,8 +686,10 @@ class AuthenticationTestCase(TestCase):
         # get group enrolled competitions
         url = "/api/v1/competitions/group_enrolled_competitions/XPTO3/"
         response = client.get(url)
-        self.assertEqual(response.data, [OrderedDict(
-            [('name', u'C1'), ('type_of_competition', 'Collaborative'), ('state_of_competition', 'Register')])])
+
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])),
+                                                      ('state_of_competition', 'Register')])])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
@@ -697,9 +715,9 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/get/Competition/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [{"name": "C1", "type_of_competition": "Collaborative",
-                           "state_of_competition": "Competition"}])
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])),
+                                                      ('state_of_competition', 'Competition')])])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -720,8 +738,13 @@ class AuthenticationTestCase(TestCase):
 
     def cascade_setup(self):
         references = []
+
+        # competitive and colaborative methods
+        competitiva = TypeOfCompetition.objects.get(name='Competitive')
+        colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
+
         # create competition
-        c3 = Competition.objects.create(name="C3")
+        c3 = Competition.objects.create(name="C3", type_of_competition=colaborativa)
         references += [c3]
 
         # create round
@@ -1002,12 +1025,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(response.data), 5)
 
         # reach maximum agents in competition
+        """
         url = "/api/v1/competitions/associate_agent/"
         data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE6'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {'status': 'Reached the limit of agents',
                                          'message': 'Reached the number of competition_agents!'})
         self.assertEqual(response.status_code, 400)
+        """
 
         client.force_authenticate(user=None)
 
@@ -1016,8 +1041,12 @@ class AuthenticationTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=user)
 
+        # competitive and colaborative methods
+        competitiva = TypeOfCompetition.objects.get(name='Competitive')
+        colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
+
         c = Competition.objects.get(name="C1")
-        c.type_of_competition = settings.COMPETITIVA
+        c.type_of_competition = competitiva
         c.save()
 
         url = "/api/v1/competitions/enroll/"
@@ -1067,12 +1096,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(CompetitionAgent.objects.all()), 1)
 
         # reach maximum agents in competition
+        """
         url = "/api/v1/competitions/associate_agent/"
         data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE2'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {'status': 'Reached the limit of agents',
                                          'message': 'Reached the number of competition_agents!'})
         self.assertEqual(response.status_code, 400)
+        """
 
         client.force_authenticate(user=None)
 
@@ -1081,9 +1112,13 @@ class AuthenticationTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=user)
 
+        # competitive and colaborative methods
+        competitiva = TypeOfCompetition.objects.get(name='Competitive')
+        colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
+
         # create competition
         url = "/api/v1/competitions/crud/"
-        data = {'name': 'C2.', 'type_of_competition': settings.COMPETITIVA}
+        data = {'name': 'C2.', 'type_of_competition': competitiva.name}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 400)
 

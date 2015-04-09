@@ -1,10 +1,33 @@
 from rest_framework import serializers
 
-from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent
+from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent,\
+    TypeOfCompetition
 from groups.serializers import GroupSerializer
 
 
+class TypeOfCompetitionSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    number_teams_for_trial = serializers.IntegerField()
+    number_agents_by_grid = serializers.IntegerField()
+
+    class Meta:
+        model = TypeOfCompetition
+        fields = ('name', 'number_teams_for_trial', 'number_agents_by_grid')
+        read_only_fields = ()
+
+
 class CompetitionSerializer(serializers.ModelSerializer):
+    type_of_competition = TypeOfCompetitionSerializer()
+
+    class Meta:
+        model = Competition
+        fields = ('name', 'type_of_competition', 'state_of_competition')
+        read_only_fields = ('name', 'type_of_competition', 'state_of_competition')
+
+
+class CompetitionInputSerializer(serializers.ModelSerializer):
+    type_of_competition = serializers.CharField(max_length=128)
+
     class Meta:
         model = Competition
         fields = ('name', 'type_of_competition', 'state_of_competition')
