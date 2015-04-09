@@ -45,3 +45,9 @@ class SimulationAgentSimplex:
         self.agent_name = sas.competition_agent.agent.agent_name
         self.round_name = sas.simulation.round.name
         self.pos = sas.pos
+
+
+class PoleSimplex:
+    def __init__(self, ps):
+        self.competition_name = ps.competition.name
+        self.group_name = ps.group.name

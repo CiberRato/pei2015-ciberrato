@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from authentication.models import Group, GroupMember
 
 from ..permissions import IsAdmin
-from .simplex import RoundSimplex
+from .simplex import RoundSimplex, PoleSimplex
 from ..models import Competition, TypeOfCompetition, PolePosition, GroupEnrolled
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
     CompetitionStateSerializer, TypeOfCompetitionSerializer, PolePositionSerializer
@@ -69,11 +69,49 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
-        pass
+        """
+        B{Retrieve} the pole details
+        B{URL:} ../api/v1/competitions/pole_position/<competition_name>/?group_name=<group_name>
+
+        @type  competition_name: str
+        @param competition_name: The type of competition name
+        @type  group_name: str
+        @type  group_name: The group name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
+
+        if competition.state_of_competition == 'Past':
+            return Response({'status': 'Bad Request',
+                             'message': 'The competition is in \'Past\' state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+
+        if len(GroupMember.objects.filter(group=group, account=request.user)) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        group_enrolled = GroupEnrolled.objects.filter(group=group, competition=competition)
+        if len(group_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not group_enrolled[0].valid:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition with valid inscription.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        pole = get_object_or_404(PolePosition.objects.all(), competition=competition, group=group)
+
+        serializer = self.serializer_class(PoleSimplex(pole))
+
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Destroy} the type of competition
+        B{Destroy} the pole position
         B{URL:} ../api/v1/competitions/pole_position/<competition_name>/?group_name=<group_name>
 
         @type  competition_name: str
