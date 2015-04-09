@@ -28,7 +28,7 @@
 
                         </table>
                         <div align="right">
-                            <a href="/api/v1/agents/agent_all_files/{{vm.agent.agent_name}}/" target="_blank">Download All</a>
+                            <a ng-if="vm.files.length != 0" href="/api/v1/agents/agent_all_files/{{vm.agent.agent_name}}/" target="_blank">Download All</a>
                         </div>
                             <a ng-if="vm.agent.is_virtual == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-success">Upload File for this Agent</a>
 

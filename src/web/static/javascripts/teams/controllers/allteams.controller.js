@@ -21,6 +21,8 @@
                     getNumberOfMembers(vm.team[i].name, i);
                 }
 
+                console.log(vm.team);
+
         	}
 
        		function getAllErrorFn(data){
