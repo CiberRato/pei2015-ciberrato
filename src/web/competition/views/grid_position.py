@@ -16,7 +16,7 @@ from ..serializers import CompetitionSerializer, CompetitionInputSerializer, Rou
 
 
 class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
-                          mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+                           mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = GridPositions.objects.all()
     serializer_class = GridPositionsSerializer
 
@@ -51,7 +51,7 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                                            name=serializer.validated_data['competition_name'])
+                name=serializer.validated_data['competition_name'])
 
             if competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
@@ -200,7 +200,8 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You must be part of the agent group.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            grid = get_object_or_404(GridPositions.objects.all(), identifier=serializer.validated_data['grid_identifier'])
+            grid = get_object_or_404(GridPositions.objects.all(),
+                identifier=serializer.validated_data['grid_identifier'])
 
             agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
 
@@ -262,4 +263,45 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
-        pass
+        """
+        B{Delete} the agent in the grid
+        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/?position=<position>
+
+        @type  grid_identifier: str
+        @param grid_identifier: The grid identifier
+        @type  agent_name: str
+        @type  agent_name: The agent name
+        """
+        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
+        agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
+            position=request.GET.get('position', ''))
+
+        agent = agent_grid.agent
+
+        if agent.group not in request.user.groups.all():
+            return Response({'status': 'Bad Request',
+                             'message': 'You must be part of the agent group.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if grid.competition.state_of_competition == 'Past':
+            return Response({'status': 'Bad Request',
+                             'message': 'The competition is in \'Past\' state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=grid.competition)
+
+        if len(group_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not group_enrolled[0].valid:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition with valid inscription.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        agent_grid.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The agent has been dissociated!'},
+                        status=status.HTTP_200_OK)
