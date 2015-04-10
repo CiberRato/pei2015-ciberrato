@@ -36,10 +36,10 @@ class Competition(models.Model):
 class TypeOfCompetition(models.Model):
     name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
     number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
-    number_agents_by_pole = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
+    number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
 
     class Meta:
-        unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_pole',)
+        unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_grid',)
 
     def __unicode__(self):
         return self.name
@@ -102,7 +102,7 @@ class Agent(models.Model):
         return self.agent_name
 
 
-class PolePosition(models.Model):
+class GridPositions(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
     competition = models.ForeignKey(Competition, blank=False)
     group = models.ForeignKey(Group, blank=False)
@@ -117,16 +117,16 @@ class PolePosition(models.Model):
         return self.identifier
 
 
-class AgentPole(models.Model):
+class AgentGrid(models.Model):
     agent = models.ForeignKey(Agent, blank=False)
     position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
-    pole_position = models.ForeignKey(PolePosition, blank=False)
+    grid_position = models.ForeignKey(GridPositions, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('position', 'pole_position',)
+        unique_together = ('position', 'grid_position',)
 
 
 class CompetitionAgent(models.Model):

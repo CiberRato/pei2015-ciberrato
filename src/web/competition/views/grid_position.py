@@ -6,40 +6,41 @@ from rest_framework.response import Response
 
 from authentication.models import Group, GroupMember
 from agent.simplex import AgentSimplex
+from agent.serializers import AgentSerializer
 
 from ..permissions import IsAdmin
-from .simplex import RoundSimplex, PoleSimplex
-from ..models import Competition, TypeOfCompetition, PolePosition, GroupEnrolled, AgentPole, Agent
+from .simplex import RoundSimplex, GridPositionsSimplex
+from ..models import Competition, TypeOfCompetition, GridPositions, GroupEnrolled, AgentGrid, Agent
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
-    CompetitionStateSerializer, TypeOfCompetitionSerializer, PolePositionSerializer, AgentPoleSerializer
+    CompetitionStateSerializer, TypeOfCompetitionSerializer, GridPositionsSerializer, AgentGridSerializer
 
 
-class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
+class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
                           mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = PolePosition.objects.all()
-    serializer_class = PolePositionSerializer
+    queryset = GridPositions.objects.all()
+    serializer_class = GridPositionsSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
     def list(self, request, *args, **kwargs):
         """
-        B{List} a pole position
-        B{URL:} ../api/v1/competitions/pole_position/
+        B{List} a grid position
+        B{URL:} ../api/v1/competitions/grid_positions/
         """
-        pole_positions = []
+        grid_positions = []
         for group in request.user.groups.all():
-            for pole in PolePosition.objects.filter(group=group):
-                pole_positions += [PoleSimplex(pole)]
+            for grid in GridPositions.objects.filter(group=group):
+                grid_positions += [GridPositionsSimplex(grid)]
 
-        serializer = self.serializer_class(pole_positions, many=True)
+        serializer = self.serializer_class(grid_positions, many=True)
 
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} a pole position
-        B{URL:} ../api/v1/competitions/pole_position/
+        B{Create} a grid positions
+        B{URL:} ../api/v1/competitions/grid_positions/
 
         @type  competition_name: str
         @param competition_name: The type of competition name
@@ -75,20 +76,20 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mix
                                  'message': 'Your group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            pole = PolePosition.objects.create(competition=competition, group=group)
+            grid = GridPositions.objects.create(competition=competition, group=group)
 
-            serializer = self.serializer_class(PoleSimplex(pole))
+            serializer = self.serializer_class(GridPositionsSimplex(grid))
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The pole position could not be created with received data'},
+                         'message': 'The grid positions could not be created with received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the pole details
-        B{URL:} ../api/v1/competitions/pole_position/<competition_name>/?group_name=<group_name>
+        B{Retrieve} the grid positions details
+        B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?group_name=<group_name>
 
         @type  competition_name: str
         @param competition_name: The type of competition name
@@ -120,16 +121,16 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mix
                              'message': 'Your group must be enrolled in the competition with valid inscription.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        pole = get_object_or_404(PolePosition.objects.all(), competition=competition, group=group)
+        grid = get_object_or_404(GridPositions.objects.all(), competition=competition, group=group)
 
-        serializer = self.serializer_class(PoleSimplex(pole))
+        serializer = self.serializer_class(GridPositionsSimplex(grid))
 
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Destroy} the pole position
-        B{URL:} ../api/v1/competitions/pole_position/<competition_name>/?group_name=<group_name>
+        B{Destroy} the grid positions
+        B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?group_name=<group_name>
 
         @type  competition_name: str
         @param competition_name: The type of competition name
@@ -161,29 +162,29 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mix
                              'message': 'Your group must be enrolled in the competition with valid inscription.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        pole = get_object_or_404(PolePosition.objects.all(), competition=competition, group=group)
-        pole.delete()
+        grid = get_object_or_404(GridPositions.objects.all(), competition=competition, group=group)
+        grid.delete()
 
         return Response({'status': 'Deleted',
-                         'message': 'The pole position has been deleted'},
+                         'message': 'The grid positions has been deleted'},
                         status=status.HTTP_200_OK)
 
 
-class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                        mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = AgentPole.objects.all()
-    serializer_class = AgentPoleSerializer
+    queryset = AgentGrid.objects.all()
+    serializer_class = AgentGridSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
     def create(self, request, *args, **kwargs):
         """
-        B{Associate} agent to the pole
-        B{URL:} ../api/v1/competitions/agent_pole/
+        B{Associate} agent to the grid position
+        B{URL:} ../api/v1/competitions/agent_grid/
 
-        @type  pole_identifier: str
-        @param pole_identifier: The pole identifier
+        @type  grid_identifier: str
+        @param grid_identifier: The grid identifier
         @type  agent_name: str
         @type  agent_name: The agent name
         @type  position: Integer
@@ -199,21 +200,21 @@ class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You must be part of the agent group.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            pole = get_object_or_404(PolePosition.objects.all(), identifier=serializer.validated_data['pole_identifier'])
+            grid = get_object_or_404(GridPositions.objects.all(), identifier=serializer.validated_data['grid_identifier'])
 
-            agents_in_pole = len(AgentPole.objects.filter(pole_position=pole))
+            agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
 
-            if agents_in_pole >= pole.competition.type_of_competition.number_agents_by_pole:
+            if agents_in_grid >= grid.competition.type_of_competition.number_agents_by_grid:
                 return Response({'status': 'Bad Request',
-                                 'message': 'You can not add more agents to the pole.'},
+                                 'message': 'You can not add more agents to the grid.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            if pole.competition.state_of_competition == 'Past':
+            if grid.competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=pole.competition)
+            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=grid.competition)
 
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -225,37 +226,40 @@ class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'Your group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if serializer.validated_data['position'] > pole.competition.type_of_competition.number_agents_by_pole:
+            if serializer.validated_data['position'] > grid.competition.type_of_competition.number_agents_by_grid:
                 return Response({'status': 'Permission denied',
-                                 'message': 'The position can\'t be higher than the number agents allowed by pole.'},
+                                 'message': 'The position can\'t be higher than the number agents allowed by grid.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if len(AgentPole.objects.filter(pole_position=pole, position=serializer.validated_data['position'])) != 0:
+            if len(AgentGrid.objects.filter(grid_position=grid, position=serializer.validated_data['position'])) != 0:
                 return Response({'status': 'Permission denied',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            AgentPole.objects.create(agent=agent, pole_position=pole, position=serializer.validated_data['position'])
+            AgentGrid.objects.create(agent=agent, grid_position=grid, position=serializer.validated_data['position'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'You can\'t associate the agent to the Pole with the received data'},
+                         'message': 'You can\'t associate the agent to the Grid with the received data'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} agents by pole
-        B{URL:} ../api/v1/competitions/agent_pole/<pole_identifier>/
+        B{Get} agents by grid
+        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/
 
-        @type  pole_identifier: str
-        @param pole_identifier: The pole identifier
+        @type  grid_identifier: str
+        @param grid_identifier: The grid identifier
         """
-        pole = get_object_or_404(PolePosition.objects.all(), identifier=kwargs.get('pk', ''))
-        agents_pole = AgentPole.objects.filter(pole=pole)
+        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
+        agents_grid = AgentGrid.objects.filter(grid=grid)
 
-        agents = [AgentSimplex(agent.agent) for agent in agents_pole]
+        agents = [AgentSimplex(agent.agent) for agent in agents_grid]
 
+        serializer = AgentSerializer(agents, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
         pass

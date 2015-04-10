@@ -47,7 +47,7 @@ class SimulationAgentSimplex:
         self.pos = sas.pos
 
 
-class PoleSimplex:
+class GridPositionsSimplex:
     def __init__(self, ps):
         self.competition_name = ps.competition.name
         self.group_name = ps.group.name

@@ -12,9 +12,9 @@ class AuthenticationTestCase(TestCase):
         g2 = Group.objects.create(name="XPTO2", max_members=10)
         g3 = Group.objects.create(name="XPTO3", max_members=10)
 
-        TypeOfCompetition.objects.create(name='Competitive', number_teams_for_trial=3, number_agents_by_pole=1)
+        TypeOfCompetition.objects.create(name='Competitive', number_teams_for_trial=3, number_agents_by_grid=1)
         colaborativa = TypeOfCompetition.objects.create(name='Collaborative', number_teams_for_trial=1,
-                                                        number_agents_by_pole=5)
+                                                        number_agents_by_grid=5)
 
         c = Competition.objects.create(name="C1", type_of_competition=colaborativa)
         r = Round.objects.create(name="R1", parent_competition=c)
@@ -45,31 +45,31 @@ class AuthenticationTestCase(TestCase):
 
         # create new type of competition
         url = "/api/v1/competitions/type_of_competition/"
-        data = {'name': 'IIA', 'number_teams_for_trial': 1, 'number_agents_by_pole': 1}
+        data = {'name': 'IIA', 'number_teams_for_trial': 1, 'number_agents_by_grid': 1}
         response = client.post(url, data)
         self.assertEqual(response.data, OrderedDict(
-            [(u'name', u'IIA'), (u'number_teams_for_trial', 1), (u'number_agents_by_pole', 1)]))
+            [(u'name', u'IIA'), (u'number_teams_for_trial', 1), (u'number_agents_by_grid', 1)]))
 
         # udpate the type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
-        data = {'name': 'IIA', 'number_teams_for_trial': 2, 'number_agents_by_pole': 1}
+        data = {'name': 'IIA', 'number_teams_for_trial': 2, 'number_agents_by_grid': 1}
         response = client.put(url, data)
         self.assertEqual(response.data, OrderedDict(
-            [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_pole', 1)]))
+            [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_grid', 1)]))
 
         # retrieve type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
         response = client.get(url)
         self.assertEqual(response.data, OrderedDict(
-            [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_pole', 1)]))
+            [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_grid', 1)]))
 
         # list type of competition
         url = "/api/v1/competitions/type_of_competition/"
         response = client.get(url)
         self.assertEqual(response.data, OrderedDict([(u'count', 3), (u'next', None), (u'previous', None), (u'results', [
-            OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_pole', 1)]),
-            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_pole', 5)]),
-            OrderedDict([('name', u'IIA'), ('number_teams_for_trial', 2), ('number_agents_by_pole', 1)])])]))
+            OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)]),
+            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)]),
+            OrderedDict([('name', u'IIA'), ('number_teams_for_trial', 2), ('number_agents_by_grid', 1)])])]))
 
         # delete type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
@@ -91,10 +91,10 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data,
                          [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
                              [('name', u'Collaborative'), ('number_teams_for_trial', 1),
-                              ('number_agents_by_pole', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
+                              ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
                              [('name', u'C2'), ('type_of_competition', OrderedDict(
                                  [('name', u'Competitive'), ('number_teams_for_trial', 3),
-                                  ('number_agents_by_pole', 1)])), ('state_of_competition', 'Register')])])
+                                  ('number_agents_by_grid', 1)])), ('state_of_competition', 'Register')])])
 
         # get all competitions
         url = "/api/v1/competitions/get/All/"
@@ -103,10 +103,10 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data,
                          [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
                              [('name', u'Collaborative'), ('number_teams_for_trial', 1),
-                              ('number_agents_by_pole', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
+                              ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
                              [('name', u'C2'), ('type_of_competition', OrderedDict(
                                  [('name', u'Competitive'), ('number_teams_for_trial', 3),
-                                  ('number_agents_by_pole', 1)])), ('state_of_competition', 'Register')])])
+                                  ('number_agents_by_grid', 1)])), ('state_of_competition', 'Register')])])
 
         # enroll one group in the competition, the group stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
@@ -356,37 +356,37 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
         self.assertEqual(response.status_code, 200)
 
-        """ Pole Positions """
-        # create pole position
-        url = "/api/v1/competitions/pole_position/"
+        """ grid Positions """
+        # create grid position
+        url = "/api/v1/competitions/grid_position/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
         self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
-        # retrieve the pole position
-        url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
+        # retrieve the grid position
+        url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
         response = client.get(path=url, data=data)
         self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 200)
 
-        # list user poles
-        url = "/api/v1/competitions/pole_position/"
+        # list user grids
+        url = "/api/v1/competitions/grid_position/"
         response = client.get(path=url)
 
-        # associate agent to the pole
-        url = "/api/v1/competitions/agent_pole/"
-        data = {'pole_identifier': identifier, 'agent_name': 'KAMIKAZE'}
+        # associate agent to the grid
+        url = "/api/v1/competitions/agent_grid/"
+        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 1}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'pole_identifier': identifier, 'agent_name': 'KAMIKAZE'})
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 1})
 
-        # delete pole position
-        url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
+        # delete grid position
+        url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
         response = client.delete(path=url)
-        self.assertEqual(response.data, {"status": "Deleted", "message": "The pole position has been deleted"})
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The grid positions has been deleted"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(PolePosition.objects.all()), 0)
+        self.assertEqual(len(GridPositions.objects.all()), 0)
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"
@@ -410,7 +410,7 @@ class AuthenticationTestCase(TestCase):
                          {'agent_name': u'KAMIKAZE', 'language': 'Java', 'is_virtual': False, 'group_name': u'XPTO3',
                           'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
                               [('name', u'Collaborative'), ('number_teams_for_trial', 1),
-                               ('number_agents_by_pole', 5)])), ('state_of_competition', 'Register')])],
+                               ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')])],
                           'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                ('teaching_institution', u'Universidade de Aveiro'),
                                                ('first_name', u'Rafael'), ('last_name', u'Ferreira')]),
@@ -754,7 +754,7 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
 
         self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_pole', 5)])),
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])),
                                                       ('state_of_competition', 'Register')])])
         self.assertEqual(response.status_code, 200)
 
@@ -782,7 +782,7 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_pole', 5)])),
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])),
                                                       ('state_of_competition', 'Competition')])])
 
         r3 = Round.objects.get(name="R3")
