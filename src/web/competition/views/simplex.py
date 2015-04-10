@@ -51,3 +51,4 @@ class PoleSimplex:
     def __init__(self, ps):
         self.competition_name = ps.competition.name
         self.group_name = ps.group.name
+        self.identifier = ps.identifier

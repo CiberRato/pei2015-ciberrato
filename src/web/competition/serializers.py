@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent,\
-    TypeOfCompetition, PolePosition
+    TypeOfCompetition, PolePosition, AgentPole
 from groups.serializers import GroupSerializer
 
 
@@ -22,7 +22,17 @@ class PolePositionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PolePosition
-        fields = ('competition_name', 'group_name')
+        fields = ('identifier', 'competition_name', 'group_name')
+        read_only_fields = ('identifier',)
+
+
+class AgentPoleSerializer(serializers.ModelSerializer):
+    competition_name = serializers.CharField()
+    agent_name = serializers.CharField()
+
+    class Meta:
+        model = AgentPole
+        fields = ('competition_name', 'agent_name')
         read_only_fields = ()
 
 

@@ -361,14 +361,19 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/pole_position/"
         data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {"competition_name": "C1", "group_name": "XPTO3"})
+        identifier = response.data["identifier"]
+        self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the pole position
         url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
         response = client.get(path=url, data=data)
-        self.assertEqual(response.data, {"competition_name": "C1", "group_name": "XPTO3"})
+        self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 200)
+
+        # list user poles
+        url = "/api/v1/competitions/pole_position/"
+        response = client.get(path=url)
 
         # delete pole position
         url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"

@@ -117,7 +117,7 @@ class PolePosition(models.Model):
         return self.identifier
 
 
-class AgentInstance(models.Model):
+class AgentPole(models.Model):
     agent = models.ForeignKey(Agent, blank=False)
     pole_position = models.ForeignKey(PolePosition, blank=False)
 
