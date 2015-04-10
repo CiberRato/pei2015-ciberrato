@@ -23,6 +23,7 @@
 
             function getByUserSuccessFn(data) {
                 vm.agents = data.data;
+                console.log(vm.agents);
             }
 
             function getByUserErrorFn(data) {

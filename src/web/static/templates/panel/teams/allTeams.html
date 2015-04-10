@@ -34,8 +34,8 @@
                         </table>
                         <nav>
                             <ul class="pager">
-                                <li ng-if="vm.team.previous != null"><a href="#">Previous</a></li>
-                                <li ng-if="vm.team.next!=null"><a href="#">Next</a></li>
+                                <li ng-if="vm.team.previous != null" ng-click="vm.change(vm.team.previous)"><a href="#">Previous</a></li>
+                                <li ng-if="vm.team.next!=null" ng-click="vm.change(vm.team.next)"><a href="#">Next</a></li>
                             </ul>
                         </nav>
                     </div>
