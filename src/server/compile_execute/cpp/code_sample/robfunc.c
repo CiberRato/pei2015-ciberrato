@@ -8,7 +8,7 @@ void DetermineAction(int beaconToFollow, float *lPow, float *rPow)
     bool   beaconReady;
     static struct beaconMeasure beacon;
     static float  left, right, center;
-    static int    Ground;
+    //static int    Ground;
     static bool   Collision;
     
     /*Access to values from Sensors - Only ReadSensors() gets new values */
@@ -25,8 +25,8 @@ void DetermineAction(int beaconToFollow, float *lPow, float *rPow)
     }
     else beaconReady=0;
 
-    if(IsGroundReady())
-        Ground=    GetGroundSensor();
+    //if(IsGroundReady())
+    //    Ground=    GetGroundSensor();
     if(IsBumperReady())
         Collision= GetBumperSensor();
 
