@@ -1,5 +1,10 @@
+# Temporary files from editors
+*.fuse_hidden*
+
+# Django related
 src/web/environment/
 src/web/db.sqlite3
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
