@@ -57,7 +57,6 @@
         function doIt() {
             /* Zoom variable (30->Standard) */
             $scope.zoom = 30;
-            $scope.increments = 1;
             $scope.velButton = '1x';
 
             /* JSON to Object */
@@ -243,7 +242,7 @@
                     $scope.updateValues();
 
                     $(".leftGrip").css("left", ($scope.idx * 820) / $scope.param._SimTime);
-                    if ($scope.play) {
+                    if ($scope.playvar) {
                         $scope.idx++;
                     }
                 } catch (TypeError) {
@@ -329,19 +328,6 @@
                     $scope.smallWallColor = '#727272';
                     $scope.gridColor = '#cfd4db';
 
-                }
-
-            };
-            $scope.setIncrements = function (id) {
-
-                if (id == 1) {
-                    $scope.increments = 1;
-                }
-                if (id == 2) {
-                    $scope.increments = 10;
-                }
-                if (id == 3) {
-                    $scope.increments = 100;
                 }
 
             };
