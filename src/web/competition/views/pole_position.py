@@ -1,25 +1,40 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
 from authentication.models import Group, GroupMember
+from agent.simplex import AgentSimplex
 
 from ..permissions import IsAdmin
 from .simplex import RoundSimplex, PoleSimplex
-from ..models import Competition, TypeOfCompetition, PolePosition, GroupEnrolled
+from ..models import Competition, TypeOfCompetition, PolePosition, GroupEnrolled, AgentPole, Agent
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
-    CompetitionStateSerializer, TypeOfCompetitionSerializer, PolePositionSerializer
+    CompetitionStateSerializer, TypeOfCompetitionSerializer, PolePositionSerializer, AgentPoleSerializer
 
 
-class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
                           mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = PolePosition.objects.all()
     serializer_class = PolePositionSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
+
+    def list(self, request, *args, **kwargs):
+        """
+        B{List} a pole position
+        B{URL:} ../api/v1/competitions/pole_position/
+        """
+        pole_positions = []
+        for group in request.user.groups.all():
+            for pole in PolePosition.objects.filter(group=group):
+                pole_positions += [PoleSimplex(pole)]
+
+        serializer = self.serializer_class(pole_positions, many=True)
+
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         """
@@ -60,9 +75,11 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'Your group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            PolePosition.objects.create(competition=competition, group=group)
+            pole = PolePosition.objects.create(competition=competition, group=group)
 
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+            serializer = self.serializer_class(PoleSimplex(pole))
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': 'The pole position could not be created with received data'},
@@ -150,3 +167,95 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return Response({'status': 'Deleted',
                          'message': 'The pole position has been deleted'},
                         status=status.HTTP_200_OK)
+
+
+class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                       mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = AgentPole.objects.all()
+    serializer_class = AgentPoleSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Associate} agent to the pole
+        B{URL:} ../api/v1/competitions/agent_pole/
+
+        @type  pole_identifier: str
+        @param pole_identifier: The pole identifier
+        @type  agent_name: str
+        @type  agent_name: The agent name
+        @type  position: Integer
+        @type  position: The agent position
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+
+            if agent.group not in request.user.groups.all():
+                return Response({'status': 'Bad Request',
+                                 'message': 'You must be part of the agent group.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            pole = get_object_or_404(PolePosition.objects.all(), identifier=serializer.validated_data['pole_identifier'])
+
+            agents_in_pole = len(AgentPole.objects.filter(pole_position=pole))
+
+            if agents_in_pole >= pole.competition.type_of_competition.number_agents_by_pole:
+                return Response({'status': 'Bad Request',
+                                 'message': 'You can not add more agents to the pole.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if pole.competition.state_of_competition == 'Past':
+                return Response({'status': 'Bad Request',
+                                 'message': 'The competition is in \'Past\' state.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=pole.competition)
+
+            if len(group_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'Your group must be enrolled in the competition.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if not group_enrolled[0].valid:
+                return Response({'status': 'Permission denied',
+                                 'message': 'Your group must be enrolled in the competition with valid inscription.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if serializer.validated_data['position'] > pole.competition.type_of_competition.number_agents_by_pole:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The position can\'t be higher than the number agents allowed by pole.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if len(AgentPole.objects.filter(pole_position=pole, position=serializer.validated_data['position'])) != 0:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The position has already been taken.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            AgentPole.objects.create(agent=agent, pole_position=pole, position=serializer.validated_data['position'])
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'You can\'t associate the agent to the Pole with the received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} agents by pole
+        B{URL:} ../api/v1/competitions/agent_pole/<pole_identifier>/
+
+        @type  pole_identifier: str
+        @param pole_identifier: The pole identifier
+        """
+        pole = get_object_or_404(PolePosition.objects.all(), identifier=kwargs.get('pk', ''))
+        agents_pole = AgentPole.objects.filter(pole=pole)
+
+        agents = [AgentSimplex(agent.agent) for agent in agents_pole]
+
+
+    def destroy(self, request, *args, **kwargs):
+        pass

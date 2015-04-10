@@ -182,8 +182,8 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         @param name: The type of competition name
         @type  number_teams_for_trial: Integer
         @type  number_teams_for_trial: The number of teams allowed by trial
-        @type  number_agents_by_grid: Integer
-        @param number_agents_by_grid: For each team the number of agents allowed by trial
+        @type  number_agents_by_pole: Integer
+        @param number_agents_by_pole: For each team the number of agents allowed by pole
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -222,8 +222,8 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         @param name: The type of competition name
         @type  number_teams_for_trial: Integer
         @type  number_teams_for_trial: The number of teams allowed by trial
-        @type  number_agents_by_grid: Integer
-        @param number_agents_by_grid: For each team the number of agents allowed by trial
+        @type  number_agents_by_pole: Integer
+        @param number_agents_by_pole: For each team the number of agents allowed by pole
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -231,7 +231,7 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
             type_of_competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
             type_of_competition.name = serializer.validated_data['name']
             type_of_competition.number_teams_for_trial = serializer.validated_data['number_teams_for_trial']
-            type_of_competition.number_agents_by_grid = serializer.validated_data['number_agents_by_grid']
+            type_of_competition.number_agents_by_pole = serializer.validated_data['number_agents_by_pole']
             type_of_competition.save()
 
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
