@@ -253,7 +253,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param grid_identifier: The grid identifier
         """
         grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
-        agents_grid = AgentGrid.objects.filter(grid=grid)
+        agents_grid = AgentGrid.objects.filter(grid_position=grid)
 
         agents = [AgentSimplex(agent.agent) for agent in agents_grid]
 

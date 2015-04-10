@@ -381,6 +381,12 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 1})
 
+        # agents associated to the grid
+        url = "/api/v1/competitions/agent_grid/"+identifier+"/"
+        response = client.get(path=url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.status_code, 200)
+
         # delete grid position
         url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
         response = client.delete(path=url)
