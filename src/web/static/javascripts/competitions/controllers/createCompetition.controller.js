@@ -20,6 +20,18 @@
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             username = authenticatedAccount.username;
 
+            Competition.getAllTypesOfCompetition().then(getAllSuccessFn, getAllErrorFn);
+
+            function getAllSuccessFn(data){
+                vm.typesOfCompetition = data.data;
+                console.log(vm.typesOfCompetition);
+            }
+
+            function getAllErrorFn(data){
+                console.error(data.data);
+                $location.path('/admin/');
+            }
+
         }
 
         function create(){

@@ -112,6 +112,18 @@
             controller:'AllTogetherCompetitionsController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html'
+        }).when('/admin/createTypeOfCompetition',{
+            controller:'CreateTypeOfCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/createType.html'
+        }).when('/admin/allTypesOfCompetition',{
+            controller:'AllTypesOfCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/allTypes.html'
+        }).when('/admin/editTypeOfCompetition/:name',{
+            controller:'EditTypeOfCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/editType.html'
         }).when('/admin/:name/',{
             controller:'ListCompetitionController',
             controllerAs: 'vm',
