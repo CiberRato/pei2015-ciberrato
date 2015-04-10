@@ -27,12 +27,12 @@ class PolePositionSerializer(serializers.ModelSerializer):
 
 
 class AgentPoleSerializer(serializers.ModelSerializer):
-    competition_name = serializers.CharField()
+    pole_identifier = serializers.CharField()
     agent_name = serializers.CharField()
 
     class Meta:
         model = AgentPole
-        fields = ('competition_name', 'agent_name')
+        fields = ('pole_identifier', 'agent_name')
         read_only_fields = ()
 
 

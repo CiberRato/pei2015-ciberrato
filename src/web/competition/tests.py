@@ -375,6 +375,12 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/pole_position/"
         response = client.get(path=url)
 
+        # associate agent to the pole
+        url = "/api/v1/competitions/agent_pole/"
+        data = {'pole_identifier': identifier, 'agent_name': 'KAMIKAZE'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'pole_identifier': identifier, 'agent_name': 'KAMIKAZE'})
+
         # delete pole position
         url = "/api/v1/competitions/pole_position/C1/?group_name=XPTO3"
         response = client.delete(path=url)
