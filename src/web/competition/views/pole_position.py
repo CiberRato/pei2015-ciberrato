@@ -5,6 +5,7 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
 from authentication.models import Group, GroupMember
+from agent.simplex import AgentSimplex
 
 from ..permissions import IsAdmin
 from .simplex import RoundSimplex, PoleSimplex
@@ -168,7 +169,7 @@ class PolePositionViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mix
                         status=status.HTTP_200_OK)
 
 
-class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
+class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                        mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = AgentPole.objects.all()
     serializer_class = AgentPoleSerializer
@@ -178,13 +179,15 @@ class AgentPoleViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
 
     def create(self, request, *args, **kwargs):
         """
-B{Associate} agent to the pole
-B{URL:} ../api/v1/competitions/agent_pole/
+        B{Associate} agent to the pole
+        B{URL:} ../api/v1/competitions/agent_pole/
 
-@type  pole_identifier: str
-@param pole_identifier: The pole identifier
-@type  agent_name: str
-@type  agent_name: The agent name
+        @type  pole_identifier: str
+        @param pole_identifier: The pole identifier
+        @type  agent_name: str
+        @type  agent_name: The agent name
+        @type  position: Integer
+        @type  position: The agent position
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -200,7 +203,7 @@ B{URL:} ../api/v1/competitions/agent_pole/
 
             agents_in_pole = len(AgentPole.objects.filter(pole_position=pole))
 
-            if agents_in_pole >= pole.competition.type_of_competition.number_agents_by_grid:
+            if agents_in_pole >= pole.competition.type_of_competition.number_agents_by_pole:
                 return Response({'status': 'Bad Request',
                                  'message': 'You can not add more agents to the pole.'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -222,10 +225,37 @@ B{URL:} ../api/v1/competitions/agent_pole/
                                  'message': 'Your group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            AgentPole.objects.create(agent=agent, pole_position=pole)
+            if serializer.validated_data['position'] > pole.competition.type_of_competition.number_agents_by_pole:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The position can\'t be higher than the number agents allowed by pole.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if len(AgentPole.objects.filter(pole_position=pole, position=serializer.validated_data['position'])) != 0:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The position has already been taken.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            AgentPole.objects.create(agent=agent, pole_position=pole, position=serializer.validated_data['position'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': 'You can\'t associate the agent to the Pole with the received data'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} agents by pole
+        B{URL:} ../api/v1/competitions/agent_pole/<pole_identifier>/
+
+        @type  pole_identifier: str
+        @param pole_identifier: The pole identifier
+        """
+        pole = get_object_or_404(PolePosition.objects.all(), identifier=kwargs.get('pk', ''))
+        agents_pole = AgentPole.objects.filter(pole=pole)
+
+        agents = [AgentSimplex(agent.agent) for agent in agents_pole]
+
+
+    def destroy(self, request, *args, **kwargs):
+        pass

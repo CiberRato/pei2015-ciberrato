@@ -36,10 +36,10 @@ class Competition(models.Model):
 class TypeOfCompetition(models.Model):
     name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
     number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
-    number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
+    number_agents_by_pole = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
 
     class Meta:
-        unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_grid',)
+        unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_pole',)
 
     def __unicode__(self):
         return self.name
@@ -119,10 +119,14 @@ class PolePosition(models.Model):
 
 class AgentPole(models.Model):
     agent = models.ForeignKey(Agent, blank=False)
+    position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
     pole_position = models.ForeignKey(PolePosition, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('position', 'pole_position',)
 
 
 class CompetitionAgent(models.Model):

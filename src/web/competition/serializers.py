@@ -32,7 +32,7 @@ class AgentPoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AgentPole
-        fields = ('pole_identifier', 'agent_name')
+        fields = ('pole_identifier', 'agent_name', 'position')
         read_only_fields = ()
 
 
