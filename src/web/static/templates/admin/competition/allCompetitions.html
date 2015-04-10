@@ -11,9 +11,9 @@
                     <div class="tab-pane active" id="static">
 
                         <h2>All Competitions</h2>
-                        <p>Here is shown in table the list of all competitions that you had been enrolled.</p>
-
-                        <table class="table table-striped table-hover">
+                        <p ng-if="vm.competitions.length != 0">Here is shown in table the list of all competitions.</p>
+                        <p ng-if="vm.competitions.length == 0">There are no competitions.</p>
+                        <table ng-if="vm.competitions.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Competition Name</th>
@@ -26,7 +26,7 @@
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitions">
                                 <td><a href="admin/{{ value.name }}/">{{value.name}}</a></td>
-                                <td>{{value.type_of_competition}}</td>
+                                <td>{{value.type_of_competition.name}}</td>
                                 <td>{{value.state_of_competition}}</td>
                                 <td>
                                     <a data-toggle="modal"  href="#changeState{{key}}">Change</a>
