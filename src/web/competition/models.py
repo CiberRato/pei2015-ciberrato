@@ -170,3 +170,15 @@ class Simulation(models.Model):
 
     def __unicode__(self):
         return self.identifier
+
+
+class GridGroups(models.Model):
+    grid_positions = models.ForeignKey(GridPositions, blank=False)
+    simulation = models.ForeignKey(Simulation, blank=False)
+    position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('position', 'simulation',)
