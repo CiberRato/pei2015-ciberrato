@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.conf import settings
 
 import requests
@@ -9,8 +9,8 @@ from rest_framework.response import Response
 
 from agent.models import Agent
 
-from .simplex import SimulationSimplex, SimulationAgentSimplex
-from ..serializers import SimulationSerializer, SimulationAgentSerializer, SimulationGridSerializer, \
+from .simplex import SimulationSimplex, SimulationAgentSimplex, SimulationGridSimplex
+from ..serializers import SimulationSerializer, SimulationAgentSerializer, SimulationGridsSerializer, \
     SimulationGridInputSerializer
 from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent, SimulationGrid, \
     GridPositions, GroupEnrolled
@@ -370,17 +370,15 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} grid positions by simulation
-        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/
+        B{URL:} ../api/v1/competitions/simulation_grid/<simulation_identifier>/
 
-        @type  grid_identifier: str
-        @param grid_identifier: The grid identifier
+        @type  simulation_identifier: str
+        @param simulation_identifier: The simulation identifier
         """
-        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
-        agents_grid = AgentGrid.objects.filter(grid_position=grid)
+        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
+        grid_sim_list = get_list_or_404(SimulationGrid.objects.all(), simulation=simulation)
 
-        agents = [AgentSimplex(agent.agent) for agent in agents_grid]
-
-        serializer = AgentSerializer(agents, many=True)
+        serializer = SimulationGridsSerializer([SimulationGridSimplex(gs) for gs in grid_sim_list], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

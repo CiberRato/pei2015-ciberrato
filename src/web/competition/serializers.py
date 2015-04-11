@@ -129,8 +129,13 @@ class SimulationSerializer(serializers.ModelSerializer):
         read_only_fields = ('identifier', 'state', 'created_at', 'updated_at',)
 
 
-class SimulationGridSerializer(serializers.ModelSerializer):
-    pass
+class SimulationGridsSerializer(serializers.ModelSerializer):
+    grid_positions = GridPositionsSerializer()
+
+    class Meta:
+        model = SimulationGrid
+        fields = ('grid_positions', 'position')
+        read_only_fields = ()
 
 
 class SimulationGridInputSerializer(serializers.ModelSerializer):

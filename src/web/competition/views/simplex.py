@@ -52,3 +52,9 @@ class GridPositionsSimplex:
         self.competition_name = ps.competition.name
         self.group_name = ps.group.name
         self.identifier = ps.identifier
+
+
+class SimulationGridSimplex:
+    def __init__(self, sgs):
+        self.grid_positions = GridPositionsSimplex(sgs.grid_positions)
+        self.position = sgs.position
