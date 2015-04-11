@@ -428,6 +428,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
+        # delete the grid position
+        url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=1"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(SimulationGrid.objects.all()), 0)
+
         # delete grid position
         url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
         response = client.delete(path=url)
