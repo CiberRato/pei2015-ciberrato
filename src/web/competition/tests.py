@@ -371,6 +371,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 200)
 
+        # ADMIN retrieve the grids by competition
+        url = "/api/v1/competitions/grid_positions_competition/C1/"
+        response = client.get(path=url, data=data)
+        self.assertEqual(response.data, [{"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"}])
+        self.assertEqual(response.status_code, 200)
+
         # list user grids
         url = "/api/v1/competitions/grid_position/"
         response = client.get(path=url)
@@ -385,12 +391,6 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/agent_grid/"+identifier+"/"
         response = client.get(path=url)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.status_code, 200)
-
-        # delete the agent associated
-        url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=1"
-        response = client.delete(path=url)
-        self.assertEqual(len(AgentGrid.objects.all()), 0)
         self.assertEqual(response.status_code, 200)
 
         # create simulation (only by admin)
@@ -427,6 +427,12 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
+
+        # delete the agent associated
+        url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=1"
+        response = client.delete(path=url)
+        self.assertEqual(len(AgentGrid.objects.all()), 0)
+        self.assertEqual(response.status_code, 200)
 
         # delete the grid position
         url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=1"
