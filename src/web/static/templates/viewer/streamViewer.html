@@ -169,5 +169,44 @@
             </div>
         </article>
     </div>
+    <div class="row"  id="finalResults" style="display: none">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <h2>Results</h2>
+                <section class="viewer">
+                    <div class="row-fluid demo">
+                        <div class="span2">Position</div>
+                        <div class="span2">Name</div>
+                        <div class="span2">Robot</div>
+                        <div class="span2">State</div>
+                        <div class="span2">Collisions</div>
+                        <div class="span2">Final Score</div>
+
+
+                    </div>
+                    <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
+                        <div class="span2 viewer"><h2>{{$index + 1}}º</h2></div>
+                        <div class="span2 viewer"><h2>{{value._Name}}</h2></div>
+                        <div class="span2 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
+                        <div class="span2 viewer"><h2>{{value._State}}</h2></div>
+                        <div class="span2 viewer"><h2>{{value.Scores._Collisions}}</h2></div>
+                        <div class="span2 viewer"><h2>{{value.Scores._Score}}</h2></div>
+                    </div>
+                    <div ng-if="numRobots == 1" class="row-fluid" style="text-align: center">
+                        <div class="span2 viewer"><h2>1º</h2></div>
+                        <div class="span2 viewer"><h2>{{robot._Name}}</h2></div>
+                        <div class="span2 viewer"><img src="{{robotColor[0]}}" width="35" height="35"></div>
+                        <div class="span2 viewer"><h2>{{robot._State}}</h2></div>
+                        <div class="span2 viewer"><h2>{{robot.Scores._Collisions}}</h2></div>
+                        <div class="span2 viewer"><h2>{{robot.Scores._Score}}</h2></div>
+                    </div>
+
+
+                </section>
+            </div>
+        </article>
+    </div>
 </div>
 <script type="text/javascript" src ="static/js/viewer/streamviewer_jquery.js"></script>
