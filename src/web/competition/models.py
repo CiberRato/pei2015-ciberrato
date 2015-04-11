@@ -172,7 +172,7 @@ class Simulation(models.Model):
         return self.identifier
 
 
-class GridGroups(models.Model):
+class SimulationGrid(models.Model):
     grid_positions = models.ForeignKey(GridPositions, blank=False)
     simulation = models.ForeignKey(Simulation, blank=False)
     position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
