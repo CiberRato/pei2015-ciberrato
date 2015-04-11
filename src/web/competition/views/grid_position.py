@@ -11,6 +11,7 @@ from agent.serializers import AgentSerializer
 from .simplex import GridPositionsSimplex
 from ..models import Competition, GridPositions, GroupEnrolled, AgentGrid, Agent
 from ..serializers import GridPositionsSerializer, AgentGridSerializer
+from ..permissions import IsAdmin
 
 
 class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
@@ -306,4 +307,22 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
 
 class GridPositionsByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    pass
+    queryset = GridPositions.objects.all()
+    serializer_class = GridPositionsSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the grid positions by competition
+        B{URL:} ../api/v1/competitions/grid_positions_competition/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The type of competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
+        grids = GridPositions.objects.filter(competition=competition)
+        serializer = self.serializer_class([GridPositionsSimplex(grid) for grid in grids], many=True)
+
+        return Response(serializer.data)
