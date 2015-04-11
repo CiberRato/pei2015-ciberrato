@@ -55,6 +55,7 @@
 
         function CiberWebSocket(){
             if ("WebSocket" in window) {
+                console.log('entrei na funçao');
                 // alert("WebSocket is supported by your Browser!");
                 // Let us open a web socket
                 var opened = false;
@@ -63,10 +64,12 @@
                 var div = document.getElementById('show');
 
                 ws.onopen = function () {
+
                     ws.send("OK");
                     opened = true;
                 };
                 ws.onmessage = function (evt) {
+
                     var received_msg = evt.data;
                     //div.innerHTML = div.innerHTML + received_msg;
                     //console.log(received_msg);
@@ -82,14 +85,14 @@
                         $("#row5").show("slow");
                         doIt();
                         $scope.play();
+                        console.log('play');
                     }
                     //console.log("PLAYVAR " + $scope.playvar);
                 };
                 ws.onclose = function () {
+                    console.log('on close');
                     if(!opened){
                         CiberWebSocket();
-                    }else{
-                        $scope.pause();
                     }
                 };
             }
