@@ -15,7 +15,8 @@ from competition.views.cp_agent import AssociateAgent, AssociateAgentAdmin, Agen
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
     RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet, RoundViewAdminSet, RoundFile
 from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents,  StartSimulation
+    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents,  StartSimulation, \
+    SimulationGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
@@ -84,6 +85,7 @@ router_competitions.register(r'trials_by_agent', SimulationByAgent)
 router_competitions.register(r'trials_by_round', SimulationByRound)
 router_competitions.register(r'trials_by_competition', SimulationByCompetition)
 router_competitions.register(r'trial_agents', GetSimulationAgents)
+router_competitions.register(r'simulation_grid', SimulationGridViewSet)
 # Simulation => Machine to Machine
 
 # COMPETITIONS URLs#

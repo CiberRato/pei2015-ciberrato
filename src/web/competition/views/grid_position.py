@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -8,11 +8,9 @@ from authentication.models import Group, GroupMember
 from agent.simplex import AgentSimplex
 from agent.serializers import AgentSerializer
 
-from ..permissions import IsAdmin
-from .simplex import RoundSimplex, GridPositionsSimplex
-from ..models import Competition, TypeOfCompetition, GridPositions, GroupEnrolled, AgentGrid, Agent
-from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
-    CompetitionStateSerializer, TypeOfCompetitionSerializer, GridPositionsSerializer, AgentGridSerializer
+from .simplex import GridPositionsSimplex
+from ..models import Competition, GridPositions, GroupEnrolled, AgentGrid, Agent
+from ..serializers import GridPositionsSerializer, AgentGridSerializer
 
 
 class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
@@ -25,7 +23,7 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
 
     def list(self, request, *args, **kwargs):
         """
-        B{List} a grid position
+        B{List} user grid position
         B{URL:} ../api/v1/competitions/grid_positions/
         """
         grid_positions = []
@@ -228,14 +226,14 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_403_FORBIDDEN)
 
             if serializer.validated_data['position'] > grid.competition.type_of_competition.number_agents_by_grid:
-                return Response({'status': 'Permission denied',
+                return Response({'status': 'Bad Request',
                                  'message': 'The position can\'t be higher than the number agents allowed by grid.'},
-                                status=status.HTTP_403_FORBIDDEN)
+                                status=status.HTTP_400_BAD_REQUEST)
 
             if len(AgentGrid.objects.filter(grid_position=grid, position=serializer.validated_data['position'])) != 0:
-                return Response({'status': 'Permission denied',
+                return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
-                                status=status.HTTP_403_FORBIDDEN)
+                                status=status.HTTP_400_BAD_REQUEST)
 
             AgentGrid.objects.create(agent=agent, grid_position=grid, position=serializer.validated_data['position'])
 
@@ -269,8 +267,8 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         @type  grid_identifier: str
         @param grid_identifier: The grid identifier
-        @type  agent_name: str
-        @type  agent_name: The agent name
+        @type  position: str
+        @type  position: The position
         """
         grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
         agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
@@ -305,3 +303,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         return Response({'status': 'Deleted',
                          'message': 'The agent has been dissociated!'},
                         status=status.HTTP_200_OK)
+
+
+class GridPositionsByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    pass

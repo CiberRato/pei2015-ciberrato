@@ -393,12 +393,43 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(AgentGrid.objects.all()), 0)
         self.assertEqual(response.status_code, 200)
 
+        # create simulation (only by admin)
+        url = "/api/v1/competitions/trial/"
+        data = {'round_name': 'R1'}
+        response = client.post(path=url, data=data)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        simulation_identifier = rsp['identifier']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
+        self.assertEqual(response.status_code, 201)
+
+        # retrieve the simulation data
+        url = "/api/v1/competitions/trial/" + simulation_identifier + "/"
+        response = client.get(url)
+        rsp = dict(response.data)
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
+        self.assertEqual(response.status_code, 200)
+
+        # associate GridPosition to simulation
+        url = "/api/v1/competitions/simulation_grid/"
+        data = {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1})
+        self.assertEqual(response.status_code, 201)
+
         # delete grid position
         url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
         response = client.delete(path=url)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The grid positions has been deleted"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(GridPositions.objects.all()), 0)
+
+        """ END grid positions """
 
         # associate the agent to the competition
         url = "/api/v1/competitions/associate_agent/"

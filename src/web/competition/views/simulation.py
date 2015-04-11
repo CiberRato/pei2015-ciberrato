@@ -10,8 +10,10 @@ from rest_framework.response import Response
 from agent.models import Agent
 
 from .simplex import SimulationSimplex, SimulationAgentSimplex
-from ..serializers import SimulationSerializer, SimulationAgentSerializer
-from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent
+from ..serializers import SimulationSerializer, SimulationAgentSerializer, SimulationGridSerializer, \
+    SimulationGridInputSerializer
+from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent, SimulationGrid, \
+    GridPositions, GroupEnrolled
 from ..shortcuts import *
 from ..permissions import IsAdmin
 
@@ -297,6 +299,134 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         serializer = self.serializer_class(simulations, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                            mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = SimulationGrid.objects.all()
+    serializer_class = SimulationGridInputSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsAdmin(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Associate} one grid to the simulation
+        B{URL:} ../api/v1/competitions/simulation_grid/
+
+        @type  grid_identifier: str
+        @param grid_identifier: The grid identifier
+        @type  simulation_identifier: str
+        @type  simulation_identifier: The agent name
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            grid_positions = get_object_or_404(GridPositions.objects.all(), identifier=serializer.validated_data['grid_identifier'])
+            simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
+
+            groups_in_grid = len(SimulationGrid.objects.filter(simulation=simulation))
+
+            if groups_in_grid >= grid_positions.competition.type_of_competition.number_teams_for_trial:
+                return Response({'status': 'Bad Request',
+                                 'message': 'You can not add more groups to the grid.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if grid_positions.competition.state_of_competition == 'Past':
+                return Response({'status': 'Bad Request',
+                                 'message': 'The competition is in \'Past\' state.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            group_enrolled = GroupEnrolled.objects.filter(group=grid_positions.group, competition=grid_positions.competition)
+
+            if len(group_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The group must be enrolled in the competition.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if not group_enrolled[0].valid:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The group must be enrolled in the competition with valid inscription.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if serializer.validated_data['position'] > grid_positions.competition.type_of_competition.number_teams_for_trial:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The position can\'t be higher than the number of teams allowed by trial.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if len(SimulationGrid.objects.filter(grid_positions=grid_positions, position=serializer.validated_data['position'])) != 0:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The position has already been taken.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            SimulationGrid.objects.create(grid_positions=grid_positions, simulation=simulation, position=serializer.validated_data['position'])
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': 'You can\'t associate the agent to the Grid with the received data'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} grid positions by simulation
+        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/
+
+        @type  grid_identifier: str
+        @param grid_identifier: The grid identifier
+        """
+        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
+        agents_grid = AgentGrid.objects.filter(grid_position=grid)
+
+        agents = [AgentSimplex(agent.agent) for agent in agents_grid]
+
+        serializer = AgentSerializer(agents, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Delete} the agent in the grid
+        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/?position=<position>
+
+        @type  grid_identifier: str
+        @param grid_identifier: The grid identifier
+        @type  agent_name: str
+        @type  agent_name: The agent name
+        """
+        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
+        agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
+            position=request.GET.get('position', ''))
+
+        agent = agent_grid.agent
+
+        if agent.group not in request.user.groups.all():
+            return Response({'status': 'Bad Request',
+                             'message': 'You must be part of the agent group.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if grid.competition.state_of_competition == 'Past':
+            return Response({'status': 'Bad Request',
+                             'message': 'The competition is in \'Past\' state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=grid.competition)
+
+        if len(group_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not group_enrolled[0].valid:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your group must be enrolled in the competition with valid inscription.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        agent_grid.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The agent has been dissociated!'},
+                        status=status.HTTP_200_OK)
 
 
 class StartSimulation(views.APIView):
