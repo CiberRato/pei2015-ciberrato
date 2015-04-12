@@ -13,7 +13,7 @@ from .simplex import SimulationSimplex, SimulationAgentSimplex, SimulationGridSi
 from ..serializers import SimulationSerializer, SimulationAgentSerializer, SimulationGridsSerializer, \
     SimulationGridInputSerializer
 from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent, SimulationGrid, \
-    GridPositions, GroupEnrolled
+    GridPositions, GroupEnrolled, AgentGrid
 from ..shortcuts import *
 from ..permissions import IsAdmin
 
@@ -146,7 +146,8 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
                                  'message': 'This agent has already in one simulation!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
+            simulation = get_object_or_404(Simulation.objects.all(),
+                identifier=serializer.validated_data['simulation_identifier'])
 
             """
             maxs = dict(settings.NUMBER_AGENTS_BY_SIMULATION)
@@ -186,7 +187,8 @@ class AssociateAgentToSimulation(mixins.CreateModelMixin, mixins.DestroyModelMix
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
             competition_agent = get_object_or_404(CompetitionAgent.objects.all(), round=r, agent=agent)
-            simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
+            simulation = get_object_or_404(Simulation.objects.all(),
+                identifier=serializer.validated_data['simulation_identifier'])
 
             lsa = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
                                                     pos=serializer.validated_data['pos'])
@@ -322,8 +324,10 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            grid_positions = get_object_or_404(GridPositions.objects.all(), identifier=serializer.validated_data['grid_identifier'])
-            simulation = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['simulation_identifier'])
+            grid_positions = get_object_or_404(GridPositions.objects.all(),
+                identifier=serializer.validated_data['grid_identifier'])
+            simulation = get_object_or_404(Simulation.objects.all(),
+                identifier=serializer.validated_data['simulation_identifier'])
 
             groups_in_grid = len(SimulationGrid.objects.filter(simulation=simulation))
 
@@ -337,7 +341,8 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=grid_positions.group, competition=grid_positions.competition)
+            group_enrolled = GroupEnrolled.objects.filter(group=grid_positions.group,
+                                                          competition=grid_positions.competition)
 
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -349,17 +354,20 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if serializer.validated_data['position'] > grid_positions.competition.type_of_competition.number_teams_for_trial:
+            if serializer.validated_data[
+                'position'] > grid_positions.competition.type_of_competition.number_teams_for_trial:
                 return Response({'status': 'Permission denied',
                                  'message': 'The position can\'t be higher than the number of teams allowed by trial.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if len(SimulationGrid.objects.filter(grid_positions=grid_positions, position=serializer.validated_data['position'])) != 0:
+            if len(SimulationGrid.objects.filter(grid_positions=grid_positions,
+                                                 position=serializer.validated_data['position'])) != 0:
                 return Response({'status': 'Permission denied',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            SimulationGrid.objects.create(grid_positions=grid_positions, simulation=simulation, position=serializer.validated_data['position'])
+            SimulationGrid.objects.create(grid_positions=grid_positions, simulation=simulation,
+                                          position=serializer.validated_data['position'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -393,7 +401,8 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  simulation_identifier: The agent name
         """
         sim = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
-        sim_grid = get_object_or_404(SimulationGrid.objects.all(), simulation=sim, position=request.GET.get('position', ''))
+        sim_grid = get_object_or_404(SimulationGrid.objects.all(), simulation=sim,
+            position=request.GET.get('position', ''))
 
         if sim_grid.grid_positions.competition.state_of_competition == 'Past':
             return Response({'status': 'Bad Request',
@@ -435,6 +444,44 @@ class StartSimulation(views.APIView):
         @param trial_id: The trial id
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
+        simulation_grids = SimulationGrid.objects.filter(simulation=simulation)
+
+        pos = 1
+
+        for simulation_grid in simulation_grids:
+            grid_positions = simulation_grid.grid_positions
+            agents_grid = AgentGrid.objects.filter(grid_position=grid_positions)
+            # print simulation_grid.position
+
+            for agent_grid in agents_grid:
+                # print agent_grid.position
+
+                if agent_grid.agent.code_valid:
+                    group_enroll = GroupEnrolled.objects.get(group=agent_grid.agent.group,
+                                                             competition=simulation.round.parent_competition)
+                    if group_enroll.valid:
+                        # competition agent
+                        competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
+                            competition=simulation.round.parent_competition,
+                            agent=agent_grid.agent,
+                            round=simulation.round)) == 0)
+
+                        if competition_agent_not_exists:
+                            competition_agent = CompetitionAgent.objects.create(
+                                competition=simulation.round.parent_competition,
+                                agent=agent_grid.agent,
+                                round=simulation.round)
+                        else:
+                            competition_agent = CompetitionAgent.objects.get(
+                                competition=simulation.round.parent_competition,
+                                agent=agent_grid.agent,
+                                round=simulation.round)
+
+                        # log simulation agent
+                        LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
+                                                          pos=pos)
+                        pos += 1
+
         if simulation_waiting(simulation):
             params = {'trial_id': simulation.identifier}
 
