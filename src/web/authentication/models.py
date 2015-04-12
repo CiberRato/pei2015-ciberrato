@@ -37,7 +37,8 @@ class AccountManager(BaseUserManager):
         Create a superuser, with email, username, teaching institution, first name, last name, password and is_admin == True
         """
         account = self.create_user(email, password, **kwargs)
-        account.is_admin = True
+        account.is_superuser = True
+        account.is_staff = True
         account.save()
 
         return account
@@ -52,7 +53,8 @@ class Account(AbstractBaseUser):
 
     teaching_institution = models.CharField(max_length=140)
 
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     groups = models.ManyToManyField('Group', through='GroupMember', related_name="account")
 
     created_at = models.DateTimeField(auto_now_add=True)

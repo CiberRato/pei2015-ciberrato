@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from ..models import Round
 from ..renderers import PlainTextRenderer
-from ..permissions import IsAdmin
+from ..permissions import IsStaff
 
 
 class GetRoundFile(views.APIView):
@@ -50,7 +50,7 @@ class UploadRoundXMLView(views.APIView):
         self.folder = folder
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def post(self, request):
         if 'round' not in request.GET:

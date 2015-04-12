@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from groups.serializers import GroupSerializer
 from groups.permissions import IsAdminOfGroup
 
-from ..permissions import IsAdmin
+from ..permissions import IsStaff
 from .simplex import RoundSimplex, GroupEnrolledSimplex
 from ..models import Competition, Round, GroupEnrolled
 from ..serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer, \
@@ -149,7 +149,7 @@ class ToggleGroupValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = GroupEnrolledSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
         """

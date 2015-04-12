@@ -20,7 +20,7 @@ class AuthenticationTestCase(TestCase):
         r = Round.objects.create(name="R1", parent_competition=c)
 
         a1 = Account.objects.create(email="rf@rf.pt", username="gipmon", first_name="Rafael", last_name="Ferreira",
-                                    teaching_institution="Universidade de Aveiro", is_admin=True)
+                                    teaching_institution="Universidade de Aveiro", is_staff=True)
         a2 = Account.objects.create(email="ey@rf.pt", username="eypo", first_name="Costa", last_name="Ferreira",
                                     teaching_institution="Universidade de Aveiro")
         a3 = Account.objects.create(email="af@rf.pt", username="eypo94", first_name="Antonio", last_name="Ferreira",

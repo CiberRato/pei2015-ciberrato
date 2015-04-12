@@ -15,7 +15,7 @@ from ..serializers import SimulationSerializer, SimulationAgentSerializer, Simul
 from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent, SimulationGrid, \
     GridPositions, GroupEnrolled, AgentGrid
 from ..shortcuts import *
-from ..permissions import IsAdmin
+from ..permissions import IsStaff
 
 
 class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -26,7 +26,7 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
         """
@@ -184,7 +184,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     serializer_class = SimulationGridInputSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
         """
@@ -307,7 +307,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
 class StartSimulation(views.APIView):
     def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     @staticmethod
     def post(request):

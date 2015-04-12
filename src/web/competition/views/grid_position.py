@@ -9,7 +9,7 @@ from authentication.models import Group, GroupMember
 from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, GroupEnrolled, AgentGrid, Agent
 from ..serializers import GridPositionsSerializer, AgentGridSerializer
-from ..permissions import IsAdmin
+from ..permissions import IsStaff
 
 
 class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
@@ -307,7 +307,7 @@ class GridPositionsByCompetition(mixins.RetrieveModelMixin, viewsets.GenericView
     serializer_class = GridPositionsSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def retrieve(self, request, *args, **kwargs):
         """

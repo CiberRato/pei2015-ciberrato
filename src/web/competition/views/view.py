@@ -4,7 +4,7 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from ..permissions import IsAdmin
+from ..permissions import IsStaff
 from .simplex import RoundSimplex
 from ..models import Competition, TypeOfCompetition
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
@@ -19,7 +19,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, **kwargs):
         """
@@ -171,7 +171,7 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
         """

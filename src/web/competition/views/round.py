@@ -13,7 +13,7 @@ from groups.serializers import GroupSerializer
 
 from ..models import Competition, Round, CompetitionAgent
 from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer, RoundFilesSerializer
-from ..permissions import IsAdmin
+from ..permissions import IsStaff
 from .simplex import RoundSimplex, CompetitionAgentSimplex
 
 
@@ -25,7 +25,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def list(self, request, **kwargs):
         """
@@ -91,7 +91,7 @@ class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = AdminRoundSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(), IsAdmin(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def retrieve(self, request, *args, **kwargs):
         """
