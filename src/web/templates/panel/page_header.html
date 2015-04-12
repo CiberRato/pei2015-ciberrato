@@ -7,7 +7,7 @@
     <!-- Alternative navigation -->
     <nav>
         <ul>
-            {% if user.is_admin %}
+            {% if user.is_superuser %}
             <li><a href="/admin/" target="_top" style="color: #e74949">Administration</a></li>
             {% endif %}
             <li><a href="login.html">Universidade de Aveiro</a></li>

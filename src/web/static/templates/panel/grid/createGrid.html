@@ -1,0 +1,66 @@
+<div class="content-block" role="main">
+
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>Create Grid Position</h2>
+                </header>
+                <section class="tab-content">
+                    <br></br>
+                    <!-- Tab #basic -->
+                    <div class="tab-pane active" id="basic">
+
+                        <!-- Example vertical forms -->
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <p>In this page you can create your grid positions.</p>
+                                <br/>
+                                <p> When you complete your editions, please click on button <strong>Save changes</strong>.</p>
+
+                            </div>
+                            <div class="span8" >
+                                <form role="form" ng-submit="vm.create()">
+                                    <fieldset>
+
+                                        <div class="control-group">
+                                            <label class="control-label" for="select1">Team of the Grid Position</label>
+                                            <div class="controls">
+                                                <select ng-change="vm.change(vm.teams.name)" ng-model="vm.teams.name" id="select1" name="option">
+                                                    <option value="" disabled>--Please select one team</option>
+                                                    <option ng-repeat="(key, value) in vm.teams" value="{{value.name}}">{{value.name}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="control-group" >
+                                            <label class="control-label" for="select">Competition of the Grid Position</label>
+                                            <div class="controls">
+                                                <select ng-if="vm.competitions.length != 0" id="select" name="option">
+                                                    <option value="" disabled>--Please select one competition</option>
+                                                    <option ng-repeat="(key, value) in vm.competitions">{{value.competition_name}}</option>
+                                                </select>
+
+                                                <p ng-if="vm.competitions.length == 0">This Team doesn't have any competitions</p>
+
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button class="btn btn-alt btn-large btn-success" type="submit">Create Grid Position</button>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
+    </div>
+</div>
