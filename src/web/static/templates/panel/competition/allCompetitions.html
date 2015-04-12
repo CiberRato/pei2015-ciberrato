@@ -25,7 +25,7 @@
                             <tr ng-repeat="(key, value) in vm.competitions">
                                 <td ng-if="value.state_of_competition=='Register'"><a href="panel/competitions/{{ value.name }}">{{value.name}}</a></td>
                                 <td ng-if="value.state_of_competition=='Competition' || value.state_of_competition=='Past'"><a href="panel/{{ value.name }}">{{value.name}}</a></td>
-                                <td>{{value.type_of_competition}}</td>
+                                <td>{{value.type_of_competition.name}}</td>
                                 <td>{{value.state_of_competition}}</td>
                             </tr>
                             </tbody>

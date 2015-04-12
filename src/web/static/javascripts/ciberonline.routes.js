@@ -58,6 +58,14 @@
             controller:'SearchController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/search.html'
+        }).when('/panel/createGridPosition',{
+            controller:'CreateGridPositionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/grid/createGrid.html'
+        }).when('/panel/myGridPositions',{
+            controller:'MyGridsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/grid/myGrids.html'
         }).when('/panel/competitions',{
             controller:'AllCompetitionsController',
             controllerAs:'vm',

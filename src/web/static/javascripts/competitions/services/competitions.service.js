@@ -31,7 +31,8 @@
             getAllTypesOfCompetition: getAllTypesOfCompetition,
             removeTypeOfCompetition: removeTypeOfCompetition,
             getType: getType,
-            updateType: updateType
+            updateType: updateType,
+            getValidByTeam: getValidByTeam
 
         };
 
@@ -146,6 +147,10 @@
                 number_teams_for_trial: type.number_teams_for_trial,
                 number_agents_by_grid: type.number_agents_by_grid
             });
+        }
+
+        function getValidByTeam(teamName){
+            return $http.get('/api/v1/competitions/enroll/' + teamName + '/');
         }
 
     }

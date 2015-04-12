@@ -9,7 +9,7 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2>{{ vm.competition.name }} ({{vm.competition.type_of_competition}})</h2>
+                        <h2>{{ vm.competition.name }} ({{vm.competition.type_of_competition.name}})</h2>
 
                         <p ng-if="vm.competitionTeamsInfo.length != 0">Here is shown in table the list of all teams enrolled in this Competition.</p>
                         <table ng-if="vm.competitionTeamsInfo.length != 0" class="table table-striped table-hover">
