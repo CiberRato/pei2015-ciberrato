@@ -406,7 +406,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 4})
 
         # agents associated to the grid
-        url = "/api/v1/competitions/agent_grid/"+identifier+"/"
+        url = "/api/v1/competitions/agent_grid/" + identifier + "/"
         response = client.get(path=url)
         self.assertEqual(len(response.data), 4)
         self.assertEqual(response.status_code, 200)
@@ -437,45 +437,17 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/simulation_grid/"
         data = {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1})
+        self.assertEqual(response.data,
+                         {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1})
         self.assertEqual(response.status_code, 201)
 
         # get gridpositions by simulation
-        url = "/api/v1/competitions/simulation_grid/"+simulation_identifier+"/"
+        url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
-        """
-        # delete the agent associated
-        url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=1"
-        response = client.delete(path=url)
-        self.assertEqual(len(AgentGrid.objects.all()), 3)
-        self.assertEqual(response.status_code, 200)
-
-        # delete the grid position
-        url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=1"
-        response = client.delete(path=url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(SimulationGrid.objects.all()), 0)
-
-        # delete grid position
-        url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
-        response = client.delete(path=url)
-        self.assertEqual(response.data, {"status": "Deleted", "message": "The grid positions has been deleted"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(GridPositions.objects.all()), 0)
-        """
-
         """ END grid positions """
-
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE'})
-        self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 1)
 
         # see the information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/"
@@ -489,156 +461,11 @@ class AuthenticationTestCase(TestCase):
 
         self.assertEqual(rsp,
                          {'agent_name': u'KAMIKAZE', 'language': 'Java', 'is_virtual': False, 'group_name': u'XPTO3',
-                          'competitions': [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-                              [('name', u'Collaborative'), ('number_teams_for_trial', 1),
-                               ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')])],
+                          'competitions': [],
                           'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
                                                ('teaching_institution', u'Universidade de Aveiro'),
                                                ('first_name', u'Rafael'), ('last_name', u'Ferreira')]),
-                          'rounds': [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1')])]})
-
-        # retrieve the agent list of one round
-        url = "/api/v1/competitions/valid_round_agents/R1/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        rsp = response.data
-        del rsp[0]['created_at']
-        del rsp[0]['updated_at']
-        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
-
-        # test participants for one round
-        url = "/api/v1/competitions/valid_round_participants/R1/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        rsp = response.data
-        del rsp[0]['created_at']
-        del rsp[0]['updated_at']
-        del rsp[1]['created_at']
-        del rsp[1]['updated_at']
-
-        self.assertEqual(rsp, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
-                                            ('teaching_institution', u'Universidade de Aveiro'),
-                                            ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                               OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                                            ('teaching_institution', u'Universidade de Aveiro'),
-                                            ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
-
-        # test groups for one round
-        url = "/api/v1/competitions/valid_round_groups/R1/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
-
-        r = Round.objects.get(name="R1")
-        competition_agent = CompetitionAgent.objects.filter(round=r)
-        competition_agent = competition_agent[0]
-        competition_agent.eligible = False
-        competition_agent.save()
-
-        # retrieve the not eligible agents for one round
-        url = "/api/v1/competitions/not_eligible_round_agents/R1/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        rsp = response.data
-        del rsp[0]['created_at']
-        del rsp[0]['updated_at']
-        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
-
-        # retrieve the not eligible participantes for one round
-        url = "/api/v1/competitions/not_eligible_round_participants/R1/"
-        response = client.get(url)
-        rsp = response.data
-        del rsp[0]['created_at']
-        del rsp[0]['updated_at']
-        del rsp[1]['created_at']
-        del rsp[1]['updated_at']
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
-                                                      ('teaching_institution', u'Universidade de Aveiro'),
-                                                      ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
-                                         OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                                                      ('teaching_institution', u'Universidade de Aveiro'),
-                                                      ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
-
-        # test not eligible groups for one round
-        url = "/api/v1/competitions/not_eligible_round_groups/R1/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
-
-        # create simulation (only by admin)
-        url = "/api/v1/competitions/trial/"
-        data = {'round_name': 'R1'}
-        response = client.post(path=url, data=data)
-        rsp = dict(response.data)
-        del rsp['created_at']
-        del rsp['updated_at']
-        identifier = rsp['identifier']
-        del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
-        self.assertEqual(response.status_code, 201)
-
-        # retrieve the simulation data
-        url = "/api/v1/competitions/trial/" + identifier + "/"
-        response = client.get(url)
-        rsp = dict(response.data)
-        del rsp['created_at']
-        del rsp['updated_at']
-        del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
-        self.assertEqual(response.status_code, 200)
-
-        competition_agent.eligible = True
-        competition_agent.save()
-
-        # associate an agent to the simulation (only can be made by an admin)
-        url = "/api/v1/competitions/associate_agent_to_trial/"
-        data = {'round_name': 'R1', 'simulation_identifier': identifier, 'agent_name': 'KAMIKAZE', 'pos': 1}
-        response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data),
-                         {'round_name': u'R1', 'agent_name': u'KAMIKAZE', 'pos': 1,
-                          'simulation_identifier': identifier})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(LogSimulationAgent.objects.all()), 1)
-
-        # get the simulations by agent
-        url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/"
-        response = client.get(url)
-        rsp = response.data[0]
-        del rsp['created_at']
-        del rsp['updated_at']
-        del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
-        self.assertEqual(response.status_code, 200)
-
-        # get the simulations by round
-        url = "/api/v1/competitions/trials_by_round/R1/"
-        response = client.get(url)
-        rsp = response.data[0]
-        del rsp['created_at']
-        del rsp['updated_at']
-        del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
-        self.assertEqual(response.status_code, 200)
-
-        # get the simulations by competition
-        url = "/api/v1/competitions/trials_by_competition/C1/"
-        response = client.get(url)
-        rsp = response.data[0]
-        del rsp['created_at']
-        del rsp['updated_at']
-        del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
-        self.assertEqual(response.status_code, 200)
-
-        # get the simulation groups
-        url = "/api/v1/competitions/trial_agents/" + identifier + "/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict(
-            [('simulation_identifier', u'' + identifier), ('agent_name', u'KAMIKAZE'), ('round_name', u'R1'),
-             ('pos', 1)])])
+                          'rounds': []})
 
         # see round files
         url = "/api/v1/competitions/round_files/R1/"
@@ -688,17 +515,96 @@ class AuthenticationTestCase(TestCase):
         data = {'trial_id': simulation_identifier}
         response = client.post(path=url, data=data)
 
-        # print response
-
         if response.status_code == 200:
             self.assertEqual(response.data, {'status': 'Trial started',
                                              'message': 'Please wait that the trial starts at the simulator!'})
         elif response.status_code == 400:
             self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
 
-        """
+        # retrieve the agent list of one round
+        url = "/api/v1/competitions/round_agents/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
+
+        # test participants for one round
+        url = "/api/v1/competitions/round_participants/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        rsp = response.data
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        del rsp[1]['created_at']
+        del rsp[1]['updated_at']
+
+        self.assertEqual(rsp, [OrderedDict([('email', u'af@rf.pt'), ('username', u'eypo94'),
+                                            ('teaching_institution', u'Universidade de Aveiro'),
+                                            ('first_name', u'Antonio'), ('last_name', u'Ferreira')]),
+                               OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                            ('teaching_institution', u'Universidade de Aveiro'),
+                                            ('first_name', u'Rafael'), ('last_name', u'Ferreira')])])
+
+        # test groups for one round
+        url = "/api/v1/competitions/round_groups/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
+        r = Round.objects.get(name="R1")
+        competition_agent = CompetitionAgent.objects.filter(round=r)
+        competition_agent = competition_agent[0]
+        competition_agent.eligible = False
+        competition_agent.save()
+
+        # get the simulations by agent
+        url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by round
+        url = "/api/v1/competitions/trials_by_round/R1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulations by competition
+        url = "/api/v1/competitions/trials_by_competition/C1/"
+        response = client.get(url)
+        rsp = response.data[0]
+        del rsp['created_at']
+        del rsp['updated_at']
+        del rsp['identifier']
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'WAITING'})
+        self.assertEqual(response.status_code, 200)
+
+        # get the simulation groups
+        url = "/api/v1/competitions/trial_agents/" + simulation_identifier + "/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [OrderedDict(
+            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+             ('round_name', u'R1'), ('pos', 1)]), OrderedDict(
+            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+             ('round_name', u'R1'), ('pos', 2)]), OrderedDict(
+            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+             ('round_name', u'R1'), ('pos', 3)]), OrderedDict(
+            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+             ('round_name', u'R1'), ('pos', 4)])])
+
         # get simulation for simulate
-        url = "/api/v1/simulations/get_simulation/" + identifier + "/"
+        url = "/api/v1/simulations/get_simulation/" + simulation_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = response.data
@@ -712,26 +618,19 @@ class AuthenticationTestCase(TestCase):
         # save simulation logs (only server by server)
         f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
         url = "/api/v1/simulations/simulation_log/"
-        data = {'simulation_identifier': identifier, 'log_json': f}
+        data = {'simulation_identifier': simulation_identifier, 'log_json': f}
         response = client.post(url, data)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
         self.assertEqual(response.status_code, 201)
-        simulation = Simulation.objects.get(identifier=identifier)
+        simulation = Simulation.objects.get(identifier=simulation_identifier)
         self.assertEqual(simulation.log_json is None, False)
 
         # get log sent
-        url = "/api/v1/competitions/get_simulation_log/" + identifier + "/"
+        url = "/api/v1/competitions/get_simulation_log/" + simulation_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
         simulation.log_json.delete()
-
-        # delete simulation
-        url = "/api/v1/competitions/associate_agent_to_trial/" + identifier + "/?round_name=R1&agent_name=KAMIKAZE"
-        response = client.delete(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation agent has been deleted!'})
-        self.assertEqual(len(LogSimulationAgent.objects.all()), 0)
 
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
@@ -758,36 +657,34 @@ class AuthenticationTestCase(TestCase):
             r.param_list_path.delete()
             r.grid_path.delete()
 
-        # deassociate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/KAMIKAZE/?competition_name=C1"
-        response = client.delete(url)
-        self.assertEqual(response.status_code, response.status_code)
-        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
-        self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
 
-        # associate agent to round
-        url = '/api/v1/competitions/associate_agent_admin/'
-        data = {'round_name': 'R1', 'agent_name': 'KAMIKAZE'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data, OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')]))
-        self.assertEqual(response.status_code, 201)
+        # delete the agent associated
+        url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=1"
+        response = client.delete(path=url)
+        self.assertEqual(len(AgentGrid.objects.all()), 3)
+        self.assertEqual(response.status_code, 200)
 
-        # deassociate the agent to the competition
-        url = "/api/v1/competitions/associate_agent_admin/KAMIKAZE/"
-        data = {'round_name': 'R1'}
-        response = client.delete(path=url, data=data)
-        self.assertEqual(response.status_code, response.status_code)
-        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The competition agent has been deleted!'})
-        self.assertEqual(len(CompetitionAgent.objects.filter(agent=agent)), 0)
+        # delete the grid position
+        url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=1"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(SimulationGrid.objects.all()), 0)
+
+        # delete grid position
+        url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The grid positions has been deleted"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(GridPositions.objects.all()), 0)
 
         # delete the simulation data
-        url = "/api/v1/competitions/trial/" + identifier + "/"
+        url = "/api/v1/competitions/trial/" + simulation_identifier + "/"
         response = client.delete(url)
         self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation has been deleted'})
         self.assertEqual(response.status_code, 200)
 
         # retrieve the simulation data
-        url = "/api/v1/competitions/trial/" + identifier + "/"
+        url = "/api/v1/competitions/trial/" + simulation_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.data, {u'detail': u'Not found.'})
 
@@ -818,9 +715,6 @@ class AuthenticationTestCase(TestCase):
                           OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])],
                          response.data)
         self.assertEqual(response.status_code, 200)
-
-        # get agent competitions
-        url = ""
 
         c = Competition.objects.get(name="C1")
         Round.objects.create(name="R2", parent_competition=c)
@@ -884,14 +778,13 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [])
-        """
+
         client.force_authenticate(user=None)
 
     def cascade_setup(self):
         references = []
 
         # competitive and colaborative methods
-        competitiva = TypeOfCompetition.objects.get(name='Competitive')
         colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
 
         # create competition
@@ -1129,61 +1022,28 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data,
                          [OrderedDict([('competition_name', u'C1'), ('group_name', u'XPTO3'), ('valid', True)])])
 
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE1'}
+        # create grid position
+        url = "/api/v1/competitions/grid_position/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE1'})
+        identifier = response.data["identifier"]
+        self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(CompetitionAgent.objects.all()), 1)
 
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE2'}
+
+        # associate agent to the grid
+        for i in range(1, 6):
+            url = "/api/v1/competitions/agent_grid/"
+            agent = 'KAMIKAZE'+str(i), i
+            data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
+            response = client.post(path=url, data=data)
+            self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
+
+        url = "/api/v1/competitions/agent_grid/"
+        agent = 'KAMIKAZE6', 6
+        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE2'})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(CompetitionAgent.objects.all()), 2)
-
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE3'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE3'})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(CompetitionAgent.objects.all()), 3)
-
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE4'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE4'})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(CompetitionAgent.objects.all()), 4)
-
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE5'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE5'})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(CompetitionAgent.objects.all()), 5)
-
-        # see the agents in the competition
-        url = "/api/v1/competitions/agents_by_competition_group/XPTO3/?competition_name=C1"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-
-        # reach maximum agents in competition
-        """
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE6'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Reached the limit of agents',
-                                         'message': 'Reached the number of competition_agents!'})
-        self.assertEqual(response.status_code, 400)
-        """
+        self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
 
         client.force_authenticate(user=None)
 
@@ -1194,7 +1054,6 @@ class AuthenticationTestCase(TestCase):
 
         # competitive and colaborative methods
         competitiva = TypeOfCompetition.objects.get(name='Competitive')
-        colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
 
         c = Competition.objects.get(name="C1")
         c.type_of_competition = competitiva
@@ -1238,23 +1097,25 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
         self.assertEqual(response.status_code, 200)
 
-        # associate the agent to the competition
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE1'}
+        # create grid position
+        url = "/api/v1/competitions/grid_position/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO3'}
         response = client.post(path=url, data=data)
-        self.assertEqual(dict(response.data), {'competition_name': u'C1', 'agent_name': u'KAMIKAZE1'})
+        identifier = response.data["identifier"]
+        self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(CompetitionAgent.objects.all()), 1)
 
-        # reach maximum agents in competition
-        """
-        url = "/api/v1/competitions/associate_agent/"
-        data = {'competition_name': 'C1', 'agent_name': 'KAMIKAZE2'}
+        url = "/api/v1/competitions/agent_grid/"
+        agent = 'KAMIKAZE1', 1
+        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Reached the limit of agents',
-                                         'message': 'Reached the number of competition_agents!'})
-        self.assertEqual(response.status_code, 400)
-        """
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
+
+        url = "/api/v1/competitions/agent_grid/"
+        agent = 'KAMIKAZE2', 2
+        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
 
         client.force_authenticate(user=None)
 
