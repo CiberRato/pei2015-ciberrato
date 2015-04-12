@@ -1030,20 +1030,41 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"identifier": identifier, "competition_name": "C1", "group_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
-
         # associate agent to the grid
         for i in range(1, 6):
             url = "/api/v1/competitions/agent_grid/"
-            agent = 'KAMIKAZE'+str(i), i
+            agent = 'KAMIKAZE' + str(i), i
             data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
             response = client.post(path=url, data=data)
-            self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
+            self.assertEqual(response.data,
+                             {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
+
+        # clean the 4
+        url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=4"
+        response = client.delete(path=url, data=data)
+
+        url = "/api/v1/competitions/agent_grid/"
+        agent = 'KAMIKAZE' + str(4), 4
+        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
+
+        # see agents order
+        url = "/api/v1/competitions/agent_grid/" + identifier + "/"
+        response = client.get(path=url)
+        self.assertEqual(response.data, [
+            {"grid_identifier": identifier, "agent_name": "KAMIKAZE1", "position": 1},
+            {"grid_identifier": identifier, "agent_name": "KAMIKAZE2", "position": 2},
+            {"grid_identifier": identifier, "agent_name": "KAMIKAZE3", "position": 3},
+            {"grid_identifier": identifier, "agent_name": "KAMIKAZE4", "position": 4},
+            {"grid_identifier": identifier, "agent_name": "KAMIKAZE5", "position": 5}])
 
         url = "/api/v1/competitions/agent_grid/"
         agent = 'KAMIKAZE6', 6
         data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
+        self.assertEqual(response.data,
+                         {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
 
         client.force_authenticate(user=None)
 
@@ -1115,7 +1136,8 @@ class AuthenticationTestCase(TestCase):
         agent = 'KAMIKAZE2', 2
         data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
+        self.assertEqual(response.data,
+                         {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
 
         client.force_authenticate(user=None)
 

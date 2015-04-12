@@ -127,7 +127,7 @@ class AgentGrid(models.Model):
 
     class Meta:
         unique_together = ('position', 'grid_position',)
-        ordering = ['grid_position']
+        ordering = ('position', 'grid_position',)
 
 
 class CompetitionAgent(models.Model):
@@ -181,4 +181,4 @@ class SimulationGrid(models.Model):
 
     class Meta:
         unique_together = ('position', 'simulation',)
-        ordering = ['position']
+        ordering = ('position',)

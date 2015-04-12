@@ -325,7 +325,7 @@ class StartSimulation(views.APIView):
 
         for simulation_grid in simulation_grids:
             grid_positions = simulation_grid.grid_positions
-            agents_grid = AgentGrid.objects.filter(grid_position=grid_positions).order_by('grid_position')
+            agents_grid = AgentGrid.objects.filter(grid_position=grid_positions)
 
             # print simulation_grid.position
 
