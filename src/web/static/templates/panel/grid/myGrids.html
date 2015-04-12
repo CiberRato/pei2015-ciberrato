@@ -44,19 +44,21 @@
                                                              yourself using the dnd-moved attribute -->
                                                         <li ng-if="listName == 'GridPosition'" ng-repeat="item in list"
                                                             dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1); vm.disassociate(item.pos)"
+                                                            dnd-moved="list.splice($index, 1); "
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"
-                                                               >
-                                                            {{item.pos}} - {{item.label}}
+                                                            dnd-disable-if="true"
+                                                        >
+                                                            {{item.pos}} - {{item.label}} <button type="button" class="close" ng-click="vm.disassociate(item.pos)">×</button>
+
                                                         </li>
                                                         <li ng-if="listName == 'Available'" ng-repeat="item in list"
                                                             dnd-draggable="item"
                                                             dnd-moved="list.splice($index, 1); vm.associate(item.label);"
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
-                                                            ng-class="{'selected': vm.models.selected === item, 'from': 'available'}"
+                                                            ng-class="{'selected': vm.models.selected === item}"
                                                             dnd-disable-if="vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"
                                                                 >
                                                             {{item.label}}

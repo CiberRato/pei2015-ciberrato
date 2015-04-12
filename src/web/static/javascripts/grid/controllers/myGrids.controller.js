@@ -12,7 +12,6 @@
 
         vm.models = {
             selected: null,
-            from: null,
             lists: {"Available": [], "GridPosition": []}
         };
 
@@ -70,7 +69,7 @@
         function getByGroupSuccessFn(data){
             vm.models.lists.Available = [];
             for (var i = 0; i < data.data.length; ++i) {
-                vm.models.lists.Available.push({label: data.data[i].agent_name});
+                vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
             }
         }
 
@@ -84,7 +83,7 @@
         function getAssociatedSuccessFn(data){
             vm.models.lists.GridPosition = [];
             for (var i = 0; i < data.data.length; ++i) {
-                vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position});
+                vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position, type: 'Grid'});
             }
         }
 
@@ -95,6 +94,8 @@
         }
 
         function associate(agent_name){
+            console.log(vm.models.lists);
+
             var pos = vm.models.lists.GridPosition.length;
             Grid.associateAgent(agent_name, vm.identifier, pos).then(associateSuccessFn, associateErrorFn);
 
@@ -110,16 +111,13 @@
 
             function associateErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Agent can't be associated.", {
-                    life: 2500,
-                    theme: 'btn-danger'
-                });
             }
 
         }
 
         function disassociate(pos){
             Grid.disassociateAgent(vm.identifier, pos).then(disassociateSuccessFn, disassociateErrorFn);
+            console.log(vm.models.selected);
 
             function disassociateSuccessFn(){
                 $.jGrowl("Agent has been disassociated successfully.", {
@@ -142,7 +140,7 @@
             function getAssociatedAgentsSuccessFn(data){
                 vm.models.lists.GridPosition = [];
                 for (var i = 0; i < data.data.length; ++i) {
-                    vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position});
+                    vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position, type: 'Grid'});
                 }
                 if(vm.models.lists.GridPosition !== []){
                     for(var j = 0; j<vm.models.lists.GridPosition.length; j++){
