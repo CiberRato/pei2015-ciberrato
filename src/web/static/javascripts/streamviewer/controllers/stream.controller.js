@@ -55,6 +55,7 @@
 
         function CiberWebSocket(){
             if ("WebSocket" in window) {
+                console.log('entrei na funçao');
                 // alert("WebSocket is supported by your Browser!");
                 // Let us open a web socket
                 var opened = false;
@@ -63,10 +64,12 @@
                 var div = document.getElementById('show');
 
                 ws.onopen = function () {
+
                     ws.send("OK");
                     opened = true;
                 };
                 ws.onmessage = function (evt) {
+
                     var received_msg = evt.data;
                     //div.innerHTML = div.innerHTML + received_msg;
                     //console.log(received_msg);
@@ -77,19 +80,17 @@
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
-                        $("#row3").show("slow");
-                        $("#row4").show("slow");
                         $("#row5").show("slow");
                         doIt();
                         $scope.play();
+                        console.log('play');
                     }
                     //console.log("PLAYVAR " + $scope.playvar);
                 };
                 ws.onclose = function () {
+                    console.log('on close');
                     if(!opened){
                         CiberWebSocket();
-                    }else{
-                        $scope.pause();
                     }
                 };
             }
@@ -122,6 +123,7 @@
 
             /* Zoom variable (30->Standard) */
             $scope.zoom = 30;
+            $scope.finalResults = [];
 
             /* JSON to Object */
             var lab_obj = angular.fromJson(lab);
@@ -256,6 +258,18 @@
 
             /* Update timeline */
             var tick = function() {
+                console.log('a ir');
+                if($scope.logBuff_obj[$scope.logBuff_obj.length-1].LogInfo._Time == $scope.logBuff_obj[$scope.idx].LogInfo._Time){
+                    $scope.playvar=-1;
+                    console.log('parou tudo');
+                    /*if($scope.numRobots != 1){
+                        for (var robot in $scope.logBuff_obj[logBuff_obj.length-1].LogInfo.Robot)
+                            $scope.finalResults.push([robot, $scope.logBuff_obj[logBuff_obj.length-1].LogInfo.Robot[robot]])
+                        $scope.finalResults.sort(function(a, b) {return a[1].Scores._Score - b[1].Scores._Score})
+
+                    }*/
+
+                }
                 try{
                     $scope.updateValues();
 
@@ -266,8 +280,17 @@
                 }catch(TypeError){
 
                 }
+
                 if($scope.playvar){
                     refresh($scope.refresh_rate);
+                }
+
+                if($scope.playvar == -1){
+
+                    $("#row1").hide("slow");
+                    $("#row2").hide("slow");
+                    $("#finalResults").show("slow");
+
                 }
             };
 
