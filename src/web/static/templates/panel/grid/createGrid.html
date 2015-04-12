@@ -41,7 +41,7 @@
                                             <div class="controls">
                                                 <select ng-if="vm.competitions.length != 0" id="select" name="option">
                                                     <option value="" disabled>--Please select one competition</option>
-                                                    <option ng-repeat="(key, value) in vm.competitions">{{value.competition_name}}</option>
+                                                    <option ng-repeat="(key, value) in vm.competitions">{{value.competition.name}} (Agents by Grid: {{value.competition.type_of_competition.number_agents_by_grid}})</option>
                                                 </select>
 
                                                 <p ng-if="vm.competitions.length == 0">This Team doesn't have any competitions</p>

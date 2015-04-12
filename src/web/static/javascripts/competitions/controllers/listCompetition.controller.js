@@ -35,7 +35,7 @@
 
                         function agentsSuccessFn(data) {
                             vm.competitionTeamsInfo[l].agents = data.data;
-                            console.log(vm.competitionTeamsInfo[l].agents.length);
+                            console.log(vm.competitionTeamsInfo[l]);
                         }
 
                         function agentsErrorFn(data) {

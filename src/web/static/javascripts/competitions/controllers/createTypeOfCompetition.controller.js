@@ -26,7 +26,6 @@
             Competition.createTypeOfCompetition(vm.typeOfCompetitionName, vm.teamsForTrial, vm.agentsByGrid).then(createSuccessFn, createErrorFn);
 
             function createSuccessFn(){
-                console.log("aqui");
                 $.jGrowl("Type Of Competition has been created successfully.", {
                     life: 2500,
                     theme: 'success'
@@ -37,7 +36,7 @@
 
             function createErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Competition could not be created.", {
+                $.jGrowl("Type Of Competition could not be created.", {
                     life: 2500,
                     theme: 'btn-danger'
                 });

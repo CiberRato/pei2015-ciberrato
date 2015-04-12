@@ -117,8 +117,7 @@
 
         function disassociate(pos){
             Grid.disassociateAgent(vm.identifier, pos).then(disassociateSuccessFn, disassociateErrorFn);
-            console.log(vm.models.selected);
-
+            console.log(vm.models.lists.GridPosition);
             function disassociateSuccessFn(){
                 $.jGrowl("Agent has been disassociated successfully.", {
                     life: 2500,
@@ -140,15 +139,21 @@
             function getAssociatedAgentsSuccessFn(data){
                 vm.models.lists.GridPosition = [];
                 for (var i = 0; i < data.data.length; ++i) {
-                    vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position, type: 'Grid'});
+                    vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position});
                 }
+                console.log(vm.models.lists.GridPosition);
+
                 if(vm.models.lists.GridPosition !== []){
                     for(var j = 0; j<vm.models.lists.GridPosition.length; j++){
                         Grid.disassociateAgent(vm.identifier, vm.models.lists.GridPosition[j].pos);
                     }
+                    console.log(vm.models.lists.GridPosition);
+
                     for(var k= 0; k<vm.models.lists.GridPosition.length; k++){
                         gridAssociate(vm.models.lists.GridPosition[k].label, k+1);
                     }
+                    console.log(vm.models.lists.GridPosition);
+
 
                 }
 
