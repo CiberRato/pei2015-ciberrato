@@ -16,16 +16,6 @@ class TypeOfCompetitionSerializer(serializers.ModelSerializer):
         read_only_fields = ()
 
 
-class GridPositionsSerializer(serializers.ModelSerializer):
-    competition_name = serializers.CharField()
-    group_name = serializers.CharField()
-
-    class Meta:
-        model = GridPositions
-        fields = ('identifier', 'competition_name', 'group_name')
-        read_only_fields = ('identifier',)
-
-
 class AgentGridSerializer(serializers.ModelSerializer):
     grid_identifier = serializers.CharField()
     agent_name = serializers.CharField()
@@ -52,6 +42,18 @@ class CompetitionInputSerializer(serializers.ModelSerializer):
         model = Competition
         fields = ('name', 'type_of_competition', 'state_of_competition')
         read_only_fields = ('state_of_competition',)
+
+
+class GridPositionsSerializer(serializers.ModelSerializer):
+    competition_name = serializers.CharField(write_only=True)
+    group_name = serializers.CharField()
+
+    competition = CompetitionSerializer(read_only=True)
+
+    class Meta:
+        model = GridPositions
+        fields = ('identifier', 'competition',  'competition_name', 'group_name')
+        read_only_fields = ('competition', 'identifier',)
 
 
 class CompetitionStateSerializer(serializers.ModelSerializer):

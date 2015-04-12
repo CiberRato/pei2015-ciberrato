@@ -49,7 +49,7 @@ class SimulationAgentSimplex:
 
 class GridPositionsSimplex:
     def __init__(self, ps):
-        self.competition_name = ps.competition.name
+        self.competition = ps.competition
         self.group_name = ps.group.name
         self.identifier = ps.identifier
 
