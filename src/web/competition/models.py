@@ -181,4 +181,4 @@ class SimulationGrid(models.Model):
 
     class Meta:
         unique_together = ('position', 'simulation',)
-        ordering = ('position',)
+        ordering = ('position', 'grid_positions', 'simulation')

@@ -80,14 +80,17 @@ class AdminRoundSerializer(serializers.ModelSerializer):
 
 
 class GroupEnrolledSerializer(serializers.ModelSerializer):
-    competition_name = serializers.CharField(max_length=128)
+    competition_name = serializers.CharField(max_length=128, write_only=True)
     group_name = serializers.CharField(max_length=128)
     valid = serializers.BooleanField(read_only=True)
 
+
+    competition = CompetitionSerializer(read_only=True)
+
     class Meta:
         model = GroupEnrolled
-        fields = ('competition_name', 'group_name', 'valid',)
-        read_only_fields = ('valid',)
+        fields = ('competition', 'competition_name', 'group_name', 'valid',)
+        read_only_fields = ('competition', 'valid',)
 
 
 class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
