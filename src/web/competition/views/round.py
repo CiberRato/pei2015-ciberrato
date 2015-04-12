@@ -116,36 +116,13 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the agents available to compete in the round
-        B{URL:} ../api/v1/competitions/valid_round_agents/<round_name>/
+        B{URL:} ../api/v1/competitions/round_agents/<round_name>/
 
         @type  round_name: str
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
-        competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
-        serializer = self.serializer_class(competition_agents, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AgentsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = CompetitionAgent.objects.all()
-    serializer_class = RoundAgentSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the agents available to compete in the round
-        B{URL:} ../api/v1/competitions/not_eligible_round_agents/<round_name>/
-
-        @type  round_name: str
-        @param round_name: The round name
-        """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
         serializer = self.serializer_class(competition_agents, many=True)
 
@@ -162,40 +139,13 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the participants available to compete in the round
-        B{URL:} ../api/v1/competitions/valid_round_participants/<round_name>/
+        B{URL:} ../api/v1/competitions/round_participants/<round_name>/
 
         @type  round_name: str
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
-        competition_groups = [agent.agent.group for agent in competition_agents]
-        accounts = []
-        for group in competition_groups:
-            group_members = GroupMember.objects.filter(group=group)
-            accounts += [group_member.account for group_member in group_members]
-        serializer = self.serializer_class(accounts, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class RoundParticipantsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = CompetitionAgent.objects.all()
-    serializer_class = AccountSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the participants available to compete in the round
-        B{URL:} ../api/v1/competitions/not_eligible_round_participants/<round_name>/
-
-        @type  round_name: str
-        @param round_name: The round name
-        """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_groups = [agent.agent.group for agent in competition_agents]
         accounts = []
         for group in competition_groups:
@@ -216,36 +166,13 @@ class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the groups available to compete in the round
-        B{URL:} ../api/v1/competitions/valid_round_groups/<round_name>/
+        B{URL:} ../api/v1/competitions/round_groups/<round_name>/
 
         @type  round_name: str
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=True)
-        competition_groups = [agent.agent.group for agent in competition_agents]
-        serializer = self.serializer_class(competition_groups, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class RoundGroupsNotEligible(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = CompetitionAgent.objects.all()
-    serializer_class = GroupSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the groups available to compete in the round
-        B{URL:} ../api/v1/competitions/not_eligible_round_groups/<round_name>/
-
-        @type  round_name: str
-        @param round_name: The round name
-        """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        competition_agents = CompetitionAgent.objects.filter(round=r, eligible=False)
+        competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_groups = [agent.agent.group for agent in competition_agents]
         serializer = self.serializer_class(competition_groups, many=True)
 

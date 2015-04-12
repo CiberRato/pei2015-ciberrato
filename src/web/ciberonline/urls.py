@@ -11,12 +11,10 @@ from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet
 from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
     CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledGroupsViewSet, ToggleGroupValid, \
     MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
-from competition.views.cp_agent import AssociateAgent, AssociateAgentAdmin, AgentsAssociated
-from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, AgentsNotEligible, \
-    RoundParticipantsNotEligible, RoundGroupsNotEligible, RoundViewSet, RoundViewAdminSet, RoundFile
-from competition.views.simulation import SimulationViewSet, AssociateAgentToSimulation, \
-    SimulationByAgent, SimulationByRound, SimulationByCompetition, GetSimulationAgents,  StartSimulation, \
-    SimulationGridViewSet
+from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, RoundViewSet, RoundViewAdminSet, \
+    RoundFile
+from competition.views.simulation import SimulationViewSet, SimulationByAgent, SimulationByRound, \
+    SimulationByCompetition, GetSimulationAgents,  StartSimulation, SimulationGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
@@ -65,23 +63,15 @@ router_competitions.register(r'my_enrolled_groups', MyEnrolledGroupsViewSet)
 router_competitions.register(r'my_enrolled_groups_competition', MyEnrolledGroupsInCompetitionViewSet)
 router_competitions.register(r'group_enrolled_competitions', GetEnrolledGroupCompetitionsViewSet)
 router_competitions.register(r'toggle_group_inscription', ToggleGroupValid)
-# Agent
-router_competitions.register(r'associate_agent', AssociateAgent)
-router_competitions.register(r'associate_agent_admin', AssociateAgentAdmin)
-router_competitions.register(r'agents_by_competition_group', AgentsAssociated)
 # Round
 router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'round_admin', RoundViewAdminSet)
-router_competitions.register(r'valid_round_agents', AgentsRound)
-router_competitions.register(r'valid_round_participants', RoundParticipants)
-router_competitions.register(r'valid_round_groups', RoundGroups)
-router_competitions.register(r'not_eligible_round_agents', AgentsNotEligible)
-router_competitions.register(r'not_eligible_round_participants', RoundParticipantsNotEligible)
-router_competitions.register(r'not_eligible_round_groups', RoundGroupsNotEligible)
+router_competitions.register(r'round_agents', AgentsRound)
+router_competitions.register(r'round_participants', RoundParticipants)
+router_competitions.register(r'round_groups', RoundGroups)
 router_competitions.register(r'round_files', RoundFile)
 # Simulation
 router_competitions.register(r'trial', SimulationViewSet)
-router_competitions.register(r'associate_agent_to_trial', AssociateAgentToSimulation)
 router_competitions.register(r'trials_by_agent', SimulationByAgent)
 router_competitions.register(r'trials_by_round', SimulationByRound)
 router_competitions.register(r'trials_by_competition', SimulationByCompetition)
@@ -160,4 +150,4 @@ urlpatterns = patterns('',
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
                        url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')
 )
-urlpatterns[:0] = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns[:0] = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
