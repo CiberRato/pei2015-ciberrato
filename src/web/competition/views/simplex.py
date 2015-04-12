@@ -58,3 +58,10 @@ class SimulationGridSimplex:
     def __init__(self, sgs):
         self.grid_positions = GridPositionsSimplex(sgs.grid_positions)
         self.position = sgs.position
+
+
+class AgentGridSimplex:
+    def __init__(self, sgs):
+        self.grid_identifier = sgs.grid_position.identifier
+        self.agent_name = sgs.agent.agent_name
+        self.position = sgs.position

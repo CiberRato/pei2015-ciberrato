@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from authentication.models import Group, GroupMember
 
-from .simplex import GridPositionsSimplex
+from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, GroupEnrolled, AgentGrid, Agent
 from ..serializers import GridPositionsSerializer, AgentGridSerializer
 from ..permissions import IsAdmin
@@ -253,7 +253,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
         agents_grid = AgentGrid.objects.filter(grid_position=grid)
 
-        serializer = AgentGridSerializer(agents_grid, many=True)
+        serializer = self.serializer_class([AgentGridSimplex(agent_grid) for agent_grid in agents_grid], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
