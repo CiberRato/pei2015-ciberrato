@@ -135,8 +135,6 @@ class CompetitionAgent(models.Model):
     round = models.ForeignKey(Round, blank=False)
     agent = models.ForeignKey(Agent, blank=False)
 
-    eligible = models.BooleanField(default=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
