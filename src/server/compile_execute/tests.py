@@ -7,8 +7,10 @@ import time
 from xml.dom import minidom
 
 
-#def test_fileExists():
-#	assert os.path.exists('cibertools-v2.2/robsample/robsample_python.py')
+def test_executeExists():
+	assert os.path.exists('execute.sh')
+def test_prepareExists():
+	assert os.path.exists('prepare.sh')
 
 def create_simulator():
 	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
