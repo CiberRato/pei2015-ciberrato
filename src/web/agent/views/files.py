@@ -189,18 +189,9 @@ class UploadAgent(views.APIView):
 
 class GetAgentFiles(views.APIView):
     @staticmethod
-    def get(request, simulation_id, agent_name):
+    def get(request, agent_name):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
-
-        # simulation_id
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
-
-        # see if round is in agent rounds
-        if simulation.round not in [cp_agent.round for cp_agent in agent.competitionagent_set.all()]:
-            return Response({'status': 'Bad request',
-                             'message': 'The agent is not in this round.'},
-                            status=status.HTTP_400_BAD_REQUEST)
 
         if not agent.locations or len(json.loads(agent.locations)) == 0:
             return Response({'status': 'Bad request',
@@ -215,7 +206,7 @@ class GetAgentFiles(views.APIView):
 
         wrapper = FileWrapper(temp)
         response = HttpResponse(wrapper, content_type="application/x-compressed")
-        response['Content-Disposition'] = 'attachment; filename=' + simulation_id + agent_name + '.tar.gz'
+        response['Content-Disposition'] = 'attachment; filename=' + agent_name + '.tar.gz'
         response['Content-Length'] = getsize(temp.name)
         temp.seek(0)
         return response
