@@ -34,7 +34,29 @@ class GetSimId(object):
 class TestAgent():
 	@cherrypy.expose
 	def index(self, **kwargs):
-		return "Hello!"
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+
+		if "simulation_identifier" not in kwargs or "agent_name" not in kwargs:
+			raise cherrypy.HTTPError(400, "Parameters simulation_identifier and agent_name were expected.")
+		
+		sim_id = kwargs["simulation_identifier"]
+		agent_name = kwargs["agent_name"]
+
+		AGENT_ENDPOINT = settings["urls"]["get_agent"] + agent_name + "/"
+
+		docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
+									  "bash -c 'curl " \
+									  "%s" \
+									  " | tar -xz;" \
+									  " py.test tests.py'" %  \
+									  (AGENT_ENDPOINT, ),
+									  shell = True, stdout = subprocess.PIPE)
+		docker_container = docker.stdout.readline().strip()
+		docker.wait()
+		#print docker.returncode
+
+		return AGENT_ENDPOINT
 
 class EndPoint():
 	def start(self):

@@ -16,4 +16,7 @@ RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(
 # Adding c++ python libraries
 ADD ./libraries/cpp /lib/
 
+# Adding tests to the Docker
+ADD ./tests.py /ciber/user_sourcecode
+
 WORKDIR /ciber/user_sourcecode
