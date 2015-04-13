@@ -2,7 +2,7 @@ import multiprocessing
 import time
 import re
 from starter import *
-from get_sim_id import *
+from serverEndpoints import *
 
 def main():
 
@@ -17,11 +17,9 @@ def main():
 	endPoint = multiprocessing.Process(target=endPoint.start)
 	endPoint.daemon = True
 	endPoint.start()
-	print "Get Sim Id End-Point has been started.."
-
+	print "Webservice has been started.."
 
 	starter.join()
-
 
 if __name__ == "__main__":
 	main()
