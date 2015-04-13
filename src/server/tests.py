@@ -7,8 +7,8 @@ import time
 from xml.dom import minidom
 
 
-def test_fileExists():
-	assert os.path.exists('cibertools-v2.2/robsample/robsample_python.py')
+#def test_fileExists():
+#	assert os.path.exists('cibertools-v2.2/robsample/robsample_python.py')
 
 def create_simulator():
 	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
@@ -17,15 +17,15 @@ def create_simulator():
 	return simulator_dummy
 
 def test_RobotName():
-
-
 	simulator_dummy = create_simulator()
 	roboNome = "ciber"
 	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 
 	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
-	agent = subprocess.Popen(["python", agentPath, "-robname", roboNome], stdout=subprocess.PIPE)
-	
+	#agent = subprocess.Popen(["python", agentPath, "-robname", roboNome], stdout=subprocess.PIPE)
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 1 "+roboNome, 
+						shell=True, stdout=subprocess.PIPE)
+
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 
 	parametersXML = minidom.parseString(data.replace("\x00", ""))
@@ -34,11 +34,10 @@ def test_RobotName():
 
 	assert nameRobot == roboNome
 
-
 	#para verificar que "esta correcto"
 	roboNome = "sdfkb"
-
-	agent = subprocess.Popen(["python", agentPath, "-robname", roboNome], stdout=subprocess.PIPE)
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 1 "+roboNome, 
+						shell=True, stdout=subprocess.PIPE)
 
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 
@@ -57,7 +56,9 @@ def test_posicao():
 	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 
 	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000	
-	agent = subprocess.Popen(["python", agentPath, "-pos", posicao], stdout=subprocess.PIPE)
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 "+posicao+" robot", 
+						shell=True, stdout=subprocess.PIPE)
+	#agent = subprocess.Popen(["python", agentPath, "-pos", posicao], stdout=subprocess.PIPE)
 
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 
@@ -71,8 +72,9 @@ def test_posicao():
 	#para verificar que "esta correcto"
 	posicao = "1"
 
-	agent = subprocess.Popen(["python", agentPath, "-pos", posicao], stdout=subprocess.PIPE)
-
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 "+posicao+" robot", 
+						shell=True, stdout=subprocess.PIPE)
+	
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 
 	parametersXML = minidom.parseString(data.replace("\x00", ""))
@@ -88,7 +90,8 @@ def test_host():
 	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 	host = "127.0.0.1"
 	simulator_dummy.bind((host, 6000)) # ouvir na porta 6000	
-	agent = subprocess.Popen(["python", agentPath, "-host", host], stdout=subprocess.PIPE)
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh "+host+" 1 robot", 
+					shell=True, stdout=subprocess.PIPE)
 
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 	print data #só para verificar o que foi recebido
@@ -111,7 +114,8 @@ def test_host():
 
 	host = "127.0.0.2"
 	simulator_dummy.bind((host, 6000)) # ouvir na porta 6000	
-	agent = subprocess.Popen(["python", agentPath, "-host", host], stdout=subprocess.PIPE)
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh "+host+" 1 robot", 
+					shell=True, stdout=subprocess.PIPE)
 
 	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
 
@@ -132,7 +136,8 @@ def test_Parameters():
 	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
 	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
 
-	agent = subprocess.Popen(["python", agentPath], stdout=subprocess.PIPE)
+	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 1 robot", 
+					shell=True, stdout=subprocess.PIPE)
 
 	data, (host_robot, port_robot) = simulator_dummy.recvfrom(1024) # infos de quem envia
 	print data
@@ -179,8 +184,8 @@ def test_Parameters():
  	try:
  		parametersActions = minidom.parseString(data.replace("\x00", ""))
  		MotorsParam = parametersActions.getElementsByTagName('Actions')
- 		left = MotorsParam[0].attributes['LeftMotor'].value
- 		right = MotorsParam[0].attributes['RightMotor'].value
+ 		#left = MotorsParam[0].attributes['LeftMotor'].value
+ 		#right = MotorsParam[0].attributes['RightMotor'].value
  	except Exception, e:
  		raise
 
@@ -200,7 +205,7 @@ def test_Parameters():
  	try:
  		parametersActions = minidom.parseString(data.replace("\x00", ""))
  		MotorsParam = parametersActions.getElementsByTagName('Actions')
- 		left = MotorsParam[0].attributes['LeftMotor'].value
- 		right = MotorsParam[0].attributes['RightMotor'].value
+ 		#left = MotorsParam[0].attributes['LeftMotor'].value
+ 		#right = MotorsParam[0].attributes['RightMotor'].value
  	except Exception, e:
  		raise			
