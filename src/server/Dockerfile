@@ -1,18 +1,9 @@
-# Obtaining IP from interface
-# ifconfig docker0 | grep "inet addr" | tr -s " " | sed -e 's/^[ \t]*//' | cut -f 2 -d " " | cut -d ":" -f 2
-#
-# sudo build -t ubuntu/ciberonline .
-# sudo docker run ubuntu/ciberonline python robsample_python.py --host $(ifconfig docker0 | grep "inet addr" | tr -s " " | sed -e 's/^[ \t]*//' | cut -f 2 -d " " | cut -d ":" -f 2)
-#
-
 FROM ubuntu
 EXPOSE 6000
 EXPOSE 8000
-RUN apt-get update
-RUN apt-get install -y \
-	curl \
-	wget \
-	python
+
+RUN apt-get update && apt-get install -y curl wget \
+	python default-jre default-jdk g++ build-essential qt4-qmake qt4-dev-tools
 
 RUN mkdir -p /ciber/user_sourcecode
 
@@ -20,6 +11,7 @@ RUN mkdir -p /ciber/user_sourcecode
 ADD ./libraries/python/ /ciber/
 RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
 
-#RUN groupadd -r lowrights && useradd -r -g lowrights agent
-#USER agent
+# Adding c++ python libraries
+ADD ./libraries/cpp /lib/
+
 WORKDIR /ciber/user_sourcecode
