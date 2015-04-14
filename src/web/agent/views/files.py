@@ -3,6 +3,7 @@ import tempfile
 import tarfile
 from zipfile import ZipFile
 import mimetypes
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
@@ -176,6 +177,11 @@ class UploadAgent(views.APIView):
                             status=status.HTTP_403_FORBIDDEN)
 
         file_obj = request.data.get('file', '')
+
+        if not isinstance(file_obj, InMemoryUploadedFile):
+            return Response({'status': 'Bad request',
+                             'message': 'You must send a file!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         # language agent
         agent.language = request.GET.get('language', '')
