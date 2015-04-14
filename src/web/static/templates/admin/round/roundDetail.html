@@ -96,7 +96,7 @@
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
 
-                                            <h2 align="center">Drag the agents for this trial</h2>
+                                            <h2 align="center">Drag the teams for this trial</h2>
                                         </div>
                                         <div class="modal-body" style="text-align: center">
                                             <div class="row" style="padding-left: 40px">
@@ -125,12 +125,16 @@
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"
+                                                            dnd-disable-if="vm.models.lists.Simulation.length == vm.competition.type_of_competition.number_teams_for_trial"
+
                                                                 >
                                                             {{item.label}}
                                                         </li>
                                                     </ul>
                                                 </div>
                                             </div>
+                                            <p ng-if = "vm.models.lists.Simulation.length == vm.competition.type_of_competition.number_teams_for_trial"><strong>You can't associate more agents, limit reached.</strong></p>
+
                                         </div>
                                         
                                     </div>
