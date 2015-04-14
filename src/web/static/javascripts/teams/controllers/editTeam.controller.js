@@ -44,11 +44,17 @@
             }
 
             function updateTeamErrorFn(data){
-                $.jGrowl("Team could not be updated.", {
-                    life: 2500,
+                var errors = "";
+                for (var value in data.data.message) {
+                    errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                    for (var error in data.data.message[value]){
+                        errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
-                console.error(data.data);
             }
         }
 
@@ -64,7 +70,7 @@
             }
 
             function destroyTeamErrorFn(data){
-                $.jGrowl("Team could not be deleted.", {
+                $.jGrowl("Team can't be deleted.", {
                     life: 2500,
                     theme: 'btn-danger'
                 });
