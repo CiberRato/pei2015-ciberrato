@@ -120,7 +120,7 @@
             console.log(data.data);
             for (var i = 0; i < data.data.length; ++i) {
                 if(isInSimulationNew(data.data[i].group_name) === false){
-                    if(isInSimulation(data.data[i].group_name) === false)
+                    if(isInSimulation(data.data[i].group_name) === true)
                     {
                         vm.models.lists.Available.push({
                             label: data.data[i].group_name,
