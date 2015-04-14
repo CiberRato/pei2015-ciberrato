@@ -12,7 +12,6 @@
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
-        vm.associate = associate;
         var agentName = $routeParams.name;
 
         activate();
@@ -25,8 +24,6 @@
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
-                Competition.getCompetitions(vm.agent.group_name).then(getCompetitionsSuccessFn, getCompetitionsErrorFn);
-
 
             }
 
@@ -41,15 +38,6 @@
             }
 
             function getFilesErrorFn(data) {
-                console.error(data.data);
-                $location.url('/panel/');
-            }
-
-            function getCompetitionsSuccessFn(data){
-                vm.competitions = data.data;
-            }
-
-            function getCompetitionsErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -114,39 +102,6 @@
                     theme: 'btn-danger'
                 });
                 console.error(data.data);
-            }
-
-        }
-
-        function associate(){
-            var competitionName = document.getElementById("selector_agent").value;
-            Competition.getFirstRound(competitionName).then(getFirstRoundSuccessFn, getFirstRoundErrorFn);
-
-            function getFirstRoundSuccessFn(data){
-                vm.round  = data;
-                Agent.associate(competitionName, agentName).then(associateSuccessFn, associateErrorFn);
-
-                function associateSuccessFn(){
-                    $.jGrowl("Agent \'" + agentName + "\' has been associated.", {
-                        life: 2500,
-                        theme: 'success'
-                    });
-                    Competition.getCompetitions(vm.agent.group_name).then(getCompetitionsSuccessFn, getCompetitionsErrorFn);
-                    $route.reload();
-                }
-
-                function associateErrorFn(data){
-                    console.error(data.data);
-                    $.jGrowl("Agent \'" + agentName + "\' can't be associated to the competition.", {
-                        life: 2500,
-                        theme: 'btn-danger'
-                    });
-                }
-            }
-
-            function getFirstRoundErrorFn(data){
-                console.error(data.data);
-                $location.path("/panel/");
             }
 
         }
