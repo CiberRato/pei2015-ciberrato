@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from authentication.models import Account
 
+from django.core.validators import MinLengthValidator
+
 
 class AccountSerializer(serializers.ModelSerializer):
     """
@@ -8,8 +10,8 @@ class AccountSerializer(serializers.ModelSerializer):
     last name, password, confirm_password.
     Create a new user and update user information.
     """
-    password = serializers.CharField(write_only=True, required=False)
-    confirm_password = serializers.CharField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=True, validators=[MinLengthValidator(8)])
+    confirm_password = serializers.CharField(write_only=True, required=True, validators=[MinLengthValidator(8)])
 
     class Meta:
         model = Account
