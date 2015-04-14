@@ -178,7 +178,7 @@ class UploadAgent(views.APIView):
 
         file_obj = request.data.get('file', '')
 
-        if not isinstance(file_obj, InMemoryUploadedFile):
+        if not isinstance(file_obj, InMemoryUploadedFile) and file_obj.size is 0:
             return Response({'status': 'Bad request',
                              'message': 'You must send a file!'},
                             status=status.HTTP_400_BAD_REQUEST)

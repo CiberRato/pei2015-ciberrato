@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
 from authentication.models import Account, GroupMember
-from authentication.serializers import AccountSerializer
+from authentication.serializers import AccountSerializer, AccountSerializerUpdate
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 
@@ -60,29 +60,36 @@ class AccountViewSet(viewsets.ModelViewSet):
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'Account could not be created with received data.'
+                         'message': serializer.errors
                         }, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
-        instance.email = request.data.get('email', instance.email)
-        instance.teaching_institution = request.data.get('teaching_institution', instance.teaching_institution)
-        instance.first_name = request.data.get('first_name', instance.first_name)
-        instance.last_name = request.data.get('last_name', instance.last_name)
+        serializer = AccountSerializerUpdate(data=request.data)
 
-        instance.save()
+        if serializer.is_valid():
+            instance.email = request.data.get('email', instance.email)
+            instance.teaching_institution = request.data.get('teaching_institution', instance.teaching_institution)
+            instance.first_name = request.data.get('first_name', instance.first_name)
+            instance.last_name = request.data.get('last_name', instance.last_name)
 
-        password = request.data.get('password', None)
-        confirm_password = request.data.get('confirm_password', None)
-
-        if password and confirm_password and password == confirm_password:
-            instance.set_password(password)
             instance.save()
 
-        return Response({'status': 'Updated',
-                         'message': 'Account updated.'
-                        }, status=status.HTTP_200_OK)
+            password = request.data.get('password', None)
+            confirm_password = request.data.get('confirm_password', None)
+
+            if password and confirm_password and password == confirm_password:
+                instance.set_password(password)
+                instance.save()
+
+            return Response({'status': 'Updated',
+                             'message': 'Account updated.'
+                            }, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors
+                         }, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))

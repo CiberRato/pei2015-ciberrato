@@ -136,3 +136,28 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         client.force_authenticate(user=None)
+
+    def test_required_users(self):
+        client = APIClient()
+        user = Account.objects.get(email='test@test.com')
+        client.force_authenticate(user=user)
+
+        # try to create with username error
+        url = "/api/v1/accounts/"
+        data = {'email': 'test', 'username': '', 'first_name': '', 'last_name': '',
+                'teaching_institution': ''}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # the fields can not be blank
+        url = "/api/v1/accounts/test/"
+        data = {'email': '', 'username': '', 'first_name': '', 'last_name': '',
+                'teaching_institution': ''}
+        response = client.put(url, data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(dict(response.data), {'status': 'Bad Request',
+                                               'message': {'first_name': [u'This field may not be blank.'],
+                                                           'last_name': [u'This field may not be blank.'],
+                                                           'email': [u'This field may not be blank.'],
+                                                           'teaching_institution': [u'This field may not be blank.']}})
+
