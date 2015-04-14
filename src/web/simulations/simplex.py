@@ -15,7 +15,7 @@ class AgentX():
         if not log_simulation_agent.competition_agent.agent.is_virtual:
             # o agent tem de estar na simulacao
             # autenticacao para receber estes dados
-            self.files = "/api/v1/competitions/agent_file/" + simulation_id + "/" + log_simulation_agent.competition_agent.agent.agent_name + "/"
+            self.files = "/api/v1/competitions/agent_file/" + log_simulation_agent.competition_agent.agent.agent_name + "/"
 
 
 class SimulationX():
