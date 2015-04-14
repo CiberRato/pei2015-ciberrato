@@ -98,11 +98,30 @@
             });
             $location.path('/panel/' + teamName + '/editTeam/');
         }
+        function isArray(myArray) {
+            return myArray.typeOf(Object);
+        }
 
         function addMemberErrorFn(data){
-            console.error(data.data);
-            $.jGrowl("Member could not be added to the Team.", {
-                life: 2500,
+            var errors = "";
+            if(typeof data.data.detail != "undefined"){
+                errors +="Member " + data.data.detail;
+            }
+            else{
+                if (typeof data.data.message == 'object'){
+                    for (var value in data.data.message) {
+                        errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                        for (var error in data.data.message[value]){
+                            errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                        }
+                    }
+                }
+                else{
+                    errors+= data.data.message + '<br/>'
+                }
+            }
+            $.jGrowl(errors, {
+                life: 5000,
                 theme: 'btn-danger'
             });
         }
@@ -112,7 +131,7 @@
         }
 
         function removeAdminSuccessFn(){
-            $.jGrowl("Admin has been removed successfully.", {
+            $.jGrowl("Admin removed successfully.", {
                 life: 2500,
                 theme: 'success'
             });
@@ -120,9 +139,8 @@
         }
 
         function removeAdminErrorFn(data){
-            console.error(data.data);
-            $.jGrowl("Admin could not be removed.", {
-                life: 2500,
+            $.jGrowl(data.data.message, {
+                life: 5000,
                 theme: 'btn-danger'
             });
         }
@@ -161,7 +179,7 @@
 
         function removeMemberErrorFn(data) {
             console.error(data.data);
-            $.jGrowl("Member could not be removed of the Team.", {
+            $.jGrowl("Member can't be removed from Team.", {
                 life: 2500,
                 theme: 'btn-danger'
             });
