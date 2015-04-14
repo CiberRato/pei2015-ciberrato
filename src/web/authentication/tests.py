@@ -54,7 +54,8 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         url = "/api/v1/accounts/"
-        data = {'email': 'test1@test.com', 'username': 'test1', 'first_name': 'unit', 'last_name': 'test',
+        data = {'email': 'test1@test.com', 'username': 'test1', 'password': 'rei12345678',
+                'confirm_password':'rei12345678', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 201)

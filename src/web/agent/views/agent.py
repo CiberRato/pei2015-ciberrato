@@ -50,7 +50,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The agent could not be created with received data'},
+                         'message': str(serializer.errors)},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
