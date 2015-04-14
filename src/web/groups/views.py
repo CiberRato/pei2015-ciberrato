@@ -47,7 +47,7 @@ class GroupViewSet(viewsets.ModelViewSet):
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                         'message': 'The group could not be created with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -232,7 +232,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                         'message': 'The group member could not be created with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
