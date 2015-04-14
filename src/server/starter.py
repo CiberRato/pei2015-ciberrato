@@ -54,6 +54,8 @@ class Starter:
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
+		TIMEOUT = settings["settings"]["timeout"]
+
 		GET_SIM_HOST = settings["urls"]["get_simulation"]
 
 		POST_SIM_HOST = settings["urls"]["post_log"]
@@ -129,20 +131,30 @@ class Starter:
 		print "Viewer ready, sending message to viewer about the number of agents\n"
 		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
+		remote = False
 		for i in range(n_agents):
-			#agent = subprocess.Popen(["python", "./cibertools-v2.2/robsample/robsample_python.py", "-pos", str(i)], stdout=subprocess.PIPE)
-			print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
-					(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
-			docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
-									  "bash -c 'curl " \
-									  "http://%s:8000%s" \
-									  " | tar -xz;" \
-									  " python myrob.py -host %s -pos %s'" %  \
-									  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
-									  shell = True, stdout = subprocess.PIPE)
-			docker_container = docker.stdout.readline().strip()
-			docker.wait()
-			print "Successfully opened container: %s\n" % (docker_container, )
+			if agents[i]['agent_type'] == "local":
+				print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
+						(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
+				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
+										  "bash -c 'curl " \
+										  "http://%s:8000%s" \
+										  " | tar -xz;" \
+										  " python myrob.py -host %s -pos %s'" %  \
+										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
+										  shell = True, stdout = subprocess.PIPE)
+				docker_container = docker.stdout.readline().strip()
+				docker.wait()
+				print "Successfully opened container: %s\n" % (docker_container, )
+			else:
+				remote = True
+
+		if remote:
+			print "Remote agents may start registering"
+			sleep(TIMEOUT) #timeout for people to register their robots
+			print "Remote agents timeout reached, simulation will start now.."
+
+
 		data = viewer_c.recv(4096)
 		while data != "<AllRobotsRegistered/>":
 			data = viewer_c.recv(4096)
