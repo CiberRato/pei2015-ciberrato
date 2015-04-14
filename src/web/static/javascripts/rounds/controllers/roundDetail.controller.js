@@ -177,6 +177,7 @@
 
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
+                console.log(pos);
 
                 Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 

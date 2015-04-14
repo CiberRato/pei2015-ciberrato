@@ -72,6 +72,7 @@
             for (var i = 0; i < data.data.length; ++i) {
                 vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
             }
+
         }
 
         function getByGroupErrorFn(data){
@@ -125,7 +126,23 @@
                     theme: 'success'
                 });
                 Agent.getByGroup(vm.team).then(getByGroupSuccessFn, getByGroupErrorFn);
-                Grid.getAgents(vm.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
+
+                function getByGroupSuccessFn(data){
+                    vm.models.lists.Available = [];
+                    for (var i = 0; i < data.data.length; ++i) {
+                        vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                    }
+                    console.log(vm.models.lists.Available);
+                    Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
+
+
+                }
+
+                function getByGroupErrorFn(data){
+                    console.error(data.data);
+                    $location.url('/panel/');
+
+                }
 
             }
 
@@ -154,6 +171,8 @@
                         gridAssociate(vm.models.lists.GridPosition[k].label, k+1);
                     }
                     console.log(vm.models.lists.GridPosition);
+                    Grid.getAgents(vm.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
+
 
 
                 }
