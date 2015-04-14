@@ -47,7 +47,7 @@ class GroupViewSet(viewsets.ModelViewSet):
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                         'message': 'The group could not be created with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -85,25 +85,19 @@ class GroupViewSet(viewsets.ModelViewSet):
         @param pk: The group name
         """
         group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        serializer = self.serializer_class(data=request.data)
 
-        max_members = request.data.get('max_members', None)
-        name = request.data.get('name', None)
-
-        if max_members is not None:
-            group.max_members = max_members
-        if name is not None:
-            group.name = name
-
-        if max_members is None and name is None:
-            return Response({'status': 'Bad request',
-                             'message': 'The group could not be updated with received data.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        else:
+        if serializer.is_valid():
+            group.max_members = serializer.validated_data['max_members']
+            group.name = serializer.validated_data['name']
             group.save()
-
-        return Response({'status': 'Updated',
-                         'message': 'The group has been updated.'},
-                        status=status.HTTP_200_OK)
+            return Response({'status': 'Updated',
+                             'message': 'The group has been updated.'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'Bad request',
+                             'message': serializer.errors},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class AccountGroupsViewSet(mixins.RetrieveModelMixin,
@@ -232,7 +226,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                         'message': 'The group member could not be created with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):

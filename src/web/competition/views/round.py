@@ -58,7 +58,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
                             status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                         'message': 'The round could not be created with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):

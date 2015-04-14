@@ -49,7 +49,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
                              'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The simulation couldn\'t be updated with that data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
 

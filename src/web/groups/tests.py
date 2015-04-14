@@ -188,6 +188,13 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {'status': 'Updated', 'message': 'The group has been updated.'})
 
+        # test update with wrong params
+        url = "/api/v1/groups/crud/XPTO2/"
+        data = {'name': '', 'max_members': -1}
+        response = client.put(path=url, data=data, format='json')
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': {'max_members': [u'Ensure this value is greater than or equal to 1.'], 'name': [u'This field may not be blank.']}})
+        self.assertEqual(response.status_code, 400)
+
         # see if has been updated
         url = "/api/v1/groups/crud/XPTO2/"
         response = client.get(url)
@@ -290,8 +297,7 @@ class GroupsModelsTestCase(TestCase):
         data = {'name': 'TestGroup', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data,
-                         {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': {'name': [u'This field must be unique.']}})
 
         client.force_authenticate(user=None)
 
@@ -307,7 +313,8 @@ class GroupsModelsTestCase(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data,
-                         {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+            {'status': 'Bad request', 'message':
+                {'max_members': [u'Ensure this value is greater than or equal to 1.']}})
 
         client.force_authenticate(user=None)
 
@@ -382,7 +389,6 @@ class GroupsModelsTestCase(TestCase):
         client = APIClient()
         client.force_authenticate(user=user)
 
-
         # create a group slug
         url = "/api/v1/groups/crud/"
         data = {'name': 'Test.Group', 'max_members': 10}
@@ -398,6 +404,12 @@ class GroupsModelsTestCase(TestCase):
         # create a group slug
         url = "/api/v1/groups/crud/"
         data = {'name': 'Test$Group', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # create a group slug
+        url = "/api/v1/groups/crud/"
+        data = {'name': '', 'max_members': -1}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
 

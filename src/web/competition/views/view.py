@@ -43,7 +43,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The competitions could not be created with received data'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -108,7 +108,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The competition state could not be update with that information'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -193,7 +193,7 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The type of competition could not be created with received data'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -237,7 +237,7 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The type of competition name could not be update with that information'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):

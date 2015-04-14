@@ -82,7 +82,7 @@ class Account(AbstractBaseUser):
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_slug])
+    name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_slug, MinLengthValidator(1)])
     max_members = models.IntegerField(default=5, validators=[MinValueValidator(1)])
 
     created_at = models.DateTimeField(auto_now_add=True)

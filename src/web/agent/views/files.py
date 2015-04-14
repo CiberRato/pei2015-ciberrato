@@ -56,14 +56,19 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                              'message': 'Please provide the ?file_name=*file_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if default_storage.exists('agents/' + agent.agent_name + '/' + request.GET.get('file_name',
-                                                                                                         '')):
-            load = json.loads(agent.locations)
-            load.remove('agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
-            agent.locations = json.dumps(load)
-            agent.save()
-            default_storage.delete(
-                'agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+        if default_storage.exists('agents/' + agent.agent_name + '/' + request.GET.get('file_name', '')):
+            try:
+                load = json.loads(agent.locations)
+                load.remove('agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+                agent.locations = json.dumps(load)
+                agent.save()
+                default_storage.delete(
+                    'agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+            except ValueError:
+                return Response({'status': 'Not found',
+                                 'message': 'The agent file has not been found!'},
+                                status=status.HTTP_404_NOT_FOUND)
+
             return Response({'status': 'Deleted',
                              'message': 'The agent file has been deleted'},
                             status=status.HTTP_200_OK)

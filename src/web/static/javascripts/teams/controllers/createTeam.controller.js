@@ -35,7 +35,7 @@
         }
 
         function createSuccessFn(){
-            $.jGrowl("Team has been created successfully.", {
+            $.jGrowl("Team successfully created.", {
                 life: 2500,
                 theme: 'success'
             });
@@ -45,8 +45,15 @@
 
         function createErrorFn(data){
             console.error(data.data);
-            $.jGrowl("Team could not be created.", {
-                life: 2500,
+            var errors = "";
+            for (var value in data.data.message) {
+                errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                for (var error in data.data.message[value]){
+                    errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                }
+            }
+            $.jGrowl(errors, {
+                life: 5000,
                 theme: 'btn-danger'
             });
         }
