@@ -15,10 +15,10 @@
             uploadLab: uploadLab,
             getSimulations: getSimulations,
             createSimulation: createSimulation,
-            getAgents: getAgents,
-            associateAgent: associateAgent,
+            getGrids: getGrids,
+            associateGrid: associateGrid,
             disassociateAgent: disassociateAgent,
-            getSimulationAgents: getSimulationAgents,
+            getSimulationGrids: getSimulationGrids,
             create: create,
             startSimulation: startSimulation,
             getRound: getRound,
@@ -76,29 +76,25 @@
                 round_name: roundName
             });
         }
-        function getAgents(roundName){
-            return $http.get("/api/v1/competitions/valid_round_agents/" +roundName+"/");
+        function getGrids(competitionName){
+            return $http.get("/api/v1/competitions/grid_positions_competition/" + competitionName + "/");
         }
 
-        function getSimulationAgents(identifier){
-            return $http.get("/api/v1/competitions/trial_agents/" + identifier + "/");
+        function getSimulationGrids(identifier){
+            return $http.get("/api/v1/competitions/simulation_grid/" + identifier + "/");
         }
 
-        function associateAgent(roundName, identifier, agent_name, pos){
-            return $http.post("/api/v1/competitions/associate_agent_to_trial/", {
-                round_name: roundName,
-                simulation_identifier: identifier,
-                agent_name: agent_name,
-                pos: pos
+        function associateGrid(grid_identifier, simulation_identifier, pos){
+            console.log(grid_identifier, simulation_identifier, pos);
+            return $http.post("/api/v1/competitions/simulation_grid/", {
+                grid_identifier: grid_identifier,
+                simulation_identifier: simulation_identifier,
+                position: pos
             });
         }
 
-        function disassociateAgent(roundName, identifier, agent_name){
-            return $http.delete("/api/v1/competitions/associate_agent_to_trial/",{
-                round_name: roundName,
-                simulation_identifier: identifier,
-                agent_name: agent_name
-            });
+        function disassociateAgent(simulation_identifier, pos){
+            return $http.delete("/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=" + pos);
         }
 
         function create(roundName, competitionName){
@@ -109,7 +105,7 @@
         }
 
         function startSimulation(identifier){
-            return $http.post("/api/v1/competitions/start_trial/", {
+            return $http.post("/api/v1/simulations/start/", {
                 trial_id: identifier
             })
         }

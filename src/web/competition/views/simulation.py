@@ -45,7 +45,7 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The simulation could not be created with received data'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -247,7 +247,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'You can\'t associate the agent to the Grid with the received data'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
@@ -259,7 +259,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param simulation_identifier: The simulation identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
-        grid_sim_list = get_list_or_404(SimulationGrid.objects.all(), simulation=simulation)
+        grid_sim_list = SimulationGrid.objects.filter(simulation=simulation)
 
         serializer = SimulationGridsSerializer([SimulationGridSimplex(gs) for gs in grid_sim_list], many=True)
 

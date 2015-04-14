@@ -91,7 +91,7 @@
                             <tr ng-repeat="(key, value) in vm.simulations" >
                                 <td id="identifier">{{value.identifier}}</td>
                                 <td>{{value.state}}</td>
-                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationAgents()" href="#addAgents{{key}}">Manage</a>
+                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
@@ -109,9 +109,19 @@
                                                              transfer the object that was assigned to it. If an element was
                                                              dragged away, you have to remove it from the original list
                                                              yourself using the dnd-moved attribute -->
-                                                        <li ng-repeat="item in list"
+                                                        <li ng-if="listName == 'Simulation'"ng-repeat="item in list"
                                                             dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1); vm.moved(item.label);"
+                                                            dnd-moved="list.splice($index, 1); "
+                                                            dnd-effect-allowed="move"
+                                                            dnd-selected="vm.models.selected = item"
+                                                            ng-class="{'selected': vm.models.selected === item}"
+                                                            dnd-disable-if="true"
+                                                                >
+                                                            {{item.label}} <button type="button" class="close" ng-click="vm.disassociateGrid(item.position)">×</button>
+                                                        </li>
+                                                        <li ng-if="listName == 'Available'"ng-repeat="item in list"
+                                                            dnd-draggable="item"
+                                                            dnd-moved="list.splice($index, 1); vm.moved(item.label, item.identifier);"
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"
