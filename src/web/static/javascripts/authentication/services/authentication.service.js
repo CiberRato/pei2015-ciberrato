@@ -60,79 +60,12 @@
 
         function registerErrorFn(data){
             var errors = "";
-            console.error(data.data);
-            try {
-                if (data.data.message.email) {
-                    if (data.data.message.email[0] == "This field is required."){
-                        errors += "&bull; Email field is required<br/>";
-                    }
-                    if (data.data.message.email[0] == "This field must be unique.") {
-                        errors += "&bull; Email already exists<br/>";
-                    }
-                    if (data.data.message.email[0] == "Enter a valid email address.") {
-                        errors += "&bull; Invalid email<br/>";
-                    }
-                    if (data.data.message.email[0] == "This field may not be blank.") {
-                        errors += "&bull; Email field is required<br/>";
-                    }
+            for (var value in data.data.message) {
+                errors += "&bull; " + value + ":<br/>"
+                for (var error in data.data.message[value]){
+                    errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
                 }
-
-                if (data.data.message.first_name) {
-                    if (data.data.message.first_name[0] == "This field is required.") {
-                        errors += "&bull; First name field is required<br/>";
-                    }
-                    if (data.data.message.first_name[0] == "This field may not be blank.") {
-                        errors += "&bull; First name field is required<br/>";
-                    }
-                    if (data.data.message.first_name[0] == "Ensure this field has at least 2 characters.") {
-                        errors += "&bull; First name needs to have at least 2 characters<br/>";
-                    }
-                }
-
-                if (data.data.message.last_name) {
-                    if (data.data.message.last_name[0] == "This field is required.") {
-                        errors += "&bull; Last name field is required<br/>";
-                    }
-                    if (data.data.message.last_name[0] == "This field may not be blank.") {
-                        errors += "&bull; Last name field is required<br/>";
-                    }
-                    if (data.data.message.last_name[0] == "Ensure this field has at least 2 characters.") {
-                        errors += "&bull; Last name needs to have at least 2 characters<br/>";
-                    }
-                }
-
-                if (data.data.message.teaching_institution) {
-                    if (data.data.message.teaching_institution[0] == "This field is required.") {
-                        errors += "&bull; Teaching institution field is required<br/>";
-                    }
-                    if (data.data.message.teaching_institution[0] == "This field may not be blank.") {
-                        errors += "&bull; Teaching institution field is required<br/>";
-                    }
-                    if (data.data.message.teaching_institution[0] == "Ensure this field has at least 2 characters.") {
-                        errors += "&bull; Teaching institution needs to have at least 2 characters<br/>";
-                    }
-
-                }
-
-                if (data.data.message.username) {
-                    if(data.data.message.username[0] == "This field is required."){
-                        errors += "&bull; Username field is required<br/>";
-                    }
-                    if (data.data.message.username[0] == "This field must be unique.") {
-                        errors += "&bull; Username already taken<br/>";
-                    }
-                    if (data.data.message.username[0] == "This field may not be blank.") {
-                        errors += "&bull; Username field is required<br/>";
-                    }
-                    if (data.data.message.username[0] == "Ensure this field has at least 2 characters.") {
-                        errors += "&bull; Username needs to have at least 2 characters<br/>";
-                    }
-
-                }
-            }catch (TypeError){
-
             }
-
             $.jGrowl(errors, {
                 life: 5000,
                 theme: 'btn-danger'
