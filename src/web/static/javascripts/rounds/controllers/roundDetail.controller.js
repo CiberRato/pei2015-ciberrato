@@ -118,15 +118,16 @@
 
         function getGridsSuccessFn(data) {
             console.log(data.data);
+            vm.models.lists.Available=[];
             for (var i = 0; i < data.data.length; ++i) {
                 if(isInSimulationNew(data.data[i].group_name) === false){
-                    if(isInSimulation(data.data[i].group_name) === true)
-                    {
+                    //if(isInSimulation(data.data[i].group_name) === true)
+                    //{
                         vm.models.lists.Available.push({
                             label: data.data[i].group_name,
                             identifier: data.data[i].identifier
                         });
-                    }
+                    //}
                 }
             }
             console.log(vm.models.lists.Available);
@@ -354,7 +355,6 @@
 
         function getSimulationGrids(){
             Round.getSimulationGrids(vm.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
-            Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
 
             function getSimulationGridsSuccessFn(data){
                 console.log(data.data);
@@ -363,6 +363,8 @@
                     vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
                 }
                 console.log(vm.models.lists.Simulation);
+                Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
             }
 
             function getSimulationGridsErrorFn(data){
