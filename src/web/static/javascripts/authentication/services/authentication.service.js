@@ -61,7 +61,7 @@
         function registerErrorFn(data){
             var errors = "";
             for (var value in data.data.message) {
-                errors += "&bull; " + value + ":<br/>"
+                errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
                 for (var error in data.data.message[value]){
                     errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
                 }
