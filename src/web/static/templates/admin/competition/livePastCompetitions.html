@@ -24,26 +24,31 @@
                         <div class="tab-pane active" id="static">
                             <p ng-if="vm.competitionTeamsInfo.length == 0">There are no teams enrolled in this competition.</p>
                             <p ng-if="vm.competitionTeamsInfo.length != 0">Here is shown in table the list of all teams enrolled in this Competition.</p>
+
+
                             <table ng-if="vm.competitionTeamsInfo.length != 0" class="table table-striped table-hover">
                                 <thead>
                                 <tr>
                                     <th>Team Name</th>
-                                    <th>Number of Agents</th>
-                                    <th ng-if="vm.competition.state_of_competition=='Register'">State of Inscription</th>
-                                    <th ng-if="vm.competition.state_of_competition=='Register'">Remove Inscription</th>
+                                    <th>State of Inscription</th>
+                                    <th>Remove Inscription</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
                                     <td><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
-                                    <td>{{value.agents.length}}</td>
                                     <td ng-if="value.valid == false && vm.competition.state_of_competition=='Register'"><a href="#" ng-click="vm.validateInscription(value.group.name, vm.competition.name)"><span class="label label-important">Not Valid</span></a></td>
                                     <td ng-if="value.valid == true && vm.competition.state_of_competition=='Register' "><a href="#" ng-click="vm.validateInscription(value.group.name, vm.competition.name)"><span class="label label-success">Valid</span></a></td>
-                                    <td ng-if="vm.competition.state_of_competition=='Register' "><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.group.name)">X</a></td>
+                                    <td ng-if="value.valid == false && vm.competition.state_of_competition!='Register'"><span class="label label-important">Not Valid</span></a></td>
+                                    <td ng-if="value.valid == true && vm.competition.state_of_competition!='Register' "><span class="label label-success">Valid</span></a></td>
+
+                                    <td ng-if="vm.competition.state_of_competition!='Register' "><a disabled class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.group.name)">X</a></td>
+                                    <td ng-if="vm.competition.state_of_competition=='Register' "><a  class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.group.name)">X</a></td>
 
                                 </tr>
                                 </tbody>
                             </table>
+
                         </div>
 
                     </div>

@@ -61,17 +61,6 @@
                             </div>
                     </div>
 
-                    <hr ng-if="vm.agent.is_virtual == false"/>
-                    <h3>Associate this agent to a competition:</h3>
-                    <p ng-if="vm.competitions.length == 0">There are no able competitions to associate this agent! Please validate your inscription.</p>
-                    <select ng-if="vm.competitions.length != 0"  id="selector_agent">
-                        <option ng-repeat="(key, value) in vm.competitions">{{value.name}}</option>
-                    </select>
-                    <p></p>
-                    <a ng-if="vm.competitions.length != 0" ng-click="vm.associate()" class="btn btn-alt btn-large btn-success">Associate Agent</a>
-
-
-
                 </section>
                 <hr/>
                 <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
