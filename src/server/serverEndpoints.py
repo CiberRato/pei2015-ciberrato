@@ -19,8 +19,8 @@ class GetSimId(object):
 	def __init__(self):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
-		HOST = settings["settings"]["starter_end_point_host"]
-		PORT = settings["settings"]["starter_end_point_port"]
+		self.HOST = settings["settings"]["starter_end_point_host"]
+		self.PORT = settings["settings"]["starter_end_point_port"]
 
 	@cherrypy.expose
 	def index(self, **kwargs):
@@ -29,7 +29,7 @@ class GetSimId(object):
 
 		self.starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self.starter_tcp.connect((HOST, PORT))
+		self.starter_tcp.connect((self.HOST, self.PORT))
 		self.starter_tcp.send(str(sim_id))
 
 		return "Received sim id:" + str(sim_id)
@@ -51,7 +51,7 @@ class TestAgent():
 
 		if "agent_name" not in kwargs:
 			raise cherrypy.HTTPError(400, "Parameters agent_name were expected.")
-		
+
 		agent_name = kwargs["agent_name"]
 
 		AGENT_ENDPOINT = "http://%s:8000/api/v1/competitions/agent_file/%s/" % (DOCKERIP, agent_name,)
@@ -72,7 +72,7 @@ class EndPoint():
 	def start(self):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
-		
+
 		HOST = settings["settings"]["end_point_host"]
 		PORT = settings["settings"]["end_point_port"]
 
@@ -82,7 +82,7 @@ class EndPoint():
 		        'server.socket_port': PORT,
 		    }
 		}
-		
+
 		cherrypy.quickstart(Root(), "/api/v1/", config)
 
 

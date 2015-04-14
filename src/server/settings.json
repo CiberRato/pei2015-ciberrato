@@ -5,21 +5,24 @@
 {
 	///general settings to be used by starter, viewer and other programs that may require so
 	"settings": {
+		///default timeout for remote hosts to register (in seconds)
+		"timeout": 2,
+
 		///default tmp file name for log info
-		"log_info_file": "ciberOnline_log.json",
+		"log_info_file": "./tmp/ciberOnline_log.json",
 
 		///default tmp file name for lab
-		"lab_file": "ciberOnline_lab.json",
+		"lab_file": "./tmp/ciberOnline_lab.json",
 
 		///default tmp file name for params
-		"params_file": "ciberOnline_params.json",
+		"params_file": "./tmp/ciberOnline_params.json",
 
 		///default tmp file name for grid
-		"grid_file": "ciberOnline_grid.json",
+		"grid_file": "./tmp/ciberOnline_grid.json",
 
 		///default file name for the log to be saved
 		///<SIM_ID> this tag must be kept even if the log name is changed
-		"file": "log_<SIM_ID>.zip",
+		"file": "./tmp/log_<SIM_ID>.zip",
 
 		///host and port for communications between starter and viewer
 		"starter_viewer_host": "127.0.0.1",
