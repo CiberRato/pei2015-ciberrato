@@ -72,7 +72,7 @@ def main():
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	#params_file.write(json_data)
-	log_file.write(json_data + "&")
+	log_file.write("{"+json_data[1:-1]+",")
 
 
 	json_obj = xmltodict.parse(lab)
@@ -81,7 +81,8 @@ def main():
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	#lab_file.write(json_data)
-	log_file.write(json_data + "&")
+	log_file.write(json_data[1:-1]+",")
+
 
 	json_obj = xmltodict.parse(grid)
 	json_data = json.dumps(json_obj)
@@ -89,7 +90,7 @@ def main():
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
 	#grid_file.write(json_data)
-	log_file.write(json_data + "&")
+	log_file.write(json_data[1:-1]+",")
 
 
 	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -143,7 +144,7 @@ def main():
 	robotTime = 0
 
 	firstTime = True
-	log_file.write("[")
+	log_file.write('"Log":[')
 	while simTime != robotTime:
 		if not firstTime:
 			log_file.write(",")
@@ -169,7 +170,8 @@ def main():
 		# Enviar os dados da simulação para o exterior
 		websocket_tcp.send(json_data)
 
-	log_file.write("]")
+	log_file.write("]}")
+
 	#wait 0.1 seconds to assure the END msg goes on a separate packet
 	time.sleep(0.1)
 	#send websocket msg telling it's over
