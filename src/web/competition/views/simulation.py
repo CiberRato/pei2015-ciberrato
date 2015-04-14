@@ -259,7 +259,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param simulation_identifier: The simulation identifier
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
-        grid_sim_list = get_list_or_404(SimulationGrid.objects.all(), simulation=simulation)
+        grid_sim_list = SimulationGrid.objects.filter(simulation=simulation)
 
         serializer = SimulationGridsSerializer([SimulationGridSimplex(gs) for gs in grid_sim_list], many=True)
 
