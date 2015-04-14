@@ -290,8 +290,7 @@ class GroupsModelsTestCase(TestCase):
         data = {'name': 'TestGroup', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data,
-                         {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': {'name': [u'This field must be unique.']}})
 
         client.force_authenticate(user=None)
 
@@ -307,7 +306,8 @@ class GroupsModelsTestCase(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data,
-                         {'status': 'Bad request', 'message': 'The group could not be created with received data.'})
+            {'status': 'Bad request', 'message':
+                {'max_members': [u'Ensure this value is greater than or equal to 1.']}})
 
         client.force_authenticate(user=None)
 
