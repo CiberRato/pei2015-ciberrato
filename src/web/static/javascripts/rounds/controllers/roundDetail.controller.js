@@ -87,7 +87,7 @@
 
         }
 
-        function moved(group_name ,identifier, pos){
+        function moved(group_name ,identifier){
             console.log(isInSimulation(group_name, identifier));
             if(isInSimulation(group_name)) {
                 associateGrid(identifier);
@@ -120,11 +120,11 @@
             console.log(data.data);
             for (var i = 0; i < data.data.length; ++i) {
                 if(isInSimulationNew(data.data[i].group_name) === false){
-                    if(isInSimulation(data.data[i].group_name) === true)
+                    if(isInSimulation(data.data[i].group_name) === false)
                     {
                         vm.models.lists.Available.push({
                             label: data.data[i].group_name,
-                            identifier: data.data[i].identifier,
+                            identifier: data.data[i].identifier
                         });
                     }
                 }

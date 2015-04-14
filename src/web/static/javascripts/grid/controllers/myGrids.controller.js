@@ -30,6 +30,7 @@
 
             function getSuccessFn(data){
                 vm.grids = data.data;
+                console.log(vm.grids);
             }
 
             function getErrorFn(data){
