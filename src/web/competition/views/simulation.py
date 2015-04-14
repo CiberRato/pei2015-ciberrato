@@ -359,7 +359,7 @@ class StartSimulation(views.APIView):
                         pos += 1
 
         if simulation_waiting(simulation):
-            params = {'trial_id': simulation.identifier}
+            params = {'simulation_identifier': simulation.identifier}
 
             try:
                 requests.post(settings.START_SIM_ENDPOINT, params)
