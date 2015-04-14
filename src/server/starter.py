@@ -54,8 +54,6 @@ class Starter:
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
-		TIMEOUT = settings["settings"]["timeout"]
-
 		GET_SIM_HOST = settings["urls"]["get_simulation"]
 
 		POST_SIM_HOST = settings["urls"]["post_log"]
@@ -118,7 +116,7 @@ class Starter:
 		print "Successfully opened process with process id: ", simulator.pid
 		time.sleep(1)
 		print "Creating process for viewer"
-		viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
+		viewer = subprocess.Popen(["python", "viewer.py", "-log"], stdout=subprocess.PIPE)
 		print "Successfully opened process with process id: ", viewer.pid
 
 		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -131,7 +129,8 @@ class Starter:
 		print "Viewer ready, sending message to viewer about the number of agents\n"
 		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
-		remote = False
+
+		print "Remote agents may start registering"
 		for i in range(n_agents):
 			if agents[i]['agent_type'] == "local":
 				print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
@@ -146,18 +145,17 @@ class Starter:
 				docker_container = docker.stdout.readline().strip()
 				docker.wait()
 				print "Successfully opened container: %s\n" % (docker_container, )
-			else:
-				remote = True
-
-		if remote:
-			print "Remote agents may start registering"
-			sleep(TIMEOUT) #timeout for people to register their robots
-			print "Remote agents timeout reached, simulation will start now.."
-
 
 		data = viewer_c.recv(4096)
-		while data != "<AllRobotsRegistered/>":
+		while not data.find("<Robots"):
 			data = viewer_c.recv(4096)
+		print "Remote agents timeout reached, simulation will start now.."
+		robotsXML = minidom.parseString(data)
+		robots = robotsXML.getElementsByTagName('Robots')
+		robotsRegistered = robots[0].attributes['Registered'].value
+		if robotsRegistered != n_agents:
+			print "ROBOTS FAILED TO REGISTER!!"
+			#what to do in this situation??
 
 		print "Sending message to Viewer (everything is ready to start)"
 		viewer_c.send("<StartedAgents/>")

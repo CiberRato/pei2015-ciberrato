@@ -25,6 +25,8 @@ def main():
 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 	settings = json.loads(settings_str)
 
+	TIMEOUT = settings["settings"]["timeout"]
+
 	SIMULATOR_HOST = settings["settings"]["simulator_host"]
 	SIMULATOR_PORT = settings["settings"]["simulator_port"]
 
@@ -107,9 +109,13 @@ def main():
 		log.write("Robots Amount: " + robotsAmount + "\n")
 		log.write("checking Robots\n")
 
+	count = 0
 	checkedRobots = []
-	while len(checkedRobots) != int(robotsAmount):
+	while len(checkedRobots) != int(robotsAmount) or count > TIMEOUT:
+		count += 1
 		data, (host, port) = simulator_s.recvfrom(4096)
+		if wlog:
+			log.write(data + "\n")
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
 		robots = robotsXML.getElementsByTagName('Robot')
 		if len(robots):
@@ -123,8 +129,9 @@ def main():
 					log.write(str(checkedRobots) + "\n	")
 					log.write(str(len(checkedRobots)) + "\n")
 	if wlog:
-		log.write("All Robots are registered\n")
-	starter_s.send("<AllRobotsRegistered/>")
+		log.write("RobotsRegistered=%s\n", str(len(checkedRobots)))
+
+	starter_s.send('<Robots Registered="' + str(len(checkedRobots)) + '"/>')
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":
