@@ -23,7 +23,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.grids">
-                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.team=value.group_name; vm.getCompetition(value.competition_name); vm.getAgents()" href="#addAgents{{key}}">{{value.identifier}}</a>
+                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.team=value.group_name; vm.getCompetition(value.competition.name); vm.getAgents()" href="#addAgents{{key}}">{{value.identifier}}</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
