@@ -71,6 +71,11 @@
 
             if(selectedFile != undefined) {
                 Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            }else{
+                $.jGrowl("You didn't select any file", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
             }
             function uploadSuccessFn() {
 
