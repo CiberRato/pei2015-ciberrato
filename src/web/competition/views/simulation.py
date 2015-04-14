@@ -235,9 +235,9 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The position can\'t be higher than the number of teams allowed by trial.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if len(SimulationGrid.objects.filter(grid_positions=grid_positions,
+            if len(SimulationGrid.objects.filter(simulation=simulation,
                                                  position=serializer.validated_data['position'])) != 0:
-                return Response({'status': 'Permission denied',
+                return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
