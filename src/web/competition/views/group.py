@@ -176,7 +176,7 @@ class ToggleGroupValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
                             status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad request',
-                         'message': 'The group can\'t enroll with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -306,7 +306,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
                             status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
-                         'message': 'The group can\'t enroll with received data.'},
+                         'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
@@ -331,7 +331,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
 
         if group_not_enrolled:
             return Response({'status': 'Bad request',
-                             'message': 'The group is not enrolled in the competition'},
+                             'message': 'The group is not enrolled in the competition.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # validations update values
