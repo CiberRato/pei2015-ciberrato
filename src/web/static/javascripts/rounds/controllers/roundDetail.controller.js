@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'StreamViewer'];
+    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'Competition'];
 
-    function DetailRoundController($location, $route, $routeParams, Round, StreamViewer){
+    function DetailRoundController($location, $route, $routeParams, Round, Competition){
         var vm = this;
 
         vm.models = {
@@ -59,6 +59,16 @@
                 function getGridsFirstSuccessFn(data){
                     for (var i = 0; i < data.data.length; ++i) {
                         vm.Available.push({label: data.data[i].group_name, identifier: data.data[i].identifier});
+                    }
+                    Competition.getCompetition(vm.round.parent_competition_name).then(getCompetitionSuccessFn, getCompetitionErrorFn);
+
+                    function getCompetitionSuccessFn(data){
+                        vm.competition = data.data;
+                    }
+
+                    function getCompetitionErrorFn(data){
+                        console.error(data.data);
+                        $location.path('/panel/');
                     }
                 }
 
@@ -121,13 +131,12 @@
             vm.models.lists.Available=[];
             for (var i = 0; i < data.data.length; ++i) {
                 if(isInSimulationNew(data.data[i].group_name) === false){
-                    //if(isInSimulation(data.data[i].group_name) === true)
-                    //{
-                        vm.models.lists.Available.push({
-                            label: data.data[i].group_name,
-                            identifier: data.data[i].identifier
-                        });
-                    //}
+
+                    vm.models.lists.Available.push({
+                        label: data.data[i].group_name,
+                        identifier: data.data[i].identifier
+                    });
+
                 }
             }
             console.log(vm.models.lists.Available);
