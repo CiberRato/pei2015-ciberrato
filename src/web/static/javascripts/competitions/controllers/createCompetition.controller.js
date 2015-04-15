@@ -50,9 +50,15 @@
                 }
 
                 function createRoundErrorFn(data){
-                    console.error(data.data);
-                    $.jGrowl("Round could not be created.", {
-                        life: 2500,
+                    var errors = "";
+                    for (var value in data.data.message) {
+                        errors += "&bull; Round " + value.replace("_", " ") + ":<br/>"
+                        for (var error in data.data.message[value]){
+                            errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                        }
+                    }
+                    $.jGrowl(errors, {
+                        life: 5000,
                         theme: 'btn-danger'
                     });
                 }
@@ -60,9 +66,15 @@
             }
 
             function createErrorFn(data){
-                console.error(data.data);
-                $.jGrowl("Competition could not be created.", {
-                    life: 2500,
+                var errors = "";
+                for (var value in data.data.message) {
+                    errors += "&bull; Competition " + value.replace("_", " ") + ":<br/>"
+                    for (var error in data.data.message[value]){
+                        errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
             }
