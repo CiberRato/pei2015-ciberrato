@@ -107,3 +107,4 @@ src/server/cibertools-v2.2/robsample/Makefile
 src/server/cibertools-v2.2/robsample/robsample
 src/server/cibertools-v2.2/simulator/Makefile
 src/server/cibertools-v2.2/simulator/simulator
+src/server/tmp/
