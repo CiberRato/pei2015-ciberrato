@@ -58,6 +58,14 @@
             controller:'SearchController',
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/search.html'
+        }).when('/panel/createGridPosition',{
+            controller:'CreateGridPositionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/grid/createGrid.html'
+        }).when('/panel/myGridPositions',{
+            controller:'MyGridsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/grid/myGrids.html'
         }).when('/panel/competitions',{
             controller:'AllCompetitionsController',
             controllerAs:'vm',
@@ -112,6 +120,18 @@
             controller:'AllTogetherCompetitionsController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html'
+        }).when('/admin/createTypeOfCompetition',{
+            controller:'CreateTypeOfCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/createType.html'
+        }).when('/admin/allTypesOfCompetition',{
+            controller:'AllTypesOfCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/allTypes.html'
+        }).when('/admin/editTypeOfCompetition/:name',{
+            controller:'EditTypeOfCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/editType.html'
         }).when('/admin/:name/',{
             controller:'ListCompetitionController',
             controllerAs: 'vm',

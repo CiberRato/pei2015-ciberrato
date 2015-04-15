@@ -9,14 +9,13 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2>{{ vm.competition.name }} ({{vm.competition.type_of_competition}})</h2>
+                        <h2>{{ vm.competition.name }} ({{vm.competition.type_of_competition.name}})</h2>
 
                         <p ng-if="vm.competitionTeamsInfo.length != 0">Here is shown in table the list of all teams enrolled in this Competition.</p>
                         <table ng-if="vm.competitionTeamsInfo.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Team Name</th>
-                                <th>Number of Agents</th>
                                 <th ng-if="vm.myTeams.length != 0">State of Inscription</th>
                                 <th ng-if="vm.myTeams.length != 0">Remove Inscription</th>
                             </tr>
@@ -25,7 +24,6 @@
                             <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
                                 <td ng-if="value.show==true"><a href="panel/{{ value.group.name }}/editTeam">{{value.group.name}}</a></td>
                                 <td ng-if="value.show==false"><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
-                                <td>{{value.agents.length}}</td>
                                 <td ng-if="value.valid == false && value.show == true"><span class="label label-important">Not Valid</span></td>
                                 <td ng-if="value.valid == true && value.show == true"><span class="label label-success">Valid</span></td>
                                 <td ng-if="value.show == false"></td>

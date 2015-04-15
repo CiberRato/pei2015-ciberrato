@@ -101,18 +101,6 @@ ALLOWED_UPLOAD_LANGUAGES = (
 )
 ALLOWED_UPLOAD_SIZE = 5000000  # bytes
 
-COLABORATIVA = 'Collaborative'
-COMPETITIVA = 'Competitive'
-NUMBER_AGENTS_BY_COMPETITION_TYPE = (
-    (COLABORATIVA, 5),
-    (COMPETITIVA, 1)
-)
-
-NUMBER_AGENTS_BY_SIMULATION = (
-    (COLABORATIVA, 5),
-    (COMPETITIVA, 3)
-)
-
 START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/simulation_id/"
 
 STATICFILES_DIRS = (
@@ -139,8 +127,7 @@ TEMPLATE_DIRS = (
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-    )
-    # ,
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 10
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }

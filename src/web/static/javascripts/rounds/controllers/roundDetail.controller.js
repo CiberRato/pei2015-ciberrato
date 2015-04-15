@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'StreamViewer'];
+    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'Competition'];
 
-    function DetailRoundController($location, $route, $routeParams, Round, StreamViewer){
+    function DetailRoundController($location, $route, $routeParams, Round, Competition){
         var vm = this;
 
         vm.models = {
@@ -20,7 +20,6 @@
 
         vm.createSimulation = createSimulation;
         vm.moved = moved;
-        vm.getSimulationAgents = getSimulationAgents;
         vm.identifier;
         vm.roundName = $routeParams.name;
         vm.uploadParamList = uploadParamList;
@@ -28,13 +27,17 @@
         vm.uploadLab = uploadLab;
         vm.destroy = destroy;
         vm.removeSimulation = removeSimulation;
+        vm.uploadAll = uploadAll;
+        vm.reload = reload;
+        vm.getSimulationGrids = getSimulationGrids;
+        vm.Available = [];
+        vm.disassociateGrid = disassociateGrid;
         activate();
 
         function activate() {
             Round.getSimulations(vm.roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
-            Round.getAgents(vm.roundName).then(getAgentsSuccessFn, getAgentsErrorFn);
             Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
-            StreamViewer.get
+            Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
@@ -48,60 +51,103 @@
                 $location.path('/panel/');
             }
 
-            function getAgentsSuccessFn(data) {
-                for (var i = 0; i < data.data.length; ++i) {
-                    vm.models.lists.Available.push({label: data.data[i].agent_name});
-                }
-            }
-
-            function getAgentsErrorFn(data) {
-                console.error(data.data);
-                $location.path('/panel/');
-            }
 
             function getRoundSuccessFn(data){
                 vm.round = data.data;
+                Round.getGrids(vm.round.parent_competition_name).then(getGridsFirstSuccessFn, getGridsFirstErrorFn);
+
+                function getGridsFirstSuccessFn(data){
+                    for (var i = 0; i < data.data.length; ++i) {
+                        vm.Available.push({label: data.data[i].group_name, identifier: data.data[i].identifier});
+                    }
+                    Competition.getCompetition(vm.round.parent_competition_name).then(getCompetitionSuccessFn, getCompetitionErrorFn);
+
+                    function getCompetitionSuccessFn(data){
+                        vm.competition = data.data;
+                    }
+
+                    function getCompetitionErrorFn(data){
+                        console.error(data.data);
+                        $location.path('/panel/');
+                    }
+                }
+
+                function getGridsFirstErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+                }
             }
 
             function getRoundErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
-        }
 
-        function getSimulationAgents(){
-            Round.getSimulationAgents(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
-
-            function getSimulationAgentsSuccessFn(data) {
-                vm.models.lists.Simulation = [];
-                for (var i = 0; i < data.data.length; ++i) {
-                    vm.models.lists.Simulation.push({label: data.data[i].agent_name});
-                }
+            function getRoundFilesSuccessFn(data){
+                vm.files = data.data;
+                vm.grid = vm.files.grid;
+                vm.lab = vm.files.lab;
+                vm.param_list = vm.files.param_list;
             }
 
-            function getSimulationAgentsErrorFn(data) {
+            function getRoundFilesErrorFn(data){
                 console.error(data.data);
-                //$location.path('/panel/');
+                $location.path('/panel/');
+            }
+
+        }
+
+        function moved(group_name ,identifier){
+            console.log(isInSimulation(group_name, identifier));
+            if(isInSimulation(group_name)) {
+                associateGrid(identifier);
             }
         }
 
-        function moved(agent_name){
-            console.log(isInSimulation(agent_name));
-            if(isInSimulation(agent_name)){
-                associateAgent(agent_name);
-            }else{
-                disassociateAgent(agent_name);
-            }
-        }
-
-        function isInSimulation(agent_name){
+        function isInSimulation(group_name){
             for (var i=0; i<vm.models.lists.Available.length; i++){
-                if (vm.models.lists.Available[i].label===agent_name){
+                if (vm.models.lists.Available[i].label===group_name){
                     return false;
                 }
             }
             return true;
         }
+
+        function isInSimulationNew(group_name){
+            for (var i=0; i<vm.models.lists.Simulation.length; i++){
+                if (vm.models.lists.Simulation[i].label===group_name){
+                    return true;
+                }
+                console.log(vm.models.lists.Simulation[i].label)
+            }
+            return false;
+        }
+
+
+
+
+        function getGridsSuccessFn(data) {
+            console.log(data.data);
+            vm.models.lists.Available=[];
+            for (var i = 0; i < data.data.length; ++i) {
+                if(isInSimulationNew(data.data[i].group_name) === false){
+
+                    vm.models.lists.Available.push({
+                        label: data.data[i].group_name,
+                        identifier: data.data[i].identifier
+                    });
+
+                }
+            }
+            console.log(vm.models.lists.Available);
+            console.log(vm.models.lists.Simulation);
+        }
+
+        function getGridsErrorFn(data) {
+            console.error(data.data);
+            $location.path('/panel/');
+        }
+
 
         function createSimulation(){
             Round.createSimulation(vm.roundName).then(createSimulationSuccessFn, createSimulationErrorFn);
@@ -124,26 +170,29 @@
             }
         }
 
-        function associateAgent(agent_name) {
+        function associateGrid(grid_identifier) {
             console.log(vm.identifier);
 
-            Round.getSimulationAgents(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
+            Round.getSimulationGrids(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
 
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
+                console.log(pos);
 
-                Round.associateAgent(vm.roundName, vm.identifier, agent_name, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
+                Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
                 function associateAgentSuccessFn() {
-                    $.jGrowl("Agent has been associated successfully.", {
+                    $.jGrowl("Grid has been associated successfully.", {
                         life: 2500,
                         theme: 'success'
                     });
+                    getSimulationGrids();
+
                 }
 
                 function associateAgentErrorFn(data) {
                     console.error(data.data);
-                    $.jGrowl("Agent can't be associated.", {
+                    $.jGrowl("Grid can't be associated.", {
                         life: 2500,
                         theme: 'btn-danger'
                     });
@@ -156,15 +205,16 @@
             }
         }
 
-        function disassociateAgent(agent_name) {
-
-            Round.disassociateAgent(vm.roundName, vm.identifier, agent_name).then(disassociateAgentSuccessFn, disassociateAgentErrorFn);
+        function disassociateGrid(pos) {
+            Round.disassociateAgent(vm.identifier, pos).then(disassociateAgentSuccessFn, disassociateAgentErrorFn);
 
             function disassociateAgentSuccessFn() {
+
                 $.jGrowl("Agent has been disassociated successfully.", {
                     life: 2500,
                     theme: 'success'
                 });
+                getSimulationGrids();
             }
 
             function disassociateAgentErrorFn(data) {
@@ -285,6 +335,54 @@
                 console.error(data.data);
             }
         }
+
+        function uploadAll(){
+            var selectedFile1 = document.getElementById('ParamListUpload').files[0];
+            console.log(selectedFile1);
+            var selectedFile2 = document.getElementById('GridUpload').files[0];
+            console.log(selectedFile2);
+            var selectedFile3 = document.getElementById('LabUpload').files[0];
+            console.log(selectedFile3);
+            if(selectedFile1 != undefined){
+                uploadParamList();
+            }
+            if(selectedFile2 != undefined){
+                uploadGrid();
+            }
+            if(selectedFile3 != undefined){
+                uploadLab();
+            }
+
+            $route.reload();
+            $('.modal-backdrop').remove();
+        }
+
+        function reload(){
+            $route.reload();
+            $('.modal-backdrop').remove();
+
+        }
+
+        function getSimulationGrids(){
+            Round.getSimulationGrids(vm.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+
+            function getSimulationGridsSuccessFn(data){
+                console.log(data.data);
+                vm.models.lists.Simulation = [];
+                for (var i = 0; i < data.data.length; ++i) {
+                    vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                }
+                console.log(vm.models.lists.Simulation);
+                Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
+            }
+
+            function getSimulationGridsErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+        }
+
 
     }
 

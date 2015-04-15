@@ -12,7 +12,7 @@ class RoundSimplex:
 
 class GroupEnrolledSimplex:
     def __init__(self, ge):
-        self.competition_name = ge.competition.name
+        self.competition = ge.competition
         self.group_name = ge.group.name
         self.valid = ge.valid
 
@@ -45,3 +45,23 @@ class SimulationAgentSimplex:
         self.agent_name = sas.competition_agent.agent.agent_name
         self.round_name = sas.simulation.round.name
         self.pos = sas.pos
+
+
+class GridPositionsSimplex:
+    def __init__(self, ps):
+        self.competition = ps.competition
+        self.group_name = ps.group.name
+        self.identifier = ps.identifier
+
+
+class SimulationGridSimplex:
+    def __init__(self, sgs):
+        self.grid_positions = GridPositionsSimplex(sgs.grid_positions)
+        self.position = sgs.position
+
+
+class AgentGridSimplex:
+    def __init__(self, sgs):
+        self.grid_identifier = sgs.grid_position.identifier
+        self.agent_name = sgs.agent.agent_name
+        self.position = sgs.position

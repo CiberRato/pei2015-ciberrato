@@ -13,6 +13,7 @@ from ..simplex import AgentSimplex
 
 from authentication.models import Group, Account
 from groups.permissions import IsAdminOfGroup
+from competition.serializers import CompetitionSerializer
 
 
 class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -28,7 +29,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def create(self, request, *args, **kwargs):
         """
         B{Create} an agent
-        B{URL:} ../api/v1/competitions/agent/
+        B{URL:} ../api/v1/agents/agent/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -49,13 +50,13 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
-                         'message': 'The agent could not be created with received data'},
+                         'message': str(serializer.errors)},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} information of the agent
-        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+        B{URL:} ../api/v1/agents/agent/<agent_name>/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -68,7 +69,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent
-        B{URL:} ../api/v1/competitions/agent/<agent_name>/
+        B{URL:} ../api/v1/agents/agent/<agent_name>/
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -97,7 +98,7 @@ class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of agents by group
-        B{URL:} ../api/v1/competitions/agents_by_group/<group_name>/
+        B{URL:} ../api/v1/agents/agents_by_group/<group_name>/
 
         @type  group_name: str
         @param group_name: The group name
@@ -118,12 +119,34 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of agents by username
-        B{URL:} ../api/v1/competitions/agents_by_user/<username>/
+        B{URL:} ../api/v1/agents/agents_by_user/<username>/
 
         @type  username: str
         @param username: The user name
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
         serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = CompetitionSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of competitions that agent is associated
+        B{URL:} ../api/v1/agents/agent_competitions/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+
+        agent = get_object_or_404(Agent.objects.all(), username=kwargs.get('pk'))
+        serializer = self.serializer_class([ac.competition for ac in agent.competitionagent_set], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

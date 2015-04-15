@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-from django.core.validators import MinValueValidator, validate_slug
+from django.core.validators import MinValueValidator, validate_slug, MinLengthValidator, EmailValidator
 
 
 class AccountManager(BaseUserManager):
@@ -37,22 +37,24 @@ class AccountManager(BaseUserManager):
         Create a superuser, with email, username, teaching institution, first name, last name, password and is_admin == True
         """
         account = self.create_user(email, password, **kwargs)
-        account.is_admin = True
+        account.is_superuser = True
+        account.is_staff = True
         account.save()
 
         return account
 
 
 class Account(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=40, unique=True, validators=[validate_slug])
+    email = models.EmailField(unique=True, blank=False, validators=[EmailValidator])
+    username = models.CharField(max_length=40, unique=True, blank=False, validators=[validate_slug, MinLengthValidator(2)])
 
-    first_name = models.CharField(max_length=40, validators=[validate_slug])
-    last_name = models.CharField(max_length=40, validators=[validate_slug])
+    first_name = models.CharField(max_length=40, validators=[validate_slug, MinLengthValidator(2)])
+    last_name = models.CharField(max_length=40, validators=[validate_slug, MinLengthValidator(2)])
 
-    teaching_institution = models.CharField(max_length=140)
+    teaching_institution = models.CharField(max_length=140, validators=[MinLengthValidator(2)])
 
-    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False, blank=False)
+    is_superuser = models.BooleanField(default=False, blank=False)
     groups = models.ManyToManyField('Group', through='GroupMember', related_name="account")
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -80,7 +82,7 @@ class Account(AbstractBaseUser):
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_slug])
+    name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_slug, MinLengthValidator(1)])
     max_members = models.IntegerField(default=5, validators=[MinValueValidator(1)])
 
     created_at = models.DateTimeField(auto_now_add=True)

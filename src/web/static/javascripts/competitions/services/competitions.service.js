@@ -26,7 +26,13 @@
             validateInscription: validateInscription,
             getAllRounds: getAllRounds,
             changeState: changeState,
-            agents: agents
+            agents: agents,
+            createTypeOfCompetition: createTypeOfCompetition,
+            getAllTypesOfCompetition: getAllTypesOfCompetition,
+            removeTypeOfCompetition: removeTypeOfCompetition,
+            getType: getType,
+            updateType: updateType,
+            getValidByTeam: getValidByTeam
 
         };
 
@@ -113,6 +119,38 @@
 
         function agents(groupName, competitionName){
             return $http.get("/api/v1/competitions/agents_by_competition_group/" + groupName+ "/?competition_name=" + competitionName)
+        }
+
+        function createTypeOfCompetition(typeName, teamsForTrial, agentsByGrid){
+            return $http.post("/api/v1/competitions/type_of_competition/", {
+                name: typeName,
+                number_teams_for_trial: teamsForTrial,
+                number_agents_by_grid: agentsByGrid
+            });
+        }
+
+        function getAllTypesOfCompetition(){
+            return $http.get("/api/v1/competitions/type_of_competition/");
+        }
+
+        function removeTypeOfCompetition(name){
+            return $http.delete("/api/v1/competitions/type_of_competition/" + name + "/");
+        }
+
+        function getType(name){
+            return $http.get("/api/v1/competitions/type_of_competition/" + name + "/");
+        }
+
+        function updateType(type, name){
+            return $http.put("/api/v1/competitions/type_of_competition/" + name + "/", {
+                name: type.name,
+                number_teams_for_trial: type.number_teams_for_trial,
+                number_agents_by_grid: type.number_agents_by_grid
+            });
+        }
+
+        function getValidByTeam(teamName){
+            return $http.get('/api/v1/competitions/enroll/' + teamName + '/');
         }
 
     }

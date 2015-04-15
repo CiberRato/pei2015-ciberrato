@@ -1,8 +1,11 @@
 import json
 import tempfile
 import tarfile
+from zipfile import ZipFile
+import mimetypes
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
-from os.path import basename, getsize
+from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -14,7 +17,7 @@ from competition.models import Simulation
 
 from authentication.models import GroupMember
 
-from ..serializers import AgentSerializer, FileAgentSerializer
+from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent
 
 from rest_framework import permissions
@@ -34,7 +37,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent file
-        B{URL:} ../api/v1/competitions/delete_agent_file/<agent_name>/?file_name=<file_name>
+        B{URL:} ../api/v1/agents/delete_agent_file/<agent_name>/?file_name=<file_name>
 
         @type  agent_name: str
         @param agent_name: The agent name
@@ -53,14 +56,19 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                              'message': 'Please provide the ?file_name=*file_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if default_storage.exists('agents/' + agent.agent_name + '/' + request.GET.get('file_name',
-                                                                                                         '')):
-            load = json.loads(agent.locations)
-            load.remove('agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
-            agent.locations = json.dumps(load)
-            agent.save()
-            default_storage.delete(
-                'agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+        if default_storage.exists('agents/' + agent.agent_name + '/' + request.GET.get('file_name', '')):
+            try:
+                load = json.loads(agent.locations)
+                load.remove('agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+                agent.locations = json.dumps(load)
+                agent.save()
+                default_storage.delete(
+                    'agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+            except ValueError:
+                return Response({'status': 'Not found',
+                                 'message': 'The agent file has not been found!'},
+                                status=status.HTTP_404_NOT_FOUND)
+
             return Response({'status': 'Deleted',
                              'message': 'The agent file has been deleted'},
                             status=status.HTTP_200_OK)
@@ -71,19 +79,30 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
 
 
 class GetAllowedLanguages(views.APIView):
+    serializer_class = LanguagesSerializer
+
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    @staticmethod
-    def get(request):
+    def get(self, request):
         """
         B{Get} the allowed languages
-        B{URL:} ../api/v1/competitions/allowed_languages/
+        B{URL:} ../api/v1/agents/allowed_languages/
         """
-        return Response(JSONRenderer().render(settings.ALLOWED_UPLOAD_LANGUAGES), status=status.HTTP_200_OK)
+        class Language:
+            def __init__(self, name, value):
+                self.name = name
+                self.value = value
+
+        languages = []
+        for key, value in dict(settings.ALLOWED_UPLOAD_LANGUAGES).iteritems():
+            languages += [Language(key, value)]
+
+        serializer = self.serializer_class(languages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
     serializer_class = FileAgentSerializer
 
@@ -93,7 +112,7 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the agent files list
-        B{URL:} ../api/v1/competitions/agent_files/<agent_name>/
+        B{URL:} ../api/v1/agents/agent_files/<agent_name>/
         Must be part of the group owner of the agent
 
         @type  agent_name: str
@@ -112,7 +131,9 @@ class GetAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             class AgentFile:
                 def __init__(self, file):
                     self.file = basename(file)
-                    self.url = "/URL/PARA/SACAR/O/FICHEIRO/"
+                    self.last_modification = getmtime(default_storage.path(file))
+                    self.size = getsize(default_storage.path(file))
+                    self.url = "/api/v1/agents/file/KAMIKAZE/"+self.file+"/"
 
             for f in json.loads(agent.locations):
                 files += [AgentFile(f)]
@@ -162,6 +183,11 @@ class UploadAgent(views.APIView):
 
         file_obj = request.data.get('file', '')
 
+        if not isinstance(file_obj, InMemoryUploadedFile) and file_obj.size is 0:
+            return Response({'status': 'Bad request',
+                             'message': 'You must send a file!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # language agent
         agent.language = request.GET.get('language', '')
 
@@ -187,7 +213,41 @@ class UploadAgent(views.APIView):
                         status=status.HTTP_201_CREATED)
 
 
-class GetAgentFiles(views.APIView):
+class GetAllAgentFiles(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def get(request, agent_name):
+        # agent_name
+        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+
+        # see if user owns the agent
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not agent.locations or len(json.loads(agent.locations)) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent doesn\'t have files.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        temp = tempfile.NamedTemporaryFile()
+        with ZipFile(temp.name, 'w') as z:
+            for name in json.loads(agent.locations):
+                z.write(default_storage.path(name), arcname=basename(default_storage.path(name)))
+            z.close()
+
+        wrapper = FileWrapper(temp)
+        response = HttpResponse(wrapper, content_type="application/zip")
+        response['Content-Disposition'] = 'attachment; filename=' + agent_name + '.zip'
+        response['Content-Length'] = getsize(temp.name)
+        temp.seek(0)
+        return response
+
+
+class GetAgentFilesSERVER(views.APIView):
     @staticmethod
     def get(request, agent_name):
         # agent_name
@@ -210,3 +270,34 @@ class GetAgentFiles(views.APIView):
         response['Content-Length'] = getsize(temp.name)
         temp.seek(0)
         return response
+
+
+class GetAgentFile(views.APIView):
+    @staticmethod
+    def get(request, agent_name, file_name):
+        # agent_name
+        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+
+        if not agent.locations or len(json.loads(agent.locations)) == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent doesn\'t have files.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # see if user owns the agent
+        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if agent.locations:
+            for f in json.loads(agent.locations):
+                if file_name == basename(f):
+                    wrapper = FileWrapper(default_storage.open(f))
+                    response = HttpResponse(wrapper, content_type=mimetypes.guess_type(f))
+                    response['Content-Disposition'] = 'attachment; filename=' + basename(f)
+                    response['Content-Length'] = getsize(default_storage.path(f))
+                    return response
+
+        return Response({'status': 'Bad request',
+                         'message': 'The agent doesn\'t have the file that you requested!'},
+                        status=status.HTTP_400_BAD_REQUEST)

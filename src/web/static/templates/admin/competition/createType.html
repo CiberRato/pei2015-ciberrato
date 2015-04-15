@@ -1,0 +1,60 @@
+<div class="content-block" role="main">
+
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>Create Type Of Competition</h2>
+                </header>
+                <section class="tab-content">
+                    <br></br>
+                    <!-- Tab #basic -->
+                    <div class="tab-pane active" id="basic">
+
+                        <!-- Example vertical forms -->
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <p>In this page you can create your types of competition.</p>
+                                <br></br>
+                                <p> When you complete your editions, please click on button <strong>Save changes</strong>.</p>
+
+                            </div>
+                            <div class="span8">
+                                <form role="form" ng-submit="vm.create()">
+                                    <fieldset>
+                                        <div class="control-group">
+                                            <label class="control-label" for="typeofcompetitionname">Type Of Competition Name</label>
+                                            <div class="controls">
+                                                <input id="typeofcompetitionname" type="text" placeholder="name of the type of competition" name="name" ng-model="vm.typeOfCompetitionName">
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="teamsTrial">Number of Teams for Trial</label>
+                                            <div class="controls">
+                                                <input id="teamsTrial" type="number" placeholder="Number Of Teams for Trial" name="number_teams" ng-model="vm.teamsForTrial">
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label" for="agentsGrid">Number Of Agents By Grid</label>
+                                            <div class="controls">
+                                                <input id="agentsGrid" type="number" placeholder="Number Of Agents by Grid" name="agents_Grid" ng-model="vm.agentsByGrid">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button class="btn btn-alt btn-large btn-success" type="submit">Create Type Of Competition</button>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
+    </div>
+</div>

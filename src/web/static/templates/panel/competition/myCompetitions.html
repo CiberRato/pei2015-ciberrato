@@ -26,9 +26,8 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.myCompetitions">
-                                <td ng-if="value.state == 'Register'"><a href="panel/competitions/{{ value.competition_name }}">{{value.competition_name}}</a></td>
-                                <td ng-if="value.state == 'Competition' || value.state == 'Past'"><a href="panel/{{ value.competition_name }}">{{value.competition_name}}</a></td>
-                                <td>{{value.type}}</td>
+                                <td><a href="panel/competitions/{{ value.competition_name }}">{{value.competition_name}}</a></td>
+                                <td>{{value.type.name}}</td>
                                 <td>{{value.state}}</td>
                                 <td><a href="panel/{{value.group_name}}/editTeam">{{value.group_name}}</a></td>
                                 <td ng-if="value.valid == false"><span class="label label-important">Not Valid</span></td>

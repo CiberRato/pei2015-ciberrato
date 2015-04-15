@@ -10,27 +10,41 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2>{{vm.roundName}}</h2>
+                        <p ng-if="vm.grid.size == 0 && vm.lab.size == 0 && vm.param_list.size == 0">This round doesn't have any files uploaded.</p>
 
-                        <a data-toggle="modal"  href="#uploadParams">(Upload Params for this Round)</a>
-
-                        <!--
-                        <table class="table table-striped table-hover">
+                        <table ng-if="vm.grid.size != 0 || vm.lab.size != 0 || vm.param_list.size != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>File Name</th>
+                                <th>Type</th>
 
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.simulations" >
-                                <td id="identifier">{{value.identifier}}</td>
+                            <tr>
+                                <td ng-if="vm.grid.size != 0">{{vm.grid.name}}</td>
+                                <td ng-if="vm.grid.size != 0">Grid</td>
                             </tr>
+                            <tr>
+                                <td ng-if="vm.lab.size != 0">{{vm.lab.name}}</td>
+                                <td ng-if="vm.lab.size != 0">Lab</td>
+                            </tr>
+
+                            <tr>
+                                <td ng-if="vm.param_list.size != 0">{{vm.param_list.name}}</td>
+                                <td ng-if="vm.param_list.size != 0">Param List</td>
+                            </tr>
+
                             </tbody>
                         </table>
-                        -->
+
+                        <a data-toggle="modal"  href="#uploadParams">(Upload Params for this Round)</a>
+
+                        <hr/>
+
                         <div class="modal fade"  id="uploadParams">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <button type="button" data-dismiss="modal" class="close" ng-click="vm.reload()" >×</button>
                                 <h2 align="center">Upload your Params</h2>
                             </div>
                             <div class="modal-body">
@@ -39,34 +53,37 @@
                                        type="file" name="files[]"
                                        class="inputFile clickable"
                                         />
-                                <button class="btn btn-alt btn-success" ng-click="vm.uploadParamList()">Upload</button>
+                                <button class="btn btn-alt btn-primary" ng-click="vm.uploadParamList()">Upload</button>
 
                                 <p><strong>Upload Grid</strong></p>
                                 <input id="GridUpload"
                                        type="file" name="files[]"
                                        class="inputFile clickable"
                                         />
-                                <button class="btn btn-alt btn-success"  ng-click="vm.uploadGrid()">Upload</button>
+                                <button class="btn btn-alt btn-primary"  ng-click="vm.uploadGrid()">Upload</button>
 
                                 <p><strong>Upload Lab</strong></p>
                                 <input id="LabUpload"
                                        type="file" name="files[]"
                                        class="inputFile clickable"
                                         />
-                                <button class="btn btn-alt btn-success"  ng-click="vm.uploadLab()">Upload</button>
+                                <button class="btn btn-alt btn-primary"  ng-click="vm.uploadLab()">Upload</button>
 
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-alt btn-success" style="float: right;" data-dismiss="modal" ng-click="vm.uploadAll()" >Upload All</button>
                             </div>
                         </div>
                         <p></p>
-                        <p ng-if="vm.simulations.length != 0">Here is shown in table the list of all simulations of this round.</p>
-                        <p ng-if="vm.simulations.length == 0">This round doesn't have any simulation.</p>
+                        <p ng-if="vm.simulations.length != 0">Here is shown in table the list of all trials of this round.</p>
+                        <p ng-if="vm.simulations.length == 0">This round doesn't have any trial.</p>
                         <table ng-if="vm.simulations.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th>Simulation identifier</th>
+                                <th>Trial identifier</th>
                                 <th>State</th>
                                 <th>Manage Agents</th>
-                                <th>Remove Simulation</th>
+                                <th>Remove Trial</th>
 
                             </tr>
                             </thead>
@@ -74,12 +91,12 @@
                             <tr ng-repeat="(key, value) in vm.simulations" >
                                 <td id="identifier">{{value.identifier}}</td>
                                 <td>{{value.state}}</td>
-                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationAgents()" href="#addAgents{{key}}">Manage</a>
+                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
 
-                                            <h2 align="center">Drag the agents for this simulation</h2>
+                                            <h2 align="center">Drag the teams for this trial (Max: {{vm.competition.type_of_competition.number_teams_for_trial}})</h2>
                                         </div>
                                         <div class="modal-body" style="text-align: center">
                                             <div class="row" style="padding-left: 40px">
@@ -92,18 +109,32 @@
                                                              transfer the object that was assigned to it. If an element was
                                                              dragged away, you have to remove it from the original list
                                                              yourself using the dnd-moved attribute -->
-                                                        <li ng-repeat="item in list"
+                                                        <li ng-if="listName == 'Simulation'"ng-repeat="item in list"
                                                             dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1); vm.moved(item.label);"
+                                                            dnd-moved="list.splice($index, 1); "
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"
+                                                            dnd-disable-if="true"
+                                                                >
+                                                            {{item.label}} <button type="button" class="close" ng-click="vm.disassociateGrid(item.position)">×</button>
+                                                        </li>
+                                                        <li ng-if="listName == 'Available'"ng-repeat="item in list"
+                                                            dnd-draggable="item"
+                                                            dnd-moved="list.splice($index, 1); vm.moved(item.label, item.identifier);"
+                                                            dnd-effect-allowed="move"
+                                                            dnd-selected="vm.models.selected = item"
+                                                            ng-class="{'selected': vm.models.selected === item}"
+                                                            dnd-disable-if="vm.models.lists.Simulation.length == vm.competition.type_of_competition.number_teams_for_trial"
+
                                                                 >
                                                             {{item.label}}
                                                         </li>
                                                     </ul>
                                                 </div>
                                             </div>
+                                            <p ng-if = "vm.models.lists.Simulation.length == vm.competition.type_of_competition.number_teams_for_trial"><strong>You can't associate more agents, limit reached.</strong></p>
+
                                         </div>
                                         
                                     </div>
@@ -113,7 +144,7 @@
                             </tbody>
                         </table>
                         <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
-                        <a ng-click="vm.createSimulation()" class="btn btn-alt btn-large btn-success">Create Simulation</a>
+                        <a ng-click="vm.createSimulation()" class="btn btn-alt btn-large btn-success">Create Trial</a>
                     </div>
 
                     <footer class="warning">

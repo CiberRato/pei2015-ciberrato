@@ -23,6 +23,7 @@
 
             function getByUserSuccessFn(data) {
                 vm.agents = data.data;
+                console.log(vm.agents);
             }
 
             function getByUserErrorFn(data) {
@@ -53,12 +54,20 @@
         }
 
         function uploadFile(name) {
+
             var language = document.getElementById("selector_language").value;
-            var selectedFile = document.getElementById("fileupload"+name).files[0];
+            console.log(language);
+            var selectedFile = document.getElementById('fileupload'+name).files[0];
 
-            Agent.upload(name, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
-
-            function uploadSuccessFn(){
+            if(selectedFile != undefined) {
+                Agent.upload(name, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            }else{
+                $.jGrowl("You didn't select any file", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+            }
+            function uploadSuccessFn() {
 
                 $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                     life: 2500,
@@ -67,7 +76,7 @@
                 $route.reload();
             }
 
-            function uploadErrorFn(data){
+            function uploadErrorFn(data) {
                 $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
                     life: 2500,
                     theme: 'btn-danger'
@@ -76,5 +85,6 @@
             }
 
         }
+
     }
 })();

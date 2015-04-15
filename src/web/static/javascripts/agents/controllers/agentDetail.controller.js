@@ -12,7 +12,6 @@
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
-        vm.associate = associate;
         var agentName = $routeParams.name;
 
         activate();
@@ -20,12 +19,11 @@
         function activate() {
             Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
             Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
+            Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
 
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
-                Competition.getCompetitions(vm.agent.group_name).then(getCompetitionsSuccessFn, getCompetitionsErrorFn);
-
 
             }
 
@@ -45,11 +43,11 @@
                 $location.url('/panel/');
             }
 
-            function getCompetitionsSuccessFn(data){
-                vm.competitions = data.data;
+            function getLanguagesSuccessFn(data){
+                vm.languages = data.data;
             }
 
-            function getCompetitionsErrorFn(data){
+            function getLanguagesErrorFn(data){
                 console.error(data.data);
                 $location.url('/panel/');
             }
@@ -57,11 +55,18 @@
 
         function uploadFile() {
             var language = document.getElementById("selector_language").value;
+            console.log(language);
             var selectedFile = document.getElementById('fileupload').files[0];
 
-            Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
-
-            function uploadSuccessFn(){
+            if(selectedFile != undefined) {
+                Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            }else{
+                $.jGrowl("You didn't select any file", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+            }
+            function uploadSuccessFn() {
 
                 $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                     life: 2500,
@@ -70,12 +75,12 @@
                 $route.reload();
             }
 
-            function uploadErrorFn(data){
-                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
+            function uploadErrorFn(data) {
+                console.log(data.data);
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                console.error(data.data);
             }
 
         }
@@ -98,39 +103,6 @@
                     theme: 'btn-danger'
                 });
                 console.error(data.data);
-            }
-
-        }
-
-        function associate(){
-            var competitionName = document.getElementById("selector_agent").value;
-            Competition.getFirstRound(competitionName).then(getFirstRoundSuccessFn, getFirstRoundErrorFn);
-
-            function getFirstRoundSuccessFn(data){
-                vm.round  = data;
-                Agent.associate(competitionName, agentName).then(associateSuccessFn, associateErrorFn);
-
-                function associateSuccessFn(){
-                    $.jGrowl("Agent \'" + agentName + "\' has been associated.", {
-                        life: 2500,
-                        theme: 'success'
-                    });
-                    Competition.getCompetitions(vm.agent.group_name).then(getCompetitionsSuccessFn, getCompetitionsErrorFn);
-                    $route.reload();
-                }
-
-                function associateErrorFn(data){
-                    console.error(data.data);
-                    $.jGrowl("Agent \'" + agentName + "\' can't be associated twice to one competition.", {
-                        life: 2500,
-                        theme: 'btn-danger'
-                    });
-                }
-            }
-
-            function getFirstRoundErrorFn(data){
-                console.error(data.data);
-                $location.path("/panel/");
             }
 
         }

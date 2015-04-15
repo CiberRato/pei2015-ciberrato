@@ -22,12 +22,17 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
-                                <td>{{value.file}}</td>
+                                <td><a href="/api/v1/agents/file/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
                                 <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
                             </tbody>
+
                         </table>
+                        <div align="right">
+                            <a ng-if="vm.files.length != 0" href="/api/v1/agents/agent_all_files/{{vm.agent.agent_name}}/" target="_blank">Download All</a>
+                        </div>
                             <a ng-if="vm.agent.is_virtual == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-success">Upload File for this Agent</a>
+
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">×</button>
@@ -39,10 +44,7 @@
                                         <p> Upload your file code here! Select <strong>Add files</strong> and next choose the file through your browse.</p>
                                         <p> When the file code is choosen, then upload him clicking on button <strong>Start upload</strong> and after these you can see your file code in the square above, allowing to you to download if you want to see him.
                                         <select id="selector_language">
-                                            <option value="Python">Python</option>
-                                            <option value="C">C</option>
-                                            <option value="cplusplus">C++</option>
-                                            <option value="Java">Java</option>
+                                            <option ng-repeat="(key, value) in vm.languages" value="{{value.value}}">{{value.name}}</option>
                                         </select>
 
                                     </section>
@@ -59,17 +61,6 @@
                                 </div>
                             </div>
                     </div>
-
-                    <hr ng-if="vm.agent.is_virtual == false"/>
-                    <h3>Associate this agent to a competition:</h3>
-                    <p ng-if="vm.competitions.length == 0">There are no able competitions to associate this agent! Please validate your inscription.</p>
-                    <select ng-if="vm.competitions.length != 0"  id="selector_agent">
-                        <option ng-repeat="(key, value) in vm.competitions">{{value.name}}</option>
-                    </select>
-                    <p></p>
-                    <a ng-if="vm.competitions.length != 0" ng-click="vm.associate()" class="btn btn-alt btn-large btn-success">Associate Agent</a>
-
-
 
                 </section>
                 <hr/>

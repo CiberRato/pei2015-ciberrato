@@ -1,17 +1,12 @@
 import uuid
-from django.core.validators import validate_slug
+from django.core.validators import validate_slug, MinValueValidator, MinLengthValidator
 from django.db import models
 from django.conf import settings
 from authentication.models import Account, Group
 
 
 class Competition(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
-
-    TYPE_OF_COMPETITIONS = (
-        (settings.COLABORATIVA, settings.COLABORATIVA),
-        (settings.COMPETITIVA, settings.COMPETITIVA),
-    )
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug, MinLengthValidator(1)])
 
     REGISTER = 'Register'
     COMPETITION = 'Competition'
@@ -25,7 +20,7 @@ class Competition(models.Model):
 
     enrolled_groups = models.ManyToManyField(Group, through='GroupEnrolled', related_name="competition")
 
-    type_of_competition = models.CharField(choices=TYPE_OF_COMPETITIONS, default=settings.COLABORATIVA, max_length=100)
+    type_of_competition = models.ForeignKey('TypeOfCompetition', blank=False)
     state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,6 +28,18 @@ class Competition(models.Model):
 
     class Meta:
         ordering = ['created_at']
+
+    def __unicode__(self):
+        return self.name
+
+
+class TypeOfCompetition(models.Model):
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug, MinLengthValidator(1)])
+    number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
+    number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
+
+    class Meta:
+        unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_grid',)
 
     def __unicode__(self):
         return self.name
@@ -56,7 +63,7 @@ class GroupEnrolled(models.Model):
 
 
 class Round(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug, MinLengthValidator(1)])
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 
@@ -76,7 +83,8 @@ class Round(models.Model):
 
 
 class Agent(models.Model):
-    agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug])
+    agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug,
+                                                                                        MinLengthValidator(1)])
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
     locations = models.CharField(max_length=256)
@@ -95,12 +103,38 @@ class Agent(models.Model):
         return self.agent_name
 
 
+class GridPositions(models.Model):
+    identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
+    competition = models.ForeignKey(Competition, blank=False)
+    group = models.ForeignKey(Group, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('competition', 'group',)
+
+    def __unicode__(self):
+        return self.identifier
+
+
+class AgentGrid(models.Model):
+    agent = models.ForeignKey(Agent, blank=False)
+    position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
+    grid_position = models.ForeignKey(GridPositions, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('position', 'grid_position',)
+        ordering = ('position', 'grid_position',)
+
+
 class CompetitionAgent(models.Model):
     competition = models.ForeignKey(Competition, blank=False)
     round = models.ForeignKey(Round, blank=False)
     agent = models.ForeignKey(Agent, blank=False)
-
-    eligible = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -117,7 +151,7 @@ class LogSimulationAgent(models.Model):
     pos = models.IntegerField(blank=False)
 
     class Meta:
-        unique_together = ('competition_agent', 'simulation',)
+        unique_together = ('pos', 'simulation',)
 
 
 class Simulation(models.Model):
@@ -136,3 +170,16 @@ class Simulation(models.Model):
 
     def __unicode__(self):
         return self.identifier
+
+
+class SimulationGrid(models.Model):
+    grid_positions = models.ForeignKey(GridPositions, blank=False)
+    simulation = models.ForeignKey(Simulation, blank=False)
+    position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('position', 'simulation',)
+        ordering = ('position', 'grid_positions', 'simulation')

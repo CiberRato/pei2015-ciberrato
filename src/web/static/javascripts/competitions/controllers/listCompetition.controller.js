@@ -26,23 +26,6 @@
 
                 function getTeamsSuccessFn(data) {
                     vm.competitionTeamsInfo = data.data;
-                    for (var l = 0; l < vm.competitionTeamsInfo.length; l++) {
-                        getAgents(vm.competitionTeamsInfo[l].group.name, l);
-
-                    }
-                    function getAgents(name, l) {
-                        Competition.agents(name, vm.competitionName).then(agentsSuccessFn, agentsErrorFn);
-
-                        function agentsSuccessFn(data) {
-                            vm.competitionTeamsInfo[l].agents = data.data;
-                            console.log(vm.competitionTeamsInfo[l].agents.length);
-                        }
-
-                        function agentsErrorFn(data) {
-                            console.error(data.data);
-                            $location.url('/panel/');
-                        }
-                    }
                 }
 
                 function getTeamsErrorFn(data) {

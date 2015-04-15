@@ -14,7 +14,8 @@
             'ciberonline.rounds',
             'dndLists',
             'ciberonline.logviewer',
-            'ciberonline.streamviewer'
+            'ciberonline.streamviewer',
+            'ciberonline.grid'
         ])
         .run(run);
 

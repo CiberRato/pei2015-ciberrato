@@ -6,10 +6,11 @@
 		.module('ciberonline.teams.controllers')
 		.controller('AllTeamsController', AllTeamsController);
 
-	AllTeamsController.$inject = ['$location', 'Team'];
+	AllTeamsController.$inject = ['$location', 'Team', '$route'];
 
-	function AllTeamsController($location, Team){
+	function AllTeamsController($location, Team, $route){
 		var vm = this;
+        vm.change = change;
 		activate();
 
 		function activate(){
@@ -20,6 +21,8 @@
                 for(var i=0; i<vm.team.length; i++){
                     getNumberOfMembers(vm.team[i].name, i);
                 }
+
+                console.log(vm.team);
 
         	}
 
@@ -43,6 +46,18 @@
             }
 
 		}
+
+        function change(url){
+            Team.change(url).then(changeSuccessFn, changeErrorFn);
+
+            function changeSuccessFn(data){
+                vm.team = data.data;
+            }
+
+            function changeErrorFn(data){
+                console.error(data.data);
+            }
+        }
 		
 
 	}
