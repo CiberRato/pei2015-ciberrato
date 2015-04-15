@@ -5,7 +5,8 @@ fi
 
 user=$(who am i | awk '{print $1}')
 echo "	>> Installing general dependencies"
-apt-get install -y	python \
+delgroup scanner
+apt-get install -y	colord python \
 			build-essential \
 			g++ \
 			qt4-dev-tools \
