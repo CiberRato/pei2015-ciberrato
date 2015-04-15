@@ -319,6 +319,14 @@ class StartSimulation(views.APIView):
         @param trial_id: The trial id
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
+
+        # verify if round has files
+        if simulation.round.grid_path is None or simulation.round.param_list_path is None \
+                or simulation.round.lab_path is None:
+            return Response({'status': 'Bad Request',
+                             'message': 'Is missing files to the Round take place!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         simulation_grids = SimulationGrid.objects.filter(simulation=simulation)
 
         pos = 1
