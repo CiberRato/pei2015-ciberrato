@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -32,7 +33,12 @@ class GetRoundFile(views.APIView):
         # see if round exists
         r = get_object_or_404(Round.objects.all(), name=round_name)
         try:
-            data = default_storage.open(getattr(r, param + '_path', None)).read()
+            if default_storage.exists(getattr(r, param + '_path', None)):
+                data = default_storage.open(getattr(r, param + '_path', None)).read()
+            else:
+                return Response({'status': 'Bad request',
+                                 'message': 'The file doesn\'t exists!'},
+                                status=status.HTTP_400_BAD_REQUEST)
         except Exception:
             return Response({'status': 'Bad request',
                              'message': 'The file doesn\'t exists'},
@@ -65,6 +71,11 @@ class UploadRoundXMLView(views.APIView):
     def file_save_xml(self, file_obj, r):
         if getattr(r, self.file_to_save, None) is not None:
             getattr(r, self.file_to_save, None).delete(False)
+
+        if not isinstance(file_obj, InMemoryUploadedFile) and file_obj.size is 0:
+            return Response({'status': 'Bad request',
+                             'message': 'You must send a file!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if file_obj.size > 102400:
             return Response({'status': 'Bad request',
