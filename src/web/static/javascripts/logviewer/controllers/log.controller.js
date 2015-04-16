@@ -8,10 +8,10 @@
     LogViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
 
     function LogViewer($location, $scope, $routeParams, Round, Authentication, Profile, LogViewer, $timeout){
-        var logInfo;
-        var lab;
-        var parameters;
-        var grid;
+        var logInfo_obj;
+        var lab_obj;
+        var parameters_obj;
+        var grid_obj;
 
         var identifier = $routeParams.identifier;
 
@@ -22,10 +22,11 @@
             console.log("TENHO O FICHEIRO: LOG!");
 
             //console.log(log);
-            logInfo = log.data.Log;
-            parameters = log.data.Parameters;
-            lab = log.data.Lab;
-            grid = log.data.Grid;
+            logInfo_obj = log.data.Log;
+            parameters_obj = log.data.Parameters;
+            lab_obj = log.data.Lab;
+            grid_obj = log.data.Grid;
+
             showViewer();
         }
         function getLogError(){
@@ -58,12 +59,6 @@
             $scope.zoom = 30;
             $scope.velButton = '1x';
 
-            /* JSON to Object */
-            var lab_obj = lab;
-            var grid_obj = grid;
-            var parameters_obj = parameters;
-            var logInfo_obj = logInfo;
-
             var b = 0;
             var i = 0;
 
@@ -72,28 +67,28 @@
 
             //console.log(lab_obj);
             /* Convert wall points to be integrated in SVG */
-            for (i = 0; i < lab_obj.Lab.Wall.length; i++) {
+            for (i = 0; i < lab_obj.Wall.length; i++) {
                 //console.log(lab_obj);
-                lab_obj.Lab.Wall[i].str = convertToStringPoints(lab_obj.Lab.Wall[i], $scope.zoom);
+                lab_obj.Wall[i].str = convertToStringPoints(lab_obj.Wall[i], $scope.zoom);
             }
 
             /* Parameters Object */
-            $scope.param = parameters_obj.Parameters;
+            $scope.param = parameters_obj;
 
             /* Map Object */
-            $scope.map = lab_obj.Lab;
+            $scope.map = lab_obj;
             /* --- slider --- */
 
 
 
             /* Grid Object */
-            $scope.grid = grid_obj.Grid;
+            $scope.grid = grid_obj;
 
             /* Log Object */
             $scope.log = logInfo_obj;
 
             /* Beacons Object */
-            $scope.beacon = lab_obj.Lab.Beacon;
+            $scope.beacon = lab_obj.Beacon;
 
             /* Number of Beacons */
             if (isArray($scope.map.Beacon)) {
@@ -105,9 +100,9 @@
 
             /* Find beacon height */
             if ($scope.nBeacon == 1)
-                $scope.beacon_height = lab_obj.Lab.Beacon._Height;
+                $scope.beacon_height = lab_obj.Beacon._Height;
             else
-                $scope.beacon_height = lab_obj.Lab.Beacon[0]._Height;
+                $scope.beacon_height = lab_obj.Beacon[0]._Height;
 
             /* Number of Robots */
             //console.log($scope.log);
