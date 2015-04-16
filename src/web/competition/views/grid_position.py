@@ -73,6 +73,11 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                                  'message': 'Your group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
+            if len(GridPositions.objects.filter(competition=competition, group=group)) == 1:
+                return Response({'status': 'Bad Request',
+                                 'message': 'You already have a grid for that competition.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             grid = GridPositions.objects.create(competition=competition, group=group)
 
             serializer = self.serializer_class(GridPositionsSimplex(grid))
