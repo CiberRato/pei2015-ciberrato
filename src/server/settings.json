@@ -51,11 +51,11 @@
 
 		///url to get agents from a specific simulation
 		/// USAGE: http://127.0.0.1:8000/api/v1/competitions/agent_file/<agent_name>/
-		"get_agent": "http://127.0.0.1:8000/api/v1/competitions/agent_file/",
+		"get_agent": "http://127.0.0.1:8000/api/v1/agents/agent_file/",
 
 		///url to post the log file after a simulation
 		///PARAMS: data={'simulation_identifier': <SIM_ID>}, files={'log_json': <FILE>}
-		"post_log": "http://127.0.0.1:8000/api/v1/competitions/simulation_log/",
+		"post_log": "http://127.0.0.1:8000/api/v1/simulations/simulation_log/",
 
 		///url to post a sim_id to be executed
 		///PARAMS: params={'simulation_identifier': <SIM_ID> }
