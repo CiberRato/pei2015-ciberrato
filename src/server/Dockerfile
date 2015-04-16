@@ -2,7 +2,9 @@ FROM ubuntu
 EXPOSE 6000
 EXPOSE 8000
 
-RUN apt-get update && apt-get install -y colord curl wget \
+# Docker builds seems to have a bug related with chfn
+RUN ln -s -f /bin/true /usr/bin/chfn
+RUN apt-get update && apt-get install -y curl wget \
 	python default-jre default-jdk g++ build-essential qt4-qmake qt4-dev-tools \
 	python-pip
 RUN pip install pytest
