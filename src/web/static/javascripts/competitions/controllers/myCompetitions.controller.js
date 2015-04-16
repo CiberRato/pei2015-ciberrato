@@ -37,6 +37,7 @@
                         }
                     }
                 }
+                console.log(vm.myCompetitions);
             }
 
             function getMyCompetitionsErrorFn(data){
