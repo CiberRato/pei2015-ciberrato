@@ -47,7 +47,7 @@ def monitor():
     sim_viewer, addr = sim_viewer_connect.accept()
 
     while True:
-        data = sim_viewer.recv(1024)
+        data = sim_viewer.recv(1024 * 8)
         if str(data) == "END":
             break
 
