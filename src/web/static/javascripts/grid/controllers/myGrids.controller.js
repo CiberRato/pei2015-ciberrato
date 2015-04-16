@@ -20,6 +20,7 @@
         vm.associate = associate;
         vm.disassociate = disassociate;
         vm.getCompetition = getCompetition;
+        vm.number = [];
         var username;
         activate();
 

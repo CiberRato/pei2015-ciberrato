@@ -1,12 +1,13 @@
 import uuid
-from django.core.validators import validate_slug, MinValueValidator, MinLengthValidator
+from django.core.validators import MinValueValidator, MinLengthValidator
+from ciberonline.validators import validate_word
 from django.db import models
 from django.conf import settings
 from authentication.models import Account, Group
 
 
 class Competition(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug, MinLengthValidator(1)])
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word, MinLengthValidator(1)])
 
     REGISTER = 'Register'
     COMPETITION = 'Competition'
@@ -34,7 +35,7 @@ class Competition(models.Model):
 
 
 class TypeOfCompetition(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug, MinLengthValidator(1)])
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word, MinLengthValidator(1)])
     number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
     number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
 
@@ -63,7 +64,7 @@ class GroupEnrolled(models.Model):
 
 
 class Round(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug, MinLengthValidator(1)])
+    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word, MinLengthValidator(1)])
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 
@@ -83,7 +84,7 @@ class Round(models.Model):
 
 
 class Agent(models.Model):
-    agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_slug,
+    agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word,
                                                                                         MinLengthValidator(1)])
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)

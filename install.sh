@@ -5,7 +5,7 @@ fi
 
 user=$(who am i | awk '{print $1}')
 echo "	>> Installing general dependencies"
-apt-get install -y	python \
+apt-get update && apt-get install -y	python \
 			build-essential \
 			g++ \
 			qt4-dev-tools \
@@ -22,21 +22,26 @@ pip install -r requirements.txt;
 echo "	>> Migrating Django applications"
 sudo -u $user python manage.py migrate;)
 
+# This should disappear from here after not needed
+(cd src/server/;
+sudo -u $user mkdir tmp;)
+
 echo "	>> Compiling cibertools"
 (cd src/server/cibertools-v2.2/;
 make;)
 echo "	>> Creating docker image based on Dockerfile"
 groupadd docker
 gpasswd -a $user docker
-sleep 2
 
 if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ];
 then
 	service docker.io restart
+	sleep 2
 	(cd src/server/;
 	docker.io build -t ubuntu/ciberonline .)
 else
 	service docker restart
+	sleep 2
 	(cd src/server/;
 	docker build -t ubuntu/ciberonline .)
 fi

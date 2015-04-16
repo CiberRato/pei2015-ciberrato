@@ -126,7 +126,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),
                        # get agent files
-                       url(r'^api/v1/agents/agent_file/(?P<simulation_id>.+)/(?P<agent_name>.+)/$',
+                       url(r'^api/v1/agents/agent_file/(?P<agent_name>.+)/$',
                            GetAgentFilesSERVER.as_view(),
                            name="Get agent files SERVER"),
 

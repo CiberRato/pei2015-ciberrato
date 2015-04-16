@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-from django.core.validators import MinValueValidator, validate_slug, MinLengthValidator, EmailValidator
+from django.core.validators import MinValueValidator, MinLengthValidator, EmailValidator
+from ciberonline.validators import validate_word
 
 
 class AccountManager(BaseUserManager):
@@ -46,10 +47,10 @@ class AccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     email = models.EmailField(unique=True, blank=False, validators=[EmailValidator])
-    username = models.CharField(max_length=40, unique=True, blank=False, validators=[validate_slug, MinLengthValidator(2)])
+    username = models.CharField(max_length=40, unique=True, blank=False, validators=[validate_word, MinLengthValidator(2)])
 
-    first_name = models.CharField(max_length=40, validators=[validate_slug, MinLengthValidator(2)])
-    last_name = models.CharField(max_length=40, validators=[validate_slug, MinLengthValidator(2)])
+    first_name = models.CharField(max_length=40, validators=[validate_word, MinLengthValidator(2)])
+    last_name = models.CharField(max_length=40, validators=[validate_word, MinLengthValidator(2)])
 
     teaching_institution = models.CharField(max_length=140, validators=[MinLengthValidator(2)])
 
@@ -82,7 +83,7 @@ class Account(AbstractBaseUser):
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_slug, MinLengthValidator(1)])
+    name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_word, MinLengthValidator(1)])
     max_members = models.IntegerField(default=5, validators=[MinValueValidator(1)])
 
     created_at = models.DateTimeField(auto_now_add=True)
