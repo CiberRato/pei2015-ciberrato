@@ -16,7 +16,8 @@ apt-get update && apt-get install -y	python \
 (cd src/web;
 echo "	>> Installing python dependencies"
 pip install cherrypy \
-			netifaces
+			netifaces \
+			xmltodict
 pip install -r requirements.txt;
 
 echo "	>> Migrating Django applications"
