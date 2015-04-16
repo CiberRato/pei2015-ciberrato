@@ -168,6 +168,7 @@ def main():
 		log_file.write(json_data)
 
 		# Enviar os dados da simulação para o exterior
+		#print json_data
 		websocket_tcp.send(json_data)
 
 	log_file.write("]}")

@@ -118,7 +118,7 @@ class Starter:
 		print "Successfully opened process with process id: ", simulator.pid
 		time.sleep(1)
 		print "Creating process for viewer"
-		viewer = subprocess.Popen(["python", "viewer.py"], stdout=subprocess.PIPE)
+		viewer = subprocess.Popen(["python", "viewer.py"])
 		print "Successfully opened process with process id: ", viewer.pid
 
 		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
