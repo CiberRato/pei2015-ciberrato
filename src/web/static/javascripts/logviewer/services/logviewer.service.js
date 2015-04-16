@@ -15,13 +15,7 @@
         return logViewer;
 
         function getLog(identifier){
-            return $http({
-                url: '/api/v1/competitions/get_simulation_log/'+identifier+'/',
-                method: 'GET',
-                transformResponse: [function (data) {
-                    return angular.fromJson(data);
-                }]
-            });
+            return $http.get('/api/v1/simulations/get_simulation_log/'+identifier+'/');
         }
     }
 })();
