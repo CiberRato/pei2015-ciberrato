@@ -21,12 +21,11 @@
             console.log("ACTIVATED");
             console.log("TENHO O FICHEIRO: LOG!");
 
-            log = log.data;
             //console.log(log);
-            logInfo = log[3];
-            parameters = log[0];
-            lab = log[1];
-            grid = log[2];
+            logInfo = log.data.Log;
+            parameters = log.data.Parameters;
+            lab = log.data.Lab;
+            grid = log.data.Grid;
             showViewer();
         }
         function getLogError(){
