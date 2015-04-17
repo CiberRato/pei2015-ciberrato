@@ -362,7 +362,7 @@ class GroupsModelsTestCase(TestCase):
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data,
-                         {'status': 'Bad request', 'message': 'The group reached the number max of members:2'})
+                         {'status': 'Bad request', 'message': 'The group reached the max number of members: 2'})
 
         client.force_authenticate(user=None)
         user = Account.objects.get(username="eypo")

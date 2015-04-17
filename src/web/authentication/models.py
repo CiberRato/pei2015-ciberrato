@@ -101,5 +101,8 @@ class GroupMember(models.Model):
     group = models.ForeignKey(Group, blank=False)
     is_admin = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('account', 'group',)
+
     def __unicode__(self):
         return "%s is in group %s (as %s)" % (self.account, self.group, self.is_admin)
