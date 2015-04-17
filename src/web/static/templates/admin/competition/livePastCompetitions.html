@@ -76,16 +76,17 @@
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
-                                        <td rowspan="{{value1.grids.length}}">{{value1.identifier}}</td>
-                                        <td rowspan="{{value1.grids.length}}">{{value1.state}}</td>
-                                        <td>
-                                            <table>
-                                                <tr ng-repeat="(key2, value2) in value1.grids">
-                                                    <td>{{value2.grid_positions.group_name}}</td>
-                                                </tr>
-                                            </table>
+                                    <tr>
+                                        <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.identifier}}</td>
+                                        <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.state}}</td>
+                                        <td ng-if="value1.grids.length == 0"><strong> There are no teams</strong></td>
+                                        <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first">{{value2.grid_positions.group_name}}</td>
+                                    </tr>
+                                    <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">
+                                        <td bgcolor="#f8f8f8">
+                                            {{value2.grid_positions.group_name}}
                                         </td>
-
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
