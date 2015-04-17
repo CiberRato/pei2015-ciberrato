@@ -146,18 +146,19 @@ class Starter:
 				docker_container = docker.stdout.readline().strip()
 				docker.wait()
 				print "Successfully opened container: %s\n" % (docker_container, )
-			else:
-				remote = True
-
-		if remote:
-			print "Remote agents may start registering"
-			sleep(TIMEOUT) #timeout for people to register their robots
-			print "Remote agents timeout reached, simulation will start now.."
 
 
 		data = viewer_c.recv(4096)
-		while data != "<AllRobotsRegistered/>":
+		while data.find("<Robots"):
 			data = viewer_c.recv(4096)
+
+		#read how many robots have registered
+		robotsXML = minidom.parseString(data)
+		robots = robotsXML.getElementsByTagName('Robots')
+		robotsRegistered = robots[0].attributes['Registered'].value
+
+		if int(robotsRegistered) != n_agents:
+			#HOUVE ROBOTS QUE NAO SE REGISTARAM
 
 		print "Sending message to Viewer (everything is ready to start)"
 		viewer_c.send("<StartedAgents/>")
