@@ -39,6 +39,11 @@ class Starter:
 			self.run(data)
 			data = None
 
+		end_point_c.shutdown(socket.SHUT_RDWR)
+		end_point_c.close()
+		end_point_tcp.shutdown(socket.SHUT_RDWR)
+		end_point_tcp.close()
+
 	def run(self,sim_id):
 		# Find docker ip
 		DOCKERIP = None
@@ -48,7 +53,7 @@ class Starter:
 				break
 		if DOCKERIP == None:
 			print "[STARTER] Please check your docker interface."
-			exit(-1)
+			return
 		else:
 			print "[STARTER] Docker interface: %s" % (DOCKERIP, )
 
@@ -72,8 +77,9 @@ class Starter:
 		#end loading settings
 
 		# Get simulation
-		result = requests.get("http://" + DJANGO_HOST + ':' + DJANGO_PORT + GET_SIM_URL + sim_id + "/")
+		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
 		simJson = json.loads(result.text)
+		print simJson
 		tempFilesList = {}
 		n_agents = 0
 		for key in simJson:
@@ -89,7 +95,10 @@ class Starter:
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
-			r = requests.get("http://" + DJANGO_HOST + ':' + DJANGO_PORT + simJson[key])
+			r = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + simJson[key])
+			if r.status_code != 200:
+				print "[STARTER] ERROR: error getting " + key + " file from end-point"
+				return
 			fp.write(r.text)
 			fp.seek(0)
 			tempFilesList[key] = fp
@@ -130,6 +139,7 @@ class Starter:
 		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
 		# Launching agents
+		docker_container = None
 		for i in range(n_agents):
 			if agents[i]['agent_type'] == "local":
 				print "[STARTER] Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
@@ -159,6 +169,7 @@ class Starter:
 		if int(robotsRegistered) != n_agents:
 			# HOUVE ROBOTS QUE NAO SE REGISTARAM
 			# TO DO
+			pass
 
 		print "[STARTER] Sending message to Viewer (everything is ready to start)"
 		viewer_c.send("<StartedAgents/>")
@@ -181,10 +192,11 @@ class Starter:
 		viewer.wait()
 
 		# Kill docker container
-		proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
-		proc.wait()
-		proc = subprocess.Popen(["docker", "rm", docker_container])
-		proc.wait()
+		if docker_container != None:
+			proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+			proc.wait()
+			proc = subprocess.Popen(["docker", "rm", docker_container])
+			proc.wait()
 
 		# Kill simulator
 		simulator.terminate()
@@ -193,7 +205,7 @@ class Starter:
 		# Save log to the end-point
 		data = {'simulation_identifier': sim_id}
 		files = {'log_json': open(LOG_FILE, "r")}
-		response = requests.post("http://" + DJANGO_HOST + ':' + DJANGO_PORT + POST_SIM_URL, data=data, files=files)
+		response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + POST_SIM_URL, data=data, files=files)
 
 		if response.status_code != 201:
 			print "[STARTER] ERROR: error posting log file to end point"
