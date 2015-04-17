@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Editor</title>
+  <style type="text/css" media="screen">
+    body {
+        overflow: hidden;
+    }
+
+    #editor {
+        margin: 0px;
+        top: 20px;
+        /*position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;*/
+        height: 600px;
+    }
+  </style>
+
+  
+<script>        
+  function handleFileSelect()
+  {               
+    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+      alert('The File APIs are not fully supported in this browser.');
+      return;
+    }   
+
+    input = document.getElementById('fileinput');
+    if (!input) {
+      alert("Um, couldn't find the fileinput element.");
+    }
+    else if (!input.files) {
+      alert("This browser doesn't seem to support the `files` property of file inputs.");
+    }
+    else if (!input.files[0]) {
+      alert("Please select a file before clicking 'Load'");               
+    }
+
+    else {
+      file = input.files[0];
+      fr = new FileReader();
+      fr.onload = receivedText;
+      fr.readAsText(file);
+      console.log();
+      //fr.readAsDataURL(file);
+
+    }
+  }
+
+  function receivedText() {           
+    //result = fr.result;
+    console.log(fr.result);
+    editor.insert(fr.result); // insert at cursor
+    
+    document.getElementById('editor').appendChild(document.createTextNode(fr.result));
+  }    
+
+
+  function saveTextAsFile()
+  {
+
+    var textToWrite = document.getElementById("inputTextToSave").value;
+    var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+    var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null)
+    {
+      // Chrome allows the link to be clicked
+      // without actually adding it to the DOM.
+      downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    }
+    else
+    {
+      // Firefox requires the link to be added to the DOM
+      // before it can be clicked.
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+    }
+
+    downloadLink.click();
+  }
+
+     
+
+</script>
+</head>
+<body>
+  <input type="file" id="fileinput" onchange="handleFileSelect();"/>  <!-- o onchange carrega directamente o ficheiro -->
+  <input type='button' id='btnLoad' value='Load' onclick='handleFileSelect();'>
+  <input type='button' id='btnClean' value='Clean' onclick='clearFileInput();'>
+  <input type='button' id='btnSave' value='Save' onclick='saveTextAsFile();'>
+
+  <div id="editor"></div>
+
+  <script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script>
+      var editor = ace.edit("editor");
+      editor.setTheme("../ace/lib/ace/theme/cobalt");
+      editor.getSession().setMode("../ace/lib/ace/mode/javascript");
+
+          // operations
+      //editor.setValue("the new text here");
+      //editor.getValue();
+      editor.session.getTextRange(editor.getSelectionRange()); //get selected text
+      editor.insert("/*Insert your \ncode here*/"); // insert at cursor
+      editor.selection.getCursor(); // Get the current cursor line and column
+      //editor.gotoLine(lineNumber); // go to a line
+      editor.session.getLenght(); // get total number of lines
+      editor.getSession().setTabSize(4); // set the default tab size
+      editor.getSession().setUseSoftTabs(true); // use soft tabs
+      document.getElementById('editor').style.fontSize='12px'; // set the font size
+      editor.getSession().setUseWrapMode(true); // Toggle word wrapping
+      editor.setHighlightActiveLine(true); // set the highlighting
+      editor.setShowPrintMargin(false); // Set the print margin visibility
+      editor.setReadOnly(false);  // false to make it editable
+
+      // triggering resizes
+      editor.resize()
+
+      //searching
+      editor.find('needle',{
+          backwards: false,
+          wrap: false,
+          caseSensitive: false,
+          wholeWord: false,
+          regExp: false
+
+      });
+      editor.findNext();
+      editor.findPrevious();
+
+      editor.find('foo');
+      editor.replace('bar');
+
+      editor.replaceAll('bar');
+
+      // listening to events
+      editor.getSession().on('change', function(e) { // to listen for an onchange
+          // e.type, etc
+      });
+
+      editor.getSession().selection.on('changeSelection', function(e) { // To listen for a cursor change:
+      });
+
+      // Adding New Commands and Keybindings
+      editor.commands.addCommand({
+          name: 'myCommand',
+          bindKey: {win: 'Ctrl-M',  mac: 'Command-M'},
+          exec: function(editor) {
+          //...
+          },
+          readOnly: true // false if this command should not apply in readOnly mode
+      });
+
+
+  </script>
+
+     
+
+</body>
+</html>
