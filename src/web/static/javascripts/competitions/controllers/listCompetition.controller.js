@@ -11,7 +11,6 @@
     function ListCompetitionController($location, $route, $routeParams, Competition, Round){
         var vm = this;
         vm.competitionName = $routeParams.name;
-        vm.startSimulation = startSimulation;
         vm.validateInscription = validateInscription;
 
         activate();
@@ -66,27 +65,7 @@
             }
         }
 
-        function startSimulation(identifier){
-            console.log(identifier);
-            Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
 
-            function startSimulationSuccessFn(){
-                $.jGrowl("Simulation has been started successfully.", {
-                    life: 2500,
-                    theme: 'success'
-                });
-                $route.reload();
-            }
-
-            function startSimulationErrorFn(){
-                $.jGrowl("Simulation can't be started.", {
-                    life: 2500,
-                    theme: 'btn-danger'
-                });
-                $route.reload();
-            }
-
-        }
         function validateInscription(group_name, competition_name){
             Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
 

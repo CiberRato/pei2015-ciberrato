@@ -83,6 +83,7 @@
                                 <th>Trial identifier</th>
                                 <th>State</th>
                                 <th>Manage Agents</th>
+                                <th>Start Trial</th>
                                 <th>Remove Trial</th>
 
                             </tr>
@@ -139,6 +140,12 @@
                                         
                                     </div>
                                 </td>
+                                <td ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startSimulation(value.identifier)">Start</a>
+                                    <p ng-if="value.state == 'STARTED'">Started</p>
+                                    <p ng-if="value.state == 'LOG'">Finished</p>
+                                </td>
+                                <td ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
+
                                 <td><a class="btn btn-primary btn-flat" ng-click="vm.removeSimulation(value.identifier)">X</a></td>
                             </tr>
                             </tbody>

@@ -32,6 +32,8 @@
         vm.getSimulationGrids = getSimulationGrids;
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
+        vm.startSimulation = startSimulation;
+
         activate();
 
         function activate() {
@@ -64,6 +66,7 @@
 
                     function getCompetitionSuccessFn(data){
                         vm.competition = data.data;
+                        console.log(vm.competition);
                     }
 
                     function getCompetitionErrorFn(data){
@@ -382,6 +385,28 @@
                 console.error(data.data);
                 $location.path('/panel/');
             }
+        }
+
+        function startSimulation(identifier){
+            console.log(identifier);
+            Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
+
+            function startSimulationSuccessFn(){
+                $.jGrowl("Simulation has been started successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $route.reload();
+            }
+
+            function startSimulationErrorFn(){
+                $.jGrowl("Simulation can't be started.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                $route.reload();
+            }
+
         }
 
 
