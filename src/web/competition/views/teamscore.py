@@ -92,27 +92,35 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the grid positions details
-        B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?group_name=<group_name>
+        B{URL:} ../api/v1/competitions/team_score/<trial_id>/
 
-        @type  competition_name: str
-        @param competition_name: The type of competition name
-        @type  group_name: str
-        @type  group_name: The group name
+        @type  trial_id: str
+        @param trial_id: The trial id
         """
-        serializer = self.serializer_class(GridPositionsSimplex(grid))
-
-        return Response(serializer.data)
+        pass
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Destroy} the grid positions
-        B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?group_name=<group_name>
+        B{Destroy} the team score
+        B{URL:} ../api/v1/competitions/team_score/<trial_id>/?team_name=<team_name>
 
-        @type  competition_name: str
-        @param competition_name: The type of competition name
-        @type  group_name: str
-        @type  group_name: The group name
+        @type  trial_id: str
+        @param trial_id: The trial identifier
+        @type  team_name: str
+        @type  team_name: The team name
         """
+        trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
+
+        if trial.round.parent_competition.state_of_competition == 'Past':
+            return Response({'status': 'Bad Request',
+                             'message': 'The competition is in \'Past\' state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team = get_object_or_404(Group.objects.all(), name=request.GET.get('team_name', ''))
+
+        team_score = get_object_or_404(TeamScore.objects.all(), trial=trial, team=team)
+        team_score.delete()
+
         return Response({'status': 'Deleted',
-                         'message': 'The grid positions has been deleted'},
+                         'message': 'The team score has been deleted!'},
                         status=status.HTTP_200_OK)
