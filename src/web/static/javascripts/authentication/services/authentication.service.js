@@ -51,7 +51,7 @@
         }
 
         function registerSuccessFn(){
-            $.jGrowl("Register Success.", {
+            $.jGrowl("You have been successfully registered", {
                 life: 2500,
                 theme: 'btn-success'
             });
