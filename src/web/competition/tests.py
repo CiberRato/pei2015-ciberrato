@@ -496,8 +496,9 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round_files/R1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'param_list': {'name': '', 'size': '0B'}, 'grid': {'name': '', 'size': '0B'},
-                                         'lab': {'name': '', 'size': '0B'}})
+        self.assertEqual(response.data, {'param_list': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'},
+                                         'grid': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'},
+                                         'lab': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'}})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"

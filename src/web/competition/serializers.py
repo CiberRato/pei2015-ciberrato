@@ -162,19 +162,24 @@ class SimulationAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ()
 
 
-class RoundFilesSerializer(serializers.BaseSerializer):
+class RoundFileSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
-            'param_list': {
-                'name': instance.param_list[0],
-                'size': instance.param_list[1]
-            },
-            'grid': {
-                'name': instance.grid[0],
-                'size': instance.grid[1]
-            },
-            'lab': {
-                'name': instance.lab[0],
-                'size': instance.lab[1]
-            }
+            'file': instance.file,
+            'last_modification': instance.last_modification,
+            'size': instance.size,
+            'url': instance.url
+        }
+
+
+class RoundFilesSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        param = RoundFileSerializer(instance.param_list)
+        grid = RoundFileSerializer(instance.grid)
+        lab = RoundFileSerializer(instance.lab)
+
+        return {
+            'param_list': param.data,
+            'grid': grid.data,
+            'lab': lab.data
         }
