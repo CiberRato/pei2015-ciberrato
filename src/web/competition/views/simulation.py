@@ -1,5 +1,6 @@
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.files.storage import default_storage
 
 import requests
 
@@ -321,8 +322,7 @@ class StartSimulation(views.APIView):
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if round has files
-        if simulation.round.grid_path is None or simulation.round.param_list_path is None \
-                or simulation.round.lab_path is None:
+        if not default_storage.exists(simulation.round.grid_path) or not default_storage.exists(simulation.round.param_list_path)  or not simulation.round.lab_path:
             return Response({'status': 'Bad Request',
                              'message': 'Is missing files to the Round take place!'},
                             status=status.HTTP_400_BAD_REQUEST)
