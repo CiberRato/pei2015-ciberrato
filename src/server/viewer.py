@@ -17,7 +17,7 @@ def getText(nodelist):
     return ''.join(rc)
 
 def main():
-	#Load settings
+	# Load settings
 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 	settings = json.loads(settings_str)
 
@@ -33,15 +33,16 @@ def main():
 	WEBSOCKET_PORT = settings["settings"]["websocket_port"]
 
 	LOG_FILE = settings["settings"]["log_info_file"]
-	#end of loading settings
+	# End of loading settings
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+	# Register as PanelViewer in the simulator
 	simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
 
-	# Ler o valor do tempo de simulação e obter as portas
-	# Vem params, grid e lab aqui
+	# Get sim time, and ports
+	# params, grid e lab comes in this packet as well
 	data, (hostSim, portSim) = simulator_s.recvfrom(4096)
 	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
 	itemlist = parametersXML.getElementsByTagName('Parameters')
@@ -54,7 +55,7 @@ def main():
 	lab = parametersXML.getElementsByTagName('Lab')[0].toxml()
 	grid = parametersXML.getElementsByTagName('Grid')[0].toxml()
 
-	#write parameters
+	# Write parameters
 	json_obj = xmltodict.parse(parameters)
 	json_data = json.dumps(json_obj)
 
@@ -63,7 +64,7 @@ def main():
 
 	log_file.write("{"+json_data[1:-1]+",")
 
-	#write lab
+	# Write lab
 	json_obj = xmltodict.parse(lab)
 	json_data = json.dumps(json_obj)
 
@@ -72,7 +73,7 @@ def main():
 
 	log_file.write(json_data[1:-1]+",")
 
-	#write grid
+	# Write grid
 	json_obj = xmltodict.parse(grid)
 	json_data = json.dumps(json_obj)
 
@@ -115,10 +116,10 @@ def main():
 	while data != "<StartedAgents/>":
 		data = starter_s.recv(4096)
 
-	#sending simulator msg to start the simulation
+	# Sending simulator msg to start the simulation
 	simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
-	#connect to websockets
+	# Connect to websockets
 	websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
@@ -132,37 +133,37 @@ def main():
 		else:
 			firstTime = False
 
-		# Actualizar o tempo do robot
+		# Update Robot time
 		data = simulator_s.recv(4096)
 		data = data.replace("\x00", "")
 		robotXML = minidom.parseString(data)
 		itemlist = robotXML.getElementsByTagName('LogInfo')
 		robotTime = itemlist[0].attributes['Time'].value
 
-		#Convert to json and write to log file
+		# Convert to json and write to log file
 		json_obj = xmltodict.parse(data)
 		json_data = json.dumps(json_obj)
 		json_data = json_data.replace("@", "_")
 		log_file.write(json_data)
 
-		# Enviar os dados da simulação para o exterior
+		# Send data to the websockets
 		websocket_tcp.send(json_data)
 
 	log_file.write("]}")
 
-	#wait 0.1 seconds to assure the END msg goes on a separate packet
+	# Wait 0.1 seconds to assure the END msg goes on a separate packet
 	time.sleep(0.1)
-	#send websocket msg telling it's over
+	# Send websocket msg telling it's over
 	websocket_tcp.send("END")
 
 	starter_s.send('<EndedSimulation/>')
 
-	#Close all connections
+	# Close all connections
 	websocket_tcp.close()
 	starter_s.close()
 	simulator_s.close()
 
-	#Close all open files
+	# Close all open files
 	log_file.close()
 
 if __name__ == "__main__":
