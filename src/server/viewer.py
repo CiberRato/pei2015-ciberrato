@@ -97,7 +97,7 @@ def main():
 
 	count = 0
 	checkedRobots = []
-	while len(checkedRobots) != int(robotsAmount) or count > TIMEOUT:
+	while (len(checkedRobots) != int(robotsAmount)) and (count < int(TIMEOUT)):
 		count += 1
 		data, (host, port) = simulator_s.recvfrom(4096)
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
