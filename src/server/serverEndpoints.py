@@ -49,12 +49,14 @@ class TestAgent():
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
+		GET_AGENT_URL = settings["urls"]["get_agent"]
+
 		if "agent_name" not in kwargs:
 			raise cherrypy.HTTPError(400, "Parameters agent_name were expected.")
 
 		agent_name = kwargs["agent_name"]
 
-		AGENT_ENDPOINT = "http://%s:8000/api/v1/competitions/agent_file/%s/" % (DOCKERIP, agent_name,)
+		AGENT_ENDPOINT = "http://%s:8000" + GET_AGENT_URL + "%s/" % (DOCKERIP, agent_name,)
 
 		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
 									  "bash -c 'curl " \
@@ -85,14 +87,3 @@ class EndPoint():
 
 		cherrypy.quickstart(Root(), "/api/v1/", config)
 
-
-# if __name__ == '__main__':
-# 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-# 	settings = json.loads(settings_str)
-# 	HOST = settings["settings"]["end_point_host"]
-# 	PORT = settings["settings"]["end_point_port"]
-
-
-# 	cherrypy.config.update({'server.socket_host': HOST ,\
-# 							'server.socket_port': PORT })
-# 	cherrypy.quickstart(GetSimId(), "/api/v1/simulation_id/")
