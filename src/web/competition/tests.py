@@ -45,15 +45,8 @@ class AuthenticationTestCase(TestCase):
 
         # create new type of competition
         url = "/api/v1/competitions/type_of_competition/"
-        data = {'name': 'IIA', 'number_teams_for_trial': 1, 'number_agents_by_grid': 1}
-        response = client.post(url, data)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'name', u'IIA'), (u'number_teams_for_trial', 1), (u'number_agents_by_grid', 1)]))
-
-        # udpate the type of competition
-        url = "/api/v1/competitions/type_of_competition/IIA/"
         data = {'name': 'IIA', 'number_teams_for_trial': 2, 'number_agents_by_grid': 1}
-        response = client.put(url, data)
+        response = client.post(url, data)
         self.assertEqual(response.data, OrderedDict(
             [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_grid', 1)]))
 
@@ -503,8 +496,8 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/round_files/R1/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'param_list': {'name': '', 'size': 0}, 'grid': {'name': '', 'size': 0},
-                                         'lab': {'name': '', 'size': 0}})
+        self.assertEqual(response.data, {'param_list': {'name': '', 'size': '0B'}, 'grid': {'name': '', 'size': '0B'},
+                                         'lab': {'name': '', 'size': '0B'}})
 
         # only  by admin
         url = "/api/v1/competitions/round/upload/param_list/?round=R1"

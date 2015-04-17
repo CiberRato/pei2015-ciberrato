@@ -3,6 +3,7 @@ from os.path import basename, getsize
 from django.core.files.storage import default_storage
 from django.db import IntegrityError
 from django.db import transaction
+from hurry.filesize import size
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -206,22 +207,22 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         class RoundFiles:
             def __init__(self, r):
                 if not r.param_list_path:
-                    self.param_list = ('', 0)
+                    self.param_list = ('', size(0))
                 else:
                     self.param_list = (
-                    basename(default_storage.path(r.param_list_path)), getsize(default_storage.path(r.param_list_path)))
+                    basename(default_storage.path(r.param_list_path)), size(getsize(default_storage.path(r.param_list_path))))
 
                 if not r.grid_path:
-                    self.grid = ('', 0)
+                    self.grid = ('', size(0))
                 else:
                     self.grid = (
-                        basename(default_storage.path(r.grid_path)), getsize(default_storage.path(r.grid_path)))
+                        basename(default_storage.path(r.grid_path)), size(getsize(default_storage.path(r.grid_path))))
 
                 if not r.lab_path:
-                    self.lab = ('', 0)
+                    self.lab = ('', size(0))
                 else:
                     self.lab = (
-                        basename(default_storage.path(r.lab_path)), getsize(default_storage.path(r.lab_path)))
+                        basename(default_storage.path(r.lab_path)), size(getsize(default_storage.path(r.lab_path))))
 
         serializer = self.serializer_class(RoundFiles(r))
 
