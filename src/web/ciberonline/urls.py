@@ -20,10 +20,11 @@ from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, 
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
+from competition.views.teamscore import TeamScoreViewSet
 
 from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
-from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
+from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, AgentCodeValidation
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
@@ -55,6 +56,7 @@ router_competitions.register(r'type_of_competition', TypeOfCompetitionViewSet)
 router_competitions.register(r'grid_position', GridPositionsViewSet)
 router_competitions.register(r'grid_positions_competition', GridPositionsByCompetition)
 router_competitions.register(r'agent_grid', AgentGridViewSet)
+router_competitions.register(r'team_score', TeamScoreViewSet)
 # Groups
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
@@ -90,6 +92,7 @@ router_agents.register(r'agents_by_group', AgentsByGroupViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', ListAgentsFiles)
+router_agents.register(r'code_validation', AgentCodeValidation)
 
 # SIMULATION URL's
 router_simulations = routers.SimpleRouter()

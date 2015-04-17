@@ -18,6 +18,13 @@ class AgentSerializer(serializers.ModelSerializer):
         read_only_fields = ('user', 'language', 'rounds', 'competitions', 'created_at', 'updated_at',)
 
 
+class AgentCodeValidationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agent
+        fields = ('code_valid', 'validation_result',)
+        read_only_fields = ()
+
+
 class FileAgentSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
