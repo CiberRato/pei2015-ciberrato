@@ -24,7 +24,7 @@ from competition.views.teamscore import TeamScoreViewSet
 
 from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
-from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
+from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, AgentCodeValidation
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
@@ -92,6 +92,7 @@ router_agents.register(r'agents_by_group', AgentsByGroupViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', ListAgentsFiles)
+router_agents.register(r'code_validation', AgentCodeValidation)
 
 # SIMULATION URL's
 router_simulations = routers.SimpleRouter()
