@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 from os.path import basename, getsize
 from django.core.files.storage import default_storage
+from django.db import IntegrityError
+from django.db import transaction
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -50,8 +52,13 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
                 name=serializer.validated_data['parent_competition_name'])
-
-            Round.objects.create(name=serializer.validated_data['name'], parent_competition=competition)
+            try:
+                with transaction.atomic():
+                    Round.objects.create(name=serializer.validated_data['name'], parent_competition=competition)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The group already enrolled.'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response({'status': 'Created',
                              'message': 'The round has been created.'},

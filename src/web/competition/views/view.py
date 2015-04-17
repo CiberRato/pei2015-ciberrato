@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
+from django.db import transaction
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -37,8 +39,14 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
             type_of_competition = get_object_or_404(TypeOfCompetition.objects.all(),
                 name=serializer.validated_data['type_of_competition'])
 
-            Competition.objects.create(name=serializer.validated_data['name'],
-                                       type_of_competition=type_of_competition)
+            try:
+                with transaction.atomic():
+                    Competition.objects.create(name=serializer.validated_data['name'],
+                                               type_of_competition=type_of_competition)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'There is already a competition with that name.'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -188,7 +196,13 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            TypeOfCompetition.objects.create(**serializer.validated_data)
+            try:
+                with transaction.atomic():
+                    TypeOfCompetition.objects.create(**serializer.validated_data)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'That type of competition was already created!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
