@@ -665,7 +665,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.status_code, 201)
 
-
+        # see my team scores
+        url = "/api/v1/competitions/team_score/"
+        response = client.get(path=url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data[0]), 5)
+        self.assertEqual(response.status_code, 200)
 
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
