@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
 from authentication.models import Account, GroupMember
-from authentication.serializers import AccountSerializer, AccountSerializerUpdate
+from authentication.serializers import AccountSerializer, AccountSerializerUpdate, PasswordSerializer
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 
@@ -105,6 +105,50 @@ class AccountViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Deleted',
                          'message': 'The account has been deleted.'
                         }, status=status.HTTP_200_OK)
+
+
+class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = PasswordSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the password
+        B{URL:} ..api/v1/change_password/<username>/
+
+        @type  password: str
+        @param password: The password
+        @type  confirm_password: str
+        @param confirm_password: The confirmation password
+        """
+        instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
+
+        if instance != request.user:
+            return Response({'status': 'Forbidden!',
+                             'message': 'Ups, what?'
+                             }, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            password = request.data.get('password', None)
+            confirm_password = request.data.get('confirm_password', None)
+
+            if password and confirm_password and password == confirm_password:
+                instance.set_password(password)
+                instance.save()
+
+            return Response({'status': 'Updated',
+                             'message': 'Account updated.'
+                             }, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors
+                         }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AccountByFirstName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
