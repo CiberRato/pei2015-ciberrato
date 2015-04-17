@@ -171,7 +171,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                               mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+                               mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = TypeOfCompetition.objects.all()
     serializer_class = TypeOfCompetitionSerializer
@@ -223,36 +223,6 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(type_of_competition)
 
         return Response(serializer.data)
-
-    def update(self, request, *args, **kwargs):
-        """
-        B{Update} the type of competition
-        B{URL:} ../api/v1/competitions/type_of_competition/<old_type_of_competition_name>/
-
-        @type  old_name: str
-        @param old_name: The type of competition name
-
-        @type  name: str
-        @param name: The type of competition name
-        @type  number_teams_for_trial: Integer
-        @type  number_teams_for_trial: The number of teams allowed by trial
-        @type  number_agents_by_grid: Integer
-        @param number_agents_by_grid: For each team the number of agents allowed by grid
-        """
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            type_of_competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
-            type_of_competition.name = serializer.validated_data['name']
-            type_of_competition.number_teams_for_trial = serializer.validated_data['number_teams_for_trial']
-            type_of_competition.number_agents_by_grid = serializer.validated_data['number_agents_by_grid']
-            type_of_competition.save()
-
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
-        return Response({'status': 'Bad Request',
-                         'message': serializer.errors},
-                        status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         """
