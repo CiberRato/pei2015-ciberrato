@@ -64,7 +64,7 @@
 
             function createErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Grid Position could not be created.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });

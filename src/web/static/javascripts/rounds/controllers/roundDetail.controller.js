@@ -162,7 +162,7 @@
 
             function createSimulationErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Simulation can't be created.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -192,7 +192,7 @@
 
                 function associateAgentErrorFn(data) {
                     console.error(data.data);
-                    $.jGrowl("Grid can't be associated.", {
+                    $.jGrowl(data.data.message, {
                         life: 2500,
                         theme: 'btn-danger'
                     });
@@ -219,7 +219,7 @@
 
             function disassociateAgentErrorFn(data) {
                 console.error(data.data);
-                $.jGrowl("Agent can't be disassociated!.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -240,11 +240,28 @@
             }
 
             function uploadErrorFn(data){
-                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
-                    life: 2500,
+                console.log(data.data);
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
+                }
+                else{
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
-                console.error(data.data);
             }
 
         }
