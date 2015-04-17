@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent,\
-    TypeOfCompetition, GridPositions, AgentGrid, SimulationGrid
+    TypeOfCompetition, GridPositions, AgentGrid, SimulationGrid, TeamScore
 from groups.serializers import GroupSerializer
 
 
@@ -183,3 +183,23 @@ class RoundFilesSerializer(serializers.BaseSerializer):
             'grid': grid.data,
             'lab': lab.data
         }
+
+
+class TeamScoreInSerializer(serializers.ModelSerializer):
+    trial_id = serializers.CharField(max_length=128, write_only=True)
+    team_name = serializers.CharField(max_length=128, write_only=True)
+
+    class Meta:
+        model = TeamScore
+        fields = ('trial_id', 'team_name', 'score', 'number_of_agents', 'time',)
+        read_only_fields = ()
+
+
+class TeamScoreOutSerializer(serializers.ModelSerializer):
+    trial = SimulationSerializer(read_only=True)
+    team = GroupSerializer(read_only=True)
+
+    class Meta:
+        model = TeamScore
+        fields = ('trial', 'team', 'score', 'number_of_agents', 'time',)
+        read_only_fields = ('trial', 'team',)

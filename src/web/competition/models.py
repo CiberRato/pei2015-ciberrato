@@ -91,7 +91,10 @@ class Agent(models.Model):
     locations = models.CharField(max_length=256)
 
     language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
+
     code_valid = models.BooleanField(default=True)
+    validation_result = models.CharField(max_length=512)
+
     is_virtual = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)

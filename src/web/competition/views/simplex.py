@@ -65,3 +65,12 @@ class AgentGridSimplex:
         self.grid_identifier = sgs.grid_position.identifier
         self.agent_name = sgs.agent.agent_name
         self.position = sgs.position
+
+
+class TeamScoreSimplex:
+    def __init__(self, tss):
+        self.trial = SimulationSimplex(tss.trial)
+        self.team = tss.team
+        self.score = tss.score
+        self.number_of_agents = tss.number_of_agents
+        self.time = tss.time

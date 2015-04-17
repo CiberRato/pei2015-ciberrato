@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from django.core.files.storage import default_storage
 
 from ..models import Agent
-from ..serializers import AgentSerializer
+from ..serializers import AgentSerializer, AgentCodeValidationSerializer
 from ..simplex import AgentSimplex
 
 from authentication.models import Group, Account
@@ -150,3 +150,36 @@ class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericView
         serializer = self.serializer_class([ac.competition for ac in agent.competitionagent_set], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentCodeValidationSerializer
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the code validation attributes
+        B{URL:} ../api/v1/agents/code_validation/<agent_name>/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+
+        @type  code_valid: bool
+        @param code_valid: True or False
+        @type  validation_result: str
+        @param validation_result: The validation result
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+
+            agent.code_valid = serializer.validated_data['code_valid']
+            agent.validation_result = serializer.validated_data['validation_result']
+            agent.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
