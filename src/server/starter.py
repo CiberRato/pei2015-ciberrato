@@ -87,6 +87,9 @@ class Starter:
 			if key == "agents":
 				n_agents = len(simJson[key])
 				agents = simJson[key]
+				if n_agents == 0:
+					print "[STARTER] ERROR: simulation had no agents"
+					return
 				continue
 			if key == "simulation_id":
 				if sim_id != simJson[key]:
@@ -164,10 +167,15 @@ class Starter:
 		# Read how many robots have registered
 		robotsXML = minidom.parseString(data)
 		robots = robotsXML.getElementsByTagName('Robots')
-		robotsRegistered = robots[0].attributes['Registered'].value
+		robotsRegistered = int(robots[0].attributes['Registered'].value)
 
-		if int(robotsRegistered) != n_agents:
-			# HOUVE ROBOTS QUE NAO SE REGISTARAM
+		if robotsRegistered != n_agents:
+			if robotsRegistered == 0:
+				# No robots were registered, needs to kill everything that is running and return
+				# TO DO
+				pass
+
+			# Not all robots registered, decide what to do either continue or kill the simulation
 			# TO DO
 			pass
 
