@@ -12,8 +12,10 @@ def validate():
 	if not os.path.exists('execute.sh'):
 		error("execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
 	# I don't want stdout log from compilation, just stderr.
-	comp = subprocess.Popen("./prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, stdout=subprocess.PIPE)
-	(stdout, stderr) = comp.communicate() 
+	# Bash -e -o pipefail will check for return codes in every single line.
+	comp = subprocess.Popen("bash -e -o pipefail prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, stdout=subprocess.PIPE)
+	(stdout, stderr) = comp.communicate()
+	print comp.returncode
 	if comp.returncode != 0:
 		error(stderr)
 	print "Success"
