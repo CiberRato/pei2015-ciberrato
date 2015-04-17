@@ -37,11 +37,11 @@
 	},
 	"urls":{
 		///url to get a simulation with a sim_id
-		///USAGE: HOST:PORT/api/v1/competitions/get_simulation/<SIM_ID>/
+		///USAGE: http://HOST:PORT/api/v1/competitions/get_simulation/<SIM_ID>/
 		"get_simulation": "/api/v1/simulations/get_simulation/",
 
 		///url to get agents from a specific simulation
-		/// USAGE: HOST:PORT/api/v1/competitions/agent_file/<agent_name>/
+		/// USAGE: http://HOST:PORT/api/v1/competitions/agent_file/<agent_name>/
 		"get_agent": "/api/v1/agents/agent_file/",
 
 		///url to post the log file after a simulation
