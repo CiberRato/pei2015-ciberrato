@@ -7,8 +7,6 @@ from groups.serializers import GroupSerializer
 
 class TypeOfCompetitionSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
-    number_teams_for_trial = serializers.IntegerField()
-    number_agents_by_grid = serializers.IntegerField()
 
     class Meta:
         model = TypeOfCompetition
