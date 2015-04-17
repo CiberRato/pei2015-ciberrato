@@ -12,6 +12,7 @@
         var vm = this;
         vm.competitionName = $routeParams.name;
         vm.validateInscription = validateInscription;
+        vm.getGrids = getGrids;
 
         activate();
 
@@ -50,12 +51,31 @@
 
                 function getSimulationsSuccessFn(data){
                     vm.rounds[i].simulations = data.data;
+                    console.log(vm.rounds[i].simulations);
+                    for(var k = 0; k<vm.rounds[i].simulations.length; k++){
+                        getGrids(vm.rounds[i].simulations[k].identifier, k, i);
+                    }
                 }
 
                 function getSimulationsErrorFn(data){
                     console.error(data.data);
                     $location.path('/panel/');
 
+                }
+            }
+
+            function getGrids(simulationIdentifier, k, i){
+                Round.getSimulationGrids(simulationIdentifier, k, i).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+
+                function getSimulationGridsSuccessFn(data){
+                    vm.rounds[i].simulations[k].grids = data.data;
+                    console.log(vm.rounds[i].simulations[k].grids);
+
+                }
+
+                function getSimulationGridsErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
                 }
             }
 
@@ -78,6 +98,20 @@
 
         }
 
+        function getGrids(identifier){
+            Round.getSimulationGrids(identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+
+            function getSimulationGridsSuccessFn(data){
+                vm.grids = data.data;
+                console.log(vm.grids);
+
+            }
+
+            function getSimulationGridsErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+        }
 
     }
 

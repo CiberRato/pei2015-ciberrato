@@ -72,11 +72,19 @@
                                     <tr>
                                         <th>Trial Name</th>
                                         <th>State</th>
+                                        <th>Teams</th>
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
-                                    <td>{{value1.identifier}}</td>
-                                    <td>{{value1.state}}</td>
+                                        <td rowspan="{{value1.grids.length}}">{{value1.identifier}}</td>
+                                        <td rowspan="{{value1.grids.length}}">{{value1.state}}</td>
+                                        <td>
+                                            <table>
+                                                <tr ng-repeat="(key2, value2) in value1.grids">
+                                                    <td>{{value2.grid_positions.group_name}}</td>
+                                                </tr>
+                                            </table>
+                                        </td>
 
                                     </tbody>
                                 </table>
