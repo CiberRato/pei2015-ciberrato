@@ -20,14 +20,22 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
     serializer_class = TeamScoreOutSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(),
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def list(self, request, *args, **kwargs):
         """
         B{List} user teams scores
         B{URL:} ../api/v1/competitions/team_score/
         """
-        pass
+        team_score_list = []
+
+        for group in request.user.groups.all():
+            team_score_list += group.teamscore_set.all()
+
+        serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in team_score_list], many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         """
