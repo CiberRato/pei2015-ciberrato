@@ -672,6 +672,18 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(response.data[0]), 5)
         self.assertEqual(response.status_code, 200)
 
+        # delete the team score
+        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO3"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status":"Deleted","message":"The team score has been deleted!"})
+
+        # see my team scores
+        url = "/api/v1/competitions/team_score/"
+        response = client.get(path=url)
+        print response
+        self.assertEqual(len(response.data), 0)
+
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
         response = client.get(url)
