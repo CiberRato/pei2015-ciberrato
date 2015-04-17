@@ -88,6 +88,7 @@
                 vm.grid = vm.files.grid;
                 vm.lab = vm.files.lab;
                 vm.param_list = vm.files.param_list;
+                console.log(vm.files);
             }
 
             function getRoundFilesErrorFn(data){
