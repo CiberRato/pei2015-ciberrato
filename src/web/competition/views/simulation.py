@@ -322,7 +322,7 @@ class StartSimulation(views.APIView):
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if round has files
-        if not default_storage.exists(simulation.round.grid_path) or not default_storage.exists(simulation.round.param_list_path)  or not simulation.round.lab_path:
+        if not default_storage.exists(simulation.round.grid_path) or not default_storage.exists(simulation.round.param_list_path)  or not default_storage.exists(simulation.round.lab_path):
             return Response({'status': 'Bad Request',
                              'message': 'Is missing files to the Round take place!'},
                             status=status.HTTP_400_BAD_REQUEST)
