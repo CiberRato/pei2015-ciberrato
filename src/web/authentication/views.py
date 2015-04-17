@@ -76,13 +76,6 @@ class AccountViewSet(viewsets.ModelViewSet):
 
             instance.save()
 
-            password = request.data.get('password', None)
-            confirm_password = request.data.get('confirm_password', None)
-
-            if password and confirm_password and password == confirm_password:
-                instance.set_password(password)
-                instance.save()
-
             return Response({'status': 'Updated',
                              'message': 'Account updated.'
                             }, status=status.HTTP_200_OK)
