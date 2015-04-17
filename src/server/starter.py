@@ -58,9 +58,12 @@ class Starter:
 
 		TIMEOUT = settings["settings"]["timeout"]
 
-		GET_SIM_HOST = settings["urls"]["get_simulation"]
+		GET_SIM_URL = settings["urls"]["get_simulation"]
 
-		POST_SIM_HOST = settings["urls"]["post_log"]
+		POST_SIM_URL = settings["urls"]["post_log"]
+
+		DJANGO_HOST = settings["settings"]["django_host"]
+		DJANGO_PORT = settings["settings"]["django_port"]
 
 		VIEWER_HOST = settings["settings"]["starter_viewer_host"]
 		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
@@ -69,12 +72,10 @@ class Starter:
 		#end loading settings
 
 		# Get simulation
-		result = requests.get(GET_SIM_HOST + sim_id + "/")
+		result = requests.get("http://" + DJANGO_HOST + ':' + DJANGO_PORT + GET_SIM_URL + sim_id + "/")
 		simJson = json.loads(result.text)
 		tempFilesList = {}
 		n_agents = 0
-		host = GET_SIM_HOST.split("/api")[0]
-
 		for key in simJson:
 			#Handle agents and simulation id
 			if key == "agents":
@@ -88,7 +89,7 @@ class Starter:
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
-			r = requests.get(host + simJson[key])
+			r = requests.get("http://" + DJANGO_HOST + ':' + DJANGO_PORT + simJson[key])
 			fp.write(r.text)
 			fp.seek(0)
 			tempFilesList[key] = fp
@@ -192,7 +193,7 @@ class Starter:
 		# Save log to the end-point
 		data = {'simulation_identifier': sim_id}
 		files = {'log_json': open(LOG_FILE, "r")}
-		response = requests.post(POST_SIM_HOST, data=data, files=files)
+		response = requests.post("http://" + DJANGO_HOST + ':' + DJANGO_PORT + POST_SIM_URL, data=data, files=files)
 
 		if response.status_code != 201:
 			print "[STARTER] ERROR: error posting log file to end point"
