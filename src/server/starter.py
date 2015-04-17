@@ -16,41 +16,43 @@ from xml.dom import minidom
 class Starter:
 
 	def main(self):
-		#loading settings
+		# Loading settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
 		END_POINT_HOST = settings["settings"]["starter_end_point_host"]
 		END_POINT_PORT = settings["settings"]["starter_end_point_port"]
 
-		print "Starter is in deamon mode, waiting for simulation.."
+		print "[STARTER] Starter is in deamon mode, waiting for simulation.."
 		end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		end_point_tcp.bind((END_POINT_HOST, END_POINT_PORT))
 		end_point_tcp.listen(1)
 		end_point_c, end_point_add = end_point_tcp.accept()
 
+		# Waiting for a post to be done
 		data = None
 		while 1:
 			while data == None:
 				data = end_point_c.recv(1024)
-			print "Received simulation with sim_id= " + data + ", starting now.."
+			print "[STARTER] Received simulation with sim_id= " + data + ", starting now.."
 			self.run(data)
 			data = None
 
 	def run(self,sim_id):
+		# Find docker ip
 		DOCKERIP = None
 		for interface in netifaces.interfaces():
 			if interface.startswith('docker'):
 				DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
 				break
 		if DOCKERIP == None:
-			print "Please check your docker interface."
+			print "[STARTER] Please check your docker interface."
 			exit(-1)
 		else:
-			print "Docker interface: %s" % (DOCKERIP, )
+			print "[STARTER] Docker interface: %s" % (DOCKERIP, )
 
-		#loading settings
+		# Loading settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
@@ -64,16 +66,10 @@ class Starter:
 		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
 
 		LOG_FILE = settings["settings"]["log_info_file"]
-		PARAM_FILE = settings["settings"]["params_file"]
-		LAB_FILE = settings["settings"]["lab_file"]
-		GRID_FILE = settings["settings"]["grid_file"]
-
-		TAR_FILE = settings["settings"]["file"]
 		#end loading settings
 
-		print GET_SIM_HOST + sim_id + "/"
+		# Get simulation
 		result = requests.get(GET_SIM_HOST + sim_id + "/")
-		print result.text
 		simJson = json.loads(result.text)
 		tempFilesList = {}
 		n_agents = 0
@@ -87,7 +83,7 @@ class Starter:
 				continue
 			if key == "simulation_id":
 				if sim_id != simJson[key]:
-					print "ERROR: sim_id received not the the same in the simulation"
+					print "[STARTER] ERROR: sim_id received not the the same in the simulation"
 					return
 				continue
 
@@ -97,16 +93,15 @@ class Starter:
 			fp.seek(0)
 			tempFilesList[key] = fp
 
-		print "Number of agents to be loaded: " + str(n_agents)
+		print "[STARTER] Process ID: ", os.getpid()
 
-		print "Process ID: ", os.getpid()
+		print "[STARTER] Creating process for Websocket end-point.."
+		websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout = subprocess.PIPE)
+		print "[STARTER] Successfully opened process with process id: ", websocket.pid
+		time.sleep(0.5)
 
-		print "Creating process for Websocket end-point.."
-		websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout=subprocess.PIPE)
-		print "Successfully opened process with process id: ", websocket.pid
-		time.sleep(1)
-		print "Creating process for simulator"
-		##		CHECK ./simulator --help 				##
+		print "[STARTER] Creating process for simulator"
+		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
 		simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
@@ -115,12 +110,14 @@ class Starter:
 						"-grid", 	tempFilesList["grid"].name], \
 						stdout = subprocess.PIPE)
 
-		print "Successfully opened process with process id: ", simulator.pid
+		print "[STARTER] Successfully opened process with process id: ", simulator.pid
 		time.sleep(1)
-		print "Creating process for viewer"
-		viewer = subprocess.Popen(["python", "viewer.py"])
-		print "Successfully opened process with process id: ", viewer.pid
 
+		print "[STARTER] Creating process for viewer"
+		viewer = subprocess.Popen(["python", "viewer.py"])
+		print "[STARTER] Successfully opened process with process id: ", viewer.pid
+
+		# Establish connection with viewer
 		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -128,14 +125,15 @@ class Starter:
 		viewer_tcp.listen(1)
 		viewer_c, viewer_c_addr = viewer_tcp.accept()
 
-		print "Viewer ready, sending message to viewer about the number of agents\n"
+		print "[STARTER] Viewer ready, sending message to viewer about the number of agents\n"
 		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
-		remote = False
+		# Launching agents
 		for i in range(n_agents):
 			if agents[i]['agent_type'] == "local":
-				print "Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
+				print "[STARTER] Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
 						(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
+
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
@@ -145,82 +143,71 @@ class Starter:
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
 				docker.wait()
-				print "Successfully opened container: %s\n" % (docker_container, )
+				print "[STARTER] Successfully opened container: %s\n" % (docker_container, )
 
-
+		# Waiting for viewer to send robots registry confirmation
 		data = viewer_c.recv(4096)
 		while data.find("<Robots"):
 			data = viewer_c.recv(4096)
 
-		#read how many robots have registered
+		# Read how many robots have registered
 		robotsXML = minidom.parseString(data)
 		robots = robotsXML.getElementsByTagName('Robots')
 		robotsRegistered = robots[0].attributes['Registered'].value
 
 		if int(robotsRegistered) != n_agents:
-			#HOUVE ROBOTS QUE NAO SE REGISTARAM
+			# HOUVE ROBOTS QUE NAO SE REGISTARAM
+			# TO DO
 
-		print "Sending message to Viewer (everything is ready to start)"
+		print "[STARTER] Sending message to Viewer (everything is ready to start)"
 		viewer_c.send("<StartedAgents/>")
-		print "Waiting for simulation to end.."
-		data = viewer_c.recv(4096)
-		while not data.find("EndedSimulation"):
-			data = viewer_c.recv(4096)
-		print "Simulation ended, killing simulator and running agents"
-		print "Posting log to the database.."
 
+		print "[STARTER] Waiting for simulation to end.."
+		data = viewer_c.recv(4096)
+		while data != "<EndedSimulation/>":
+			data = viewer_c.recv(4096)
+
+		print "[STARTER] Simulation ended, killing simulator and running agents"
+		print "[STARTER] Posting log to the database.."
+
+		# Shuting down connections to viewer
 		viewer_c.shutdown(socket.SHUT_RDWR)
 		viewer_c.close()
 		viewer_tcp.shutdown(socket.SHUT_RDWR)
 		viewer_tcp.close()
 
+		# Waiting for viewer to die
 		viewer.wait()
 
+		# Kill docker container
 		proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
 		proc.wait()
 		proc = subprocess.Popen(["docker", "rm", docker_container])
 		proc.wait()
 
+		# Kill simulator
 		simulator.terminate()
 		simulator.wait()
 
-
-		#compressing json file to tar.gz
-		# TAR_FILE = TAR_FILE.replace("<SIM_ID>", sim_id)
-		# json_gz = zipfile.ZipFile(TAR_FILE, mode='a')
-		# json_gz.write(LOG_FILE, arcname=LOG_FILE)
-		# json_gz.write(PARAM_FILE, arcname=PARAM_FILE)
-		# json_gz.write(LAB_FILE, arcname=LAB_FILE)
-		# json_gz.write(GRID_FILE, arcname=GRID_FILE)
-		#json_gz.write("tmp.json", arcname="tmp.json")
-
-		# json_gz.close()
-
-		#save log to the end-point
+		# Save log to the end-point
 		data = {'simulation_identifier': sim_id}
-		#files = {'log_json': open(TAR_FILE, "rb")}
 		files = {'log_json': open(LOG_FILE, "r")}
 		response = requests.post(POST_SIM_HOST, data=data, files=files)
 
-		#print response.status_code
-		#print response.text
 		if response.status_code != 201:
-			print "ERROR: error posting log file to end point"
+			print "[STARTER] ERROR: error posting log file to end point"
 			return
 
+		print "[STARTER] Log successfully posted, starter closing now.."
 
-		print "Log successfully posted, starter closing now.."
-
+		# Remove log file from system
 		os.remove(LOG_FILE)
-		os.remove(PARAM_FILE)
-		os.remove(LAB_FILE)
-		os.remove(GRID_FILE)
-		#os.remove(TAR_FILE)
 
+		# Close all tmp files
 		for key in tempFilesList:
 			tempFilesList[key].close()
 
-		print "Simulation " + sim_id + " finished successfully.."
+		print "[STARTER] Simulation " + sim_id + " finished successfully..\n"
 
 
 if __name__ == "__main__":
