@@ -33,9 +33,6 @@ def main():
 	WEBSOCKET_PORT = settings["settings"]["websocket_port"]
 
 	LOG_FILE = settings["settings"]["log_info_file"]
-	PARAM_FILE = settings["settings"]["params_file"]
-	LAB_FILE = settings["settings"]["lab_file"]
-	GRID_FILE = settings["settings"]["grid_file"]
 	#end of loading settings
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
