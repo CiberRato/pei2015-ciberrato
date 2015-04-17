@@ -658,6 +658,15 @@ class AuthenticationTestCase(TestCase):
 
         simulation.log_json.delete()
 
+        # create team score
+        url = "/api/v1/competitions/team_score/"
+        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO3', 'score': 10, 'number_of_agents': 5, 'time': 10}
+        response = client.post(path=url, data=data)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.status_code, 201)
+
+
+
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
         response = client.get(url)
