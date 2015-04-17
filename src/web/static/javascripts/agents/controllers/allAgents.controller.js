@@ -54,7 +54,7 @@
 
             function destroyAgentErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Agent could not be deleted.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });

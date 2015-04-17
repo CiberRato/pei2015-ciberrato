@@ -54,7 +54,7 @@
 
             function destroyErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Grid Position could not be removed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -149,7 +149,7 @@
 
             function disassociateErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Agent can't be disassociated.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
