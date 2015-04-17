@@ -79,7 +79,7 @@
             }
 
             function startSimulationErrorFn(){
-                $.jGrowl("Simulation can't be started.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });

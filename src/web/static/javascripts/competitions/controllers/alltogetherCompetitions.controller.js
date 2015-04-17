@@ -41,7 +41,7 @@
             }
 
             function deleteCompetitionErrorFn(){
-                $.jGrowl("Competition can't be removed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'success'
                 });
@@ -64,7 +64,7 @@
 
             function changeStateErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("State of Competition can't be changed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'success'
                 });
