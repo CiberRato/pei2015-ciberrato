@@ -33,7 +33,7 @@
         }
 
         function updatePassword(username, password, confirm_password){
-            return $http.put('/api/v1/accounts/' + username + '/', {
+            return $http.put('/api/v1/change_password/' + username + '/', {
                 password: password,
                 confirm_password: confirm_password
             });
