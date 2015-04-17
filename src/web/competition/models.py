@@ -184,3 +184,17 @@ class SimulationGrid(models.Model):
     class Meta:
         unique_together = ('position', 'simulation',)
         ordering = ('position', 'grid_positions', 'simulation')
+
+
+class TeamScore(models.Model):
+    trial = models.ForeignKey(Simulation, blank=False)
+    team = models.ForeignKey(Group, blank=False)
+    score = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+    number_of_agents = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+    time = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('trial', 'team',)
