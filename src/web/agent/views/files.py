@@ -131,7 +131,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 def __init__(self, file):
                     self.file = basename(file)
                     self.last_modification = getmtime(default_storage.path(file))
-                    self.size = getsize(default_storage.path(file))
+                    self.size = size(getsize(default_storage.path(file)))
                     self.url = "/api/v1/agents/file/KAMIKAZE/" + self.file + "/"
 
             for f in json.loads(agent.locations):

@@ -2,6 +2,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from hurry.filesize import size
 
 from rest_framework import permissions
 from rest_framework import views, status
