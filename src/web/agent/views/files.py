@@ -3,8 +3,9 @@ import tempfile
 import tarfile
 from zipfile import ZipFile
 import mimetypes
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from hurry.filesize import size
 
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
@@ -12,8 +13,6 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-
-from competition.models import Simulation
 
 from authentication.models import GroupMember
 
@@ -24,7 +23,6 @@ from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 
 
 class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -89,6 +87,7 @@ class GetAllowedLanguages(views.APIView):
         B{Get} the allowed languages
         B{URL:} ../api/v1/agents/allowed_languages/
         """
+
         class Language:
             def __init__(self, name, value):
                 self.name = name
@@ -133,7 +132,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                     self.file = basename(file)
                     self.last_modification = getmtime(default_storage.path(file))
                     self.size = getsize(default_storage.path(file))
-                    self.url = "/api/v1/agents/file/KAMIKAZE/"+self.file+"/"
+                    self.url = "/api/v1/agents/file/KAMIKAZE/" + self.file + "/"
 
             for f in json.loads(agent.locations):
                 files += [AgentFile(f)]
@@ -193,8 +192,8 @@ class UploadAgent(views.APIView):
 
         if file_obj.size > settings.ALLOWED_UPLOAD_SIZE:
             return Response({'status': 'Bad request',
-                             'message': 'You can only upload files with size less than' + str(
-                                 settings.ALLOWED_UPLOAD_SIZE) + "kb."},
+                             'message': 'You can only upload files with size less than: ' + size(
+                                 settings.ALLOWED_UPLOAD_SIZE)},
                             status=status.HTTP_400_BAD_REQUEST)
 
         if not agent.locations:
