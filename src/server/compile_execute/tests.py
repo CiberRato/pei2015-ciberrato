@@ -1,11 +1,31 @@
 # encoding=UTF-8
-import pytest
+#import pytest
 import os.path
 import subprocess
 import socket
 import time
+import sys
 from xml.dom import minidom
 
+def validate():
+	#if not os.path.exists('prepare.sh'):
+	if not os.path.exists('execute.sh'):
+		error("execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
+	# I don't want stdout log from compilation, just stderr.
+	comp = subprocess.Popen("./prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, stdout=subprocess.PIPE)
+	(stdout, stderr) = comp.communicate() 
+	if comp.returncode != 0:
+		error(stderr)
+	print "Success"
+	sys.exit(0)
+
+
+def error(message):
+	sys.stderr.write(message)
+	sys.exit(1)
+
+if __name__ == "__main__":
+	validate()
 
 def test_executeExists():
 	assert os.path.exists('execute.sh')
