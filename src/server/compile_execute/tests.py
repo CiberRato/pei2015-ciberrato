@@ -7,19 +7,62 @@ import time
 import sys
 from xml.dom import minidom
 
-def validate():
-	#if not os.path.exists('prepare.sh'):
-	if not os.path.exists('execute.sh'):
-		error("execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
-	# I don't want stdout log from compilation, just stderr.
-	# Bash -e -o pipefail will check for return codes in every single line.
-	comp = subprocess.Popen("bash -e -o pipefail prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, stdout=subprocess.PIPE)
-	(stdout, stderr) = comp.communicate()
-	print comp.returncode
-	if comp.returncode != 0:
-		error(stderr)
-	print "Success"
-	sys.exit(0)
+class Validator:
+	def __init__(self):
+		self.simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
+		self.simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
+
+	def validate(self):
+		#if not os.path.exists('prepare.sh'):
+		if not os.path.exists('execute.sh'):
+			error("execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
+		# I don't want stdout log from compilation, just stderr.
+		# Bash -e -o pipefail will check for return codes in every single line.
+		if os.path.exists('prepare.sh'):
+			comp = subprocess.Popen("bash -e -o pipefail prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, stdout=subprocess.PIPE)
+			(stdout, stderr) = comp.communicate()
+			if comp.returncode != 0:
+				error(stderr)
+
+		## At this point we got every file compiled, or at least, it should be.
+		# Lets make sure that everything is ready!
+
+		# Should allow to change names
+		self.validateRobotName("myrobot")
+		self.validateRobotName("thisisaaname")
+		self.validatePosition("1")
+		self.validatePosition("5")
+
+		print "Success"
+		sys.exit(0)
+
+	def validateRobotName(self, name):
+		agent = subprocess.Popen("bash -e -o pipefail execute.sh 127.0.0.1 1 "+name, 
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
+
+		parametersXML = minidom.parseString(data.replace("\x00", ""))
+		robotParam = parametersXML.getElementsByTagName('Robot')
+		nameRobot = robotParam[0].attributes['Name'].value
+
+		if nameRobot != name:
+			error("execute.sh doesn't allow to change agent name.\n"
+				"Please check that the third parameter on execute.sh should be able to change agent name.")
+
+	def validatePosition(self, pos):
+		agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 "+pos+" robot", 
+							shell=True, stdout=subprocess.PIPE)
+
+		data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
+
+		parametersXML = minidom.parseString(data.replace("\x00", ""))
+		robotParam = parametersXML.getElementsByTagName('Robot')
+		ID = robotParam[0].attributes['Id'].value
+
+		if ID != pos:
+			error("execute.sh doesn't allow to change robot position.\n"
+				"Please check that the second parameter on execute.sh should be able to change agent position.")
 
 
 def error(message):
@@ -27,86 +70,7 @@ def error(message):
 	sys.exit(1)
 
 if __name__ == "__main__":
-	validate()
-
-def test_executeExists():
-	assert os.path.exists('execute.sh')
-def test_prepareExists():
-	assert os.path.exists('prepare.sh')
-
-def create_simulator():
-	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-	return simulator_dummy
-
-def test_RobotName():
-	simulator_dummy = create_simulator()
-	roboNome = "ciber"
-	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
-
-	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
-	#agent = subprocess.Popen(["python", agentPath, "-robname", roboNome], stdout=subprocess.PIPE)
-	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 1 "+roboNome, 
-						shell=True, stdout=subprocess.PIPE)
-
-	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
-
-	parametersXML = minidom.parseString(data.replace("\x00", ""))
-	robotParam = parametersXML.getElementsByTagName('Robot')
-	nameRobot = robotParam[0].attributes['Name'].value
-
-	assert nameRobot == roboNome
-
-	#para verificar que "esta correcto"
-	roboNome = "sdfkb"
-	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 1 "+roboNome, 
-						shell=True, stdout=subprocess.PIPE)
-
-	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
-
-	parametersXML = minidom.parseString(data.replace("\x00", ""))
-	robotParam = parametersXML.getElementsByTagName('Robot')
-	nameRobot = robotParam[0].attributes['Name'].value
-
-	assert nameRobot == roboNome
-
-
-def test_posicao():
-	simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-	simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	
-	posicao = "2"
-	agentPath = "cibertools-v2.2/robsample/robsample_python.py"
-
-	simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000	
-	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 "+posicao+" robot", 
-						shell=True, stdout=subprocess.PIPE)
-	#agent = subprocess.Popen(["python", agentPath, "-pos", posicao], stdout=subprocess.PIPE)
-
-	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
-
-	parametersXML = minidom.parseString(data.replace("\x00", ""))
-	robotParam = parametersXML.getElementsByTagName('Robot')
-	ID = robotParam[0].attributes['Id'].value
-
-	assert ID == posicao
-
-
-	#para verificar que "esta correcto"
-	posicao = "1"
-
-	agent = subprocess.Popen("./prepare.sh; ./execute.sh 127.0.0.1 "+posicao+" robot", 
-						shell=True, stdout=subprocess.PIPE)
-	
-	data, (host, port) = simulator_dummy.recvfrom(1024) # infos de quem envia
-
-	parametersXML = minidom.parseString(data.replace("\x00", ""))
-	robotParam = parametersXML.getElementsByTagName('Robot')
-	ID = robotParam[0].attributes['Id'].value
-
-	assert ID == posicao
-
+	Validator().validate()
 
 def test_host():
 	simulator_dummy = create_simulator()
