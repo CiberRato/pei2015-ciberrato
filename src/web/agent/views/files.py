@@ -17,12 +17,77 @@ from django.core.servers.basehttp import FileWrapper
 from authentication.models import GroupMember
 
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
-from ..models import Agent
+from ..models import Agent, AgentFile
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
+
+
+class UploadAgent(views.APIView):
+    parser_classes = (FileUploadParser,)
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def post(request):
+        if 'agent_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?agent_name=*agent_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        """
+        if 'language' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?language=*language*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        allowed_languages = dict(settings.ALLOWED_UPLOAD_LANGUAGES).values()
+        if request.GET.get('language', '') not in allowed_languages:
+            return Response({'status': 'Bad request',
+                             'message': 'The uploaded language is not allowed.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        """
+
+        agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
+
+        if agent.is_local:
+            return Response({'status': 'Bad request',
+                             'message': 'You can\'t upload code to a virtual agent!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+
+        if len(group_member) == 0:
+            return Response({'status': 'Permission denied',
+                             'message': 'You must be part of the group.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        file_obj = request.data.get('file', '')
+
+        if not isinstance(file_obj, InMemoryUploadedFile) and file_obj.size is 0:
+            return Response({'status': 'Bad request',
+                             'message': 'You must send a file!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        """
+        # language agent
+        agent.language = request.GET.get('language', '')
+        """
+
+        if file_obj.size > settings.ALLOWED_UPLOAD_SIZE:
+            return Response({'status': 'Bad request',
+                             'message': 'You can only upload files with size less than: ' + size(
+                                 settings.ALLOWED_UPLOAD_SIZE)},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        AgentFile.objects.create(agent=agent, file=file_obj)
+
+        return Response({'status': 'File uploaded!',
+                         'message': 'The agent code has been uploaded!'},
+                        status=status.HTTP_201_CREATED)
 
 
 class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -54,14 +119,14 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                              'message': 'Please provide the ?file_name=*file_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if default_storage.exists('agents/' + agent.agent_name + '/' + request.GET.get('file_name', '')):
+        if default_storage.exists('agents/%Y/%m/%d//' + agent.agent_name + '/' + request.GET.get('file_name', '')):
             try:
                 load = json.loads(agent.locations)
-                load.remove('agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+                load.remove('agents/%Y/%m/%d//' + agent.agent_name + '/' + request.GET.get('file_name', ''))
                 agent.locations = json.dumps(load)
                 agent.save()
                 default_storage.delete(
-                    'agents/' + agent.agent_name + '/' + request.GET.get('file_name', ''))
+                    'agents/%Y/%m/%d//' + agent.agent_name + '/' + request.GET.get('file_name', ''))
             except ValueError:
                 return Response({'status': 'Not found',
                                  'message': 'The agent file has not been found!'},
@@ -132,7 +197,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                     self.file = basename(file)
                     self.last_modification = getmtime(default_storage.path(file))
                     self.size = size(getsize(default_storage.path(file)))
-                    self.url = "/api/v1/agents/file/KAMIKAZE/" + self.file + "/"
+                    self.url = "/api/v1/agents/file/" + agent.agent_name + "/" + self.file + "/"
 
             for f in json.loads(agent.locations):
                 files += [AgentFile(f)]
@@ -140,76 +205,6 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(files, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UploadAgent(views.APIView):
-    parser_classes = (FileUploadParser,)
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    @staticmethod
-    def post(request):
-        if 'agent_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?agent_name=*agent_name*'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if 'language' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?language=*language*'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        allowed_languages = dict(settings.ALLOWED_UPLOAD_LANGUAGES).values()
-        if request.GET.get('language', '') not in allowed_languages:
-            return Response({'status': 'Bad request',
-                             'message': 'The uploaded language is not allowed.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
-
-        if agent.is_local:
-            return Response({'status': 'Bad request',
-                             'message': 'You can\'t upload code to a virtual agent!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
-
-        if len(group_member) == 0:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the group.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        file_obj = request.data.get('file', '')
-
-        if not isinstance(file_obj, InMemoryUploadedFile) and file_obj.size is 0:
-            return Response({'status': 'Bad request',
-                             'message': 'You must send a file!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        # language agent
-        agent.language = request.GET.get('language', '')
-
-        if file_obj.size > settings.ALLOWED_UPLOAD_SIZE:
-            return Response({'status': 'Bad request',
-                             'message': 'You can only upload files with size less than: ' + size(
-                                 settings.ALLOWED_UPLOAD_SIZE)},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if not agent.locations:
-            load = []
-        else:
-            load = json.loads(agent.locations)
-
-        path = default_storage.save('agents/' + agent.agent_name + '/' + file_obj.name, ContentFile(file_obj.read()))
-
-        load += [path]
-        agent.locations = json.dumps(load)
-        agent.save()
-
-        return Response({'status': 'File uploaded!',
-                         'message': 'The agent code has been uploaded!'},
-                        status=status.HTTP_201_CREATED)
 
 
 class GetAllAgentFiles(views.APIView):

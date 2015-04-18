@@ -68,9 +68,9 @@ class Round(models.Model):
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 
-    param_list_path = models.FileField(max_length=128)
-    grid_path = models.FileField(max_length=128)
-    lab_path = models.FileField(max_length=128)
+    param_list_path = models.FileField(upload_to="params/%Y/%m/%d")
+    grid_path = models.FileField(upload_to="grids/%Y/%m/%d")
+    lab_path = models.FileField(upload_to="labs/%Y/%m/%d")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -105,6 +105,11 @@ class Agent(models.Model):
 
     def __unicode__(self):
         return self.agent_name
+
+
+class AgentFile(models.Model):
+    agent = models.ForeignKey(Agent, blank=False)
+    file = models.FileField(upload_to="agents/%Y/%m/%d")
 
 
 class GridPositions(models.Model):

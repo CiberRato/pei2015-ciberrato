@@ -307,8 +307,11 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&language=Python"
         f = open('media/tests_files/myrob_do.py', 'r')
         response = client.post(url, {'file': f})
+        print response
+        print len(AgentFile.objects.all())
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+        exit(1)
 
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&language=C"
         f = open('media/tests_files/main.c', 'r')
@@ -339,11 +342,13 @@ class AuthenticationTestCase(TestCase):
 
         url = "/api/v1/agents/file/KAMIKAZE/myrob_do.py/"
         response = client.get(url)
+        print response
         self.assertEqual(response.status_code, 200)
 
         # delete uploaded file
         url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py"
         response = client.delete(url)
+        print response
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
