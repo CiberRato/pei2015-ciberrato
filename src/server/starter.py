@@ -142,7 +142,7 @@ class Starter:
 		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
 
 		# Launching agents
-		docker_container = None
+		docker_containers = []
 		for i in range(n_agents):
 			if agents[i]['agent_type'] == "local":
 				print "[STARTER] Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
@@ -155,7 +155,7 @@ class Starter:
 										  " python myrob.py -host %s -pos %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
 										  shell = True, stdout = subprocess.PIPE)
-				docker_container = docker.stdout.readline().strip()
+				docker_containers += [ docker.stdout.readline().strip() ]
 				docker.wait()
 				print "[STARTER] Successfully opened container: %s\n" % (docker_container, )
 
@@ -190,10 +190,10 @@ class Starter:
 
 			# Kill docker container
 			print "[STARTER] Killing Docker Containers"
-			if docker_container != None:
-				proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+			for dock in docker_containers:
+				proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
 				proc.wait()
-				proc = subprocess.Popen(["docker", "rm", docker_container])
+				proc = subprocess.Popen(["docker", "rm", dock])
 				proc.wait()
 
 			# Remove log file from system
@@ -248,10 +248,10 @@ class Starter:
 		websocket.wait()
 
 		# Kill docker container
-		if docker_container != None:
-			proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+		for dock in docker_containers:
+			proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
 			proc.wait()
-			proc = subprocess.Popen(["docker", "rm", docker_container])
+			proc = subprocess.Popen(["docker", "rm", dock])
 			proc.wait()
 
 		# Kill simulator
