@@ -25,19 +25,13 @@
                             <tr ng-repeat="(key, value) in vm.agents">
                                 <td><a href="panel/{{value.agent_name}}/agentDetail">{{ value.agent_name }}</a></td>
                                 <td><a href="panel/{{value.group_name}}/teamMembers">{{value.group_name}}</a></td>
-<<<<<<< HEAD
-                                <td>
-                                    <a ng-if="value.is_local == false" data-toggle="modal"  href="#uploadCode{{key}}">Upload</a>
-                                    <div class="modal fade"  id="uploadCode{{key}}">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
-=======
-                                <td ng-if="value.is_virtual == false">
+
+                                <td ng-if="value.is_local == false">
                                     <a  href="/panel/{{value.agent_name}}/agentDetail">Upload</a>
->>>>>>> feature/Updates_angular
+
 
                                 </td>
-                                <td ng-if="value.is_virtual == true">Can't Upload Code</td>
+                                <td ng-if="value.is_local == true">Can't Upload Code</td>
                                 <td><a ng-click="vm.deleteAgent(value.agent_name)" class="btn btn-primary btn-flat">X</a></td>
 
                             </tr>
