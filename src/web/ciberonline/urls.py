@@ -1,6 +1,4 @@
 from django.conf.urls import patterns, include, url
-from django.conf.urls.static import static
-from django.conf import settings
 from django.views.generic.base import TemplateView
 
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
@@ -15,7 +13,7 @@ from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, Co
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, RoundViewSet, RoundViewAdminSet, \
     RoundFile
 from competition.views.simulation import SimulationViewSet, SimulationByAgent, SimulationByRound, \
-    SimulationByCompetition, GetSimulationAgents,  StartSimulation, SimulationGridViewSet
+    SimulationByCompetition, GetSimulationAgents, StartSimulation, SimulationGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
@@ -101,7 +99,6 @@ router_simulations = routers.SimpleRouter()
 router_simulations.register(r'simulation_log', SaveLogs)
 router_simulations.register(r'get_simulation', GetSimulation)
 
-
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/groups/', include(router_groups.urls)),
@@ -127,7 +124,8 @@ urlpatterns = patterns('',
                        # stat simulation
                        url(r'^api/v1/simulations/start/$', StartSimulation.as_view(), name="Start simulation"),
                        # get simulation log
-                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$', GetSimulationLog.as_view(),
+                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$',
+                           GetSimulationLog.as_view(),
                            name="Get simulation log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
@@ -156,5 +154,5 @@ urlpatterns = patterns('',
                        url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
                        url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')
-)
+                       )
 # urlpatterns[:0] = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
