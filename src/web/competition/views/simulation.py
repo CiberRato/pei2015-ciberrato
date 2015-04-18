@@ -191,6 +191,8 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     serializer_class = SimulationGridInputSerializer
 
     def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
         return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
