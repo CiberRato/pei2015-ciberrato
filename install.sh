@@ -17,7 +17,8 @@ apt-get update && apt-get install -y	python \
 echo "	>> Installing python dependencies"
 pip install cherrypy \
 			netifaces \
-			xmltodict
+			xmltodict \
+			flufl.enum
 pip install -r requirements.txt;
 
 echo "	>> Migrating Django applications"

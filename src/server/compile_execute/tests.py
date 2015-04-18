@@ -1,11 +1,32 @@
 # encoding=UTF-8
-#import pytest
-import os.path
-import subprocess
-import socket
-import time
-import sys
+import os.path, subprocess, socket, time, sys
+# Replace this with from enum import Enum with python 3.4
+from flufl.enum import Enum
 from xml.dom import minidom
+
+class ValidatorMessage(Enum):
+	EXEC_MISSING 		= (1, "execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
+	FAILED_PREPARE 		= (2, "Failed to execute prepare.sh")
+	TIMEOUT 			= (3, "Simulator will not be able to receive answer, please check host parameter, agent port and execute.sh.")
+	ROBOTNAME 			= (4, "execute.sh doesn't allow to change agent name.\n"
+								"Please check that the third parameter on execute.sh should be able to change agent name.")
+	POSITION 			= (5, "execute.sh doesn't allow to change robot position.\n"
+								"Please check that the second parameter on execute.sh should be able to change agent position.")
+	ROBOTID 			= (6, "Message registering agent sent has an invalid robot id.")
+	REGISTER_MESSAGE 	= (7, "Message registering agent sent to the simulator is not valid.")
+	ANSWER_ACTIONS 		= (8, "Messages sent to the simulator with the actions failed to receive.")
+	VALID_ACTIONS 		= (9, "Messages received after the Measures is not an valid actions message. Please check it.")
+
+	def __init__(self, code, message):
+		self._code = code
+		self._message = message
+
+def error(vmsg, additional_info = None):
+	if additional_info == None:
+		sys.stderr.write(vmsg.value[1])
+	else:
+		sys.stderr.write(vmsg.value[1] + "\n" + additional_info)
+	sys.exit(vmsg.value[0])
 
 class Validator:
 	def __init__(self):
@@ -15,16 +36,15 @@ class Validator:
 		self.simulator_dummy.settimeout(1)
 
 	def validate(self):
-		#if not os.path.exists('prepare.sh'):
 		if not os.path.exists('execute.sh'):
-			error("execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
+			error(ValidatorMessage.EXEC_MISSING)
 		# I don't want stdout log from compilation, just stderr.
 		# Bash -e -o pipefail will check for return codes in every single line.
 		if os.path.exists('prepare.sh'):
-			comp = subprocess.Popen("bash -e -o pipefail prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, stdout=subprocess.PIPE)
+			comp = subprocess.Popen("bash -e -o pipefail prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			(stdout, stderr) = comp.communicate()
 			if comp.returncode != 0:
-				error(stderr)
+				error(ValidatorMessage.FAILED_PREPARE, stderr)
 
 		## At this point we got every file compiled, or at least, it should be.
 		# Lets make sure that everything is ready!
@@ -157,13 +177,13 @@ class Validator:
 		except socket.timeout:
 			error("Messages sent to the simulator with the actions failed to receive.")
 
-	 	try:
-	 		parametersActions = minidom.parseString(data.replace("\x00", ""))
-	 		MotorsParam = parametersActions.getElementsByTagName('Actions')
-	 	except:
-	 		error("Messages received after the Measures is not an Actions. Please check it.")
+		try:
+			parametersActions = minidom.parseString(data.replace("\x00", ""))
+			MotorsParam = parametersActions.getElementsByTagName('Actions')
+		except:
+			error("Messages received after the Measures is not an valid actions message. Please check it.")
 
-	 	# More measures
+		# More measures
 		readSensorsParamCollisionOn = '<Measures Time="1234">\
 			<Sensors Collision="On">\
 			<GPS X="840.5" Y="393.6" />\
@@ -171,24 +191,20 @@ class Validator:
 			<Leds EndLed="Off" ReturningLed="Off" VisitingLed="Off"/>\
 			<Buttons Start="On" Stop="Off"/>\
 			</Measures>\n'
-	 	
+		
 		self.simulator_dummy.sendto(readSensorsParamCollisionOn ,(host_robot, port_robot))
 		try:
-	 		data, (host, port) = self.simulator_dummy.recvfrom(1024)
-	 	except socket.timeout:
+			data, (host, port) = self.simulator_dummy.recvfrom(1024)
+		except socket.timeout:
 			error("Messages sent to the simulator with the actions failed to receive.")	
 
-	 	try:
-	 		parametersActions = minidom.parseString(data.replace("\x00", ""))
-	 		MotorsParam = parametersActions.getElementsByTagName('Actions')
-	 	except:
-	 		error("Messages received after the Measures is not an Actions. Please check it.")
+		try:
+			parametersActions = minidom.parseString(data.replace("\x00", ""))
+			MotorsParam = parametersActions.getElementsByTagName('Actions')
+		except:
+			error("Messages received after the Measures is not an Actions. Please check it.")
 
-	 	agent.kill()
-	 	
-def error(message):
-	sys.stderr.write(message)
-	sys.exit(1)
+		agent.kill()
 
 if __name__ == "__main__":
 	Validator().validate()
