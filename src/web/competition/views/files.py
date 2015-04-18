@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from hurry.filesize import size
+from django.db import transaction
 
 from rest_framework import permissions
 from rest_framework import views, status
@@ -34,8 +35,8 @@ class GetRoundFile(views.APIView):
         # see if round exists
         r = get_object_or_404(Round.objects.all(), name=round_name)
         try:
-            if default_storage.exists(getattr(r, param + '_path', None)):
-                data = default_storage.open(getattr(r, param + '_path', None)).read()
+            if default_storage.exists(getattr(r, param + '_path', '')):
+                data = default_storage.open(getattr(r, param + '_path', '')).read()
             else:
                 return Response({'status': 'Bad request',
                                  'message': 'The file doesn\'t exists!'},
@@ -67,9 +68,9 @@ class UploadRoundXMLView(views.APIView):
 
         r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''))
 
-        return self.file_save_xml(request.data.get('file', ''), r, )
+        return self.file_save_xml(request.data.get('file', ''), r, request)
 
-    def file_save_xml(self, file_obj, r):
+    def file_save_xml(self, file_obj, r, request):
         if getattr(r, self.file_to_save, None) is not None:
             getattr(r, self.file_to_save, None).delete(False)
 
@@ -83,11 +84,10 @@ class UploadRoundXMLView(views.APIView):
                              'message': 'You can only upload files with size less than 100KB.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        path = default_storage.save('competition_files/' + self.folder + '/' + file_obj.name,
-                                    ContentFile(file_obj.read()))
-
-        setattr(r, self.file_to_save, path)
-        r.save()
+        with transaction.atomic():
+            r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''))
+            setattr(r, self.file_to_save, file_obj)
+            r.save()
 
         return Response({'status': 'Uploaded',
                          'message': 'The file has been uploaded and saved to ' + str(r.name)},
