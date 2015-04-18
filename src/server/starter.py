@@ -184,6 +184,11 @@ class Starter:
 			simulator.terminate()
 			simulator.wait()
 
+			# Killing Websockets
+			print "[STARTER] Killing Websocket"
+			websocket.terminate()
+			websocket.wait()
+
 			# Remove log file from system
 			print "[STARTER] Removing log file"
 			os.remove(LOG_FILE)
@@ -233,6 +238,10 @@ class Starter:
 
 		# Waiting for viewer to die
 		viewer.wait()
+
+		# Killing Websockets
+		websocket.terminate()
+		websocket.wait()
 
 		# Kill docker container
 		if docker_container != None:
