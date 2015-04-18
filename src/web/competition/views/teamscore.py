@@ -15,7 +15,7 @@ from ..permissions import IsStaff
 
 
 class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
-                       mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+                       viewsets.GenericViewSet):
     queryset = TeamScore.objects.all()
     serializer_class = TeamScoreOutSerializer
 
@@ -89,16 +89,6 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Retrieve} the grid positions details
-        B{URL:} ../api/v1/competitions/team_score/<trial_id>/
-
-        @type  trial_id: str
-        @param trial_id: The trial id
-        """
-        pass
-
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} the team score
@@ -124,3 +114,21 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         return Response({'status': 'Deleted',
                          'message': 'The team score has been deleted!'},
                         status=status.HTTP_200_OK)
+
+
+class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = TeamScore
+    serializer_class = TeamScoreOutSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the ranking for the trial
+        B{URL:} ../api/v1/competitions/ranking_trial/<trial_id>/
+
+        @type  trial_id: str
+        @param trial_id: The trial id
+        """
+        pass
