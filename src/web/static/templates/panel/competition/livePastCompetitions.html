@@ -30,16 +30,28 @@
                                     <tr>
                                         <th>Trial Name</th>
                                         <th>State</th>
+
+                                        <th>Teams</th>
                                         <th>Watch Trial</th>
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
-                                        <td>{{value1.identifier}}</td>
-                                        <td>{{value1.state}}</td>
-                                        <td><a ng-if="value1.state == 'WAITING'">Didn't Start</a>
-                                            <a href="/panel/{{value1.identifier}}/liveStream" ng-if="value1.state == 'STARTED'">Watch Live</a>
-                                            <a href="/panel/{{value1.identifier}}/watchSimulation" ng-if="value1.state == 'LOG'">Watch</a>
-                                        </td>
+                                        <tr>
+                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.identifier}}</td>
+                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.state}}</td>
+                                            <td ng-if="value1.grids.length == 0"><strong> There are no teams</strong></td>
+                                            <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first">{{value2.grid_positions.group_name}}</td>
+                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}"><a ng-if="value1.state == 'WAITING'">Didn't Start</a>
+                                                <a href="/panel/{{value1.identifier}}/liveStream" ng-if="value1.state == 'STARTED'">Watch Live</a>
+                                                <a href="/panel/{{value1.identifier}}/watchSimulation" ng-if="value1.state == 'LOG'">Watch</a>
+                                            </td>
+
+                                        </tr>
+                                        <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">
+                                            <td bgcolor="#f8f8f8">
+                                                {{value2.grid_positions.group_name}}
+                                            </td>
+                                        </tr>
 
                                     </tbody>
                                 </table>
