@@ -85,28 +85,6 @@
             }
         }
 
-<<<<<<< HEAD
-        function startSimulation(identifier){
-            console.log(identifier);
-            Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
-
-            function startSimulationSuccessFn(){
-                $.jGrowl("Simulation has been started successfully.", {
-                    life: 2500,
-                    theme: 'success'
-                });
-                $route.reload();
-            }
-
-            function startSimulationErrorFn(){
-                $.jGrowl(data.data.message, {
-                    life: 2500,
-                    theme: 'btn-danger'
-                });
-                $route.reload();
-            }
-=======
->>>>>>> feature/Updates_angular
 
         function validateInscription(group_name, competition_name){
             Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);

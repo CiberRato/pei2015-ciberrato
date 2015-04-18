@@ -366,12 +366,15 @@
             console.log(selectedFile3);
             if(selectedFile1 != undefined){
                 uploadParamList();
+                console.log('fizparam');
             }
             if(selectedFile2 != undefined){
                 uploadGrid();
+                console.log('fizgrd');
             }
             if(selectedFile3 != undefined){
                 uploadLab();
+                console.log('fizlab');
             }
 
             $route.reload();
