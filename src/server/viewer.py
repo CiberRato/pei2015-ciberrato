@@ -95,10 +95,8 @@ def main():
 
 	print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
 
-	count = 0
 	checkedRobots = []
-	while (len(checkedRobots) != int(robotsAmount)) and (count < int(TIMEOUT)):
-		count += 1
+	while len(checkedRobots) != int(robotsAmount):
 		data, (host, port) = simulator_s.recvfrom(4096)
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
 		robots = robotsXML.getElementsByTagName('Robot')
@@ -108,9 +106,10 @@ def main():
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 
+	starter_s.send('<Robots Registered="' + str(len(checkedRobots)) + '"/>')
+
 	print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 
-	starter_s.send('<Robots Registered="' + str(len(checkedRobots)) + '"/>')
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":

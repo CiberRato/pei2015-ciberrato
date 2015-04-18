@@ -5,7 +5,7 @@
 {
 	///general settings to be used by starter, viewer and other programs that may require so
 	"settings": {
-		///default timeout for remote hosts to register (in cicles)
+		///default timeout for remote hosts to register (in seconds)
 		"timeout": 100,
 
 		///default tmp file name for log info
