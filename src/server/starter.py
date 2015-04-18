@@ -160,24 +160,53 @@ class Starter:
 				print "[STARTER] Successfully opened container: %s\n" % (docker_container, )
 
 		# Waiting for viewer to send robots registry confirmation
-		data = viewer_c.recv(4096)
-		while data.find("<Robots"):
-			data = viewer_c.recv(4096)
+		viewer_c.settimeout(TIMEOUT)
+		try:
+        	data = viewer_c.recv(4096)
+		except viewer_c.timeout:
+	        print "[STARTER] Failed to register all robots in the timeout established"
+	        # Canceling everything regarding this simulation
+	        # Shuting down connections to viewer
+			viewer_c.shutdown(socket.SHUT_RDWR)
+			viewer_c.close()
+			viewer_tcp.shutdown(socket.SHUT_RDWR)
+			viewer_tcp.close()
 
-		# Read how many robots have registered
-		robotsXML = minidom.parseString(data)
-		robots = robotsXML.getElementsByTagName('Robots')
-		robotsRegistered = int(robots[0].attributes['Registered'].value)
+			# Waiting for viewer to die
+			viewer.terminate()
+			viewer.wait()
 
-		if robotsRegistered != n_agents:
-			if robotsRegistered == 0:
-				# No robots were registered, needs to kill everything that is running and return
-				# TO DO
-				pass
+			# Kill simulator
+			simulator.terminate()
+			simulator.wait()
 
-			# Not all robots registered, decide what to do either continue or kill the simulation
-			# TO DO
-			pass
+			# Remove log file from system
+			os.remove(LOG_FILE)
+
+			# Close all tmp files
+			for key in tempFilesList:
+				tempFilesList[key].close()
+		    return
+
+		# if not data.find("<Robots"):
+
+
+		# # Read how many robots have registered
+		# robotsXML = minidom.parseString(data)
+		# robots = robotsXML.getElementsByTagName('Robots')
+		# robotsRegistered = int(robots[0].attributes['Registered'].value)
+
+		# if robotsRegistered != n_agents:
+		# 	if robotsRegistered == 0:
+		# 		# No robots were registered, needs to kill everything that is running and return
+		# 		# TO DO
+		# 		pass
+
+		# 	# Not all robots registered, decide what to do either continue or kill the simulation
+		# 	# TO DO
+		# 	pass
+
+		viewer_c.settimeout(None)
 
 		print "[STARTER] Sending message to Viewer (everything is ready to start)"
 		viewer_c.send("<StartedAgents/>")
