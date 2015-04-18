@@ -72,19 +72,21 @@
                                     <tr>
                                         <th>Trial Name</th>
                                         <th>State</th>
-                                        <th>Start Trial</th>
+                                        <th>Teams</th>
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
-                                    <td>{{value1.identifier}}</td>
-                                    <td>{{value1.state}}</td>
-                                    <td ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value1.state == 'WAITING'" ng-click = "vm.startSimulation(value1.identifier)">Start</a>
-                                        <p ng-if="value1.state == 'STARTED'">Started</p>
-                                        <p ng-if="value1.state == 'LOG'">Finished</p>
-                                    </td>
-
-                                    <td ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
-
+                                    <tr>
+                                        <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.identifier}}</td>
+                                        <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.state}}</td>
+                                        <td ng-if="value1.grids.length == 0"><strong> There are no teams</strong></td>
+                                        <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first"><a href="/panel/{{value2.grid_positions.group_name}}/teamMembers">{{value2.grid_positions.group_name}}</a></td>
+                                    </tr>
+                                    <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">
+                                        <td bgcolor="#f8f8f8">
+                                            <a href="/panel/{{value2.grid_positions.group_name}}/teamMembers">{{value2.grid_positions.group_name}}</a>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>

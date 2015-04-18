@@ -11,8 +11,8 @@
     function ListCompetitionController($location, $route, $routeParams, Competition, Round){
         var vm = this;
         vm.competitionName = $routeParams.name;
-        vm.startSimulation = startSimulation;
         vm.validateInscription = validateInscription;
+        vm.getGrids = getGrids;
 
         activate();
 
@@ -51,6 +51,10 @@
 
                 function getSimulationsSuccessFn(data){
                     vm.rounds[i].simulations = data.data;
+                    console.log(vm.rounds[i].simulations);
+                    for(var k = 0; k<vm.rounds[i].simulations.length; k++){
+                        getGrids(vm.rounds[i].simulations[k].identifier, k, i);
+                    }
                 }
 
                 function getSimulationsErrorFn(data){
@@ -60,12 +64,28 @@
                 }
             }
 
+            function getGrids(simulationIdentifier, k, i){
+                Round.getSimulationGrids(simulationIdentifier, k, i).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+
+                function getSimulationGridsSuccessFn(data){
+                    vm.rounds[i].simulations[k].grids = data.data;
+                    console.log(vm.rounds[i].simulations[k].grids);
+
+                }
+
+                function getSimulationGridsErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+                }
+            }
+
             function getAllRoundsErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }
         }
 
+<<<<<<< HEAD
         function startSimulation(identifier){
             console.log(identifier);
             Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
@@ -85,8 +105,9 @@
                 });
                 $route.reload();
             }
+=======
+>>>>>>> feature/Updates_angular
 
-        }
         function validateInscription(group_name, competition_name){
             Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
 
@@ -99,6 +120,20 @@
 
         }
 
+        function getGrids(identifier){
+            Round.getSimulationGrids(identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+
+            function getSimulationGridsSuccessFn(data){
+                vm.grids = data.data;
+                console.log(vm.grids);
+
+            }
+
+            function getSimulationGridsErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+        }
 
     }
 

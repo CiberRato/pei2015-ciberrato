@@ -7,11 +7,11 @@
     <!-- Alternative navigation -->
     <nav>
         <ul>
-            {% if user.is_superuser %}
+            {% if user.is_staff %}
             <li><a href="/admin/" target="_top" style="color: #e74949">Administration</a></li>
             {% endif %}
-            <li><a href="login.html">Universidade de Aveiro</a></li>
-            <li><a href="login.html">Ciber Rato</a></li>
+            <li><a href="http://www.ua.pt">Universidade de Aveiro</a></li>
+            <li><a href="http://microrato.ua.pt/">Ciber Rato</a></li>
         </ul>
     </nav>
 </header>

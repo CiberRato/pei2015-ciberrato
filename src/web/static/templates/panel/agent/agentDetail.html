@@ -17,12 +17,16 @@
                             <thead>
                             <tr>
                                 <th>File Name</th>
+                                <th>Size</th>
+                                <th>Last Modification</th>
                                 <th>Remove File</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
                                 <td><a href="/api/v1/agents/file/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
+                                <td>{{value.size}}</td>
+                                <td>{{value.last_modification}}</td>
                                 <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
                             </tbody>

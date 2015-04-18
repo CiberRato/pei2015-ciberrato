@@ -27,12 +27,14 @@
                                     <fieldset>
 
                                         <div class="control-group">
-                                            <label class="control-label" for="select1">Team of the Grid Position</label>
+                                            <label class="control-label" for="select1">Team of the  Grid Position</label>
                                             <div class="controls">
-                                                <select ng-change="vm.change(vm.teams.name)" ng-model="vm.teams.name" id="select1" name="option">
+                                                <select ng-if="vm.teams.length != 0" ng-change="vm.change(vm.teams.name)" ng-model="vm.teams.name" id="select1" name="option">
                                                     <option value="" disabled>--Please select one team</option>
                                                     <option ng-repeat="(key, value) in vm.teams" value="{{value.name}}">{{value.name}}</option>
                                                 </select>
+
+                                                <p ng-if="vm.teams.length == 0"><a href="/panel/{{vm.username}}/createTeam">Please Create a Team</a></p>
                                             </div>
                                         </div>
 
