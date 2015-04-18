@@ -738,6 +738,31 @@ class AuthenticationTestCase(TestCase):
                                "team": {"name": "XPTO2", "max_members": 10}, "score": 10, "number_of_agents": 3,
                                "time": 10}])
 
+        # ranking by round
+        url = "/api/v1/competitions/ranking_round/R1/"
+        response = client.get(path=url)
+        rsp = response.data
+
+        del rsp[0]['trial']["created_at"]
+        del rsp[0]['trial']["updated_at"]
+        del rsp[1]['trial']["created_at"]
+        del rsp[1]['trial']["updated_at"]
+        del rsp[2]['trial']["created_at"]
+        del rsp[2]['trial']["updated_at"]
+
+        self.assertEqual(rsp, [{"trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                          "state": "STARTED"},
+                                "team": {"name": "XPTO1", "max_members": 10}, "score": 10, "number_of_agents": 5,
+                                "time": 9}, {
+                                   "trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                             "state": "STARTED"},
+                                   "team": {"name": "XPTO3", "max_members": 10}, "score": 10, "number_of_agents": 5,
+                                   "time": 10}, {
+                                   "trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                             "state": "STARTED"},
+                                   "team": {"name": "XPTO2", "max_members": 10}, "score": 10, "number_of_agents": 3,
+                                   "time": 10}])
+
         # delete the team score
         url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO3"
         response = client.delete(path=url)

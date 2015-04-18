@@ -20,7 +20,7 @@ from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, 
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
-from competition.views.teamscore import TeamScoreViewSet, RankingByTrial
+from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound
 
 from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
@@ -58,6 +58,7 @@ router_competitions.register(r'grid_positions_competition', GridPositionsByCompe
 router_competitions.register(r'agent_grid', AgentGridViewSet)
 router_competitions.register(r'team_score', TeamScoreViewSet)
 router_competitions.register(r'ranking_trial', RankingByTrial)
+router_competitions.register(r'ranking_round', RankingByRound)
 # Groups
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
