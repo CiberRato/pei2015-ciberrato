@@ -131,7 +131,7 @@ def main():
 	if wlog:
 		log.write("RobotsRegistered=%s\n", str(len(checkedRobots)))
 
-	starter_s.send('<Robots Registered="' + str(len(checkedRobots)) + '"/>')
+	starter_s.send("<RobotsRegistered/>")
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":

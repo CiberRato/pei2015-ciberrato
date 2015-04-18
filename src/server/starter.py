@@ -156,7 +156,7 @@ class Starter:
 
 
 		data = viewer_c.recv(4096)
-		while data != "<AllRobotsRegistered/>":
+		while data != "<RobotsRegistered/>":
 			data = viewer_c.recv(4096)
 
 		print "Sending message to Viewer (everything is ready to start)"
