@@ -18,8 +18,7 @@ echo "	>> Installing python dependencies"
 pip install cherrypy \
 			netifaces \
 			xmltodict \
-			flufl.enum \
-			http
+			flufl.enum
 pip install -r requirements.txt;
 
 echo "	>> Migrating Django applications"
