@@ -80,7 +80,6 @@ class Starter:
 		# Get simulation
 		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
 		simJson = json.loads(result.text)
-		print simJson
 		tempFilesList = {}
 		n_agents = 0
 		for key in simJson:
@@ -188,6 +187,14 @@ class Starter:
 			print "[STARTER] Killing Websocket"
 			websocket.terminate()
 			websocket.wait()
+
+			# Kill docker container
+			print "[STARTER] Killing Docker Containers"
+			if docker_container != None:
+				proc = subprocess.Popen(["docker", "stop", "-t", "0", docker_container])
+				proc.wait()
+				proc = subprocess.Popen(["docker", "rm", docker_container])
+				proc.wait()
 
 			# Remove log file from system
 			print "[STARTER] Removing log file"
