@@ -88,9 +88,8 @@ class Agent(models.Model):
                                                                                         MinLengthValidator(1)])
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
-    locations = models.CharField(max_length=256)
 
-    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
+    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100, default="Python")
 
     code_valid = models.BooleanField(default=True)
     validation_result = models.CharField(max_length=512)

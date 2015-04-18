@@ -80,12 +80,6 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param agent_name: The agent name
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
-
-        if agent.locations:
-            if len(json.loads(agent.locations)) > 0:
-                for path in json.loads(agent.locations):
-                    default_storage.delete(path)
-
         agent.delete()
 
         return Response({'status': 'Deleted',

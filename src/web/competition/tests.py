@@ -261,7 +261,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u''), ('competitions', []),
+            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'), ('competitions', []),
              ('user', OrderedDict(
                  [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                   ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
@@ -277,7 +277,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u''), ('competitions', []),
+            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'), ('competitions', []),
              ('user', OrderedDict(
                  [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                   ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
@@ -293,7 +293,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'', 'group_name': u'XPTO3',
+        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
                                'competitions': [], 'user': OrderedDict(
             [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
@@ -351,7 +351,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'', 'group_name': u'XPTO3',
+        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
                                'competitions': [], 'user': OrderedDict(
             [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
@@ -505,7 +505,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'', 'group_name': u'XPTO3',
+        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
                                'competitions': [], 'user': OrderedDict(
             [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
