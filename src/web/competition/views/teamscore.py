@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from authentication.models import Group, GroupMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex, TeamScoreSimplex
-from ..models import Competition, TeamScore, GroupEnrolled, AgentGrid, Agent, Simulation
+from ..models import Competition, TeamScore, GroupEnrolled, AgentGrid, Agent, Simulation, Round
 from ..serializers import GridPositionsSerializer, AgentGridSerializer, TeamScoreOutSerializer, TeamScoreInSerializer
 from ..permissions import IsStaff
 
@@ -134,4 +134,29 @@ class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trial.teamscore_set.all()],
                                            many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = TeamScore.objects.all()
+    serializer_class = TeamScoreOutSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the ranking for the round
+        B{URL:} ../api/v1/competitions/ranking_round/<trial_id>/
+
+        @type  round_name: str
+        @param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
+
+        trials = []
+        for trial in r.simulation_set.all():
+            trials += trial.teamscore_set.all()
+
+        serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
