@@ -117,7 +117,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
 
 
 class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = TeamScore
+    queryset = TeamScore.objects.all()
     serializer_class = TeamScoreOutSerializer
 
     def get_permissions(self):
