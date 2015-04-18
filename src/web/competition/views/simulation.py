@@ -338,6 +338,11 @@ class StartSimulation(views.APIView):
 
         simulation_grids = SimulationGrid.objects.filter(simulation=simulation)
 
+        if len(simulation_grids) == 0:
+            return Response({'status': 'Bad Request',
+                             'message': 'Please select teams to go to the Trial!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         pos = 1
 
         for simulation_grid in simulation_grids:
