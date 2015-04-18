@@ -21,8 +21,6 @@ def main():
 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 	settings = json.loads(settings_str)
 
-	TIMEOUT = settings["settings"]["timeout"]
-
 	SIMULATOR_HOST = settings["settings"]["simulator_host"]
 	SIMULATOR_PORT = settings["settings"]["simulator_port"]
 
@@ -109,7 +107,6 @@ def main():
 	starter_s.send('<Robots Registered="' + str(len(checkedRobots)) + '"/>')
 
 	print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
-
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":
