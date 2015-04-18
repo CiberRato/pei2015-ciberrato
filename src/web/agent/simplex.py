@@ -1,4 +1,7 @@
 from competition.views.simplex import RoundSimplex
+from os.path import basename, getsize, getmtime
+from hurry.filesize import size
+from django.core.files.storage import default_storage
 
 
 class AgentSimplex:
@@ -16,3 +19,11 @@ class AgentSimplex:
         self.group_name = ag.group.name
         self.created_at = ag.created_at
         self.updated_at = ag.updated_at
+
+
+class AgentFileSimplex:
+    def __init__(self, file_obj):
+        self.file = basename(file_obj.original_name)
+        self.last_modification = getmtime(default_storage.path(file_obj.file))
+        self.size = size(getsize(default_storage.path(file_obj.file)))
+        self.url = "/api/v1/agents/file/" + file_obj.agent.agent_name + "/" + self.file + "/"

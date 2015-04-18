@@ -1,1 +1,1 @@
-from competition.models import Agent
+from competition.models import Agent, AgentFile
