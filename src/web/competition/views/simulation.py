@@ -41,6 +41,12 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+
+            if not bool(r.grid_path) or not bool(r.param_list_path) or not bool(r.param_list_path):
+                return Response({'status': 'Bad Request',
+                                 'message': 'Is missing files to the Round take place!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             s = Simulation.objects.create(round=r)
             serializer = SimulationSerializer(SimulationSimplex(s))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -322,7 +328,8 @@ class StartSimulation(views.APIView):
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if round has files
-        if not default_storage.exists(simulation.round.grid_path) or not default_storage.exists(simulation.round.param_list_path)  or not default_storage.exists(simulation.round.lab_path):
+        if not bool(simulation.round.grid_path) or not bool(simulation.round.param_list_path) \
+                or not bool(simulation.round.param_list_path):
             return Response({'status': 'Bad Request',
                              'message': 'Is missing files to the Round take place!'},
                             status=status.HTTP_400_BAD_REQUEST)

@@ -206,7 +206,7 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         class RFile:
             def __init__(self, f):
-                if not f or not default_storage.exists(f):
+                if not bool(f) or not default_storage.exists(f):
                     self.file = ''
                     self.last_modification = None
                     self.size = size(0)

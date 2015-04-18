@@ -35,7 +35,7 @@ class GetRoundFile(views.APIView):
         # see if round exists
         r = get_object_or_404(Round.objects.all(), name=round_name)
         try:
-            if default_storage.exists(getattr(r, param + '_path', '')):
+            if bool(getattr(r, param + '_path', '')) and default_storage.exists(getattr(r, param + '_path', '')):
                 data = default_storage.open(getattr(r, param + '_path', '')).read()
             else:
                 return Response({'status': 'Bad request',
