@@ -381,6 +381,18 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
         self.assertEqual(response.status_code, 200)
 
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO2'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
+        self.assertEqual(response.status_code, 200)
+
         """ grid Positions """
         # create grid position
         url = "/api/v1/competitions/grid_position/"
@@ -388,10 +400,10 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
         self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-        'type_of_competition',
-        OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                               'state_of_competition',
-                                                                                               'Register')]),
+            'type_of_competition',
+            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
+                                                                                                   'state_of_competition',
+                                                                                                   'Register')]),
                                          'group_name': u'XPTO3'})
         self.assertEqual(response.status_code, 201)
 
@@ -399,10 +411,10 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
         response = client.get(path=url, data=data)
         self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-        'type_of_competition',
-        OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                               'state_of_competition',
-                                                                                               'Register')]),
+            'type_of_competition',
+            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
+                                                                                                   'state_of_competition',
+                                                                                                   'Register')]),
                                          'group_name': u'XPTO3'})
         self.assertEqual(response.status_code, 200)
 
@@ -410,10 +422,10 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/grid_positions_competition/C1/"
         response = client.get(path=url, data=data)
         self.assertEqual(response.data, [{'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-        'type_of_competition',
-        OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                                'state_of_competition',
-                                                                                                'Register')]),
+            'type_of_competition',
+            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
+                                                                                                    'state_of_competition',
+                                                                                                    'Register')]),
                                           'group_name': u'XPTO3'}])
         self.assertEqual(response.status_code, 200)
 
@@ -687,11 +699,75 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(response.data[0]), 5)
         self.assertEqual(response.status_code, 200)
 
+        # create team score
+        url = "/api/v1/competitions/team_score/"
+        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO1', 'score': 10, 'number_of_agents': 5, 'time': 9}
+        response = client.post(path=url, data=data)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.status_code, 201)
+
+        # create team score
+        url = "/api/v1/competitions/team_score/"
+        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO2', 'score': 10, 'number_of_agents': 3, 'time': 10}
+        response = client.post(path=url, data=data)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.status_code, 201)
+
+        # ranking by trial
+        url = "/api/v1/competitions/ranking_trial/" + simulation_identifier + "/"
+        response = client.get(path=url)
+        rsp = response.data
+
+        del rsp[0]['trial']["created_at"]
+        del rsp[0]['trial']["updated_at"]
+        del rsp[1]['trial']["created_at"]
+        del rsp[1]['trial']["updated_at"]
+        del rsp[2]['trial']["created_at"]
+        del rsp[2]['trial']["updated_at"]
+
+        self.assertEqual(rsp, [{"trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                          "state": "STARTED"},
+                                "team": {"name": "XPTO1", "max_members": 10}, "score": 10, "number_of_agents": 5,
+                                "time": 9}, {
+                               "trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                         "state": "STARTED"},
+                               "team": {"name": "XPTO3", "max_members": 10}, "score": 10, "number_of_agents": 5,
+                               "time": 10}, {
+                               "trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                         "state": "STARTED"},
+                               "team": {"name": "XPTO2", "max_members": 10}, "score": 10, "number_of_agents": 3,
+                               "time": 10}])
+
         # delete the team score
         url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO3"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
+
+        # delete the team score
+        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO2"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
+
+        # delete the team score
+        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO1"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
+
+        # toggle inscription again
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO2'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: False'})
+        self.assertEqual(response.status_code, 200)
+
+        url = "/api/v1/competitions/toggle_group_inscription/"
+        data = {'competition_name': 'C1', 'group_name': 'XPTO1'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: False'})
+        self.assertEqual(response.status_code, 200)
 
         # see my team scores
         url = "/api/v1/competitions/team_score/"
@@ -1187,10 +1263,10 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
         self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-        'type_of_competition',
-        OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                               'state_of_competition',
-                                                                                               'Register')]),
+            'type_of_competition',
+            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
+                                                                                                   'state_of_competition',
+                                                                                                   'Register')]),
                                          'group_name': u'XPTO3'})
         self.assertEqual(response.status_code, 201)
 
@@ -1288,10 +1364,10 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
         self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-        'type_of_competition',
-        OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)])), (
-                                                                                               'state_of_competition',
-                                                                                               'Register')]),
+            'type_of_competition',
+            OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)])), (
+                                                                                                   'state_of_competition',
+                                                                                                   'Register')]),
                                          'group_name': u'XPTO3'})
         self.assertEqual(response.status_code, 201)
 
