@@ -23,7 +23,11 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.grids">
-                                <td>{{ value.competition.name}}</td>
+                                <td>
+                                    <a ng-if="value.competition.state_of_competition == 'Register'" href="/panel/competitions/{{value.competition.name}}">{{value.competition.name}}</a>
+                                    <a ng-if="value.competition.state_of_competition != 'Register'" href="/panel/{{value.competition.name}}">{{value.competition.name}}</a>
+
+                                </td>
                                 <td><a href="panel/{{value.group_name}}/teamMembers">{{value.group_name}}</a></td>
                                 <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.team=value.group_name; vm.getCompetition(value.competition.name); vm.getAgents()" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
