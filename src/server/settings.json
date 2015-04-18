@@ -6,7 +6,7 @@
 	///general settings to be used by starter, viewer and other programs that may require so
 	"settings": {
 		///default timeout for remote hosts to register (in seconds)
-		"timeout": 100,
+		"timeout": 30,
 
 		///default tmp file name for log info
 		"log_info_file": "./tmp/ciberOnline_log.json",

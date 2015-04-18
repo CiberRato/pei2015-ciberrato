@@ -23,7 +23,7 @@ class Starter:
 		END_POINT_HOST = settings["settings"]["starter_end_point_host"]
 		END_POINT_PORT = settings["settings"]["starter_end_point_port"]
 
-		print "[STARTER] Starter is in deamon mode, waiting for simulation.."
+		print "[STARTER] Starter is in deamon mode"
 		end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		end_point_tcp.bind((END_POINT_HOST, END_POINT_PORT))
@@ -33,7 +33,8 @@ class Starter:
 		# Waiting for a post to be done
 		data = None
 		while 1:
-			while data == None:
+			print "[STARTER] Waiting for simulation.."
+			while data == None or data == "":
 				data = end_point_c.recv(1024)
 			print "[STARTER] Received simulation with sim_id= " + data + ", starting now.."
 			self.run(data)
@@ -162,31 +163,36 @@ class Starter:
 		# Waiting for viewer to send robots registry confirmation
 		viewer_c.settimeout(TIMEOUT)
 		try:
-        	data = viewer_c.recv(4096)
-		except viewer_c.timeout:
-	        print "[STARTER] Failed to register all robots in the timeout established"
-	        # Canceling everything regarding this simulation
-	        # Shuting down connections to viewer
+			data = viewer_c.recv(4096)
+		except socket.timeout:
+			print "[STARTER] Failed to register all robots in the timeout established"
+			# Canceling everything regarding this simulation
+			# Shuting down connections to viewer
+			print "[STARTER] Killing Sockets"
 			viewer_c.shutdown(socket.SHUT_RDWR)
 			viewer_c.close()
 			viewer_tcp.shutdown(socket.SHUT_RDWR)
 			viewer_tcp.close()
 
 			# Waiting for viewer to die
+			print "[STARTER] Killing Viewer"
 			viewer.terminate()
 			viewer.wait()
 
 			# Kill simulator
+			print "[STARTER] Killing Simulator"
 			simulator.terminate()
 			simulator.wait()
 
 			# Remove log file from system
+			print "[STARTER] Removing log file"
 			os.remove(LOG_FILE)
 
 			# Close all tmp files
+			print "[STARTER] Closing tmp files"
 			for key in tempFilesList:
 				tempFilesList[key].close()
-		    return
+			return
 
 		# if not data.find("<Robots"):
 
