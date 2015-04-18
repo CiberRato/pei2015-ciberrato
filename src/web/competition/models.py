@@ -110,6 +110,10 @@ class Agent(models.Model):
 class AgentFile(models.Model):
     agent = models.ForeignKey(Agent, blank=False)
     file = models.FileField(upload_to="agents/%Y/%m/%d")
+    original_name = models.CharField(max_length=128, blank=False)
+
+    class Meta:
+        unique_together = ('agent', 'original_name',)
 
 
 class GridPositions(models.Model):
