@@ -5,7 +5,7 @@ class AgentSimplex:
     def __init__(self, ag):
         self.agent_name = ag.agent_name
         self.user = ag.user
-        self.is_virtual = ag.is_virtual
+        self.is_local = ag.is_local
         self.language = ag.language
         self.competitions = [cp_agent.competition for cp_agent in ag.competitionagent_set.all()]
 

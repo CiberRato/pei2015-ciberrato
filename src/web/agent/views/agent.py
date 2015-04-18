@@ -35,8 +35,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param agent_name: The agent name
         @type  group_name: str
         @param group_name: The group name
-        @type  is_virtual: boolean
-        @param is_virtual: True if is virtual or False if is not virtual
+        @type  is_local: boolean
+        @param is_local: True if is virtual or False if is not virtual
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -45,7 +45,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
             agent_name = serializer.validated_data['agent_name']
             Agent.objects.create(agent_name=agent_name, user=user, group=group,
-                                 is_virtual=serializer.validated_data['is_virtual'])
+                                 is_local=serializer.validated_data['is_local'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 

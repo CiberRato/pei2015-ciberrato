@@ -13,7 +13,7 @@ class AgentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'is_virtual', 'language', 'rounds', 'competitions', 'user', 'group_name', 'created_at',
+        fields = ('agent_name', 'is_local', 'language', 'rounds', 'competitions', 'user', 'group_name', 'created_at',
                   'updated_at')
         read_only_fields = ('user', 'language', 'rounds', 'competitions', 'created_at', 'updated_at',)
 

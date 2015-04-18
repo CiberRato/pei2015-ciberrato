@@ -28,7 +28,7 @@
             return $http.post('/api/v1/agents/agent/',{
                 agent_name: name,
                 group_name: teamName,
-                is_virtual: type
+                is_local: type
             })
         }
         function getByGroup(teamName){
