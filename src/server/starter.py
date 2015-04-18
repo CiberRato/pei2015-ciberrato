@@ -206,7 +206,6 @@ class Starter:
 				tempFilesList[key].close()
 			return
 
-
 		# # Read how many robots have registered
 		# robotsXML = minidom.parseString(data)
 		# robots = robotsXML.getElementsByTagName('Robots')

@@ -34,10 +34,12 @@
                                         <div  class="control-group">
                                             <label class="control-label" for="select">Type Of the Competition</label>
                                             <div class="controls">
-                                                <select id="select" name="option">
+                                                <select ng-if="vm.typesOfCompetition.count>0" id="select" name="option">
                                                     <option ng-repeat="(key, value) in vm.typesOfCompetition.results" value="{{value.name}}">{{value.name}}</option>
                                                 </select>
                                             </div>
+                                            <p style="color: #b21818" ng-if="vm.typesOfCompetition.count == 0"><a href="/admin/createTypeOfCompetition"><strong>Please Create a Type Of Competition</strong></a></p>
+
                                         </div>
                                         <div class="control-group">
                                             <label class="control-label" for="firstroundname">First Round Name</label>

@@ -55,11 +55,36 @@ class AuthenticationTestCase(TestCase):
 
         url = "/api/v1/accounts/"
         data = {'email': 'test1@test.com', 'username': 'test1', 'password': 'rei12345678',
-                'confirm_password':'rei12345678', 'first_name': 'unit', 'last_name': 'test',
+                'confirm_password': 'rei12345678', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 201)
 
+        # change password with other user
+        url = "/api/v1/change_password/test1/"
+        data = {'password': '1234', 'confirm_password': '1234'}
+        response = client.put(url, data)
+        self.assertEqual(response.data, {'status': 'Forbidden!', 'message': 'Ups, what?'})
+        self.assertEqual(response.status_code, 403)
+
+        # change password with the user
+        url = "/api/v1/change_password/test/"
+        data = {'password': '1234', 'confirm_password': '1234'}
+        response = client.put(url, data)
+        self.assertEqual(response.data, {'status': 'Bad Request', 'message': {
+        'confirm_password': [u'Ensure this value has at least 8 characters (it has 4).'],
+        'password': [u'Ensure this value has at least 8 characters (it has 4).']}})
+        self.assertEqual(response.status_code, 400)
+
+        # change correctly the password
+        url = "/api/v1/change_password/test/"
+        data = {'password': '123456789', 'confirm_password': '123456789'}
+        response = client.put(url, data)
+        self.assertEqual(response.data, {'status': 'Updated', 'message': 'Account updated.'})
+        self.assertEqual(response.status_code, 200)
+
+        # get informations
+        url = "/api/v1/accounts/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 

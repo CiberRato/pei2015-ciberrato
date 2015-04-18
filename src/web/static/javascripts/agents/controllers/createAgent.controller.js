@@ -47,8 +47,8 @@
         }
 
         function createErrorFn(data){
-            console.error(data.data);
-            $.jGrowl("Agent could not be created.", {
+            console.error(data.data.message);
+            $.jGrowl("Error: Invalid name or an agent with that name already exists.", {
                 life: 2500,
                 theme: 'btn-danger'
             });

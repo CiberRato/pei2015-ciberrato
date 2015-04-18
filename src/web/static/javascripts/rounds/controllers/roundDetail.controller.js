@@ -32,6 +32,8 @@
         vm.getSimulationGrids = getSimulationGrids;
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
+        vm.startSimulation = startSimulation;
+
         activate();
 
         function activate() {
@@ -64,6 +66,7 @@
 
                     function getCompetitionSuccessFn(data){
                         vm.competition = data.data;
+                        console.log(vm.competition);
                     }
 
                     function getCompetitionErrorFn(data){
@@ -88,6 +91,7 @@
                 vm.grid = vm.files.grid;
                 vm.lab = vm.files.lab;
                 vm.param_list = vm.files.param_list;
+                console.log(vm.files);
             }
 
             function getRoundFilesErrorFn(data){
@@ -162,7 +166,7 @@
 
             function createSimulationErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Simulation can't be created.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -192,7 +196,7 @@
 
                 function associateAgentErrorFn(data) {
                     console.error(data.data);
-                    $.jGrowl("Grid can't be associated.", {
+                    $.jGrowl(data.data.message, {
                         life: 2500,
                         theme: 'btn-danger'
                     });
@@ -219,7 +223,7 @@
 
             function disassociateAgentErrorFn(data) {
                 console.error(data.data);
-                $.jGrowl("Agent can't be disassociated!.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -240,11 +244,28 @@
             }
 
             function uploadErrorFn(data){
-                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
-                    life: 2500,
+                console.log(data.data);
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
+                }
+                else{
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
-                console.error(data.data);
             }
 
         }
@@ -345,12 +366,15 @@
             console.log(selectedFile3);
             if(selectedFile1 != undefined){
                 uploadParamList();
+                console.log('fizparam');
             }
             if(selectedFile2 != undefined){
                 uploadGrid();
+                console.log('fizgrd');
             }
             if(selectedFile3 != undefined){
                 uploadLab();
+                console.log('fizlab');
             }
 
             $route.reload();
@@ -381,6 +405,28 @@
                 console.error(data.data);
                 $location.path('/panel/');
             }
+        }
+
+        function startSimulation(identifier){
+            console.log(identifier);
+            Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
+
+            function startSimulationSuccessFn(){
+                $.jGrowl("Simulation has been started successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $route.reload();
+            }
+
+            function startSimulationErrorFn(){
+                $.jGrowl("Simulation can't be started.", {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+                $route.reload();
+            }
+
         }
 
 

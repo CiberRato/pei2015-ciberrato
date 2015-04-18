@@ -5,6 +5,7 @@ import json
 import subprocess
 import netifaces
 import time
+import requests
 
 class Root(object):
 	def __init__(self):
@@ -61,16 +62,21 @@ class TestAgent():
 		AGENT_ENDPOINT = "http://%s:8000" + GET_AGENT_URL + "%s/" % (DOCKERIP, agent_name,)
 
 		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
-									  "bash -c 'curl " \
+									  "bash -c 'curl -s " \
 									  "%s" \
 									  " | tar -xz;" \
-									  " py.test -x tests.py'" %  \
+									  " python tests.py'" %  \
 									  (AGENT_ENDPOINT, ),
 									  shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		docker.wait()
+		(stdout, stderr) = docker.communicate()
+		if docker.returncode != 0:
+			message = stderr
+		else:
+			message = "Passed tests with success"
 
-		return json.dumps({"return code": docker.returncode, "message": "Empty for now.."}, sort_keys=False, \
-							indent=4, separators=(',', ': '))
+		url = "http://localhost:8000/api/v1/agents/code_validation/"+agent_name+"/"
+		data = {'code_valid': docker.returncode == 0, 'validation_result': message}
+		requests.put(url, data=data)
 
 class EndPoint():
 	def start(self):

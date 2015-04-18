@@ -77,8 +77,8 @@
             }
 
             function uploadErrorFn(data) {
-                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
-                    life: 2500,
+                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded:<br>" + data.data.message, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
                 console.error(data.data);

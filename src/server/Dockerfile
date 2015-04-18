@@ -8,7 +8,8 @@ RUN ln -s -f /bin/true /usr/bin/chfn
 RUN apt-get update && apt-get install -y curl wget \
 	python default-jre default-jdk g++ build-essential qt4-qmake qt4-dev-tools \
 	python-pip
-RUN pip install pytest
+RUN pip install pytest \
+				flufl.enum
 
 RUN mkdir -p /ciber/user_sourcecode
 

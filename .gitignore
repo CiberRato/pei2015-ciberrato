@@ -9,7 +9,7 @@ src/web/db.sqlite3
 __pycache__/
 *.py[cod]
 *.o
-
+*.class
 
 # OSX Finder turds
 .DS_Store

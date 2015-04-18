@@ -35,8 +35,15 @@
         }
 
         function create(){
-            var x = document.getElementById("select").value;
+            var x;
+            if(vm.typesOfCompetition.count > 0) {
+                x = document.getElementById("select").value;
+            }else {
+                x = undefined;
+            }
+
             Competition.create(vm.competitionName, x).then(createSuccessFn, createErrorFn);
+
 
             function createSuccessFn(){
                 Round.createRound(vm.firstRound, vm.competitionName).then(createRoundSuccessFn, createRoundErrorFn);

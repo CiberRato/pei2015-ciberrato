@@ -104,7 +104,7 @@ def main():
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 
-	starter_s.send('<Robots Registered="' + str(len(checkedRobots)) + '"/>')
+	starter_s.send("<RobotsRegistered/>")
 
 	print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 

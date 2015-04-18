@@ -10,19 +10,23 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}})</h2>
-                        <p ng-if="vm.files.length != 0 && vm.agent.is_virtual == false">Here is shown in table the list of all uploaded files of this agent.</p>
-                        <p ng-if="vm.files.length == 0 && vm.agent.is_virtual == false">This agent doesn't have any uploaded file.</p>
+                        <p ng-if="vm.files.length != 0 && vm.agent.is_local == false">Here is shown in table the list of all uploaded files of this agent.</p>
+                        <p ng-if="vm.files.length == 0 && vm.agent.is_local == false">This agent doesn't have any uploaded file.</p>
 
-                        <table ng-if="vm.files.length != 0 && vm.agent.is_virtual == false" class="table table-striped table-hover">
+                        <table ng-if="vm.files.length != 0 && vm.agent.is_local == false" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>File Name</th>
+                                <th>Size</th>
+                                <th>Last Modification</th>
                                 <th>Remove File</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
                                 <td><a href="/api/v1/agents/file/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
+                                <td>{{value.size}}</td>
+                                <td>{{value.last_modification}}</td>
                                 <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
                             </tbody>
@@ -31,7 +35,7 @@
                         <div align="right">
                             <a ng-if="vm.files.length != 0" href="/api/v1/agents/agent_all_files/{{vm.agent.agent_name}}/" target="_blank">Download All</a>
                         </div>
-                            <a ng-if="vm.agent.is_virtual == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-success">Upload File for this Agent</a>
+                            <a ng-if="vm.agent.is_local == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-success">Upload File for this Agent</a>
 
                             <div class="modal fade"  id="uploadCode">
                                 <div class="modal-header">

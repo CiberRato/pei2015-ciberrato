@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404
-from os.path import basename, getsize
+from os.path import basename, getsize, getmtime
 from django.core.files.storage import default_storage
 from django.db import IntegrityError
 from django.db import transaction
+from hurry.filesize import size
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -203,25 +204,24 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
+        class RFile:
+            def __init__(self, f):
+                if not bool(f) or not default_storage.exists(f):
+                    self.file = ''
+                    self.last_modification = None
+                    self.size = size(0)
+                    self.url = ""
+                else:
+                    self.file = basename(default_storage.path(f))
+                    self.last_modification = getmtime(default_storage.path(f))
+                    self.size = size(getsize(default_storage.path(f)))
+                    self.url = ""
+
         class RoundFiles:
-            def __init__(self, r):
-                if not r.param_list_path:
-                    self.param_list = ('', 0)
-                else:
-                    self.param_list = (
-                    basename(default_storage.path(r.param_list_path)), getsize(default_storage.path(r.param_list_path)))
-
-                if not r.grid_path:
-                    self.grid = ('', 0)
-                else:
-                    self.grid = (
-                        basename(default_storage.path(r.grid_path)), getsize(default_storage.path(r.grid_path)))
-
-                if not r.lab_path:
-                    self.lab = ('', 0)
-                else:
-                    self.lab = (
-                        basename(default_storage.path(r.lab_path)), getsize(default_storage.path(r.lab_path)))
+            def __init__(self, ro):
+                self.param_list = RFile(ro.param_list_path)
+                self.grid = RFile(ro.grid_path)
+                self.lab = RFile(ro.lab_path)
 
         serializer = self.serializer_class(RoundFiles(r))
 

@@ -41,7 +41,7 @@
 
             function removeErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Type Of Competition could not be removed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
