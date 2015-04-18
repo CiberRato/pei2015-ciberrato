@@ -8,6 +8,8 @@ from hurry.filesize import size
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
+from django.db import transaction
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
@@ -18,6 +20,7 @@ from authentication.models import GroupMember
 
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent, AgentFile
+from ..simplex import AgentFileSimplex
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
@@ -37,19 +40,6 @@ class UploadAgent(views.APIView):
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?agent_name=*agent_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
-
-        """
-        if 'language' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?language=*language*'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        allowed_languages = dict(settings.ALLOWED_UPLOAD_LANGUAGES).values()
-        if request.GET.get('language', '') not in allowed_languages:
-            return Response({'status': 'Bad request',
-                             'message': 'The uploaded language is not allowed.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        """
 
         agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
 
@@ -72,18 +62,19 @@ class UploadAgent(views.APIView):
                              'message': 'You must send a file!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        """
-        # language agent
-        agent.language = request.GET.get('language', '')
-        """
-
         if file_obj.size > settings.ALLOWED_UPLOAD_SIZE:
             return Response({'status': 'Bad request',
                              'message': 'You can only upload files with size less than: ' + size(
                                  settings.ALLOWED_UPLOAD_SIZE)},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        AgentFile.objects.create(agent=agent, file=file_obj)
+        try:
+            with transaction.atomic():
+                AgentFile.objects.create(agent=agent, file=file_obj, original_name=file_obj.name)
+        except IntegrityError:
+            return Response({'status': 'Bad request',
+                             'message': 'The agent has already one file with that name!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'status': 'File uploaded!',
                          'message': 'The agent code has been uploaded!'},
@@ -119,51 +110,12 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                              'message': 'Please provide the ?file_name=*file_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if default_storage.exists('agents/%Y/%m/%d//' + agent.agent_name + '/' + request.GET.get('file_name', '')):
-            try:
-                load = json.loads(agent.locations)
-                load.remove('agents/%Y/%m/%d//' + agent.agent_name + '/' + request.GET.get('file_name', ''))
-                agent.locations = json.dumps(load)
-                agent.save()
-                default_storage.delete(
-                    'agents/%Y/%m/%d//' + agent.agent_name + '/' + request.GET.get('file_name', ''))
-            except ValueError:
-                return Response({'status': 'Not found',
-                                 'message': 'The agent file has not been found!'},
-                                status=status.HTTP_404_NOT_FOUND)
+        file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent, original_name=request.GET.get('file_name', ''))
+        file_obj.delete()
 
-            return Response({'status': 'Deleted',
-                             'message': 'The agent file has been deleted'},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({'status': 'Not found',
-                             'message': 'The agent file has not been found!'},
-                            status=status.HTTP_404_NOT_FOUND)
-
-
-class GetAllowedLanguages(views.APIView):
-    serializer_class = LanguagesSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def get(self, request):
-        """
-        B{Get} the allowed languages
-        B{URL:} ../api/v1/agents/allowed_languages/
-        """
-
-        class Language:
-            def __init__(self, name, value):
-                self.name = name
-                self.value = value
-
-        languages = []
-        for key, value in dict(settings.ALLOWED_UPLOAD_LANGUAGES).iteritems():
-            languages += [Language(key, value)]
-
-        serializer = self.serializer_class(languages, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'status': 'Deleted',
+                         'message': 'The agent file has been deleted'},
+                        status=status.HTTP_200_OK)
 
 
 class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -190,17 +142,8 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                             status=status.HTTP_403_FORBIDDEN)
 
         files = []
-
-        if agent.locations:
-            class AgentFile:
-                def __init__(self, file):
-                    self.file = basename(file)
-                    self.last_modification = getmtime(default_storage.path(file))
-                    self.size = size(getsize(default_storage.path(file)))
-                    self.url = "/api/v1/agents/file/" + agent.agent_name + "/" + self.file + "/"
-
-            for f in json.loads(agent.locations):
-                files += [AgentFile(f)]
+        for file_obj in AgentFile.objects.filter(agent=agent):
+            files += [AgentFileSimplex(file_obj)]
 
         serializer = self.serializer_class(files, many=True)
 
@@ -222,15 +165,15 @@ class GetAllAgentFiles(views.APIView):
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        if not agent.locations or len(json.loads(agent.locations)) == 0:
+        if len(AgentFile.objects.filter(agent=agent)) == 0:
             return Response({'status': 'Bad request',
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         temp = tempfile.NamedTemporaryFile()
         with ZipFile(temp.name, 'w') as z:
-            for name in json.loads(agent.locations):
-                z.write(default_storage.path(name), arcname=basename(default_storage.path(name)))
+            for file_obj in AgentFile.objects.filter(agent=agent):
+                z.write(default_storage.path(file_obj.file), arcname=file_obj.original_name)
             z.close()
 
         wrapper = FileWrapper(temp)
@@ -247,15 +190,15 @@ class GetAgentFilesSERVER(views.APIView):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
 
-        if not agent.locations or len(json.loads(agent.locations)) == 0:
+        if len(AgentFile.objects.filter(agent=agent)) == 0:
             return Response({'status': 'Bad request',
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         temp = tempfile.NamedTemporaryFile()
         with tarfile.open(temp.name, "w:gz") as tar:
-            for name in json.loads(agent.locations):
-                tar.add(default_storage.path(name), arcname=basename(default_storage.path(name)))
+            for file_obj in AgentFile.objects.filter(agent=agent):
+                tar.add(default_storage.path(file_obj.file), arcname=file_obj.original_name)
             tar.close()
 
         wrapper = FileWrapper(temp)
@@ -272,7 +215,7 @@ class GetAgentFile(views.APIView):
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
 
-        if not agent.locations or len(json.loads(agent.locations)) == 0:
+        if len(AgentFile.objects.filter(agent=agent)) == 0:
             return Response({'status': 'Bad request',
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -283,15 +226,35 @@ class GetAgentFile(views.APIView):
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        if agent.locations:
-            for f in json.loads(agent.locations):
-                if file_name == basename(f):
-                    wrapper = FileWrapper(default_storage.open(f))
-                    response = HttpResponse(wrapper, content_type=mimetypes.guess_type(f))
-                    response['Content-Disposition'] = 'attachment; filename=' + basename(f)
-                    response['Content-Length'] = getsize(default_storage.path(f))
-                    return response
+        file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent, original_name=file_name)
 
-        return Response({'status': 'Bad request',
-                         'message': 'The agent doesn\'t have the file that you requested!'},
-                        status=status.HTTP_400_BAD_REQUEST)
+        wrapper = FileWrapper(default_storage.open(file_obj.file))
+        response = HttpResponse(wrapper, content_type=mimetypes.guess_type(default_storage.path(file_obj.file)))
+        response['Content-Disposition'] = 'attachment; filename=' + file_obj.original_name
+        response['Content-Length'] = getsize(default_storage.path(file_obj.file))
+        return response
+
+
+class GetAllowedLanguages(views.APIView):
+    serializer_class = LanguagesSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def get(self, request):
+        """
+        B{Get} the allowed languages
+        B{URL:} ../api/v1/agents/allowed_languages/
+        """
+
+        class Language:
+            def __init__(self, name, value):
+                self.name = name
+                self.value = value
+
+        languages = []
+        for key, value in dict(settings.ALLOWED_UPLOAD_LANGUAGES).iteritems():
+            languages += [Language(key, value)]
+
+        serializer = self.serializer_class(languages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
