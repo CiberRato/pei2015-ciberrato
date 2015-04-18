@@ -131,4 +131,7 @@ class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  trial_id: str
         @param trial_id: The trial id
         """
-        pass
+        trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trial.teamscore_set.all()],
+                                           many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
