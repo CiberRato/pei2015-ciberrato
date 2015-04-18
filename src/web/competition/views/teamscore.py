@@ -147,7 +147,7 @@ class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the ranking for the round
-        B{URL:} ../api/v1/competitions/ranking_round/<trial_id>/
+        B{URL:} ../api/v1/competitions/ranking_round/<round_name>/
 
         @type  round_name: str
         @param round_name: The round name
@@ -157,6 +157,33 @@ class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trials = []
         for trial in r.simulation_set.all():
             trials += trial.teamscore_set.all()
+
+        serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RankingByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = TeamScore.objects.all()
+    serializer_class = TeamScoreOutSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the ranking for the competition
+        B{URL:} ../api/v1/competitions/ranking_competition/<competition_name>/
+
+        @type  competition_name: str
+        @param competition_name: The competition name
+        """
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+
+        trials = []
+
+        for r in competition.round_set.all():
+            for trial in r.simulation_set.all():
+                trials += trial.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
