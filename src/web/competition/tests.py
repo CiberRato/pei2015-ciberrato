@@ -457,6 +457,50 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(response.data), 4)
         self.assertEqual(response.status_code, 200)
 
+        # see round files
+        url = "/api/v1/competitions/round_files/R1/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'param_list': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'},
+                                         'grid': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'},
+                                         'lab': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'}})
+
+        # only  by admin
+        url = "/api/v1/competitions/round/upload/param_list/?round=R1"
+        f = open('media/tests_files/Param.xml', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        # only  by admin
+        url = "/api/v1/competitions/round/upload/grid/?round=R1"
+        f = open('media/tests_files/Ciber2010_Grid.xml', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        # only  by admin
+        url = "/api/v1/competitions/round/upload/lab/?round=R1"
+        f = open('media/tests_files/Ciber2010_Lab.xml', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
+
+        # see round files
+        url = "/api/v1/competitions/round_files/R1/"
+        response = client.get(path=url)
+        # print response.data
+        # print response.status_code
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)
+
+        # see if the files were registred
+        url = "/api/v1/competitions/round_admin/R1/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # print dict(response.data) # show the round files
+        self.assertEqual(len(dict(response.data)), 5)
+
         # create simulation (only by admin)
         url = "/api/v1/competitions/trial/"
         data = {'round_name': 'R1'}
@@ -509,50 +553,6 @@ class AuthenticationTestCase(TestCase):
                                'competitions': [], 'user': OrderedDict(
             [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
-
-        # see round files
-        url = "/api/v1/competitions/round_files/R1/"
-        response = client.get(path=url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {'param_list': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'},
-                                         'grid': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'},
-                                         'lab': {'url': '', 'last_modification': None, 'file': '', 'size': '0B'}})
-
-        # only  by admin
-        url = "/api/v1/competitions/round/upload/param_list/?round=R1"
-        f = open('media/tests_files/Param.xml', 'r')
-        response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
-
-        # only  by admin
-        url = "/api/v1/competitions/round/upload/grid/?round=R1"
-        f = open('media/tests_files/Ciber2010_Grid.xml', 'r')
-        response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
-
-        # only  by admin
-        url = "/api/v1/competitions/round/upload/lab/?round=R1"
-        f = open('media/tests_files/Ciber2010_Lab.xml', 'r')
-        response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'Uploaded', 'message': 'The file has been uploaded and saved to R1'})
-
-        # see round files
-        url = "/api/v1/competitions/round_files/R1/"
-        response = client.get(path=url)
-        # print response.data
-        # print response.status_code
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 3)
-
-        # see if the files were registred
-        url = "/api/v1/competitions/round_admin/R1/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        # print dict(response.data) # show the round files
-        self.assertEqual(len(dict(response.data)), 5)
 
         # start simulation
         url = "/api/v1/simulations/start/"
