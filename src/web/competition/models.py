@@ -201,3 +201,4 @@ class TeamScore(models.Model):
 
     class Meta:
         unique_together = ('trial', 'team',)
+        ordering = ('score', 'number_of_agents', 'time')
