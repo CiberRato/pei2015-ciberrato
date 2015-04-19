@@ -1,5 +1,7 @@
 import threading
 import socket
+from starter import *
+from testReceiver import *
 
 class Manager:
 	def main(self):
@@ -24,14 +26,20 @@ class Manager:
 			while data == None or data == "":
 				data = end_point_c.recv(1024)
 
-			if arg == "sim_id":
+			data = data.split("=")
+			if arg[0] == "sim_id":
 				#handle simulation
-				print "[MANAGER] Received simulation with sim_id= " + data + ", starting now.."
+				print "[MANAGER] Received simulation with sim_id= " + data[1] + ", starting now.."
+				starter = Starter()
+				starter_thread = threading.Thread(target=starter.run, args=(arg[1]))
+				starter_thread.start()
 
-			else if arg == "agent_name":
+			else if arg[0] == "agent_name":
 				#handle test
-			else:
-				#ignore
+				print "[TESTS] Received test request with agent_name " + data[1] + ", starting now.."
+				test = Test()
+				test_thread = threading.Thread(target=test.run, args=(arg[1]))
+				test_thread.start()
 
 			data = None
 
