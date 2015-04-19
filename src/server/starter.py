@@ -155,7 +155,8 @@ class Starter:
 										  " python myrob.py -host %s -pos %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
 										  shell = True, stdout = subprocess.PIPE)
-				docker_containers += [ docker.stdout.readline().strip() ]
+				docker_container = docker.stdout.readline().strip()
+				docker_containers += [  ]
 				docker.wait()
 				print "[STARTER] Successfully opened container: %s\n" % (docker_container, )
 
