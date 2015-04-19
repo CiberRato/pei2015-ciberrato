@@ -23,7 +23,7 @@ class Starter:
 				break
 		if DOCKERIP == None:
 			print "[STARTER] Please check your docker interface."
-			return
+			sys.exit(-1)
 		else:
 			print "[STARTER] Docker interface: %s" % (DOCKERIP, )
 
@@ -49,7 +49,8 @@ class Starter:
 		# Get simulation
 		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
 		if result.status_code != 200:
-			return
+			print "[STARTER] ERROR: simulation failed to load data"
+			sys.exit(-1)
 
 		simJson = json.loads(result.text)
 		tempFilesList = {}
@@ -61,19 +62,19 @@ class Starter:
 				agents = simJson[key]
 				if n_agents == 0:
 					print "[STARTER] ERROR: simulation had no agents"
-					return
+					sys.exit(-1)
 				continue
 			if key == "simulation_id":
 				if sim_id != simJson[key]:
 					print "[STARTER] ERROR: sim_id received not the the same in the simulation"
-					return
+					sys.exit(-1)
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
 			r = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + simJson[key])
 			if r.status_code != 200:
 				print "[STARTER] ERROR: error getting " + key + " file from end-point"
-				return
+				sys.exit(-1)
 			fp.write(r.text)
 			fp.seek(0)
 			tempFilesList[key] = fp
@@ -177,7 +178,7 @@ class Starter:
 			print "[STARTER] Closing tmp files"
 			for key in tempFilesList:
 				tempFilesList[key].close()
-			return
+			sys.exit(-1)
 
 		# # Read how many robots have registered
 		# robotsXML = minidom.parseString(data)
@@ -250,7 +251,7 @@ class Starter:
 			tempFilesList[key].close()
 
 		print "[STARTER] Simulation " + sim_id + " finished successfully..\n"
-
+		sys.exit(0)
 
 if __name__ == "__main__":
 	main()
