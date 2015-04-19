@@ -5,6 +5,8 @@ from zipfile import ZipFile
 import mimetypes
 from hurry.filesize import size
 
+import requests
+
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from os.path import basename, getsize, getmtime
 from django.shortcuts import get_object_or_404
@@ -75,6 +77,14 @@ class UploadAgent(views.APIView):
             return Response({'status': 'Bad request',
                              'message': 'The agent has already one file with that name!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        # call code validations
+        try:
+            requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>", agent.agent_name))
+        except requests.ConnectionError:
+            agent.code_valid = False
+            agent.validation_result = "The endpoint to do the code validation is down!"
+            agent.save()
 
         return Response({'status': 'File uploaded!',
                          'message': 'The agent code has been uploaded!'},
