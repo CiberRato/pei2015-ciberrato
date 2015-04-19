@@ -45,14 +45,14 @@
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
                 for (var i= 0; i<vm.simulations.length; i++){
-                    getSimulationGrids(vm.simulations[i], i);
+                    getSimulationGridsFirst(vm.simulations[i], i);
                 }
             }
 
-            function getSimulationGrids(simulation, i){
-                Round.getSimulationGrids(simulation.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+            function getSimulationGridsFirst(simulation, i){
+                Round.getSimulationGrids(simulation.identifier).then(getSimulationGridsFirstSuccessFn, getSimulationGridsFirstErrorFn);
 
-                function getSimulationGridsSuccessFn(data){
+                function getSimulationGridsFirstSuccessFn(data){
                     console.log(data.data);
                     vm.models.lists.Simulation = [];
                     for (var k = 0; k < data.data.length; ++k) {
@@ -63,7 +63,7 @@
                     console.log(vm.simulations[i].gridsTotal.length);
                 }
 
-                function getSimulationGridsErrorFn(data){
+                function getSimulationGridsFirstErrorFn(data){
                     console.error(data.data);
                     $location.path('/panel/');
                 }
@@ -200,6 +200,7 @@
 
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
+                console.log(data.data);
                 console.log(pos);
 
                 Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
@@ -233,11 +234,45 @@
 
             function disassociateAgentSuccessFn() {
 
-                $.jGrowl("Agent has been disassociated successfully.", {
+                $.jGrowl("Grid has been disassociated successfully.", {
                     life: 2500,
                     theme: 'success'
                 });
-                getSimulationGrids();
+
+                Round.getSimulationGrids(vm.identifier).then(getSimulationGridsNSuccessFn, getSimulationGridsNErrorFn);
+
+                function getSimulationGridsNSuccessFn(data){
+                    console.log(data.data);
+                    vm.models.lists.Simulation = [];
+                    for (var i = 0; i < data.data.length; ++i) {
+                        vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                    }
+
+                    if(vm.models.lists.Simulation !== []){
+                        console.log(vm.models.lists.Simulation);
+                        for(var j = 0; j<vm.models.lists.Simulation.length; j++){
+                            Round.disassociateAgent(vm.identifier, vm.models.lists.Simulation[j].position);
+                            console.log("disassociate " + vm.models.lists.Simulation[j].position + " " +  vm.models.lists.Simulation[j].label);
+                        }
+                        console.log(vm.models.lists.Simulation);
+
+                        for(var k= 0; k<vm.models.lists.Simulation.length; k++){
+                            gridAssociate(vm.models.lists.Simulation[k].identifier, k+1);
+                            console.log("associated");
+                        }
+                        console.log(vm.models.lists.Simulation);
+                        Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
+                    }
+                    console.log(vm.models.lists.Simulation);
+
+
+                }
+
+                function getSimulationGridsNErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+                }
             }
 
             function disassociateAgentErrorFn(data) {
@@ -473,12 +508,15 @@
 
         }
 
-        function saveScores(){
-            for(var i = 0; i<vm.models.lists.Simulation; i++){
-                var inputText = document.getElementById("teamsTrial"+vm.models.lists.Simulation[i].label).value;
+        function gridAssociate(grid, pos){
+            Round.associateGrid(grid, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
+            function associateAgentSuccessFn(){
             }
 
+            function associateAgentErrorFn(data){
+                console.error(data.data);
+            }
         }
 
 

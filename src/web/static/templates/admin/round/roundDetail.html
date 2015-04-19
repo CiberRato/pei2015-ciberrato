@@ -91,7 +91,6 @@
                                 <th>State</th>
                                 <th>Manage Grids</th>
                                 <th>Grids</th>
-                                <th>Scores</th>
                                 <th>Start Trial</th>
                                 <th>Remove Trial</th>
 
@@ -104,7 +103,7 @@
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <button type="button" class="close" data-dismiss="modal" ng-click="vm.reload()">×</button>
 
                                             <h2 align="center">Drag the grids for this trial (Max: {{vm.competition.type_of_competition.number_teams_for_trial}})</h2>
                                         </div>
@@ -153,32 +152,6 @@
 
                                 <td ng-repeat="(key2, value2) in value.gridsTotal" ng-if="$first"><a href="/panel/{{value2.label}}/teamMembers">{{value2.label}}</a>
                                 </td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addScores{{key}}">Manage Scores</a>
-                                    <div class="modal fade"  id="addScores{{key}}">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
-
-                                            <h2 align="center">Enter the score of each grid</h2>
-                                        </div>
-                                        <div class="modal-body" style="text-align: center">
-                                            <form role="form" ng-submit="vm.create()">
-                                                <fieldset>
-                                                    <div  ng-repeat="(key1, value1) in vm.models.lists.Simulation" class="control-group">
-                                                        <label class="control-label" for="teamsTrial{{value1.label}}">{{value1.label}}</label>
-                                                        <div class="controls">
-                                                            <input id="teamsTrial{{value1.label}}" type="number" placeholder="Score" name="{{value1.label}}">
-                                                        </div>
-                                                    </div>
-                                                </fieldset>
-                                            </form>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a ng-click="vm.saveScores()" class="btn btn-alt btn-large btn-success">Save Scores</a>
-
-                                        </div>
-
-                                    </div></td>
 
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startSimulation(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
