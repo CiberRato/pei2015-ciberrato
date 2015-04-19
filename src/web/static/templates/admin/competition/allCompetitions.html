@@ -29,33 +29,7 @@
                                 <td>{{value.type_of_competition.name}}</td>
                                 <td>{{value.state_of_competition}}</td>
                                 <td>
-                                    <a data-toggle="modal"  href="#changeState{{key}}">Change</a>
-                                    <div class="modal fade"  id="changeState{{key}}">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
-
-                                            <h2 align="center">New State of Competition</h2>
-                                        </div>
-                                        <div class="modal-body">
-                                            <section>
-                                                <div class="control-group">
-                                                    <label class="control-label" for="select"></label>
-                                                    <select id="select{{value.name}}" name="option">
-                                                        <option value="Register">Register</option>
-                                                        <option value="Competition">Competition</option>
-                                                        <option value="Past">Past</option>
-                                                    </select>
-                                                </div>
-
-                                            </section>
-
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a ng-click = "vm.changeState(value.name)" data-dismiss="modal" class="btn btn-alt btn-success">Change</a>
-                                        </div>
-                                    </div>
-
-
+                                    <a href="#" ng-click="vm.changeState(value.name, value.state_of_competition)">Change</a>
                                 </td>
                                 <td><a ng-click="vm.deleteCompetition(value.name)" class="btn btn-primary btn-flat">X</a></td>
 
