@@ -284,7 +284,12 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         """
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
-        instance.is_superuser = not instance.is_superuser
+        if not instance.is_superuser:
+            instance.is_superuser = True
+            instance.is_staff = True
+        else:
+            instance.is_superuser = False
+
         instance.save()
 
         return Response({'status': 'Updated',
