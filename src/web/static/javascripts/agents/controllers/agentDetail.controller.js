@@ -19,8 +19,6 @@
         function activate() {
             Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
             Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
-            Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
-
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
@@ -43,23 +41,13 @@
                 $location.url('/panel/');
             }
 
-            function getLanguagesSuccessFn(data){
-                vm.languages = data.data;
-            }
-
-            function getLanguagesErrorFn(data){
-                console.error(data.data);
-                $location.url('/panel/');
-            }
         }
 
         function uploadFile() {
-            var language = document.getElementById("selector_language").value;
-            console.log(language);
             var selectedFile = document.getElementById('fileupload').files[0];
 
             if(selectedFile != undefined) {
-                Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+                Agent.upload(agentName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
             }else{
                 $.jGrowl("You didn't select any file", {
                     life: 2500,

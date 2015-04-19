@@ -17,6 +17,7 @@
                             <tr>
                                 <th>Agent Name</th>
                                 <th>Group Name</th>
+                                <th>Language</th>
                                 <th>Upload Code</th>
                                 <th>Remove Agent</th>
                             </tr>
@@ -25,7 +26,7 @@
                             <tr ng-repeat="(key, value) in vm.agents">
                                 <td><a href="panel/{{value.agent_name}}/agentDetail">{{ value.agent_name }}</a></td>
                                 <td><a href="panel/{{value.group_name}}/teamMembers">{{value.group_name}}</a></td>
-
+                                <td>{{value.language}}</td>
                                 <td ng-if="value.is_local == false">
                                     <a  href="/panel/{{value.agent_name}}/agentDetail">Upload</a>
 
