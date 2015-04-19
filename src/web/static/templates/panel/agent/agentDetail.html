@@ -45,6 +45,8 @@
                                multiple=""
                                 />
 
+
+
                         <script>
                             function handleFileSelect(evt) {
                                 var files = evt.target.files; // FileList object
@@ -64,6 +66,24 @@
                         </script>
 
                         <button class="btn btn-alt btn-success" ng-click="vm.uploadFile()">Upload All</button>
+                        <br/>
+                        <br/>
+                        <span class="awe-exclamation-sign"></span><b>
+                        <a data-toggle="modal"  href="#samples">See the Samples</a></b>
+                        <div class="modal fade"  id="samples">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+
+                                <h2 align="center">Samples</h2>
+                            </div>
+                            <div class="modal-body">
+                                <strong>You can download the sample files for your agent's language:</strong><br/>
+                                <a href="/static/samples/{{vm.agent.language}}.zip"  target="_blank">- {{vm.agent.language}} Samples</a>
+                            </div>
+                            <div class="modal-footer">
+                                Note that <strong>execute.sh</strong> file is required and <strong>prepare.sh</strong> is optional
+                            </div>
+                        </div>
 
 
 
