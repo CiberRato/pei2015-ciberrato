@@ -79,12 +79,14 @@ class UploadAgent(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         # call code validations
+        """
         try:
             requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>", agent.agent_name))
         except requests.ConnectionError:
             agent.code_valid = False
             agent.validation_result = "The endpoint to do the code validation is down!"
             agent.save()
+        """
 
         return Response({'status': 'File uploaded!',
                          'message': 'The agent code has been uploaded!'},
