@@ -56,7 +56,8 @@
         }
         function doIt() {
             /* Zoom variable (30->Standard) */
-            $scope.zoom = 30;
+            $scope.first_zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
+            $scope.zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
             $scope.velButton = '1x';
 
             var b = 0;
@@ -234,8 +235,14 @@
             var tick = function () {
                 try {
                     $scope.updateValues();
-
-                    $(".leftGrip").css("left", ($scope.idx * 820) / $scope.param._SimTime);
+                    if ($scope.first_zoom != $scope.zoom){
+                        $scope.first_zoom = $scope.zoom;
+                        for (i = 0; i < lab_obj.Wall.length; i++) {
+                            //console.log(lab_obj);
+                            lab_obj.Wall[i].str = convertToStringPoints(lab_obj.Wall[i], $scope.zoom);
+                        }
+                    }
+                    $(".leftGrip").css("left", ($scope.idx * ($scope.map._Width*$scope.zoom)) / $scope.param._SimTime);
                     if ($scope.playvar) {
                         $scope.idx++;
                     }

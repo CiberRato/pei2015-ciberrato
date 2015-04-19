@@ -49,7 +49,7 @@
         <article class="span12 data-block">
             <div class="data-container">
                 <section>
-                    <div class="row">
+                    <div class="row" id="svgrow">
                         <div class="span12 viewer" style="text-align: center; vertical-align: middle">
                             <svg  ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="background-color: {{groundColor}}" >
                                 <g ng-attr-transform="translate(0,{{map._Height*zoom}})">
@@ -107,8 +107,8 @@
                                 </g>
                             </svg>
 
-                            <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}}"
-                                 data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-left: 20px; margin-top: -5px">
+                            <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}} "
+                                 data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-top: -5px">
                                 <div class="leftGrip"></div>
                             </div>
 
@@ -391,7 +391,7 @@
                 var value = $(".leftGrip").css("left");
                 value = parseInt(value);
                 var scope = angular.element('[ng-controller=LogViewer]').scope();
-                scope.idx = parseInt((value * angular.element('[ng-controller=LogViewer]').scope().param._SimTime) / 820);
+                scope.idx = parseInt((value * angular.element('[ng-controller=LogViewer]').scope().param._SimTime) / (angular.element('[ng-controller=LogViewer]').scope().map._Width*angular.element('[ng-controller=LogViewer]').scope().zoom));
                 console.log(scope.idx);
 
             }catch(TypeError){}

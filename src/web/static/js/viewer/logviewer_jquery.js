@@ -1,3 +1,12 @@
+window.onresize = doALoadOfStuff;
+
+function doALoadOfStuff() {
+    angular.element('[ng-controller=LogViewer]').scope().zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
+}
+
+var handler = window.onresize;
+handler();
+
 $("#play").click(function() {
     angular.element('[ng-controller=LogViewer]').scope().play();
     console.log("OK");
