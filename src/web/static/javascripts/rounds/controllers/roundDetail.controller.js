@@ -33,7 +33,7 @@
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
         vm.startSimulation = startSimulation;
-
+        vm.all = false;
         activate();
 
         function activate() {
@@ -41,10 +41,31 @@
             Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
             Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
+
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
                 for (var i= 0; i<vm.simulations.length; i++){
+                    getSimulationGridsFirst(vm.simulations[i], i);
+                }
+            }
 
+            function getSimulationGridsFirst(simulation, i){
+                Round.getSimulationGrids(simulation.identifier).then(getSimulationGridsFirstSuccessFn, getSimulationGridsFirstErrorFn);
+
+                function getSimulationGridsFirstSuccessFn(data){
+                    console.log(data.data);
+                    vm.models.lists.Simulation = [];
+                    for (var k = 0; k < data.data.length; ++k) {
+                        vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                    }
+                    console.log(vm.models.lists.Simulation);
+                    vm.simulations[i].gridsTotal= vm.models.lists.Simulation;
+                    console.log(vm.simulations[i].gridsTotal.length);
+                }
+
+                function getSimulationGridsFirstErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
                 }
             }
 
@@ -99,6 +120,7 @@
                 $location.path('/panel/');
             }
 
+
         }
 
         function moved(group_name ,identifier){
@@ -126,9 +148,6 @@
             }
             return false;
         }
-
-
-
 
         function getGridsSuccessFn(data) {
             console.log(data.data);
@@ -181,6 +200,7 @@
 
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
+                console.log(data.data);
                 console.log(pos);
 
                 Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
@@ -214,11 +234,45 @@
 
             function disassociateAgentSuccessFn() {
 
-                $.jGrowl("Agent has been disassociated successfully.", {
+                $.jGrowl("Grid has been disassociated successfully.", {
                     life: 2500,
                     theme: 'success'
                 });
-                getSimulationGrids();
+
+                Round.getSimulationGrids(vm.identifier).then(getSimulationGridsNSuccessFn, getSimulationGridsNErrorFn);
+
+                function getSimulationGridsNSuccessFn(data){
+                    console.log(data.data);
+                    vm.models.lists.Simulation = [];
+                    for (var i = 0; i < data.data.length; ++i) {
+                        vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                    }
+
+                    if(vm.models.lists.Simulation !== []){
+                        console.log(vm.models.lists.Simulation);
+                        for(var j = 0; j<vm.models.lists.Simulation.length; j++){
+                            Round.disassociateAgent(vm.identifier, vm.models.lists.Simulation[j].position);
+                            console.log("disassociate " + vm.models.lists.Simulation[j].position + " " +  vm.models.lists.Simulation[j].label);
+                        }
+                        console.log(vm.models.lists.Simulation);
+
+                        for(var k= 0; k<vm.models.lists.Simulation.length; k++){
+                            gridAssociate(vm.models.lists.Simulation[k].identifier, k+1);
+                            console.log("associated");
+                        }
+                        console.log(vm.models.lists.Simulation);
+                        Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
+                    }
+                    console.log(vm.models.lists.Simulation);
+
+
+                }
+
+                function getSimulationGridsNErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+                }
             }
 
             function disassociateAgentErrorFn(data) {
@@ -241,6 +295,23 @@
                     life: 2500,
                     theme: 'success'
                 });
+
+                if(vm.all === true){
+                    var selectedFile2 = document.getElementById('GridUpload').files[0];
+                    var selectedFile3 = document.getElementById('LabUpload').files[0];
+
+                    if(selectedFile2 != undefined){
+                        uploadGrid();
+                        console.log('fizgrd');
+                    }else if(selectedFile3 != undefined){
+                        uploadLab();
+                    }else{
+                        $route.reload();
+                        $('.modal-backdrop').remove();
+                        vm.all = false;
+                    }
+
+                }
             }
 
             function uploadErrorFn(data){
@@ -281,6 +352,19 @@
                     life: 2500,
                     theme: 'success'
                 });
+
+                if(vm.all === true){
+                    var selectedFile3 = document.getElementById('LabUpload').files[0];
+                    if(selectedFile3 != undefined){
+                        uploadLab();
+                        console.log('fizlab');
+                    }else{
+                        $route.reload();
+                        $('.modal-backdrop').remove();
+                        vm.all = false;
+                    }
+
+                }
             }
 
             function uploadErrorFn(data){
@@ -304,6 +388,12 @@
                     life: 2500,
                     theme: 'success'
                 });
+                if(vm.all === true){
+                    $route.reload();
+                    $('.modal-backdrop').remove();
+                    vm.all = false;
+                }
+
             }
 
             function uploadErrorFn(data){
@@ -358,27 +448,16 @@
         }
 
         function uploadAll(){
+            vm.all = true;
+            console.log(vm.all);
             var selectedFile1 = document.getElementById('ParamListUpload').files[0];
-            console.log(selectedFile1);
-            var selectedFile2 = document.getElementById('GridUpload').files[0];
-            console.log(selectedFile2);
-            var selectedFile3 = document.getElementById('LabUpload').files[0];
-            console.log(selectedFile3);
+
             if(selectedFile1 != undefined){
                 uploadParamList();
                 console.log('fizparam');
-            }
-            if(selectedFile2 != undefined){
+            }else{
                 uploadGrid();
-                console.log('fizgrd');
             }
-            if(selectedFile3 != undefined){
-                uploadLab();
-                console.log('fizlab');
-            }
-
-            $route.reload();
-            $('.modal-backdrop').remove();
         }
 
         function reload(){
@@ -427,6 +506,17 @@
                 $route.reload();
             }
 
+        }
+
+        function gridAssociate(grid, pos){
+            Round.associateGrid(grid, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
+
+            function associateAgentSuccessFn(){
+            }
+
+            function associateAgentErrorFn(data){
+                console.error(data.data);
+            }
         }
 
 

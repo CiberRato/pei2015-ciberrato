@@ -19,8 +19,6 @@
         function activate() {
             Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
             Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
-            Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
-
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
@@ -43,45 +41,43 @@
                 $location.url('/panel/');
             }
 
-            function getLanguagesSuccessFn(data){
-                vm.languages = data.data;
-            }
-
-            function getLanguagesErrorFn(data){
-                console.error(data.data);
-                $location.url('/panel/');
-            }
         }
 
         function uploadFile() {
-            var language = document.getElementById("selector_language").value;
-            console.log(language);
-            var selectedFile = document.getElementById('fileupload').files[0];
-
-            if(selectedFile != undefined) {
-                Agent.upload(agentName, language, selectedFile).then(uploadSuccessFn, uploadErrorFn);
-            }else{
+            var selectedFile = document.getElementById('fileupload').files;
+            if(selectedFile.length == 0){
                 $.jGrowl("You didn't select any file", {
                     life: 2500,
                     theme: 'btn-danger'
                 });
-            }
-            function uploadSuccessFn() {
-
-                $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
-                    life: 2500,
-                    theme: 'success'
-                });
-                $route.reload();
+            }else{
+                for(var i = 0; i< selectedFile.length; i++) {
+                    uploadCode(selectedFile[i]);
+                }
             }
 
-            function uploadErrorFn(data) {
-                console.log(data.data);
-                $.jGrowl(data.data.message, {
-                    life: 2500,
-                    theme: 'btn-danger'
-                });
+
+            function uploadCode(selectedFile){
+                Agent.upload(agentName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+
+                function uploadSuccessFn() {
+
+                    $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
+                        life: 2500,
+                        theme: 'success'
+                    });
+                    $route.reload();
+                }
+
+                function uploadErrorFn(data) {
+                    console.log(data.data);
+                    $.jGrowl(data.data.message, {
+                        life: 2500,
+                        theme: 'btn-danger'
+                    });
+                }
             }
+
 
         }
 

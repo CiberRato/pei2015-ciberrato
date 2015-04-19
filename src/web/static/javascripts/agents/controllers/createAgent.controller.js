@@ -21,6 +21,7 @@
             username = authenticatedAccount.username;
 
             Team.getUserAdmin(username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
+            Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
 
             function getUserAdminSuccessFn(data){
                 vm.teams = data.data;
@@ -29,12 +30,23 @@
                 console.error(data.data);
             }
 
+            function getLanguagesSuccessFn(data){
+                vm.languages = data.data;
+            }
+
+            function getLanguagesErrorFn(data){
+                console.error(data.data);
+                $location.url('/panel/');
+            }
+
         }
 
         function create(){
             var x = document.getElementById("select").value;
             var y = document.getElementById("type").value;
-            Agent.create(vm.name, x, y).then(createSuccessFn, createErrorFn);;
+            var language = document.getElementById("selector_language").value;
+
+            Agent.create(vm.name, x, y, language).then(createSuccessFn, createErrorFn);;
         }
 
         function createSuccessFn(){

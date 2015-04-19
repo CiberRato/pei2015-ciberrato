@@ -16,6 +16,7 @@
                             <thead>
                             <tr>
                                 <th>File Name</th>
+                                <th>Size</th>
                                 <th>Type</th>
 
                             </tr>
@@ -23,16 +24,22 @@
                             <tbody>
                             <tr>
                                 <td ng-if="vm.grid.size != '0B'">{{vm.grid.file}}</td>
+                                <td ng-if="vm.grid.size != '0B'">{{vm.grid.size}}</td>
                                 <td ng-if="vm.grid.size != '0B'">Grid</td>
+
                             </tr>
                             <tr>
                                 <td ng-if="vm.lab.size != '0B'">{{vm.lab.file}}</td>
+                                <td ng-if="vm.lab.size != '0B'">{{vm.lab.size}}</td>
                                 <td ng-if="vm.lab.size != '0B'">Lab</td>
+
                             </tr>
 
                             <tr>
                                 <td ng-if="vm.param_list.size != '0B'">{{vm.param_list.file}}</td>
+                                <td ng-if="vm.param_list.size != '0B'">{{vm.param_list.size}}</td>
                                 <td ng-if="vm.param_list.size != '0B'">Param List</td>
+
                             </tr>
 
                             </tbody>
@@ -82,22 +89,23 @@
                             <tr>
                                 <th>Trial identifier</th>
                                 <th>State</th>
-                                <th>Manage Agents</th>
+                                <th>Manage Grids</th>
+                                <th>Grids</th>
                                 <th>Start Trial</th>
                                 <th>Remove Trial</th>
 
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr ng-repeat="(key, value) in vm.simulations" >
-                                <td id="identifier">{{value.identifier}}</td>
-                                <td>{{value.state}}</td>
-                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
+                            <tbody ng-repeat="(key, value) in vm.simulations" >
+                            <tr >
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" id="identifier">{{value.identifier}}</td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">{{value.state}}</td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <button type="button" class="close" data-dismiss="modal" ng-click="vm.reload()">×</button>
 
-                                            <h2 align="center">Drag the teams for this trial (Max: {{vm.competition.type_of_competition.number_teams_for_trial}})</h2>
+                                            <h2 align="center">Drag the grids for this trial (Max: {{vm.competition.type_of_competition.number_teams_for_trial}})</h2>
                                         </div>
                                         <div class="modal-body" style="text-align: center">
                                             <div class="row" style="padding-left: 40px">
@@ -140,13 +148,24 @@
                                         
                                     </div>
                                 </td>
-                                <td ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startSimulation(value.identifier)">Start</a>
+                                <td ng-if="value.gridsTotal.length == 0"><strong> There are no grids</strong></td>
+
+                                <td ng-repeat="(key2, value2) in value.gridsTotal" ng-if="$first"><a href="/panel/{{value2.label}}/teamMembers">{{value2.label}}</a>
+                                </td>
+
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startSimulation(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>
-                                <td ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
 
-                                <td><a class="btn btn-primary btn-flat" ng-click="vm.removeSimulation(value.identifier)">X</a></td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a class="btn btn-primary btn-flat" ng-click="vm.removeSimulation(value.identifier)">X</a></td>
+                            </tr>
+                            <tr ng-repeat="(key2, value2) in value.gridsTotal" ng-if="!$first">
+                                <td bgcolor="#f8f8f8">
+                                    <a href="/panel/{{value2.label}}/teamMembers">{{value2.label}}</a>
+
+                                </td>
                             </tr>
                             </tbody>
                         </table>
