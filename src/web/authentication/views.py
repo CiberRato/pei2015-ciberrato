@@ -1,5 +1,5 @@
 import json
-from competition.permissions import IsStaff
+from competition.permissions import IsStaff, IsSuperUser
 
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
@@ -250,7 +250,7 @@ class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
     def update(self, request, *args, **kwargs):
         """
-        B{Update} the password
+        B{Update} the user
         B{URL:} ..api/v1/toggle_staff/<username>/
 
         @type  username: str
@@ -263,4 +263,30 @@ class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
         return Response({'status': 'Updated',
                          'message': 'Account updated, is staff? ' + str(instance.is_staff)
+                         }, status=status.HTTP_200_OK)
+
+
+class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = PasswordSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsSuperUser(),
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the user
+        B{URL:} ..api/v1/toggle_super_user/<username>/
+
+        @type  username: str
+        @param username: The username
+        """
+        instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
+
+        instance.is_superuser = not instance.is_superuser
+        instance.save()
+
+        return Response({'status': 'Updated',
+                         'message': 'Account updated, is super user? ' + str(instance.is_superuser)
                          }, status=status.HTTP_200_OK)
