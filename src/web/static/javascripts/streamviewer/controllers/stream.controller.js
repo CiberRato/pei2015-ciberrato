@@ -258,23 +258,43 @@
 
             /* Update timeline */
             var tick = function() {
-                console.log('a ir');
+
                 if($scope.logBuff_obj[$scope.logBuff_obj.length-1].LogInfo._Time == $scope.logBuff_obj[$scope.idx].LogInfo._Time){
                     $scope.playvar=-1;
                     console.log('parou tudo');
-                    /*if($scope.numRobots != 1){
-                        for (var robot in $scope.logBuff_obj[logBuff_obj.length-1].LogInfo.Robot)
-                            $scope.finalResults.push([robot, $scope.logBuff_obj[logBuff_obj.length-1].LogInfo.Robot[robot]])
-                        $scope.finalResults.sort(function(a, b) {return a[1].Scores._Score - b[1].Scores._Score})
+                    if($scope.numRobots != 1) {
+                        $scope.finalResults = $scope.logBuff_obj[$scope.idx].LogInfo.Robot
+                        var swapped;
+                        do {
+                            swapped = false;
+                            for (var i = 0; i < $scope.finalResults.length - 1; i++) {
+                                if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
+                                    var temp = $scope.finalResults[i];
+                                    var temp2 = $scope.robotColor[i];
 
-                    }*/
+                                    $scope.finalResults[i] = $scope.finalResults[i + 1];
+                                    $scope.robotColor[i] = $scope.robotColor[i + 1];
+
+                                    $scope.finalResults[i + 1] = temp;
+                                    $scope.robotColor[i + 1] = temp2;
+                                    swapped = true;
+                                }
+                            }
+                        } while (swapped);
+                        ;
+                    }
 
                 }
                 try{
                     $scope.updateValues();
 
                     if($scope.playvar){
-                        $scope.idx++;
+                        if ($scope.logBuff_obj.length - 1 > $scope.idx + 50){
+                            $scope.idx = $scope.logBuff_obj.length - 20;
+                        }
+                        else{
+                            $scope.idx++;
+                        }
                     }
                     //console.log("IDX"+$scope.idx);
                 }catch(TypeError){

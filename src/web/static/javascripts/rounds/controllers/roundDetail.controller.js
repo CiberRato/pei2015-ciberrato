@@ -419,12 +419,30 @@
                 $route.reload();
             }
 
-            function startSimulationErrorFn(){
-                $.jGrowl("Simulation can't be started.", {
-                    life: 2500,
+            function startSimulationErrorFn(data){
+                console.log(data.data);
+                console.log(data.data);
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
+                }
+                else{
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
-                $route.reload();
             }
 
         }

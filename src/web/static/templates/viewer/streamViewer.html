@@ -119,7 +119,7 @@
                 <section class="viewer">
                     <div class="row-fluid demo">
                         <div class="span6">Name</div>
-                        <div class="span6">Position</div>
+                        <div class="span6">Robot</div>
 
                     </div>
                     <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
@@ -186,7 +186,7 @@
 
 
                     </div>
-                    <div ng-if="numRobots != 1" ng-repeat="value in robot track by $index" class="row-fluid" style="text-align: center">
+                    <div ng-if="numRobots != 1" ng-repeat="value in finalResults track by $index" class="row-fluid" style="text-align: center">
                         <div class="span2 viewer"><h2>{{$index + 1}}º</h2></div>
                         <div class="span2 viewer"><h2>{{value._Name}}</h2></div>
                         <div class="span2 viewer"><img src="{{robotColor[$index]}}" width="35" height="35"></div>
