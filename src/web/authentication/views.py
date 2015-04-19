@@ -240,10 +240,26 @@ class LogoutView(views.APIView):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
+class MyDetails(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def get(self, request):
+        """
+        See the details of the current logged user
+        B{URL:} ..api/v1/me/
+        """
+        serializer = self.serializer_class(request.user)
+        return Response(serializer.data)
+
+
 class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     lookup_field = 'username'
     queryset = Account.objects.all()
-    serializer_class = PasswordSerializer
+    serializer_class = AccountSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsStaff(),
@@ -269,7 +285,7 @@ class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     lookup_field = 'username'
     queryset = Account.objects.all()
-    serializer_class = PasswordSerializer
+    serializer_class = AccountSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsSuperUser(),
@@ -295,3 +311,29 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         return Response({'status': 'Updated',
                          'message': 'Account updated, is super user? ' + str(instance.is_superuser)
                          }, status=status.HTTP_200_OK)
+
+
+class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsSuperUser(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Login to other} user
+        B{URL:} ..api/v1/login_to/<username>/
+
+        @type  username: str
+        @param username: The username
+        """
+        account = get_object_or_404(self.queryset, username=kwargs.get('username', ''))
+        account.backend = 'django.contrib.auth.backends.ModelBackend'
+
+        logout(request)
+        login(request, account)
+
+        serialized = self.serializer_class(account)
+        return Response(serialized.data)
