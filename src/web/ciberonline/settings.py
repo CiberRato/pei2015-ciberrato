@@ -102,6 +102,7 @@ ALLOWED_UPLOAD_LANGUAGES = (
 ALLOWED_UPLOAD_SIZE = 5000000  # bytes
 
 START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/simulation_id/"
+TEST_CODE_ENDPOINT = "http://127.0.0.1:9000/api/v1/test_agent/?agent_name=<agent_name>"
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist/static'),
