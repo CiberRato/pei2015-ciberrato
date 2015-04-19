@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
 
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
-    AccountChangePassword
+    AccountChangePassword, ToggleUserToStaff
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet, AccountGroupsAdminViewSet
@@ -33,6 +33,7 @@ router_accounts.register(r'accounts', AccountViewSet)
 router_accounts.register(r'change_password', AccountChangePassword)
 router_accounts.register(r'account_by_first_name', AccountByFirstName)
 router_accounts.register(r'account_by_last_name', AccountByLastName)
+router_accounts.register(r'toggle_staff', ToggleUserToStaff)
 # GROUPS URLs
 router_groups = routers.SimpleRouter()
 router_groups.register(r'members', GroupMembersViewSet)
