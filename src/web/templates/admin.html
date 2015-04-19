@@ -1,3 +1,4 @@
+{% if user.is_staff %}
 <!DOCTYPE html>
 <html ng-app="ciberonline">
 <head>
@@ -39,3 +40,6 @@
 {% include 'admin/javascripts.html' %}
 </body>
 </html>
+{% else %}
+    <meta http-equiv="refresh" content="0; url={% url 'panel' %}" />
+{% endif %}
