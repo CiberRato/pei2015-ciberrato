@@ -14,36 +14,6 @@ import zipfile
 from xml.dom import minidom
 
 class Test:
-	def main(self):
-		# Loading settings
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
-
-		END_POINT_HOST = settings["settings"]["test_end_point_host"]
-		END_POINT_PORT = settings["settings"]["test_end_point_port"]
-
-		print "[TESTS] Starter is in deamon mode"
-		end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		end_point_tcp.bind((END_POINT_HOST, END_POINT_PORT))
-		end_point_tcp.listen(1)
-		end_point_c, end_point_add = end_point_tcp.accept()
-
-		# Waiting for a post to be done
-		data = None
-		while 1:
-			print "[TESTS] Waiting for tests request.."
-			while data == None or data == "":
-				data = end_point_c.recv(1024)
-			print "[STARTER] Received test request with agent_name " + data + ", starting now.."
-			self.run(data)
-			data = None
-
-		end_point_c.shutdown(socket.SHUT_RDWR)
-		end_point_c.close()
-		end_point_tcp.shutdown(socket.SHUT_RDWR)
-		end_point_tcp.close()
-
 	def run(self, agent_name):
 		# Find docker ip
 		DOCKERIP = None
@@ -82,4 +52,4 @@ class Test:
 if __name__ == "__main__":
 	main()
 
-		
+
