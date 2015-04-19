@@ -125,6 +125,17 @@ class AuthenticationTestCase(TestCase):
         a = Account.objects.get(username="test")
         self.assertEqual(a.is_staff, False)
 
+        # update a user to super user
+        user.is_superuser = True
+        user.save()
+
+        url = "/api/v1/toggle_super_user/test/"
+        response = client.put(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Updated", "message": "Account updated, is super user? False"})
+        a = Account.objects.get(username="test")
+        self.assertEqual(a.is_superuser, False)
+
         # create a group
         url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 10}
