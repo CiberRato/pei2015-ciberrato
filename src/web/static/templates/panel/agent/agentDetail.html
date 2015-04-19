@@ -35,33 +35,38 @@
                         <div align="right">
                             <a ng-if="vm.files.length != 0" href="/api/v1/agents/agent_all_files/{{vm.agent.agent_name}}/" target="_blank">Download All</a>
                         </div>
-                            <a ng-if="vm.agent.is_local == false" data-toggle="modal"  href="#uploadCode" class="btn btn-alt btn-large btn-success">Upload File for this Agent</a>
+                        <strong style="font-size: large">Files: </strong>
+                        <br/>
+                        <output id="list"></output>
 
-                            <div class="modal fade"  id="uploadCode">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                        <input id="fileupload"
+                               type="file" name="files[]"
+                               class="inputFile clickable"
+                               multiple=""
+                                />
 
-                                    <h2 align="center">Upload your code</h2>
-                                </div>
-                                <div class="modal-body">
-                                    <section>
-                                        <p> Upload your file code here! Select <strong>Add files</strong> and next choose the file through your browse.</p>
-                                        <p> When the file code is choosen, then upload him clicking on button <strong>Start upload</strong> and after these you can see your file code in the square above, allowing to you to download if you want to see him.
+                        <script>
+                            function handleFileSelect(evt) {
+                                var files = evt.target.files; // FileList object
+
+                                // files is a FileList of File objects. List some properties.
+                                var output = [];
+                                for (var i = 0, f; f = files[i]; i++) {
+                                    output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                                            f.size, ' bytes, last modified: ',
+                                            f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                                            '</li>');
+                                }
+                                document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+                            }
+
+                            document.getElementById('fileupload').addEventListener('change', handleFileSelect, false);
+                        </script>
+
+                        <button class="btn btn-alt btn-success" ng-click="vm.uploadFile()">Upload All</button>
 
 
-                                    </section>
-                                    <input id="fileupload"
-                                           type="file" name="files[]"
-                                           class="inputFile clickable"
-                                           />
 
-                                </div>
-                                <div class="modal-footer">
-
-                                    <button class="btn btn-alt btn-success" data-dismiss="modal" ng-click="vm.uploadFile()">Upload</button>
-
-                                </div>
-                            </div>
                     </div>
 
                 </section>
