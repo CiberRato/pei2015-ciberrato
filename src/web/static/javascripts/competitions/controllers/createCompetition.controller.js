@@ -11,6 +11,7 @@
         var vm = this;
 
         vm.create = create;
+        vm.typesToShow = [];
 
         var username;
 
@@ -24,7 +25,39 @@
 
             function getAllSuccessFn(data){
                 vm.typesOfCompetition = data.data;
-                console.log(vm.typesOfCompetition);
+                vm.tmp = data.data;
+                console.log(vm.tmp.results);
+                vm.typesToShow = vm.tmp.results;
+                console.log(vm.typesToShow);
+                console.log(vm.tmp);
+
+                if(vm.tmp.next != null){
+                    add(vm.tmp.next);
+                }
+                console.log(vm.tmp);
+                console.log(vm.typesToShow);
+
+
+            }
+
+            function add(url){
+                Competition.change(url).then(addSuccessFn, addErrorFn);
+
+                function addSuccessFn(data){
+                    vm.tmp = data.data;
+                    for(var i=0; i<vm.tmp.results.length; i++){
+                        vm.typesToShow.push(vm.tmp.results[i]);
+                    }
+                    if(vm.tmp.next != null){
+                        add(vm.tmp.next);
+                    }
+
+
+                }
+
+                function addErrorFn(data){
+                    console.error(data.data);
+                }
             }
 
             function getAllErrorFn(data){

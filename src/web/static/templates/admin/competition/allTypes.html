@@ -32,6 +32,12 @@
                             </tr>
                             </tbody>
                         </table>
+                        <nav>
+                            <ul class="pager">
+                                <li ng-if="vm.typesOfCompetitions.previous != null" ng-click="vm.change(vm.typesOfCompetitions.previous)"><a href="#">Previous</a></li>
+                                <li ng-if="vm.typesOfCompetitions.next!=null" ng-click="vm.change(vm.typesOfCompetitions.next)"><a href="#">Next</a></li>
+                            </ul>
+                        </nav>
                     </div>
                 </section>
             </div>
