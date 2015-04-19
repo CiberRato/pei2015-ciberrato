@@ -14,7 +14,6 @@ import zipfile
 from xml.dom import minidom
 
 class Starter:
-
 	def main(self):
 		# Loading settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
@@ -79,6 +78,9 @@ class Starter:
 
 		# Get simulation
 		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
+		if result.status_code != 200:
+			return
+
 		simJson = json.loads(result.text)
 		tempFilesList = {}
 		n_agents = 0

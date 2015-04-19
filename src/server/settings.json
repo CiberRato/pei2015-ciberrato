@@ -19,6 +19,9 @@
 		"starter_end_point_host": "127.0.0.1",
 		"starter_end_point_port": 7500,
 
+		"test_end_point_host": "127.0.0.1",
+		"test_end_point_port": 7501,
+
 		///host and port for GetSimId and Tests end-point connection
 		"end_point_host": "127.0.0.1",
 		"end_point_port": 9000,
