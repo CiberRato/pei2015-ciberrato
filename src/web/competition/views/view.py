@@ -172,7 +172,6 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                                mixins.ListModelMixin, viewsets.GenericViewSet):
-
     queryset = TypeOfCompetition.objects.all()
     serializer_class = TypeOfCompetitionSerializer
 

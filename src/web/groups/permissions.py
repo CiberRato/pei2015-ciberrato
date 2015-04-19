@@ -4,6 +4,7 @@ from rest_framework import permissions
 from authentication.models import Group, GroupMember
 from competition.models import Agent
 
+
 class IsAdminOfGroup(permissions.BasePermission):
     def has_permission(self, request, view):
         """

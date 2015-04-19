@@ -1,8 +1,8 @@
+from collections import OrderedDict
+
 from django.test import TestCase
 from authentication.models import Group, GroupMember, Account
-
 from rest_framework.test import APIClient
-from collections import OrderedDict
 
 
 class GroupsModelsTestCase(TestCase):
@@ -57,7 +57,8 @@ class GroupsModelsTestCase(TestCase):
 
         # only one group is stored
         response = client.get(url)
-        self.assertEqual(response.data, OrderedDict([(u'count', 1), (u'next', None), (u'previous', None), (u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)])])]))
+        self.assertEqual(response.data, OrderedDict([(u'count', 1), (u'next', None), (u'previous', None), (
+        u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)])])]))
 
         # create a group
         data = {'name': 'TestGroup', 'max_members': 10}
@@ -69,7 +70,9 @@ class GroupsModelsTestCase(TestCase):
         # only two groups must be stored
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, OrderedDict([(u'count', 2), (u'next', None), (u'previous', None), (u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)]), OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])]))
+        self.assertEqual(response.data, OrderedDict([(u'count', 2), (u'next', None), (u'previous', None), (u'results', [
+            OrderedDict([('name', u'XPTO'), ('max_members', 10)]),
+            OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])]))
 
         # only two groups must be admin
         url = "/api/v1/groups/user_admin/gipmon/"
@@ -192,7 +195,9 @@ class GroupsModelsTestCase(TestCase):
         url = "/api/v1/groups/crud/XPTO2/"
         data = {'name': '', 'max_members': -1}
         response = client.put(path=url, data=data, format='json')
-        self.assertEqual(response.data, {'status': 'Bad request', 'message': {'max_members': [u'Ensure this value is greater than or equal to 1.'], 'name': [u'This field may not be blank.']}})
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': {
+        'max_members': [u'Ensure this value is greater than or equal to 1.'],
+        'name': [u'This field may not be blank.']}})
         self.assertEqual(response.status_code, 400)
 
         # see if has been updated
@@ -313,8 +318,8 @@ class GroupsModelsTestCase(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data,
-            {'status': 'Bad request', 'message':
-                {'max_members': [u'Ensure this value is greater than or equal to 1.']}})
+                         {'status': 'Bad request', 'message':
+                             {'max_members': [u'Ensure this value is greater than or equal to 1.']}})
 
         client.force_authenticate(user=None)
 

@@ -1,27 +1,23 @@
-import json
 import tempfile
 import tarfile
 from zipfile import ZipFile
 import mimetypes
+
 from hurry.filesize import size
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from os.path import basename, getsize, getmtime
+from os.path import getsize
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-
 from authentication.models import GroupMember
-
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent, AgentFile
 from ..simplex import AgentFileSimplex
-
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
 from rest_framework.parsers import FileUploadParser
@@ -76,6 +72,16 @@ class UploadAgent(views.APIView):
                              'message': 'The agent has already one file with that name!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # call code validations
+        """
+        try:
+            requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>", agent.agent_name))
+        except requests.ConnectionError:
+            agent.code_valid = False
+            agent.validation_result = "The endpoint to do the code validation is down!"
+            agent.save()
+        """
+
         return Response({'status': 'File uploaded!',
                          'message': 'The agent code has been uploaded!'},
                         status=status.HTTP_201_CREATED)
@@ -110,7 +116,8 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                              'message': 'Please provide the ?file_name=*file_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent, original_name=request.GET.get('file_name', ''))
+        file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent,
+            original_name=request.GET.get('file_name', ''))
         file_obj.delete()
 
         return Response({'status': 'Deleted',

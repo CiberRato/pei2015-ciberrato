@@ -1,5 +1,6 @@
 import json
 
+from competition.permissions import IsStaff, IsSuperUser
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
@@ -61,7 +62,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors
-                        }, status=status.HTTP_400_BAD_REQUEST)
+                         }, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
@@ -78,7 +79,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
             return Response({'status': 'Updated',
                              'message': 'Account updated.'
-                            }, status=status.HTTP_200_OK)
+                             }, status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors
@@ -104,7 +105,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         instance.delete()
         return Response({'status': 'Deleted',
                          'message': 'The account has been deleted.'
-                        }, status=status.HTTP_200_OK)
+                         }, status=status.HTTP_200_OK)
 
 
 class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -214,12 +215,12 @@ class LoginView(views.APIView):
             else:
                 return Response({'status': 'Unauthorized',
                                  'message': 'This account has been disabled.'
-                                }, status=status.HTTP_401_UNAUTHORIZED)
+                                 }, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             return Response({'status': 'Unauthorized',
                              'message': 'Username and/or password is wrong.'
-                            }, status=status.HTTP_401_UNAUTHORIZED)
+                             }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(views.APIView):
@@ -237,3 +238,102 @@ class LogoutView(views.APIView):
         logout(request)
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+class MyDetails(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def get(self, request):
+        """
+        See the details of the current logged user
+        B{URL:} ..api/v1/me/
+        """
+        serializer = self.serializer_class(request.user)
+        return Response(serializer.data)
+
+
+class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsStaff(),
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the user
+        B{URL:} ..api/v1/toggle_staff/<username>/
+
+        @type  username: str
+        @param username: The username
+        """
+        instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
+
+        instance.is_staff = not instance.is_staff
+        instance.save()
+
+        return Response({'status': 'Updated',
+                         'message': 'Account updated, is staff? ' + str(instance.is_staff)
+                         }, status=status.HTTP_200_OK)
+
+
+class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsSuperUser(),
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the user
+        B{URL:} ..api/v1/toggle_super_user/<username>/
+
+        @type  username: str
+        @param username: The username
+        """
+        instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
+
+        if not instance.is_superuser:
+            instance.is_superuser = True
+            instance.is_staff = True
+        else:
+            instance.is_superuser = False
+
+        instance.save()
+
+        return Response({'status': 'Updated',
+                         'message': 'Account updated, is super user? ' + str(instance.is_superuser)
+                         }, status=status.HTTP_200_OK)
+
+
+class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsSuperUser(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Login to other} user
+        B{URL:} ..api/v1/login_to/<username>/
+
+        @type  username: str
+        @param username: The username
+        """
+        account = get_object_or_404(self.queryset, username=kwargs.get('username', ''))
+        account.backend = 'django.contrib.auth.backends.ModelBackend'
+
+        logout(request)
+        login(request, account)
+
+        serialized = self.serializer_class(account)
+        return Response(serialized.data)

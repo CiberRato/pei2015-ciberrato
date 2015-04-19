@@ -1,4 +1,5 @@
 import uuid
+
 from django.core.validators import MinValueValidator, MinLengthValidator
 from ciberonline.validators import validate_word
 from django.db import models

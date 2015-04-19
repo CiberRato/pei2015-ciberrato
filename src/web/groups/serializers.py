@@ -8,6 +8,7 @@ class GroupSerializer(serializers.ModelSerializer):
     """
     This group serializer allow to CRUD the fields: name and max_members
     """
+
     class Meta:
         model = Group
 
