@@ -33,6 +33,7 @@
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
         vm.startSimulation = startSimulation;
+        vm.all = false;
 
         activate();
 
@@ -241,6 +242,23 @@
                     life: 2500,
                     theme: 'success'
                 });
+
+                if(vm.all === true){
+                    var selectedFile2 = document.getElementById('GridUpload').files[0];
+                    var selectedFile3 = document.getElementById('LabUpload').files[0];
+
+                    if(selectedFile2 != undefined){
+                        uploadGrid();
+                        console.log('fizgrd');
+                    }else if(selectedFile3 != undefined){
+                        uploadLab();
+                    }else{
+                        $route.reload();
+                        $('.modal-backdrop').remove();
+                        vm.all = false;
+                    }
+
+                }
             }
 
             function uploadErrorFn(data){
@@ -281,6 +299,19 @@
                     life: 2500,
                     theme: 'success'
                 });
+
+                if(vm.all === true){
+                    var selectedFile3 = document.getElementById('LabUpload').files[0];
+                    if(selectedFile3 != undefined){
+                        uploadLab();
+                        console.log('fizlab');
+                    }else{
+                        $route.reload();
+                        $('.modal-backdrop').remove();
+                        vm.all = false;
+                    }
+
+                }
             }
 
             function uploadErrorFn(data){
@@ -304,6 +335,12 @@
                     life: 2500,
                     theme: 'success'
                 });
+                if(vm.all === true){
+                    $route.reload();
+                    $('.modal-backdrop').remove();
+                    vm.all = false;
+                }
+
             }
 
             function uploadErrorFn(data){
@@ -358,27 +395,16 @@
         }
 
         function uploadAll(){
+            vm.all = true;
+            console.log(vm.all);
             var selectedFile1 = document.getElementById('ParamListUpload').files[0];
-            console.log(selectedFile1);
-            var selectedFile2 = document.getElementById('GridUpload').files[0];
-            console.log(selectedFile2);
-            var selectedFile3 = document.getElementById('LabUpload').files[0];
-            console.log(selectedFile3);
+
             if(selectedFile1 != undefined){
                 uploadParamList();
                 console.log('fizparam');
-            }
-            if(selectedFile2 != undefined){
+            }else{
                 uploadGrid();
-                console.log('fizgrd');
             }
-            if(selectedFile3 != undefined){
-                uploadLab();
-                console.log('fizlab');
-            }
-
-            $route.reload();
-            $('.modal-backdrop').remove();
         }
 
         function reload(){

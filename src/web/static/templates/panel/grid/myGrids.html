@@ -29,7 +29,8 @@
 
                                 </td>
                                 <td><a href="panel/{{value.group_name}}/teamMembers">{{value.group_name}}</a></td>
-                                <td><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.team=value.group_name; vm.getCompetition(value.competition.name); vm.getAgents()" href="#addAgents{{key}}">Manage</a>
+                                <td ng-if = "value.competition.state_of_competition == 'Past'">Competition Finished</td>
+                                <td ng-if = "value.competition.state_of_competition != 'Past'"><a  data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.team=value.group_name; vm.getCompetition(value.competition.name); vm.getAgents()" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>

@@ -88,6 +88,7 @@
             for (var i = 0; i < data.data.length; ++i) {
                 vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position, type: 'Grid'});
             }
+
         }
 
         function getAssociatedErrorFn(data){
