@@ -136,6 +136,21 @@ class AuthenticationTestCase(TestCase):
         a = Account.objects.get(username="test")
         self.assertEqual(a.is_superuser, False)
 
+        # login to different user
+        url = "/api/v1/login_to/test1/"
+        response = client.get(path=url)
+        rsp = dict(response.data)
+        del rsp['updated_at']
+        del rsp['created_at']
+        self.assertEqual(rsp,
+                         {'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
+                          'first_name': u'unit', 'last_name': u'test'})
+
+        # see if the user is currently logged in
+        url = "/api/v1/me/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+
         # create a group
         url = "/api/v1/groups/crud/"
         data = {'name': 'TestGroup', 'max_members': 10}
