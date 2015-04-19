@@ -64,6 +64,10 @@ class UploadAgent(views.APIView):
                                  settings.ALLOWED_UPLOAD_SIZE)},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        if len(AgentFile.objects.filter(agent=agent, original_name=file_obj.name)) == 1:
+            file_agent = AgentFile.objects.get(agent=agent, original_name=file_obj.name)
+            file_agent.delete()
+
         try:
             with transaction.atomic():
                 AgentFile.objects.create(agent=agent, file=file_obj, original_name=file_obj.name)
