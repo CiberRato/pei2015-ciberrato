@@ -23,7 +23,7 @@ class Test:
 				break
 		if DOCKERIP == None:
 			print "Please check your docker interface."
-			exit(-1)
+			sys.exit(-1)
 
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
