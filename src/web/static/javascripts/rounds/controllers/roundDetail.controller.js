@@ -100,6 +100,7 @@
                 $location.path('/panel/');
             }
 
+
         }
 
         function moved(group_name ,identifier){
