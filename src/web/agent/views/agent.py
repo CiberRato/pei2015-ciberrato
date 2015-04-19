@@ -47,9 +47,11 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
             if serializer.validated_data['is_local']:
                 Agent.objects.create(agent_name=agent_name, user=user, group=group, code_valid=True,
+                                     language=serializer.validated_data['language'],
                                      is_local=serializer.validated_data['is_local'])
             else:
                 Agent.objects.create(agent_name=agent_name, user=user, group=group,
+                                     language=serializer.validated_data['language'], code_valid=True,
                                      is_local=serializer.validated_data['is_local'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
