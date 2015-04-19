@@ -25,7 +25,7 @@ class GetSimId(object):
 	def index(self, **kwargs):
 		sim_id = kwargs["simulation_identifier"]
 
-		self.starter_tcp.send(str(sim_id))
+		self.starter_tcp.send("sim_id="+str(sim_id))
 		return "Received sim id:" + str(sim_id)
 
 class TestAgent():
@@ -46,7 +46,7 @@ class TestAgent():
 
 		agent_name = kwargs["agent_name"]
 
-		self.tests_tcp.send(str(agent_name))
+		self.tests_tcp.send("agent_name="+str(agent_name))
 		return "Received test request for agent " + str(agent_name)
 
 class EndPoint():
