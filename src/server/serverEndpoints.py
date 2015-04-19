@@ -1,11 +1,5 @@
-import cherrypy
-import socket
-import re
-import json
-import subprocess
-import netifaces
-import time
-import requests
+import cherrypy, socket, re, json, subprocess, netifaces, time, requests
+from multiprocessing import Process
 
 class Root(object):
 	def __init__(self):
@@ -29,54 +23,31 @@ class GetSimId(object):
 
 	@cherrypy.expose
 	def index(self, **kwargs):
-
 		sim_id = kwargs["simulation_identifier"]
 
-
 		self.starter_tcp.send(str(sim_id))
-
 		return "Received sim id:" + str(sim_id)
 
 class TestAgent():
-	@cherrypy.expose
-	def index(self, **kwargs):
-		DOCKERIP = None
-		for interface in netifaces.interfaces():
-			if interface.startswith('docker'):
-				DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
-				break
-		if DOCKERIP == None:
-			print "Please check your docker interface."
-			exit(-1)
-
+	def __init__(self):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
+		self.HOST = settings["settings"]["test_end_point_host"]
+		self.PORT = settings["settings"]["test_end_point_port"]
 
-		GET_AGENT_URL = settings["urls"]["get_agent"]
+		self.tests_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.tests_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.tests_tcp.connect((self.HOST, self.PORT))
 
+	@cherrypy.expose
+	def index(self, **kwargs):
 		if "agent_name" not in kwargs:
 			raise cherrypy.HTTPError(400, "Parameters agent_name were expected.")
 
 		agent_name = kwargs["agent_name"]
 
-		AGENT_ENDPOINT = "http://%s:8000" + GET_AGENT_URL + "%s/" % (DOCKERIP, agent_name,)
-
-		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
-									  "bash -c 'curl -s " \
-									  "%s" \
-									  " | tar -xz;" \
-									  " python tests.py'" %  \
-									  (AGENT_ENDPOINT, ),
-									  shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		(stdout, stderr) = docker.communicate()
-		if docker.returncode != 0:
-			message = stderr
-		else:
-			message = "Passed tests with success"
-
-		url = "http://localhost:8000/api/v1/agents/code_validation/"+agent_name+"/"
-		data = {'code_valid': docker.returncode == 0, 'validation_result': message}
-		requests.put(url, data=data)
+		self.tests_tcp.send(str(agent_name))
+		return "Received test request for agent " + str(agent_name)
 
 class EndPoint():
 	def start(self):
