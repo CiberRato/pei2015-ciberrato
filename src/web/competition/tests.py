@@ -1,9 +1,9 @@
+from collections import OrderedDict
+
 from django.test import TestCase
 from competition.models import *
 from authentication.models import GroupMember
-
 from rest_framework.test import APIClient
-from collections import OrderedDict
 
 
 class AuthenticationTestCase(TestCase):
@@ -261,7 +261,8 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'), ('competitions', []),
+            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'),
+             ('competitions', []),
              ('user', OrderedDict(
                  [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                   ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
@@ -277,7 +278,8 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'), ('competitions', []),
+            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'),
+             ('competitions', []),
              ('user', OrderedDict(
                  [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                   ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
@@ -293,10 +295,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
-                               'competitions': [], 'user': OrderedDict(
-            [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-             ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
+        self.assertEqual(rsp,
+                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
+                          'competitions': [], 'user': OrderedDict(
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'),
+                              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
 
         # upload agent code
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
@@ -351,10 +355,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
-                               'competitions': [], 'user': OrderedDict(
-            [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-             ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
+        self.assertEqual(rsp,
+                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
+                          'competitions': [], 'user': OrderedDict(
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'),
+                              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
 
         url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
@@ -549,10 +555,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
-                               'competitions': [], 'user': OrderedDict(
-            [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-             ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
+        self.assertEqual(rsp,
+                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
+                          'competitions': [], 'user': OrderedDict(
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'),
+                              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
 
         # start simulation
         url = "/api/v1/simulations/start/"
@@ -1213,7 +1221,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE1', 'group_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([(u'agent_name', u'KAMIKAZE1'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE1'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
         self.assertEqual(a1.code_valid, True)
 
@@ -1222,7 +1231,8 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE2', 'group_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([(u'agent_name', u'KAMIKAZE2'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE2'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
 
 
         # create a agent for group
@@ -1230,28 +1240,32 @@ class AuthenticationTestCase(TestCase):
         data = {'agent_name': 'KAMIKAZE3', 'group_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([(u'agent_name', u'KAMIKAZE3'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE3'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
 
         # create a agent for group
         url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE4', 'group_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([(u'agent_name', u'KAMIKAZE4'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE4'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
 
         # create a agent for group
         url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE5', 'group_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([(u'agent_name', u'KAMIKAZE5'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE5'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
 
         # create a agent for group
         url = "/api/v1/agents/agent/"
         data = {'agent_name': 'KAMIKAZE6', 'group_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([(u'agent_name', u'KAMIKAZE6'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE6'), (u'is_local', True), (u'language', 'Python'), (u'group_name', u'XPTO3')]))
 
         # only admin
         url = "/api/v1/competitions/toggle_group_inscription/"

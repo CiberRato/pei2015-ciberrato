@@ -6,11 +6,11 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from authentication.models import Group, GroupMember
+from authentication.models import Group
 
-from .simplex import GridPositionsSimplex, AgentGridSimplex, TeamScoreSimplex
-from ..models import Competition, TeamScore, GroupEnrolled, AgentGrid, Agent, Simulation, Round
-from ..serializers import GridPositionsSerializer, AgentGridSerializer, TeamScoreOutSerializer, TeamScoreInSerializer
+from .simplex import TeamScoreSimplex
+from ..models import Competition, TeamScore, GroupEnrolled, Simulation, Round
+from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
 from ..permissions import IsStaff
 
 

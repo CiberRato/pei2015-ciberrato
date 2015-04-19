@@ -1,8 +1,9 @@
+import datetime
+
 from rest_framework import serializers
 from authentication.serializers import AccountSerializer
 from competition.serializers import RoundSerializer, CompetitionSerializer
 from .models import Agent
-import datetime
 
 
 class AgentSerializer(serializers.ModelSerializer):

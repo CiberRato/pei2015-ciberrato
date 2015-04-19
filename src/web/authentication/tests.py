@@ -1,8 +1,8 @@
+from collections import OrderedDict
+
 from django.test import TestCase
 from authentication.models import Account
-
 from rest_framework.test import APIClient
-from collections import OrderedDict
 
 
 class AuthenticationTestCase(TestCase):
@@ -72,8 +72,8 @@ class AuthenticationTestCase(TestCase):
         data = {'password': '1234', 'confirm_password': '1234'}
         response = client.put(url, data)
         self.assertEqual(response.data, {'status': 'Bad Request', 'message': {
-        'confirm_password': [u'Ensure this value has at least 8 characters (it has 4).'],
-        'password': [u'Ensure this value has at least 8 characters (it has 4).']}})
+            'confirm_password': [u'Ensure this value has at least 8 characters (it has 4).'],
+            'password': [u'Ensure this value has at least 8 characters (it has 4).']}})
         self.assertEqual(response.status_code, 400)
 
         # change correctly the password
@@ -121,7 +121,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/toggle_staff/test/"
         response = client.put(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"status":"Updated","message":"Account updated, is staff? False"})
+        self.assertEqual(response.data, {"status": "Updated", "message": "Account updated, is staff? False"})
         a = Account.objects.get(username="test")
         self.assertEqual(a.is_staff, False)
 

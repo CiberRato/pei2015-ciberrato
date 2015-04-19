@@ -1,11 +1,7 @@
-import json
-
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
-
-from django.core.files.storage import default_storage
 
 from ..models import Agent
 from ..serializers import AgentSerializer, AgentCodeValidationSerializer

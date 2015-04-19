@@ -381,7 +381,8 @@ class StartSimulation(views.APIView):
 
                         # log simulation agent
                         if log_sim_agent_not_exists:
-                            LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
+                            LogSimulationAgent.objects.create(competition_agent=competition_agent,
+                                                              simulation=simulation,
                                                               pos=pos)
 
                         pos += 1

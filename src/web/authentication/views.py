@@ -1,6 +1,6 @@
 import json
-from competition.permissions import IsStaff, IsSuperUser
 
+from competition.permissions import IsStaff, IsSuperUser
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
@@ -62,7 +62,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors
-                        }, status=status.HTTP_400_BAD_REQUEST)
+                         }, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
@@ -79,7 +79,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
             return Response({'status': 'Updated',
                              'message': 'Account updated.'
-                            }, status=status.HTTP_200_OK)
+                             }, status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors
@@ -105,7 +105,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         instance.delete()
         return Response({'status': 'Deleted',
                          'message': 'The account has been deleted.'
-                        }, status=status.HTTP_200_OK)
+                         }, status=status.HTTP_200_OK)
 
 
 class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -215,12 +215,12 @@ class LoginView(views.APIView):
             else:
                 return Response({'status': 'Unauthorized',
                                  'message': 'This account has been disabled.'
-                                }, status=status.HTTP_401_UNAUTHORIZED)
+                                 }, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             return Response({'status': 'Unauthorized',
                              'message': 'Username and/or password is wrong.'
-                            }, status=status.HTTP_401_UNAUTHORIZED)
+                             }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(views.APIView):
