@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from django.core.files.storage import default_storage
 
 import requests
 
