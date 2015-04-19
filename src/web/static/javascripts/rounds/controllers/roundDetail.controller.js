@@ -34,7 +34,6 @@
         vm.disassociateGrid = disassociateGrid;
         vm.startSimulation = startSimulation;
         vm.all = false;
-
         activate();
 
         function activate() {
@@ -42,10 +41,31 @@
             Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
             Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
+
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
                 for (var i= 0; i<vm.simulations.length; i++){
+                    getSimulationGrids(vm.simulations[i], i);
+                }
+            }
 
+            function getSimulationGrids(simulation, i){
+                Round.getSimulationGrids(simulation.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+
+                function getSimulationGridsSuccessFn(data){
+                    console.log(data.data);
+                    vm.models.lists.Simulation = [];
+                    for (var k = 0; k < data.data.length; ++k) {
+                        vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                    }
+                    console.log(vm.models.lists.Simulation);
+                    vm.simulations[i].gridsTotal= vm.models.lists.Simulation;
+                    console.log(vm.simulations[i].gridsTotal.length);
+                }
+
+                function getSimulationGridsErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
                 }
             }
 
@@ -128,9 +148,6 @@
             }
             return false;
         }
-
-
-
 
         function getGridsSuccessFn(data) {
             console.log(data.data);
@@ -452,6 +469,14 @@
                     theme: 'btn-danger'
                 });
                 $route.reload();
+            }
+
+        }
+
+        function saveScores(){
+            for(var i = 0; i<vm.models.lists.Simulation; i++){
+                var inputText = document.getElementById("teamsTrial"+vm.models.lists.Simulation[i].label).value;
+
             }
 
         }
