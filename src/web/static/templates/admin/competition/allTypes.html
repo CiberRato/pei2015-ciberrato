@@ -28,16 +28,16 @@
                                 <td>{{value.number_teams_for_trial}}</td>
                                 <td>{{value.number_agents_by_grid}}</td>
                                 <td><a data-toggle="modal" href="#confirmType{{key}}" class="btn btn-primary btn-flat">X</a>
-                                <div  class="modal fade hide"  id="confirmType{{key}}">
-                                    <div class="modal-body">
-                                        <button type="button" class="close" data-dismiss="modal">×</button>
-                                        <p align="center"><strong>All Competitions with this type of competition will be removed!</strong></p>
+                                    <div  class="modal fade hide"  id="confirmType{{key}}">
+                                        <div class="modal-body">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <p align="center"><strong>All Competitions with this type of competition will be removed!</strong></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a ng-click="vm.deleteTypeOfCompetition(value.name)"  class="btn btn-alt btn-danger" data-dismiss="modal">Delete</a>
+                                        </div>
                                     </div>
-                                    <div class="modal-footer">
-                                        <a ng-click="vm.deleteTypeOfCompetition(value.name)"  class="btn btn-alt btn-danger" data-dismiss="modal">Delete</a>
-                                    </div>
-                                </div>
-                                </div>
+                                </td>
 
                             </tr>
                             </tbody>
