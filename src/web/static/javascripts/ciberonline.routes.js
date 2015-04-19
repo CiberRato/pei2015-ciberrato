@@ -20,7 +20,7 @@
             title: 'Login'
         }).when('/panel/', {
             templateUrl: '/static/templates/panel/index.html',
-            title: 'Panel'
+            title: 'Welcome!'
         }).when('/panel/:username/changePassword',{
             controller: 'ProfileController',
             controllerAs: 'vm',
@@ -138,7 +138,7 @@
             title: 'All Agents'
         }).when('/admin/',{
             templateUrl: '/static/templates/admin/index.html',
-            title: 'Administration'
+            title: 'Welcome!'
         }).when('/admin/createCompetition',{
             controller:'CreateCompetitionController',
             controllerAs: 'vm',
