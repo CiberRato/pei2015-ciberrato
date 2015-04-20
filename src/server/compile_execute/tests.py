@@ -39,10 +39,15 @@ class Validator:
 	def validate(self):
 		if not os.path.exists('execute.sh'):
 			error(ValidatorMessage.EXEC_MISSING)
+		else:
+			sub = subprocess.Popen("chmod +x execute.sh", 
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			sub.wait()
 		# I don't want stdout log from compilation, just stderr.
 		# Bash -e -o pipefail will check for return codes in every single line.
 		if os.path.exists('prepare.sh'):
-			comp = subprocess.Popen("bash -e -o pipefail prepare.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			comp = subprocess.Popen("chmod +x prepare.sh; bash -e -o pipefail prepare.sh", 
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			(stdout, stderr) = comp.communicate()
 			if comp.returncode != 0:
 				error(ValidatorMessage.FAILED_PREPARE, stderr)
