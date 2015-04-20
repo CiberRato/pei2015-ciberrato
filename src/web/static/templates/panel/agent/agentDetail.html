@@ -10,13 +10,13 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
                         <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}})</h2>
-                        <div class="alert alert-error">
-                            <strong>Code not valid!</strong> Nice red alert when something goes wrong.
+                        <div ng-if="vm.agent.code_valid == false" class="alert alert-error">
+                            <strong>Code not valid!</strong> {{vm.agent.validation_result}}
                         </div>
-                        <div class="alert alert-success">
-                            <strong>Code valid!</strong> If you play nice, you will see this one.
+                        <div ng-if="vm.agent.code_valid == true" class="alert alert-success">
+                            <strong>Code valid!</strong> {{vm.agent.validation_result}}
                         </div>
-                        <div class="alert alert-inverse">
+                        <div ng-if="vm.agent.code_valid == false && vm.agent.code_valid.length == 0 && vm.files.length != 0" class="alert alert-inverse">
                             <strong>Please run a code validation!</strong>
                         </div>
                         <p ng-if="vm.files.length != 0 && vm.agent.is_local == false">Here is shown in table the list of all uploaded files of this agent.</p>

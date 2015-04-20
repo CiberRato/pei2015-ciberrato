@@ -260,12 +260,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'),
-             ('competitions', []),
-             ('user', OrderedDict(
-                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-                  ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', True), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
 
         # get agents by user
         url = "/api/v1/agents/agents_by_user/gipmon/"
@@ -277,12 +272,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('language', u'Python'),
-             ('competitions', []),
-             ('user', OrderedDict(
-                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-                  ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', True), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
 
         # get the agent information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/"
@@ -295,12 +285,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
-                          'competitions': [], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'),
-                              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
+        self.assertEqual(rsp,{'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
         # upload agent code
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
@@ -355,12 +340,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
-                          'competitions': [], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'),
-                              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
+        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
         url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
@@ -555,12 +535,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': u'Python', 'group_name': u'XPTO3',
-                          'competitions': [], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'),
-                              ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'rounds': []})
+        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
         # start simulation
         url = "/api/v1/simulations/start/"

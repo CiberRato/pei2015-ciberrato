@@ -17,6 +17,8 @@ class AgentSimplex:
             self.rounds += [RoundSimplex(r)]
 
         self.group_name = ag.group.name
+        self.validation_result = ag.validation_result
+        self.code_valid = ag.code_valid
         self.created_at = ag.created_at
         self.updated_at = ag.updated_at
 
