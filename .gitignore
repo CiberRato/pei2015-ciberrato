@@ -109,5 +109,6 @@ src/server/cibertools-v2.2/robsample/robsample
 src/server/cibertools-v2.2/simulator/Makefile
 src/server/cibertools-v2.2/simulator/simulator
 src/server/tmp/
-sample_code/libRobSock/Makefile
-sample_code/libRobSock/moc_croblink.cpp
+src/server/compile_execute/cpp/sample_code/libRobSock/Makefile
+src/server/compile_execute/cpp/sample_code/libRobSock/moc_croblink.cpp
+src/server/compile_execute/cpp/sample_code/robsample
