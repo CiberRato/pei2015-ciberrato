@@ -153,8 +153,8 @@ class Starter:
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
-										  " | tar -xz;" \
-										  " python myrob.py -host %s -pos %s'" %  \
+										  " | tar -xz;" 
+										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s robotname'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
