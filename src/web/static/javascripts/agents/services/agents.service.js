@@ -20,6 +20,7 @@
             associate: associate,
             deleteAgent: deleteAgent,
             getLanguages: getLanguages,
+            validateAgent: validateAgent
         };
 
         return Agent;
@@ -52,6 +53,12 @@
             return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
+            });
+        }
+
+        function validateAgent(agentName){
+            return $http.post("/api/v1/agents/validate_code/", {
+                agent_name: agentName
             });
         }
 

@@ -12,6 +12,7 @@
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
+        vm.validateCode = validateCode;
         var agentName = $routeParams.name;
 
         activate();
@@ -41,6 +42,26 @@
                 $location.url('/panel/');
             }
 
+        }
+
+        function validateCode(){
+            Agent.validateAgent(agentName).then(validateSuccessFn, validateErrorFn);
+
+                function validateSuccessFn() {
+                    $.jGrowl("The code has been submitted for validation!", {
+                        life: 2500,
+                        theme: 'success'
+                    });
+                    $route.reload();
+                }
+
+                function validateErrorFn(data) {
+                    console.log(data.data);
+                    $.jGrowl(data.data.message, {
+                        life: 2500,
+                        theme: 'btn-danger'
+                    });
+                }
         }
 
         function uploadFile() {

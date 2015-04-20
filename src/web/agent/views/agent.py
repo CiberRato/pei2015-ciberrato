@@ -2,12 +2,15 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
+from django.conf import settings
+
+import requests
 
 from ..models import Agent
-from ..serializers import AgentSerializer, AgentCodeValidationSerializer
+from ..serializers import AgentSerializer, AgentCodeValidationSerializer, SubmitCodeAgentSerializer
 from ..simplex import AgentSimplex
 
-from authentication.models import Group, Account
+from authentication.models import Group, Account, GroupMember
 from groups.permissions import IsAdminOfGroup
 from competition.serializers import CompetitionSerializer
 
@@ -147,6 +150,48 @@ class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericView
         serializer = self.serializer_class([ac.competition for ac in agent.competitionagent_set], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = SubmitCodeAgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{POST} validate code
+        B{URL:} ../api/v1/agents/validate_code/
+
+        @type  agent_name: str
+        @param agent_name: The agent name
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+
+            if len(GroupMember.objects.filter(group=agent.group, account=request.user)) == 0:
+                return Response({'status': 'Permission denied',
+                                 'message': 'You must be part of the group.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            # call code validations
+            try:
+                requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>", agent.agent_name))
+            except requests.ConnectionError:
+                agent.code_valid = False
+                agent.validation_result = "The endpoint to do the code validation is down!"
+                agent.save()
+
+            return Response({'status': 'OK',
+                             'message': 'The code has been submitted for validation!'},
+                            status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
