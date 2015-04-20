@@ -66,7 +66,7 @@ class Test:
 									  "bash -c 'curl -s " \
 									  "%s" \
 									  " | tar -xz;" \
-									  " python tests.py'" %  \
+									  " chmod +x execute.sh prepare.sh; python tests.py'" %  \
 									  (AGENT_ENDPOINT, ),
 									  shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		(stdout, stderr) = docker.communicate()

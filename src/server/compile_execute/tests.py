@@ -16,6 +16,7 @@ class ValidatorMessage(Enum):
 	REGISTER_MESSAGE 	= (7, "Message registering agent sent to the simulator is not valid.")
 	ANSWER_ACTIONS 		= (8, "Messages sent to the simulator with the actions failed to receive.")
 	VALID_ACTIONS 		= (9, "Messages received after the Measures is not an valid actions message. Please check it.")
+	NOT_ACTIONS 		= (10, "Messages received after the Measures is not an Actions. Please check it.")
 
 	def __init__(self, code, message):
 		self._code = code
@@ -69,7 +70,7 @@ class Validator:
 		try:
 			data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
 		except socket.timeout:
-			error("Simulator will not be able to receive answer, please check host parameter, agent port and execute.sh.")
+			error(ValidatorMessage.TIMEOUT)
 
 		agent.kill()
 
@@ -79,10 +80,9 @@ class Validator:
 			nameRobot = robotParam[0].attributes['Name'].value
 
 			if nameRobot != name:
-				error("execute.sh doesn't allow to change agent name.\n"
-					"Please check that the third parameter on execute.sh should be able to change agent name.")
+				error(ValidatorMessage.ROBOTNAME)
 		except:
-			error("Message registering agent sent to the simulator is not valid.")
+			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validatePosition(self, pos):
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 "+pos+" robot", 
@@ -91,7 +91,7 @@ class Validator:
 		try:
 			data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
 		except socket.timeout:
-			error("Simulator will not be able to receive answer, please check host parameter, agent port and execute.sh.")
+			error(ValidatorMessage.TIMEOUT)
 
 		agent.kill()
 
@@ -101,10 +101,9 @@ class Validator:
 			ID = robotParam[0].attributes['Id'].value
 
 			if ID != pos:
-				error("execute.sh doesn't allow to change robot position.\n"
-					"Please check that the second parameter on execute.sh should be able to change agent position.")
+				error(ValidatorMessage.POSITION)
 		except:
-			error("Message registering agent sent to the simulator is not valid.")
+			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validateHost(self, hostVal):
 		hostSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
@@ -117,7 +116,7 @@ class Validator:
 		try:
 			data, (host, port) = hostSocket.recvfrom(1024) # infos de quem envia
 		except socket.timeout:
-			error("Simulator will not be able to receive answer, please check host parameter, agent port and execute.sh.")
+			error(ValidatorMessage.TIMEOUT)
 
 		hostSocket.close()
 		agent.kill()
@@ -127,10 +126,10 @@ class Validator:
 			robotParam = parametersXML.getElementsByTagName('Robot')
 			robotid = robotParam[0].attributes['Id']
 			if int(robotid.value) < 0:
-				error("Message registering agent sent has an invalid robot id.")
+				error(ValidatorMessage.ROBOTID)
 			robotName = robotParam[0].attributes['Name']
 		except:
-			error("Message registering agent sent to the simulator is not valid.")
+			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validateMessagesExchanged(self):
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 robot", 
@@ -138,7 +137,7 @@ class Validator:
 		try:
 			data, (host_robot, port_robot) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
 		except socket.timeout:
-			error("Simulator will not be able to receive answer, please check host parameter, agent port and execute.sh.")
+			error(ValidatorMessage.TIMEOUT)
 
 		parameters = '<Reply Status="Ok">\
 			<Parameters SimTime="1800" CycleTime="50"\
@@ -175,13 +174,13 @@ class Validator:
 		try:
 	 		data, (host, port) = self.simulator_dummy.recvfrom(1024)
 		except socket.timeout:
-			error("Messages sent to the simulator with the actions failed to receive.")
+			error(ValidatorMessage.ANSWER_ACTIONS)
 
 		try:
 			parametersActions = minidom.parseString(data.replace("\x00", ""))
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
 		except:
-			error("Messages received after the Measures is not an valid actions message. Please check it.")
+			error(ValidatorMessage.VALID_ACTIONS)
 
 		# More measures
 		readSensorsParamCollisionOn = '<Measures Time="1234">\
@@ -196,13 +195,13 @@ class Validator:
 		try:
 			data, (host, port) = self.simulator_dummy.recvfrom(1024)
 		except socket.timeout:
-			error("Messages sent to the simulator with the actions failed to receive.")	
+			error(ValidatorMessage.ANSWER_ACTIONS)	
 
 		try:
 			parametersActions = minidom.parseString(data.replace("\x00", ""))
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
 		except:
-			error("Messages received after the Measures is not an Actions. Please check it.")
+			error(ValidatorMessage.NOT_ACTIONS)
 
 		agent.kill()
 
