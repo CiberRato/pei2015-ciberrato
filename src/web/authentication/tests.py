@@ -1,8 +1,8 @@
+from collections import OrderedDict
+
 from django.test import TestCase
 from authentication.models import Account
-
 from rest_framework.test import APIClient
-from collections import OrderedDict
 
 
 class AuthenticationTestCase(TestCase):
@@ -55,11 +55,36 @@ class AuthenticationTestCase(TestCase):
 
         url = "/api/v1/accounts/"
         data = {'email': 'test1@test.com', 'username': 'test1', 'password': 'rei12345678',
-                'confirm_password':'rei12345678', 'first_name': 'unit', 'last_name': 'test',
+                'confirm_password': 'rei12345678', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 201)
 
+        # change password with other user
+        url = "/api/v1/change_password/test1/"
+        data = {'password': '1234', 'confirm_password': '1234'}
+        response = client.put(url, data)
+        self.assertEqual(response.data, {'status': 'Forbidden!', 'message': 'Ups, what?'})
+        self.assertEqual(response.status_code, 403)
+
+        # change password with the user
+        url = "/api/v1/change_password/test/"
+        data = {'password': '1234', 'confirm_password': '1234'}
+        response = client.put(url, data)
+        self.assertEqual(response.data, {'status': 'Bad Request', 'message': {
+            'confirm_password': [u'Ensure this value has at least 8 characters (it has 4).'],
+            'password': [u'Ensure this value has at least 8 characters (it has 4).']}})
+        self.assertEqual(response.status_code, 400)
+
+        # change correctly the password
+        url = "/api/v1/change_password/test/"
+        data = {'password': '123456789', 'confirm_password': '123456789'}
+        response = client.put(url, data)
+        self.assertEqual(response.data, {'status': 'Updated', 'message': 'Account updated.'})
+        self.assertEqual(response.status_code, 200)
+
+        # get informations
+        url = "/api/v1/accounts/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -88,6 +113,43 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         self.assertEqual(rsp, {'username': u'test', 'first_name': u'unit', 'last_name': u'test',
                                'teaching_institution': u'testUA', 'email': u'test2@test.com'})
+
+        # update a user to staff member
+        user.is_staff = True
+        user.save()
+
+        url = "/api/v1/toggle_staff/test/"
+        response = client.put(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Updated", "message": "Account updated, is staff? False"})
+        a = Account.objects.get(username="test")
+        self.assertEqual(a.is_staff, False)
+
+        # update a user to super user
+        user.is_superuser = True
+        user.save()
+
+        url = "/api/v1/toggle_super_user/test/"
+        response = client.put(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Updated", "message": "Account updated, is super user? False"})
+        a = Account.objects.get(username="test")
+        self.assertEqual(a.is_superuser, False)
+
+        # login to different user
+        url = "/api/v1/login_to/test1/"
+        response = client.get(path=url)
+        rsp = dict(response.data)
+        del rsp['updated_at']
+        del rsp['created_at']
+        self.assertEqual(rsp,
+                         {'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
+                          'first_name': u'unit', 'last_name': u'test'})
+
+        # see if the user is currently logged in
+        url = "/api/v1/me/"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
 
         # create a group
         url = "/api/v1/groups/crud/"

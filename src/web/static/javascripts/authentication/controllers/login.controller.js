@@ -28,7 +28,7 @@
         function loginError(data){
             if(data){
                 vm.error = data.data.error;
-                $.jGrowl("Username and/or password is wrong.", {
+                $.jGrowl("Username and/or password is wrong. ", {
                     life: 2500,
                     theme: 'btn-danger'
                 });

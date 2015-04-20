@@ -47,7 +47,8 @@ class AccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     email = models.EmailField(unique=True, blank=False, validators=[EmailValidator])
-    username = models.CharField(max_length=40, unique=True, blank=False, validators=[validate_word, MinLengthValidator(2)])
+    username = models.CharField(max_length=40, unique=True, blank=False,
+                                validators=[validate_word, MinLengthValidator(2)])
 
     first_name = models.CharField(max_length=40, validators=[validate_word, MinLengthValidator(2)])
     last_name = models.CharField(max_length=40, validators=[validate_word, MinLengthValidator(2)])
@@ -100,6 +101,9 @@ class GroupMember(models.Model):
     account = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
     is_admin = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('account', 'group',)
 
     def __unicode__(self):
         return "%s is in group %s (as %s)" % (self.account, self.group, self.is_admin)

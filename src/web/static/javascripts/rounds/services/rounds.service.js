@@ -85,7 +85,6 @@
         }
 
         function associateGrid(grid_identifier, simulation_identifier, pos){
-            console.log(grid_identifier, simulation_identifier, pos);
             return $http.post("/api/v1/competitions/simulation_grid/", {
                 grid_identifier: grid_identifier,
                 simulation_identifier: simulation_identifier,

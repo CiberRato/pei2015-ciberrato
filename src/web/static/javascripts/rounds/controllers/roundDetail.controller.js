@@ -16,7 +16,6 @@
             lists: {"Available": [], "Simulation": []}
         };
 
-        console.log(vm.models);
 
         vm.createSimulation = createSimulation;
         vm.moved = moved;
@@ -32,6 +31,8 @@
         vm.getSimulationGrids = getSimulationGrids;
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
+        vm.startSimulation = startSimulation;
+        vm.all = false;
         activate();
 
         function activate() {
@@ -39,10 +40,28 @@
             Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
             Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
+
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
                 for (var i= 0; i<vm.simulations.length; i++){
+                    getSimulationGridsFirst(vm.simulations[i], i);
+                }
+            }
 
+            function getSimulationGridsFirst(simulation, i){
+                Round.getSimulationGrids(simulation.identifier).then(getSimulationGridsFirstSuccessFn, getSimulationGridsFirstErrorFn);
+
+                function getSimulationGridsFirstSuccessFn(data){
+                    vm.models.lists.Simulation = [];
+                    for (var k = 0; k < data.data.length; ++k) {
+                        vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                    }
+                    vm.simulations[i].gridsTotal= vm.models.lists.Simulation;
+                }
+
+                function getSimulationGridsFirstErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
                 }
             }
 
@@ -95,10 +114,10 @@
                 $location.path('/panel/');
             }
 
+
         }
 
         function moved(group_name ,identifier){
-            console.log(isInSimulation(group_name, identifier));
             if(isInSimulation(group_name)) {
                 associateGrid(identifier);
             }
@@ -118,16 +137,11 @@
                 if (vm.models.lists.Simulation[i].label===group_name){
                     return true;
                 }
-                console.log(vm.models.lists.Simulation[i].label)
             }
             return false;
         }
 
-
-
-
         function getGridsSuccessFn(data) {
-            console.log(data.data);
             vm.models.lists.Available=[];
             for (var i = 0; i < data.data.length; ++i) {
                 if(isInSimulationNew(data.data[i].group_name) === false){
@@ -139,8 +153,7 @@
 
                 }
             }
-            console.log(vm.models.lists.Available);
-            console.log(vm.models.lists.Simulation);
+
         }
 
         function getGridsErrorFn(data) {
@@ -162,7 +175,7 @@
 
             function createSimulationErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Simulation can't be created.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -171,13 +184,12 @@
         }
 
         function associateGrid(grid_identifier) {
-            console.log(vm.identifier);
 
             Round.getSimulationGrids(vm.identifier).then(getSimulationAgentsSuccessFn, getSimulationAgentsErrorFn);
 
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
-                console.log(pos);
+
 
                 Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
@@ -192,7 +204,7 @@
 
                 function associateAgentErrorFn(data) {
                     console.error(data.data);
-                    $.jGrowl("Grid can't be associated.", {
+                    $.jGrowl(data.data.message, {
                         life: 2500,
                         theme: 'btn-danger'
                     });
@@ -208,18 +220,56 @@
         function disassociateGrid(pos) {
             Round.disassociateAgent(vm.identifier, pos).then(disassociateAgentSuccessFn, disassociateAgentErrorFn);
 
+
             function disassociateAgentSuccessFn() {
 
-                $.jGrowl("Agent has been disassociated successfully.", {
+                $.jGrowl("Grid has been disassociated successfully.", {
                     life: 2500,
                     theme: 'success'
                 });
-                getSimulationGrids();
+
+                Round.getSimulationGrids(vm.identifier).then(getSimulationGridsNSuccessFn, getSimulationGridsNErrorFn);
+
+                function getSimulationGridsNSuccessFn(data){
+                    vm.models.lists.Simulation = [];
+                    for (var i = 0; i < data.data.length; ++i) {
+                        vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                    }
+
+                    if(vm.models.lists.Simulation !== []){
+                        for(var j = 0; j<vm.models.lists.Simulation.length; j++){
+                            disassociate(vm.models.lists.Simulation[j].position);
+                        }
+                        Round.getSimulationGrids(vm.identifier).then(ola, ole);
+
+                    }
+
+                    function ola(data){
+                        vm.Simulation=[];
+                        for (var i = 0; i < data.data.length; ++i) {
+                            vm.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                        }
+
+                        for(var k= 0; k<vm.models.lists.Simulation.length; k++){
+                            gridAssociate(vm.models.lists.Simulation[k].identifier, k+1, vm.models.lists.Simulation[k].label);
+                        }
+                        Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+                    }
+
+                    function ole(data){
+                        console.error(data.data);
+                    }
+                }
+
+                function getSimulationGridsNErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+                }
             }
 
             function disassociateAgentErrorFn(data) {
                 console.error(data.data);
-                $.jGrowl("Agent can't be disassociated!.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -237,14 +287,46 @@
                     life: 2500,
                     theme: 'success'
                 });
+
+                if(vm.all === true){
+                    var selectedFile2 = document.getElementById('GridUpload').files[0];
+                    var selectedFile3 = document.getElementById('LabUpload').files[0];
+
+                    if(selectedFile2 != undefined){
+                        uploadGrid();
+                    }else if(selectedFile3 != undefined){
+                        uploadLab();
+                    }else{
+                        $route.reload();
+                        $('.modal-backdrop').remove();
+                        vm.all = false;
+                    }
+
+                }
             }
 
             function uploadErrorFn(data){
-                $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
-                    life: 2500,
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
+                }
+                else{
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
-                console.error(data.data);
             }
 
         }
@@ -260,6 +342,18 @@
                     life: 2500,
                     theme: 'success'
                 });
+
+                if(vm.all === true){
+                    var selectedFile3 = document.getElementById('LabUpload').files[0];
+                    if(selectedFile3 != undefined){
+                        uploadLab();
+                    }else{
+                        $route.reload();
+                        $('.modal-backdrop').remove();
+                        vm.all = false;
+                    }
+
+                }
             }
 
             function uploadErrorFn(data){
@@ -283,6 +377,12 @@
                     life: 2500,
                     theme: 'success'
                 });
+                if(vm.all === true){
+                    $route.reload();
+                    $('.modal-backdrop').remove();
+                    vm.all = false;
+                }
+
             }
 
             function uploadErrorFn(data){
@@ -337,24 +437,14 @@
         }
 
         function uploadAll(){
+            vm.all = true;
             var selectedFile1 = document.getElementById('ParamListUpload').files[0];
-            console.log(selectedFile1);
-            var selectedFile2 = document.getElementById('GridUpload').files[0];
-            console.log(selectedFile2);
-            var selectedFile3 = document.getElementById('LabUpload').files[0];
-            console.log(selectedFile3);
+
             if(selectedFile1 != undefined){
                 uploadParamList();
-            }
-            if(selectedFile2 != undefined){
+            }else{
                 uploadGrid();
             }
-            if(selectedFile3 != undefined){
-                uploadLab();
-            }
-
-            $route.reload();
-            $('.modal-backdrop').remove();
         }
 
         function reload(){
@@ -366,20 +456,94 @@
         function getSimulationGrids(){
             Round.getSimulationGrids(vm.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
 
-            function getSimulationGridsSuccessFn(data){
+
+        }
+
+        function getSimulationGridsSuccessFn(data){
+            vm.models.lists.Simulation = [];
+            for (var i = 0; i < data.data.length; ++i) {
+                vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+            }
+            Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
+        }
+
+        function getSimulationGridsErrorFn(data){
+            console.error(data.data);
+            $location.path('/panel/');
+        }
+
+        function startSimulation(identifier){
+            Round.startSimulation(identifier).then(startSimulationSuccessFn, startSimulationErrorFn);
+
+            function startSimulationSuccessFn(){
+                $.jGrowl("Simulation has been started successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $route.reload();
+            }
+
+            function startSimulationErrorFn(data){
                 console.log(data.data);
-                vm.models.lists.Simulation = [];
-                for (var i = 0; i < data.data.length; ++i) {
-                    vm.models.lists.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                console.log(data.data);
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
                 }
-                console.log(vm.models.lists.Simulation);
-                Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+                else{
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
+                    theme: 'btn-danger'
+                });
+            }
+
+        }
+
+        function gridAssociate(grid, pos, name){
+            Round.associateGrid(grid, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
+
+            function associateAgentSuccessFn(){
+                Round.getSimulationGrids(vm.identifier).then(getNewSimulationGridsSuccessFn, getNewSimulationGridsErrorFn);
+
+                function getNewSimulationGridsSuccessFn(data){
+                    vm.models.lists.Simulation = [];
+                    for (var k = 0; k < data.data.length; ++k) {
+                        vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                    }
+                }
+
+                function getNewSimulationGridsErrorFn(data){
+                    console.error(data.data);
+                }
+            }
+
+            function associateAgentErrorFn(data){
+                console.error(data.data);
+            }
+        }
+
+        function disassociate(pos){
+            Round.disassociateAgent(vm.identifier, pos).then(disassociateSuccessFn, disassociateErrorFn);
+
+            function disassociateSuccessFn(){
 
             }
 
-            function getSimulationGridsErrorFn(data){
+            function disassociateErrorFn(data){
                 console.error(data.data);
-                $location.path('/panel/');
             }
         }
 

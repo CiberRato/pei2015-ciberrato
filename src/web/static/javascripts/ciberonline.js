@@ -25,10 +25,13 @@
     angular
         .module('ciberonline.routes', ['ngRoute']);
 
-    run.$inject = ['$http'];
+    run.$inject = ['$http', '$rootScope'];
 
-    function run($http){
+    function run($http, $rootScope){
         $http.defaults.xsrfHeaderName = 'X-CSRFToken';
         $http.defaults.xsrfCookieName = 'csrftoken';
+        $rootScope.$on("$routeChangeSuccess", function(event, currentRoute, previousRoute) {
+            $rootScope.title = currentRoute.title;
+        });
     }
 })();

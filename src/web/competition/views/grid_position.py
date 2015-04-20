@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
+from django.db import transaction
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -73,11 +75,17 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                                  'message': 'Your group must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            grid = GridPositions.objects.create(competition=competition, group=group)
+            try:
+                with transaction.atomic():
+                    grid = GridPositions.objects.create(competition=competition, group=group)
 
-            serializer = self.serializer_class(GridPositionsSimplex(grid))
+                    serializer = self.serializer_class(GridPositionsSimplex(grid))
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'You already have a grid for that competition.'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},

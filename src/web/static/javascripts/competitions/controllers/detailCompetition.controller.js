@@ -155,7 +155,7 @@
 
             function enrollErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Team could not join the competition.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -176,7 +176,7 @@
             }
 
             function deleteEnrollErrorFn(){
-                $.jGrowl("Team can't be removed from the competition.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });

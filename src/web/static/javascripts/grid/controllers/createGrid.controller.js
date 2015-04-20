@@ -48,8 +48,19 @@
         }
 
         function create(){
-            var teamName = document.getElementById("select1").value;
-            var competitionName = document.getElementById("select").value;
+            var teamName;
+            var competitionName;
+
+            if(vm.teams.length > 0){
+                teamName = document.getElementById("select1").value;
+            }else{
+                teamName = undefined;
+            }
+            if(vm.competitions.length > 0){
+                competitionName = document.getElementById("select").value;
+            }else{
+                competitionName = undefined;
+            }
 
             Grid.create(teamName, competitionName).then(createSuccessFn, createErrorFn);
 
@@ -64,7 +75,7 @@
 
             function createErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Grid Position could not be created.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });

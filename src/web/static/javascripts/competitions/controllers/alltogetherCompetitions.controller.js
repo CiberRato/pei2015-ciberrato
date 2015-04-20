@@ -41,7 +41,7 @@
             }
 
             function deleteCompetitionErrorFn(){
-                $.jGrowl("Competition can't be removed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'success'
                 });
@@ -50,12 +50,19 @@
 
         }
 
-        function changeState(name){
-            var x = document.getElementById("select"+name).value;
-            Competition.changeState(name, x).then(changeStateSuccessFn, changeStateErrorFn);
+        function changeState(name, state){
+            var next;
+            if(state === 'Register'){
+                next = 'Competition';
+            }else if(state === 'Competition'){
+                next = 'Past'
+            }else{
+                next = 'Register';
+            }
+            Competition.changeState(name, next).then(changeStateSuccessFn, changeStateErrorFn);
 
             function changeStateSuccessFn(){
-                $.jGrowl("State of Competition has been changed successfully.", {
+                $.jGrowl("State of Competition \""+ name +"\" has been changed to " + next + ".", {
                     life: 2500,
                     theme: 'success'
                 });
@@ -64,7 +71,7 @@
 
             function changeStateErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("State of Competition can't be changed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'success'
                 });

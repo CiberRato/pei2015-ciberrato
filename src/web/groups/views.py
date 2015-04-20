@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
+from django.db import transaction
 
 from rest_framework import permissions, viewsets, status, mixins
 from rest_framework.response import Response
@@ -42,8 +44,15 @@ class GroupViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            g = Group.objects.create(**serializer.validated_data)
-            GroupMember.objects.create(group=g, account=self.request.user, is_admin=True)
+            try:
+                with transaction.atomic():
+                    g = Group.objects.create(**serializer.validated_data)
+                    GroupMember.objects.create(group=g, account=self.request.user, is_admin=True)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'There is a group with that name already!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad request',
@@ -207,23 +216,20 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
             user = get_object_or_404(Account.objects.all(), username=serializer.validated_data['user_name'])
 
-            already_member = (len(GroupMember.objects.filter(group=group, account=user)) >= 1)
-
-            if already_member:
-                return Response({'status': 'Bad request',
-                                 'message': 'The user is already in the group'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
             number_of_members = len(group.groupmember_set.all())
             if number_of_members >= group.max_members:
                 return Response({'status': 'Bad request',
-                                 'message': 'The group reached the number max of members:' + str(number_of_members)},
+                                 'message': 'The group reached the max number of members: ' + str(number_of_members)},
                                 status=status.HTTP_400_BAD_REQUEST)
-
-            group_member = GroupMember.objects.create(group=group, account=user)
-            group_member_serializer = MemberSerializer(group_member)
-
-            return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
+            try:
+                with transaction.atomic():
+                    group_member = GroupMember.objects.create(group=group, account=user)
+                    group_member_serializer = MemberSerializer(group_member)
+                    return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The user is already in the group'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'status': 'Bad request',
                          'message': serializer.errors},

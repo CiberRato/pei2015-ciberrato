@@ -7,7 +7,7 @@ def main():
 	settings = json.loads(settings_str)
 	HOST = settings["urls"]["post_sim_id"]
 
-	params = {'simulation_identifier': "3349b88f-4268-48f8-b00b-ef3cc47b8956" }
+	params = {'simulation_identifier': "9df02d7c-ac7d-4f38-903f-c2704eb37d38" }
 	result = requests.post(HOST, params)
 	print result.text
 	print result.status_code

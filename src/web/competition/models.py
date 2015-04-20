@@ -1,4 +1,5 @@
 import uuid
+
 from django.core.validators import MinValueValidator, MinLengthValidator
 from ciberonline.validators import validate_word
 from django.db import models
@@ -68,9 +69,9 @@ class Round(models.Model):
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 
-    param_list_path = models.FileField(max_length=128)
-    grid_path = models.FileField(max_length=128)
-    lab_path = models.FileField(max_length=128)
+    param_list_path = models.FileField(upload_to="params/%Y/%m/%d")
+    grid_path = models.FileField(upload_to="grids/%Y/%m/%d")
+    lab_path = models.FileField(upload_to="labs/%Y/%m/%d")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -88,11 +89,13 @@ class Agent(models.Model):
                                                                                         MinLengthValidator(1)])
     user = models.ForeignKey(Account, blank=False)
     group = models.ForeignKey(Group, blank=False)
-    locations = models.CharField(max_length=256)
 
-    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100)
+    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100, default="Python")
+
     code_valid = models.BooleanField(default=True)
-    is_virtual = models.BooleanField(default=False)
+    validation_result = models.CharField(max_length=512)
+
+    is_local = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -102,6 +105,15 @@ class Agent(models.Model):
 
     def __unicode__(self):
         return self.agent_name
+
+
+class AgentFile(models.Model):
+    agent = models.ForeignKey(Agent, blank=False)
+    file = models.FileField(upload_to="agents/%Y/%m/%d")
+    original_name = models.CharField(max_length=128, blank=False)
+
+    class Meta:
+        unique_together = ('agent', 'original_name',)
 
 
 class GridPositions(models.Model):
@@ -184,3 +196,18 @@ class SimulationGrid(models.Model):
     class Meta:
         unique_together = ('position', 'simulation',)
         ordering = ('position', 'grid_positions', 'simulation')
+
+
+class TeamScore(models.Model):
+    trial = models.ForeignKey(Simulation, blank=False)
+    team = models.ForeignKey(Group, blank=False)
+    score = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+    number_of_agents = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+    time = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('trial', 'team',)
+        ordering = ('score', '-number_of_agents', 'time')

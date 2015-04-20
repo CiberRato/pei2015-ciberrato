@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
+from django.db import transaction
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -37,8 +39,14 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
             type_of_competition = get_object_or_404(TypeOfCompetition.objects.all(),
                 name=serializer.validated_data['type_of_competition'])
 
-            Competition.objects.create(name=serializer.validated_data['name'],
-                                       type_of_competition=type_of_competition)
+            try:
+                with transaction.atomic():
+                    Competition.objects.create(name=serializer.validated_data['name'],
+                                               type_of_competition=type_of_competition)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'There is already a competition with that name.'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -163,8 +171,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                               mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-
+                               mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TypeOfCompetition.objects.all()
     serializer_class = TypeOfCompetitionSerializer
 
@@ -188,7 +195,13 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            TypeOfCompetition.objects.create(**serializer.validated_data)
+            try:
+                with transaction.atomic():
+                    TypeOfCompetition.objects.create(**serializer.validated_data)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'That type of competition was already created!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -209,36 +222,6 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(type_of_competition)
 
         return Response(serializer.data)
-
-    def update(self, request, *args, **kwargs):
-        """
-        B{Update} the type of competition
-        B{URL:} ../api/v1/competitions/type_of_competition/<old_type_of_competition_name>/
-
-        @type  old_name: str
-        @param old_name: The type of competition name
-
-        @type  name: str
-        @param name: The type of competition name
-        @type  number_teams_for_trial: Integer
-        @type  number_teams_for_trial: The number of teams allowed by trial
-        @type  number_agents_by_grid: Integer
-        @param number_agents_by_grid: For each team the number of agents allowed by grid
-        """
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            type_of_competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
-            type_of_competition.name = serializer.validated_data['name']
-            type_of_competition.number_teams_for_trial = serializer.validated_data['number_teams_for_trial']
-            type_of_competition.number_agents_by_grid = serializer.validated_data['number_agents_by_grid']
-            type_of_competition.save()
-
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
-        return Response({'status': 'Bad Request',
-                         'message': serializer.errors},
-                        status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         """

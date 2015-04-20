@@ -32,7 +32,8 @@
             removeTypeOfCompetition: removeTypeOfCompetition,
             getType: getType,
             updateType: updateType,
-            getValidByTeam: getValidByTeam
+            getValidByTeam: getValidByTeam,
+            change: change
 
         };
 
@@ -151,6 +152,10 @@
 
         function getValidByTeam(teamName){
             return $http.get('/api/v1/competitions/enroll/' + teamName + '/');
+        }
+
+        function change(url){
+            return $http.get(url);
         }
 
     }

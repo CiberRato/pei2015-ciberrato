@@ -24,11 +24,12 @@
 
         return Agent;
 
-        function create(name, teamName, type){
+        function create(name, teamName, type, language){
             return $http.post('/api/v1/agents/agent/',{
                 agent_name: name,
                 group_name: teamName,
-                is_virtual: type
+                is_local: type,
+                language: language
             })
         }
         function getByGroup(teamName){
@@ -44,11 +45,11 @@
 
         }
 
-        function upload(agentName, language, value){
+        function upload(agentName, value){
             var fd = new FormData();
             fd.append('file', value);
 
-            return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName + '&language=' +language, fd, {
+            return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             });

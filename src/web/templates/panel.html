@@ -1,8 +1,9 @@
+{% if user.is_authenticated %}
 <!DOCTYPE html>
 <html ng-app="ciberonline">
 <head>
     <meta charset="utf-8">
-    <title>CiberRato</title>
+    <title ng-bind="'CiberRato | ' + $root.title">CiberRato | Welcome!</title>
     <meta name="description" content="">
     <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,3 +40,6 @@
 {% include 'panel/javascripts.html' %}
 </body>
 </html>
+{% else %}
+    <meta http-equiv="refresh" content="0; url={% url 'idp' %}login" />
+{% endif %}

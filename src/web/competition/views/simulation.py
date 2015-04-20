@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 import requests
@@ -40,6 +40,12 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+
+            if not bool(r.grid_path) or not bool(r.param_list_path) or not bool(r.param_list_path):
+                return Response({'status': 'Bad Request',
+                                 'message': 'Is missing files to the Round take place!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             s = Simulation.objects.create(round=r)
             serializer = SimulationSerializer(SimulationSimplex(s))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -184,6 +190,8 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     serializer_class = SimulationGridInputSerializer
 
     def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
         return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
@@ -321,13 +329,18 @@ class StartSimulation(views.APIView):
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if round has files
-        if simulation.round.grid_path is None or simulation.round.param_list_path is None \
-                or simulation.round.lab_path is None:
+        if not bool(simulation.round.grid_path) or not bool(simulation.round.param_list_path) \
+                or not bool(simulation.round.param_list_path):
             return Response({'status': 'Bad Request',
                              'message': 'Is missing files to the Round take place!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         simulation_grids = SimulationGrid.objects.filter(simulation=simulation)
+
+        if len(simulation_grids) == 0:
+            return Response({'status': 'Bad Request',
+                             'message': 'Please select teams to go to the Trial!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         pos = 1
 
@@ -368,7 +381,8 @@ class StartSimulation(views.APIView):
 
                         # log simulation agent
                         if log_sim_agent_not_exists:
-                            LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation,
+                            LogSimulationAgent.objects.create(competition_agent=competition_agent,
+                                                              simulation=simulation,
                                                               pos=pos)
 
                         pos += 1

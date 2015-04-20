@@ -1,9 +1,8 @@
 from django.conf.urls import patterns, include, url
-from django.conf.urls.static import static
-from django.conf import settings
 from django.views.generic.base import TemplateView
 
-from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName
+from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
+    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails
 
 from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
     MemberInGroupViewSet, AccountGroupsAdminViewSet
@@ -14,15 +13,16 @@ from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, Co
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, RoundViewSet, RoundViewAdminSet, \
     RoundFile
 from competition.views.simulation import SimulationViewSet, SimulationByAgent, SimulationByRound, \
-    SimulationByCompetition, GetSimulationAgents,  StartSimulation, SimulationGridViewSet
+    SimulationByCompetition, GetSimulationAgents, StartSimulation, SimulationGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
+from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition
 
 from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog
 
-from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet
+from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, AgentCodeValidation
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
@@ -30,8 +30,13 @@ from rest_framework import routers
 
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
+router_accounts.register(r'change_password', AccountChangePassword)
 router_accounts.register(r'account_by_first_name', AccountByFirstName)
 router_accounts.register(r'account_by_last_name', AccountByLastName)
+router_accounts.register(r'toggle_staff', ToggleUserToStaff)
+router_accounts.register(r'toggle_super_user', ToggleUserToSuperUser)
+router_accounts.register(r'login_to', LoginToOtherUser)
+router_accounts.register(r'me', MyDetails)
 # GROUPS URLs
 router_groups = routers.SimpleRouter()
 router_groups.register(r'members', GroupMembersViewSet)
@@ -53,6 +58,10 @@ router_competitions.register(r'type_of_competition', TypeOfCompetitionViewSet)
 router_competitions.register(r'grid_position', GridPositionsViewSet)
 router_competitions.register(r'grid_positions_competition', GridPositionsByCompetition)
 router_competitions.register(r'agent_grid', AgentGridViewSet)
+router_competitions.register(r'team_score', TeamScoreViewSet)
+router_competitions.register(r'ranking_trial', RankingByTrial)
+router_competitions.register(r'ranking_round', RankingByRound)
+router_competitions.register(r'ranking_competition', RankingByCompetition)
 # Groups
 router_competitions.register(r'enroll', EnrollGroup)
 router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
@@ -88,12 +97,12 @@ router_agents.register(r'agents_by_group', AgentsByGroupViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', ListAgentsFiles)
+router_agents.register(r'code_validation', AgentCodeValidation)
 
 # SIMULATION URL's
 router_simulations = routers.SimpleRouter()
 router_simulations.register(r'simulation_log', SaveLogs)
 router_simulations.register(r'get_simulation', GetSimulation)
-
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
@@ -120,7 +129,8 @@ urlpatterns = patterns('',
                        # stat simulation
                        url(r'^api/v1/simulations/start/$', StartSimulation.as_view(), name="Start simulation"),
                        # get simulation log
-                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$', GetSimulationLog.as_view(),
+                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$',
+                           GetSimulationLog.as_view(),
                            name="Get simulation log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
@@ -149,5 +159,5 @@ urlpatterns = patterns('',
                        url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
                        url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')
-)
+                       )
 # urlpatterns[:0] = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

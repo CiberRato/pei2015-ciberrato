@@ -1,14 +1,12 @@
 from rest_framework import serializers
 
-from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent,\
-    TypeOfCompetition, GridPositions, AgentGrid, SimulationGrid
+from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent, \
+    TypeOfCompetition, GridPositions, AgentGrid, SimulationGrid, TeamScore
 from groups.serializers import GroupSerializer
 
 
 class TypeOfCompetitionSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
-    number_teams_for_trial = serializers.IntegerField()
-    number_agents_by_grid = serializers.IntegerField()
 
     class Meta:
         model = TypeOfCompetition
@@ -52,7 +50,7 @@ class GridPositionsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GridPositions
-        fields = ('identifier', 'competition',  'competition_name', 'group_name')
+        fields = ('identifier', 'competition', 'competition_name', 'group_name')
         read_only_fields = ('competition', 'identifier',)
 
 
@@ -85,7 +83,6 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128, write_only=True)
     group_name = serializers.CharField(max_length=128)
     valid = serializers.BooleanField(read_only=True)
-
 
     competition = CompetitionSerializer(read_only=True)
 
@@ -164,19 +161,44 @@ class SimulationAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ()
 
 
-class RoundFilesSerializer(serializers.BaseSerializer):
+class RoundFileSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
-            'param_list': {
-                'name': instance.param_list[0],
-                'size': instance.param_list[1]
-            },
-            'grid': {
-                'name': instance.grid[0],
-                'size': instance.grid[1]
-            },
-            'lab': {
-                'name': instance.lab[0],
-                'size': instance.lab[1]
-            }
+            'file': instance.file,
+            'last_modification': instance.last_modification,
+            'size': instance.size,
+            'url': instance.url
         }
+
+
+class RoundFilesSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        param = RoundFileSerializer(instance.param_list)
+        grid = RoundFileSerializer(instance.grid)
+        lab = RoundFileSerializer(instance.lab)
+
+        return {
+            'param_list': param.data,
+            'grid': grid.data,
+            'lab': lab.data
+        }
+
+
+class TeamScoreInSerializer(serializers.ModelSerializer):
+    trial_id = serializers.CharField(max_length=128, write_only=True)
+    team_name = serializers.CharField(max_length=128, write_only=True)
+
+    class Meta:
+        model = TeamScore
+        fields = ('trial_id', 'team_name', 'score', 'number_of_agents', 'time',)
+        read_only_fields = ()
+
+
+class TeamScoreOutSerializer(serializers.ModelSerializer):
+    trial = SimulationSerializer(read_only=True)
+    team = GroupSerializer(read_only=True)
+
+    class Meta:
+        model = TeamScore
+        fields = ('trial', 'team', 'score', 'number_of_agents', 'time',)
+        read_only_fields = ('trial', 'team',)

@@ -17,11 +17,7 @@ def getText(nodelist):
     return ''.join(rc)
 
 def main():
-	wlog = False
-	for i in range(0, len(sys.argv)):
-		if sys.argv[i] == "-log":
-			wlog = True
-	#Load settings
+	# Load settings
 	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 	settings = json.loads(settings_str)
 
@@ -35,61 +31,53 @@ def main():
 	WEBSOCKET_PORT = settings["settings"]["websocket_port"]
 
 	LOG_FILE = settings["settings"]["log_info_file"]
-	PARAM_FILE = settings["settings"]["params_file"]
-	LAB_FILE = settings["settings"]["lab_file"]
-	GRID_FILE = settings["settings"]["grid_file"]
-	#end of loading settings
-
-	if wlog:
-		log = open("log", "w") # log file used to view prints of this program
-		log.write("viewer started\n")
+	# End of loading settings
 
 	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+	# Register as PanelViewer in the simulator
 	simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
-	# Ler o valor do tempo de simulação e obter as portas
+
+	# Get sim time, and ports
+	# params, grid e lab comes in this packet as well
 	data, (hostSim, portSim) = simulator_s.recvfrom(4096)
-	# Vem params, grid e lab aqui
 	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
 	itemlist = parametersXML.getElementsByTagName('Parameters')
 	simTime = itemlist[0].attributes['SimTime'].value
 
-	# Write params, grid and lab to the json Log
+	# Log file to be written
 	log_file = open(LOG_FILE, "w")
-	params_file = open(PARAM_FILE, "w")
-	lab_file = open(LAB_FILE, "w")
-	grid_file = open(GRID_FILE, "w")
-
 
 	parameters = itemlist[0].toxml()
 	lab = parametersXML.getElementsByTagName('Lab')[0].toxml()
 	grid = parametersXML.getElementsByTagName('Grid')[0].toxml()
 
+	# Write parameters
 	json_obj = xmltodict.parse(parameters)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	#params_file.write(json_data)
+
 	log_file.write("{"+json_data[1:-1]+",")
 
-
+	# Write lab
 	json_obj = xmltodict.parse(lab)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	#lab_file.write(json_data)
+
 	log_file.write(json_data[1:-1]+",")
 
-
+	# Write grid
 	json_obj = xmltodict.parse(grid)
 	json_data = json.dumps(json_obj)
 
 	json_data = json_data.replace("@", "_")
 	json_data = json_data.replace('"#text": "\\""', "")
-	#grid_file.write(json_data)
+
 	log_file.write(json_data[1:-1]+",")
 
 
@@ -103,9 +91,7 @@ def main():
 	robots = robotsXML.getElementsByTagName('Robots')
 	robotsAmount = robots[0].attributes['Amount'].value
 
-	if wlog:
-		log.write("Robots Amount: " + robotsAmount + "\n")
-		log.write("checking Robots\n")
+	print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
 
 	checkedRobots = []
 	while len(checkedRobots) != int(robotsAmount):
@@ -115,34 +101,26 @@ def main():
 		if len(robots):
 			for r in robots:
 				robotID = r.attributes['Id'].value
-				if wlog:
-					log.write(robotID + "\n	")
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
-				if wlog:
-					log.write(str(checkedRobots) + "\n	")
-					log.write(str(len(checkedRobots)) + "\n")
-	if wlog:
-		log.write("All Robots are registered\n")
-	starter_s.send("<AllRobotsRegistered/>")
+
+	starter_s.send("<RobotsRegistered/>")
+
+	print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 
 	data = starter_s.recv(4096)
 	while data != "<StartedAgents/>":
 		data = starter_s.recv(4096)
 
-	if wlog:
-		log.write("Received start confirmation\n")
-
+	# Sending simulator msg to start the simulation
 	simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
-
-
+	# Connect to websockets
 	websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
 
 	robotTime = 0
-
 	firstTime = True
 	log_file.write('"Log":[')
 	while simTime != robotTime:
@@ -150,45 +128,39 @@ def main():
 			log_file.write(",")
 		else:
 			firstTime = False
+
+		# Update Robot time
 		data = simulator_s.recv(4096)
-		# Actualizar o tempo do robot
 		data = data.replace("\x00", "")
-		if wlog:
-			log.write(data + "\n")
 		robotXML = minidom.parseString(data)
 		itemlist = robotXML.getElementsByTagName('LogInfo')
 		robotTime = itemlist[0].attributes['Time'].value
 
-		#Convert to json
+		# Convert to json and write to log file
 		json_obj = xmltodict.parse(data)
 		json_data = json.dumps(json_obj)
 		json_data = json_data.replace("@", "_")
-		#json_data = json_data.replace('"#text": "\\""', "")
-
 		log_file.write(json_data)
 
-		# Enviar os dados da simulação para o exterior
-		#print json_data
+		# Send data to the websockets
 		websocket_tcp.send(json_data)
 
 	log_file.write("]}")
 
-	#wait 0.1 seconds to assure the END msg goes on a separate packet
+	# Wait 0.1 seconds to assure the END msg goes on a separate packet
 	time.sleep(0.1)
-	#send websocket msg telling it's over
+	# Send websocket msg telling it's over
 	websocket_tcp.send("END")
 
 	starter_s.send('<EndedSimulation/>')
 
-	if wlog:
-		log.close()
+	# Close all connections
 	websocket_tcp.close()
-	log_file.close()
-	params_file.close()
-	lab_file.close()
-	grid_file.close()
 	starter_s.close()
 	simulator_s.close()
+
+	# Close all open files
+	log_file.close()
 
 if __name__ == "__main__":
 	main()

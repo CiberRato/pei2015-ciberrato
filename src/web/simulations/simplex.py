@@ -3,7 +3,7 @@ from competition.models import LogSimulationAgent
 
 class AgentX():
     def __init__(self, log_simulation_agent, simulation_id):
-        if log_simulation_agent.competition_agent.agent.is_virtual:
+        if log_simulation_agent.competition_agent.agent.is_local:
             self.agent_type = "virtual"
         else:
             self.agent_type = "local"
@@ -12,7 +12,7 @@ class AgentX():
         self.pos = log_simulation_agent.pos
         self.language = log_simulation_agent.competition_agent.agent.language
 
-        if not log_simulation_agent.competition_agent.agent.is_virtual:
+        if not log_simulation_agent.competition_agent.agent.is_local:
             # o agent tem de estar na simulacao
             # autenticacao para receber estes dados
             self.files = "/api/v1/agents/agent_file/" + log_simulation_agent.competition_agent.agent.agent_name + "/"

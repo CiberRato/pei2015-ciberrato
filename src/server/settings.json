@@ -6,23 +6,10 @@
 	///general settings to be used by starter, viewer and other programs that may require so
 	"settings": {
 		///default timeout for remote hosts to register (in seconds)
-		"timeout": 2,
+		"timeout": 30,
 
 		///default tmp file name for log info
 		"log_info_file": "./tmp/ciberOnline_log.json",
-
-		///default tmp file name for lab
-		"lab_file": "./tmp/ciberOnline_lab.json",
-
-		///default tmp file name for params
-		"params_file": "./tmp/ciberOnline_params.json",
-
-		///default tmp file name for grid
-		"grid_file": "./tmp/ciberOnline_grid.json",
-
-		///default file name for the log to be saved
-		///<SIM_ID> this tag must be kept even if the log name is changed
-		"file": "./tmp/log_<SIM_ID>.zip",
 
 		///host and port for communications between starter and viewer
 		"starter_viewer_host": "127.0.0.1",
@@ -32,7 +19,10 @@
 		"starter_end_point_host": "127.0.0.1",
 		"starter_end_point_port": 7500,
 
-		///host and port for both starter and GetSimId connection
+		"test_end_point_host": "127.0.0.1",
+		"test_end_point_port": 7501,
+
+		///host and port for GetSimId and Tests end-point connection
 		"end_point_host": "127.0.0.1",
 		"end_point_port": 9000,
 
@@ -42,24 +32,28 @@
 
 		///websocket host and port for viewer to send robots data stream
 		"websocket_host": "127.0.0.1",
-		"websocket_port": 10000
+		"websocket_port": 10000,
+
+		///django server default host and port for end-points
+		"django_host": "127.0.0.1",
+		"django_port": 8000
 	},
 	"urls":{
 		///url to get a simulation with a sim_id
-		///USAGE: http://127.0.0.1:8000/api/v1/competitions/get_simulation/<SIM_ID>/
-		"get_simulation": "http://127.0.0.1:8000/api/v1/simulations/get_simulation/",
+		///USAGE: http://HOST:PORT/api/v1/competitions/get_simulation/<SIM_ID>/
+		"get_simulation": "/api/v1/simulations/get_simulation/",
 
 		///url to get agents from a specific simulation
-		/// USAGE: http://127.0.0.1:8000/api/v1/competitions/agent_file/<agent_name>/
-		"get_agent": "http://127.0.0.1:8000/api/v1/agents/agent_file/",
+		/// USAGE: http://HOST:PORT/api/v1/competitions/agent_file/<agent_name>/
+		"get_agent": "/api/v1/agents/agent_file/",
 
 		///url to post the log file after a simulation
 		///PARAMS: data={'simulation_identifier': <SIM_ID>}, files={'log_json': <FILE>}
-		"post_log": "http://127.0.0.1:8000/api/v1/simulations/simulation_log/",
+		"post_log": "/api/v1/simulations/simulation_log/",
 
 		///url to post a sim_id to be executed
 		///PARAMS: params={'simulation_identifier': <SIM_ID> }
-		"post_sim_id": "http://127.0.0.1:9000/api/v1/simulation_id/"
+		"post_sim_id": "/api/v1/simulation_id/"
 	}
 }
 

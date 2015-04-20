@@ -9,7 +9,7 @@
 
     function MyGridsController($location, $route, Authentication, Grid, Agent, Competition){
         var vm = this;
-
+        vm.username;
         vm.models = {
             selected: null,
             lists: {"Available": [], "GridPosition": []}
@@ -21,12 +21,12 @@
         vm.disassociate = disassociate;
         vm.getCompetition = getCompetition;
         vm.number = [];
-        var username;
+
         activate();
 
         function activate(){
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            username = authenticatedAccount.username;
+            vm.username = authenticatedAccount.username;
             Grid.getMyGrids().then(getSuccessFn, getErrorFn);
 
             function getSuccessFn(data){
@@ -54,7 +54,7 @@
 
             function destroyErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Grid Position could not be removed.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -88,6 +88,7 @@
             for (var i = 0; i < data.data.length; ++i) {
                 vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position, type: 'Grid'});
             }
+            console.log(vm.modeles)
         }
 
         function getAssociatedErrorFn(data){
@@ -149,7 +150,7 @@
 
             function disassociateErrorFn(data){
                 console.error(data.data);
-                $.jGrowl("Agent can't be disassociated.", {
+                $.jGrowl(data.data.message, {
                     life: 2500,
                     theme: 'btn-danger'
                 });
@@ -173,8 +174,6 @@
                     }
                     console.log(vm.models.lists.GridPosition);
                     Grid.getAgents(vm.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
-
-
 
                 }
 
