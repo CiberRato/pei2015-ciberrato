@@ -8,6 +8,12 @@
     LogViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
 
     function LogViewer($location, $scope, $routeParams, Round, Authentication, Profile, LogViewer, $timeout){
+        console.log(document.getElementById("svgrow").offsetWidth);
+        console.log((document.getElementById("svgrow").offsetWidth * 31.5) / 880);
+        $scope.load=false;
+
+
+
         var logInfo_obj;
         var lab_obj;
         var parameters_obj;
@@ -33,6 +39,7 @@
             console.log("ERROR");
         }
         function showViewer(){
+
             $("#waitawhile").hide("fast");
             $("#row1").show("slow");
             $("#row2").show("slow");
@@ -43,7 +50,7 @@
             console.log("OK");
             doIt();
         }
-        function convertToStringPoints(cornerList, zoom){
+        $scope.convertToStringPoints = function(cornerList, zoom){
             var out = "";
             var b = 0;
             for(; b<cornerList.Corner.length; b++){
@@ -66,11 +73,10 @@
             $scope.slow = 0;
             $scope.playvar = 0;
 
-            //console.log(lab_obj);
             /* Convert wall points to be integrated in SVG */
             for (i = 0; i < lab_obj.Wall.length; i++) {
                 //console.log(lab_obj);
-                lab_obj.Wall[i].str = convertToStringPoints(lab_obj.Wall[i], $scope.zoom);
+                lab_obj.Wall[i].str = $scope.convertToStringPoints(lab_obj.Wall[i], $scope.zoom);
             }
 
             /* Parameters Object */
@@ -237,10 +243,7 @@
                     $scope.updateValues();
                     if ($scope.first_zoom != $scope.zoom){
                         $scope.first_zoom = $scope.zoom;
-                        for (i = 0; i < lab_obj.Wall.length; i++) {
-                            //console.log(lab_obj);
-                            lab_obj.Wall[i].str = convertToStringPoints(lab_obj.Wall[i], $scope.zoom);
-                        }
+
                     }
                     $(".leftGrip").css("left", ($scope.idx * ($scope.map._Width*$scope.zoom)) / $scope.param._SimTime);
                     if ($scope.playvar) {

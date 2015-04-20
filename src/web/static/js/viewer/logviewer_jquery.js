@@ -1,7 +1,17 @@
 window.onresize = doALoadOfStuff;
 
 function doALoadOfStuff() {
-    angular.element('[ng-controller=LogViewer]').scope().zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
+    if(angular.element('[ng-controller=LogViewer]').scope().load){
+        var i;
+        angular.element('[ng-controller=LogViewer]').scope().zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
+        for (i = 0; i < angular.element('[ng-controller=LogViewer]').scope().map.Wall.length; i++) {
+            //console.log(lab_obj);
+            angular.element('[ng-controller=LogViewer]').scope().map.Wall[i].str = angular.element('[ng-controller=LogViewer]').scope().convertToStringPoints(angular.element('[ng-controller=LogViewer]').scope().map.Wall[i], angular.element('[ng-controller=LogViewer]').scope().zoom);
+        }
+        angular.element('[ng-controller=LogViewer]').scope().$apply();
+
+    }
+    angular.element('[ng-controller=LogViewer]').scope().load = true;
 }
 
 var handler = window.onresize;
