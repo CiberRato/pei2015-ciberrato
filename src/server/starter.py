@@ -153,9 +153,9 @@ class Starter:
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
-										  " | tar -xz;" \
-										  " python myrob.py -host %s -pos %s'" %  \
-										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], ),
+										  " | tar -xz;" 
+										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
+										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
 				docker_containers += [  ]
