@@ -69,7 +69,7 @@
 
                 function getSimulationGridsSuccessFn(data){
                     vm.rounds[i].simulations[k].grids = data.data;
-                    console.log(vm.rounds[i].simulations[k].grids);
+                    console.log(vm.rounds[i].simulations[k]);
 
                 }
 

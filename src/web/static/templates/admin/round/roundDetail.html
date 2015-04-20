@@ -98,7 +98,7 @@
                             </thead>
                             <tbody ng-repeat="(key, value) in vm.simulations" >
                             <tr >
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" id="identifier">{{value.identifier}}</td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" id="identifier">{{$index+1}} - {{value.identifier}}</td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">{{value.state}}</td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
