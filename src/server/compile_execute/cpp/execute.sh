@@ -7,4 +7,4 @@
 # Usage: ./execute.sh localhost 3 myrobot
 
 cd sample_code;
-./robsample -host $1 -pos $2 -robname $3
+LD_LIBRARY_PATH=libRobSock/ ./robsample -host $1 -pos $2 -robname $3
