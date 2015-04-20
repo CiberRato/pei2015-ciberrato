@@ -37,7 +37,7 @@ class Validator:
 		self.simulator_dummy.settimeout(1)
 
 	def validate(self):
-		if not os.path.exists('execute2.sh'):
+		if not os.path.exists('execute.sh'):
 			error(ValidatorMessage.EXEC_MISSING)
 		# I don't want stdout log from compilation, just stderr.
 		# Bash -e -o pipefail will check for return codes in every single line.
