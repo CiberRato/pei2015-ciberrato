@@ -206,6 +206,9 @@ class LoginView(views.APIView):
 
         if account is not None:
             if account.is_active:
+                if not request.POST.get('remember_me', None):
+                    request.session.set_expiry(0)
+
                 login(request, account)
 
                 serialized = AccountSerializer(account)
