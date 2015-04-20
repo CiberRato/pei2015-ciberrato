@@ -5,21 +5,18 @@
         .module('ciberonline.competitions.controllers')
         .controller('CreateCompetitionController', CreateCompetitionController);
 
-    CreateCompetitionController.$inject = ['$location', 'Authentication', 'Competition', 'Round'];
+    CreateCompetitionController.$inject = ['$location', 'Competition', 'Round'];
 
-    function CreateCompetitionController($location, Authentication, Competition, Round){
+    function CreateCompetitionController($location, Competition, Round){
         var vm = this;
 
         vm.create = create;
         vm.typesToShow = [];
 
-        var username;
 
         activate();
 
         function activate(){
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            username = authenticatedAccount.username;
 
             Competition.getAllTypesOfCompetition().then(getAllSuccessFn, getAllErrorFn);
 

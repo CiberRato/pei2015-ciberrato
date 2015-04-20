@@ -18,6 +18,7 @@
 
         function activate(){
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
+            console.log(authenticatedAccount);
             username = authenticatedAccount.username;
 
             Team.getUserAdmin(username).then(getUserAdminSuccessFn, getUserAdminErrorFn);

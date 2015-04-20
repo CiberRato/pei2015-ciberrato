@@ -7,16 +7,13 @@
 
     AllAgentController.$inject = ['$location', '$routeParams', 'Authentication', 'Agent', 'Team'];
 
-    function AllAgentController($location, $routeParams, Authentication, Agent, Team){
+    function AllAgentController($location, $routeParams, Agent, Team){
         var vm = this;
         vm.destroyAgent = destroyAgent;
-        var username;
 
         activate();
 
         function activate(){
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            username = authenticatedAccount.username;
             vm.teamName = $routeParams.name;
 
             Agent.getByGroup(vm.teamName).then(getByGroupSuccessFn, getByGroupErrorFn);

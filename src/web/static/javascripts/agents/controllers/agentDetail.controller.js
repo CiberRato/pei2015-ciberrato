@@ -6,9 +6,9 @@
         .module('ciberonline.agents.controllers')
         .controller('AgentDetailController', AgentDetailController);
 
-    AgentDetailController.$inject = ['$location', '$routeParams', '$route', 'Agent', 'Competition'];
+    AgentDetailController.$inject = ['$location', '$routeParams', '$route', 'Agent'];
 
-    function AgentDetailController($location, $routeParams, $route,  Agent, Competition) {
+    function AgentDetailController($location, $routeParams, $route,  Agent) {
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;

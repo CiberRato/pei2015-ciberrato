@@ -12,13 +12,9 @@
 
         vm.create = create;
 
-        var username;
-
         activate();
 
         function activate(){
-            var authenticatedAccount = Authentication.getAuthenticatedAccount();
-            username = authenticatedAccount.username;
 
         }
 
