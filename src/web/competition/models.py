@@ -92,7 +92,7 @@ class Agent(models.Model):
 
     language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100, default="Python")
 
-    code_valid = models.BooleanField(default=True)
+    code_valid = models.BooleanField(default=False)
     validation_result = models.CharField(max_length=512)
 
     is_local = models.BooleanField(default=False)

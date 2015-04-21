@@ -9,15 +9,17 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}})</h2>
-                        <div ng-if="vm.agent.code_valid == false" class="alert alert-error">
-                            <strong>Code not valid!</strong> {{vm.agent.validation_result}}
+                        <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.group_name}}) </h2>
+                        <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length > 0" class="alert alert-error">
+                            <strong>Code not valid!</strong><br/> {{vm.agent.validation_result}}<br/><br/>
+                            <button class="btn btn-alt btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
                         </div>
                         <div ng-if="vm.agent.code_valid == true" class="alert alert-success">
                             <strong>Code valid!</strong> {{vm.agent.validation_result}}
                         </div>
-                        <div ng-if="vm.agent.code_valid == false && vm.agent.code_valid.length == 0 && vm.files.length != 0" class="alert alert-inverse">
-                            <strong>Please run a code validation!</strong>
+                        <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length == 0 && vm.files.length != 0" class="alert alert-inverse">
+                            <strong>Please run a code validation!</strong>&nbsp;&nbsp;
+                            <button class="btn btn-alt btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
                         </div>
                         <p ng-if="vm.files.length != 0 && vm.agent.is_local == false">Here is shown in table the list of all uploaded files of this agent.</p>
                         <p ng-if="vm.files.length == 0 && vm.agent.is_local == false">This agent doesn't have any uploaded file.</p>
@@ -75,7 +77,7 @@
                         </script>
                         <br/>
 
-                        <button class="btn btn-alt btn-success" ng-click="vm.uploadFile()">Upload All</button><button class="btn btn-alt btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
+                        <button class="btn btn-alt btn-success" ng-click="vm.uploadFile()">Upload All</button>
                         <br/>
                         <br/>
                         <span class="awe-exclamation-sign"></span><b>

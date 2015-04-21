@@ -76,6 +76,10 @@ class UploadAgent(views.APIView):
                              'message': 'The agent has already one file with that name!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        agent.code_valid = False
+        agent.validation_result = ""
+        agent.save()
+
         return Response({'status': 'File uploaded!',
                          'message': 'The agent code has been uploaded!'},
                         status=status.HTTP_201_CREATED)
