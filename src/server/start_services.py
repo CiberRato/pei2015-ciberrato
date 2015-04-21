@@ -19,7 +19,7 @@ def main():
 	endPoint.start()
 	print "Webservice has been started.."
 
-	starter.join()
+	manager.join()
 
 if __name__ == "__main__":
 	main()
