@@ -27,7 +27,7 @@ class Starter:
 			self.run(sim_id)
 		except Exception as e:
 			print e.args[0]
-			params = {'msg': e.args[0]}
+			params = {'simulation_identifier': sim_id,'msg': e.args[0]}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, params=params)
 			if response.status_code != 200:
 				print "[STARTER] ERROR: Posting error to end point"
