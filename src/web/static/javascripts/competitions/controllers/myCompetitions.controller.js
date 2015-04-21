@@ -10,6 +10,7 @@
 
     function MyCompetitionsController($location, $routeParams, Competition, Authentication){
         var vm = this;
+        vm.getScoresByCompetition = getScoresByCompetition;
         activate();
 
         function activate(){
@@ -54,6 +55,19 @@
                 $location.path('/panel/')
             }
 
+        }
+
+
+        function getScoresByCompetition(){
+            Competition.getScoresByCompetition(vm.competitionName).then(getScoresByCompetitionSuccessFn, getScoresByCompetitionErrorFn);
+
+            function getScoresByCompetitionSuccessFn(data){
+                vm.scoresByCompetition = data.data;
+            }
+
+            function getScoresByCompetitionErrorFn(data){
+                console.error(data.data);
+            }
         }
 
     }

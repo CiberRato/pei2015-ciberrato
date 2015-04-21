@@ -52,7 +52,7 @@
                             <div class="modal fade"  id="competitionScore">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">×</button>
-                                    <h2 align="center">Consult the Score Table Of this Competition</h2>
+                                    <h2 align="center">{{vm.competitionName}} - Scores</h2>
                                 </div>
                                 <div class="modal-body" style="text-align: center">
                                     <p ng-if="vm.scoresByCompetition.length == 0">There are no Scores!</p>
@@ -116,7 +116,7 @@
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal">×</button>
 
-                                                    <h2 align="center">Consult the Score Table</h2>
+                                                    <h2 align="center">Trial Scores</h2>
                                                 </div>
                                                 <div class="modal-body" style="text-align: center">
                                                     <p ng-if="vm.scoresByTrial.length == 0">There are no Scores!</p>
@@ -155,7 +155,7 @@
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal">×</button>
 
-                                        <h2 align="center">Consult the Score Table Of Round "{{value.name}}"</h2>
+                                        <h2 align="center">Round Scores</h2>
                                     </div>
                                     <div class="modal-body" style="text-align: center">
                                         <p ng-if="vm.scoresByRound.length == 0">There are no Scores!</p>

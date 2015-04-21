@@ -10,6 +10,7 @@
 
     function AllCompetitionsController($location, Competition){
         var vm = this;
+        vm.getScoresByCompetition = getScoresByCompetition;
         activate();
 
         function activate(){
@@ -42,6 +43,18 @@
                 }
             }
 
+        }
+
+        function getScoresByCompetition(name){
+            Competition.getScoresByCompetition(name).then(getScoresByCompetitionSuccessFn, getScoresByCompetitionErrorFn);
+
+            function getScoresByCompetitionSuccessFn(data){
+                vm.scoresByCompetition = data.data;
+            }
+
+            function getScoresByCompetitionErrorFn(data){
+                console.error(data.data);
+            }
         }
 
 

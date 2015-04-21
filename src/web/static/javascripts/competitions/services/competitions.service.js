@@ -163,6 +163,8 @@
             return $http.get("/api/v1/competitions/ranking_competition/" + name + "/");
         }
 
+
+
     }
 
 })();
