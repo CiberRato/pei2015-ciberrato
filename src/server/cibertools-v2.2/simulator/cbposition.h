@@ -53,20 +53,22 @@ public:
 	inline void setRadianDirection(double d) { direction = d; }
 
 	void set(double x, double y, double dir);
-	
 	void setDegDirection(double);
+	void setNumberRobots(unsigned int);
 
 	cbPoint &Coord();
 	double X();
 	double Y();
 	double radianDirection();
 	double degreeDirection();
+	unsigned int getNumberRobotsAllowed();
 	inline double Direction() { return direction; }
 	inline double directionInDegrees() { return direction*(180/M_PI); }
 
 private:
 	cbPoint coord;
 	double direction;	// in radians
+	unsigned int nRobots;
 };
 
 #endif

@@ -30,6 +30,7 @@ cbPosition::cbPosition()
 {
 	coord = cbPoint();
 	direction = 0.0;
+    nRobots = 1;
 }
 
 cbPosition::~cbPosition()
@@ -51,6 +52,11 @@ void cbPosition::setDegDirection(double d)
 	direction = (d * M_PI) / 180;
 }
 
+void cbPosition::setNumberRobots(unsigned int n) {
+    if (nRobots <= 0)
+        return;
+    nRobots = n;
+}
 cbPoint &cbPosition::Coord()
 {
 	return coord;
@@ -76,6 +82,9 @@ double cbPosition::degreeDirection()
 	return (180 * direction) / M_PI;
 }
 
+unsigned int cbPosition::getNumberRobotsAllowed() {
+    return nRobots;
+}
 void cbPosition::set(double x, double y, double dir)
 {
 	direction = dir;
