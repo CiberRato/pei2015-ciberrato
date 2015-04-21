@@ -33,10 +33,14 @@ class SimulationSimplex:
         self.updated_at = ss.updated_at
         if simulation_done(ss):
             self.state = "LOG"
+        elif simulation_error(ss):
+            self.state = "ERROR"
         elif simulation_started(ss):
             self.state = "STARTED"
-        else:
+        elif simulation_waiting(ss):
             self.state = "WAITING"
+        else:
+            self.state = "READY"
 
 
 class SimulationAgentSimplex:

@@ -328,6 +328,12 @@ class StartSimulation(views.APIView):
         """
         simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
 
+        # verify if the round doen't started already
+        if not simulation_not_started(simulation):
+            return Response({'status': 'Bad Request',
+                             'message': 'The trial is in state waiting, started or done!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # verify if round has files
         if not bool(simulation.round.grid_path) or not bool(simulation.round.param_list_path) \
                 or not bool(simulation.round.param_list_path):
@@ -387,20 +393,19 @@ class StartSimulation(views.APIView):
 
                         pos += 1
 
-        if simulation_waiting(simulation):
-            params = {'simulation_identifier': simulation.identifier}
+        params = {'simulation_identifier': simulation.identifier}
 
-            try:
-                requests.post(settings.START_SIM_ENDPOINT, params)
-            except requests.ConnectionError:
-                return Response({'status': 'Bad Request',
-                                 'message': 'The simulator appears to be down!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            return Response({'status': 'Trial started',
-                             'message': 'Please wait that the trial starts at the simulator!'},
-                            status=status.HTTP_200_OK)
-        else:
+        try:
+            requests.post(settings.START_SIM_ENDPOINT, params)
+        except requests.ConnectionError:
             return Response({'status': 'Bad Request',
-                             'message': 'The trial must be in state: waiting!'},
+                             'message': 'The simulator appears to be down!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        # sim now goes to "waiting"
+        simulation.waiting = True
+        simulation.save()
+
+        return Response({'status': 'Trial started',
+                         'message': 'Please wait that the trial starts at the simulator!'},
+                        status=status.HTTP_200_OK)
