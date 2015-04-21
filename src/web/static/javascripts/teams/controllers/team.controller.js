@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('TeamController', TeamController);
 
-    TeamController.$inject = ['$location', '$routeParams','Team', 'Authentication', 'Profile', 'Agent'];
+    TeamController.$inject = ['$location', '$routeParams', '$timeout', 'Team', 'Authentication', 'Profile', 'Agent'];
 
-    function TeamController($location, $routeParams, Team, Authentication, Profile, Agent){
+    function TeamController($location, $routeParams, $timeout, Team, Authentication, Profile, Agent){
         var vm = this;
 
         vm.addMember = addMember;
@@ -96,11 +96,9 @@
                 life: 2500,
                 theme: 'success'
             });
-            $location.path('/panel/' + teamName + '/editTeam/');
-        }
-        function isArray(myArray) {
-            return myArray.typeOf(Object);
-        }
+            $timeout(function(){
+                getMembers();
+            });        }
 
         function addMemberErrorFn(data){
             var errors = "";
@@ -126,68 +124,74 @@
             });
         }
 
-        function removeAdmin(user_name){
+        function removeAdmin(user_name, i){
             Team.manageAdmin(teamName, user_name).then(removeAdminSuccessFn, removeAdminErrorFn);
-        }
 
-        function removeAdminSuccessFn(){
-            $.jGrowl("Admin removed successfully.", {
-                life: 2500,
-                theme: 'success'
-            });
-            $location.path('/panel/' + teamName + '/editTeam/');
-        }
+            function removeAdminSuccessFn(){
+                $.jGrowl("Admin removed successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function(){
+                    getAdmin(i);
+                });         }
 
-        function removeAdminErrorFn(data){
-            console.log(data.data);
-            var errors = "";
-            if(typeof data.data.detail != "undefined"){
-                errors += data.data.detail;
-            }
-            else{
-                if (typeof data.data.message == 'object'){
-                    for (var value in data.data.message) {
-                        errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
-                        for (var error in data.data.message[value]){
-                            errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
-                        }
-                    }
+            function removeAdminErrorFn(data){
+                console.log(data.data);
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
                 }
                 else{
-                    errors+= data.data.message + '<br/>'
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
                 }
-            }
-            $.jGrowl(errors, {
-                life: 5000,
-                theme: 'btn-danger'
-            });
+                $.jGrowl(errors, {
+                    life: 5000,
+                    theme: 'btn-danger'
+                });
 
+            }
         }
 
-        function addAdmin(user_name){
+
+
+        function addAdmin(user_name, i){
             Team.manageAdmin(teamName, user_name).then(addAdminSuccessFn, addAdminErrorFn);
-        }
+            
+            function addAdminSuccessFn(){
+                $.jGrowl("Admin has been added successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function(){
+                    getAdmin(i);
+                });         }
 
-        function addAdminSuccessFn(){
-            $.jGrowl("Admin has been added successfully.", {
-                life: 2500,
-                theme: 'success'
-            });
-            $location.path('/panel/' + teamName + '/editTeam/');
-        }
+            function addAdminErrorFn(data){
 
-        function addAdminErrorFn(data){
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
+                }
 
-            var errors = "";
-            if(typeof data.data.detail != "undefined"){
-                errors += data.data.detail;
+                $.jGrowl(errors, {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
             }
 
-            $.jGrowl(errors, {
-                life: 2500,
-                theme: 'btn-danger'
-            });
         }
+
 
         function removeMember(user_name){
             Team.removeMember(user_name, teamName).then(removeMemberSuccessFn, removeMemberErrorFn);
@@ -198,8 +202,9 @@
                 life: 2500,
                 theme: 'success'
             });
-            $location.path('/panel/' + teamName + '/editTeam/');
-        }
+            $timeout(function(){
+                getMembers();
+            });         }
 
         function removeMemberErrorFn(data) {
             console.error(data.data);
@@ -226,6 +231,37 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
+            }
+        }
+
+        function getMembers(){
+            Team.getMembers(teamName).then(getMembersSuccessFn, getMembersErrorFn);
+
+            function getMembersSuccessFn(data){
+                vm.members = data.data;
+                for(var i = 0; i<vm.members.length; i++){
+                    Team.getTeamInformation(teamName,vm.members[i].username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
+                }
+
+            }
+
+            function getMembersErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+        }
+
+        function getAdmin(i){
+            Team.getTeamInformation(teamName,vm.members[i].username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
+
+            function getTeamInformationSuccessFn(data){
+                vm.team = data.data;
+                vm.members[i].is_admin = vm.team.is_admin;
+
+            }
+
+            function getTeamInformationErrorFn(){
+                $location.path('/panel/');
             }
         }
 

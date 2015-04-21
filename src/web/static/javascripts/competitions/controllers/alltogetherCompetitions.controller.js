@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('AllTogetherCompetitionsController', AllTogetherCompetitionsController);
 
-    AllTogetherCompetitionsController.$inject = ['$location', '$route', 'Competition'];
+    AllTogetherCompetitionsController.$inject = ['$location', '$timeout', 'Competition'];
 
-    function AllTogetherCompetitionsController($location, $route, Competition){
+    function AllTogetherCompetitionsController($location, $timeout, Competition){
         var vm = this;
         vm.deleteCompetition = deleteCompetition;
         vm.changeState = changeState;
@@ -51,7 +51,7 @@
 
         }
 
-        function changeState(name, state){
+        function changeState(name, state, i){
             var next;
             if(state === 'Register'){
                 next = 'Competition';
@@ -67,7 +67,17 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $route.reload();
+                $timeout(function(){
+                    Competition.getCompetition(name).then(getCompetitionSuccessFn, getCompetitionErrorFn);
+
+                    function getCompetitionSuccessFn(data){
+                        vm.competitions[i] = data.data;
+                    }
+
+                    function getCompetitionErrorFn(data){
+                        console.error(data.data);
+                    }
+                });
             }
 
             function changeStateErrorFn(data){

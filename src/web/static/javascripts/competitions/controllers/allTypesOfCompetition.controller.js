@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('AllTypesOfCompetitionController', AllTypesOfCompetitionController);
 
-    AllTypesOfCompetitionController.$inject = ['$location', 'Competition', '$route'];
+    AllTypesOfCompetitionController.$inject = ['$location', 'Competition', '$timeout'];
 
-    function AllTypesOfCompetitionController($location, Competition, $route){
+    function AllTypesOfCompetitionController($location, Competition, $timeout){
         var vm = this;
         vm.deleteTypeOfCompetition = deleteTypeOfCompetition;
         vm.change = change;
@@ -38,7 +38,18 @@
                     theme: 'success'
                 });
 
-                $route.reload();
+                $timeout(function(){
+                    Competition.getAllTypesOfCompetition().then(getAllSuccessFn, getAllErrorFn);
+
+                    function getAllSuccessFn(data){
+                        vm.typesOfCompetitions = data.data;
+                    }
+
+                    function getAllErrorFn(data){
+                        console.error(data.data);
+                        $location.url('/panel/');
+                    }
+                });
             }
 
             function removeErrorFn(data){

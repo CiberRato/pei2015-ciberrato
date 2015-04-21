@@ -5,9 +5,9 @@
         .module('ciberonline.agents.controllers')
         .controller('CreateAgentController', CreateAgentController);
 
-    CreateAgentController.$inject = ['$location', '$route', 'Authentication', 'Agent', 'Team'];
+    CreateAgentController.$inject = ['$location', '$timeout', 'Authentication', 'Agent', 'Team'];
 
-    function CreateAgentController($location, $route, Authentication, Agent, Team){
+    function CreateAgentController($location, $timeout, Authentication, Agent, Team){
         var vm = this;
 
         vm.create = create;
@@ -65,7 +65,9 @@
                 life: 2500,
                 theme: 'btn-danger'
             });
-            $route.reload();
+            $timeout(function(){
+                activate();
+            });
         }
     }
 })();

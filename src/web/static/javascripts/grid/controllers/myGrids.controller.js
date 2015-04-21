@@ -5,9 +5,9 @@
         .module('ciberonline.grid.controllers')
         .controller('MyGridsController', MyGridsController);
 
-    MyGridsController.$inject = ['$location', '$route', 'Authentication', 'Grid', 'Agent', 'Competition'];
+    MyGridsController.$inject = ['$location', '$timeout', 'Authentication', 'Grid', 'Agent', 'Competition'];
 
-    function MyGridsController($location, $route, Authentication, Grid, Agent, Competition){
+    function MyGridsController($location, $timeout, Authentication, Grid, Agent, Competition){
         var vm = this;
         vm.username;
         vm.models = {
@@ -49,7 +49,19 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $route.reload();
+                $timeout(function() {
+                    Grid.getMyGrids().then(getSuccessFn, getErrorFn);
+
+                    function getSuccessFn(data) {
+                        vm.grids = data.data;
+                        console.log(vm.grids);
+                    }
+
+                    function getErrorFn(data) {
+                        console.error(data.data);
+                        $location.url('/panel/');
+                    }
+                });
             }
 
             function destroyErrorFn(data){

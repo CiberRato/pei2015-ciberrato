@@ -36,8 +36,8 @@
                                 <tbody>
                                 <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
                                     <td><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
-                                    <td ng-if="value.valid == false && vm.competition.state_of_competition=='Register'"><a href="#" ng-click="vm.validateInscription(value.group.name, vm.competition.name)"><span class="label label-important">Not Valid</span></a></td>
-                                    <td ng-if="value.valid == true && vm.competition.state_of_competition=='Register' "><a href="#" ng-click="vm.validateInscription(value.group.name, vm.competition.name)"><span class="label label-success">Valid</span></a></td>
+                                    <td ng-if="value.valid == false && vm.competition.state_of_competition=='Register'"><a href="#" ng-click="vm.validateInscription(value.group.name, vm.competition.name, $index)"><span class="label label-important">Not Valid</span></a></td>
+                                    <td ng-if="value.valid == true && vm.competition.state_of_competition=='Register' "><a href="#" ng-click="vm.validateInscription(value.group.name, vm.competition.name, $index)"><span class="label label-success">Valid</span></a></td>
                                     <td ng-if="value.valid == false && vm.competition.state_of_competition!='Register'"><span class="label label-important">Not Valid</span></a></td>
                                     <td ng-if="value.valid == true && vm.competition.state_of_competition!='Register' "><span class="label label-success">Valid</span></a></td>
 

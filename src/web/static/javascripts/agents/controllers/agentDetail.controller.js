@@ -6,9 +6,9 @@
         .module('ciberonline.agents.controllers')
         .controller('AgentDetailController', AgentDetailController);
 
-    AgentDetailController.$inject = ['$location', '$routeParams', '$route', 'Agent'];
+    AgentDetailController.$inject = ['$location', '$timeout', '$routeParams', '$route', 'Agent'];
 
-    function AgentDetailController($location, $routeParams, $route,  Agent) {
+    function AgentDetailController($location, $timeout, $routeParams, $route,  Agent) {
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
@@ -53,9 +53,11 @@
                         theme: 'success'
                     });
                     setTimeout(function () {
-                        Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+                        $timeout(function(){
+                            Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+                        });
                     }, 1000);
-                    $route.reload();
+
                 }
 
                 function getAgentSuccessFn(data) {
@@ -105,7 +107,9 @@
                         life: 2500,
                         theme: 'success'
                     });
-                    $route.reload();
+                    $timeout(function(){
+                        getFiles();
+                    });
                 }
 
                 function uploadErrorFn(data) {
@@ -128,7 +132,9 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $route.reload();
+                $timeout(function(){
+                    getFiles();
+                });
 
             }
 
@@ -138,6 +144,22 @@
                     theme: 'btn-danger'
                 });
                 console.error(data.data);
+            }
+
+        }
+
+        function getFiles(){
+            Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
+
+            function getFilesSuccessFn(data) {
+                vm.files = data.data;
+                console.log(vm.files);
+
+            }
+
+            function getFilesErrorFn(data) {
+                console.error(data.data);
+                $location.url('/panel/');
             }
 
         }

@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('ListCompetitionController', ListCompetitionController);
 
-    ListCompetitionController.$inject = ['$location', '$route', '$routeParams', 'Competition', 'Round'];
+    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round'];
 
-    function ListCompetitionController($location, $route, $routeParams, Competition, Round){
+    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round){
         var vm = this;
         vm.competitionName = $routeParams.name;
         vm.validateInscription = validateInscription;
@@ -90,11 +90,22 @@
         }
 
 
-        function validateInscription(group_name, competition_name){
+        function validateInscription(group_name, competition_name, i){
             Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
 
             function validateInscriptionSuccessFn(){
-                $route.reload();            }
+                $timeout(function(){
+                    Competition.getTeams(vm.competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
+
+                    function getTeamsSuccessFn(data) {
+                        vm.competitionTeamsInfo = data.data;
+                    }
+
+                    function getTeamsErrorFn(data) {
+                        console.error(data.data);
+                        $location.url('/panel/');
+                    }
+                });            }
             function validateInscriptionErrorFn(data){
                 console.error(data.data);
                 $location.path('/admin/');
