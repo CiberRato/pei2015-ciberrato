@@ -27,7 +27,8 @@
             getSimulation: getSimulation,
             getFiles: getFiles,
             saveScore: saveScore,
-            getScoresByTrial: getScoresByTrial
+            getScoresByTrial: getScoresByTrial,
+            getScoresByRound: getScoresByRound
         };
 
         return Round;
@@ -143,6 +144,10 @@
 
         function getScoresByTrial(identifier){
             return $http.get("/api/v1/competitions/ranking_trial/" + identifier + "/");
+        }
+
+        function getScoresByRound(name){
+            return $http.get("/api/v1/competitions/ranking_round/" + name +"/")
         }
 
     }

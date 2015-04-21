@@ -13,6 +13,10 @@
         vm.competitionName = $routeParams.name;
         vm.validateInscription = validateInscription;
         vm.getGrids = getGrids;
+        vm.getScoresByTrial = getScoresByTrial;
+        vm.getScoresByRound = getScoresByRound;
+        vm.getScoresByCompetition = getScoresByCompetition;
+        vm.identifier;
 
         activate();
 
@@ -112,6 +116,47 @@
                 $location.path('/panel/');
             }
         }
+
+        function getScoresByTrial(){
+            Round.getScoresByTrial(vm.identifier).then(getScoresByTrialSuccessFn, getScoresByTrialErrorFn);
+
+            function getScoresByTrialSuccessFn(data){
+                vm.scoresByTrial = data.data;
+                console.log(vm.scoresByTrial);
+            }
+
+            function getScoresByTrialErrorFn(data){
+                console.error(data.data);
+            }
+
+
+        }
+
+        function getScoresByRound(name){
+            Round.getScoresByRound(name).then(getScoresByRoundSuccessFn, getScoresByRoundErrorFn);
+
+            function getScoresByRoundSuccessFn(data){
+                vm.scoresByRound = data.data;
+            }
+
+            function getScoresByRoundErrorFn(data){
+                console.error(data.data);
+            }
+        }
+
+        function getScoresByCompetition(){
+            Competition.getScoresByCompetition(vm.competitionName).then(getScoresByCompetitionSuccessFn, getScoresByCompetitionErrorFn);
+
+            function getScoresByCompetitionSuccessFn(data){
+                vm.scoresByCompetition = data.data;
+            }
+
+            function getScoresByCompetitionErrorFn(data){
+                console.error(data.data);
+            }
+        }
+
+
 
     }
 

@@ -33,7 +33,8 @@
             getType: getType,
             updateType: updateType,
             getValidByTeam: getValidByTeam,
-            change: change
+            change: change,
+            getScoresByCompetition: getScoresByCompetition
 
         };
 
@@ -156,6 +157,10 @@
 
         function change(url){
             return $http.get(url);
+        }
+
+        function getScoresByCompetition(name){
+            return $http.get("/api/v1/competitions/ranking_competition/" + name + "/");
         }
 
     }

@@ -10,7 +10,6 @@
                 <section class="tab-content">
                     <header>
                         <h2>{{vm.competitionName}}</h2>
-
                     </header>
 
                     <!-- Tab #basic -->
@@ -49,6 +48,35 @@
                                 </tbody>
                             </table>
 
+                            <a data-toggle="modal" href="#competitionScore" ng-click="vm.getScoresByCompetition()">   (Consult the Score of this Competition)</a>
+                            <div class="modal fade"  id="competitionScore">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                    <h2 align="center">Consult the Score Table Of this Competition</h2>
+                                </div>
+                                <div class="modal-body" style="text-align: center">
+                                    <p ng-if="vm.scoresByCompetition.length == 0">There are no Scores!</p>
+                                    <table ng-if="vm.scoresByCompetition.length != 0" style="width: 100%" class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="border-right: 0px none">Team</th>
+                                            <th style="border-right: 0px none">Score</th>
+                                            <th style="border-right: 0px none">Number Of Agents</th>
+                                            <th style="border-right: 0px none">Time</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody ng-repeat="(key, value) in vm.scoresByCompetition">
+                                        <td>{{value.team.name}}</td>
+                                        <td>{{value.score}}</td>
+                                        <td>{{value.number_of_agents}}</td>
+                                        <td>{{value.time}}</td>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+                            </div>
+
                         </div>
 
                     </div>
@@ -66,6 +94,7 @@
                         <div ng-if="vm.rounds.length != 0" ng-repeat="(key, value) in vm.rounds" class="span8">
                             <div class="tab-pane active" id="static">
                                 <h3><a href="admin/{{value.name}}/roundDetail">{{value.name}} </a></h3>
+
                                 <p ng-if="value.simulations.length == 0"> This round doesn't have any trials.</p>
                                 <table ng-if="value.simulations.length != 0" class="table table-striped table-hover">
                                     <thead>
@@ -73,6 +102,7 @@
                                         <th>Trial Name</th>
                                         <th>State</th>
                                         <th>Teams</th>
+                                        <th>Score By Trial</th>
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.simulations">
@@ -81,6 +111,36 @@
                                         <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.state}}</td>
                                         <td ng-if="value1.grids.length == 0"><strong> There are no teams</strong></td>
                                         <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first"><a href="/panel/{{value2.grid_positions.group_name}}/teamMembers">{{value2.grid_positions.group_name}}</a></td>
+                                        <td style="vertical-align: middle" rowspan="{{value1.grids.length}}"><a data-toggle="modal" ng-click="vm.identifier=value1.identifier; vm.getScoresByTrial()" href="#addScores">Score</a>
+                                            <div class="modal fade"  id="addScores">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">×</button>
+
+                                                    <h2 align="center">Consult the Score Table</h2>
+                                                </div>
+                                                <div class="modal-body" style="text-align: center">
+                                                    <p ng-if="vm.scoresByTrial.length == 0">There are no Scores!</p>
+                                                    <table ng-if="vm.scoresByTrial.length != 0" style="width: 100%" class="table table-bordered">
+                                                        <thead>
+                                                        <tr>
+                                                            <th style="border-right: 0px none">Team</th>
+                                                            <th style="border-right: 0px none">Score</th>
+                                                            <th style="border-right: 0px none">Number Of Agents</th>
+                                                            <th style="border-right: 0px none">Time</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody ng-repeat="(key, value) in vm.scoresByTrial">
+                                                        <td>{{value.team.name}}</td>
+                                                        <td>{{value.score}}</td>
+                                                        <td>{{value.number_of_agents}}</td>
+                                                        <td>{{value.time}}</td>
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">
                                         <td bgcolor="#f8f8f8">
@@ -89,6 +149,36 @@
                                     </tr>
                                     </tbody>
                                 </table>
+
+                                <a ng-if="value.simulations.length != 0" data-toggle="modal" href="#roundScores{{key}}" ng-click="vm.getScoresByRound(value.name)">(Consult the Score of this Round)</a>
+                                <div class="modal fade"  id="roundScores{{key}}">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">×</button>
+
+                                        <h2 align="center">Consult the Score Table Of Round "{{value.name}}"</h2>
+                                    </div>
+                                    <div class="modal-body" style="text-align: center">
+                                        <p ng-if="vm.scoresByRound.length == 0">There are no Scores!</p>
+                                        <table ng-if="vm.scoresByRound.length != 0" style="width: 100%" class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th style="border-right: 0px none">Team</th>
+                                                <th style="border-right: 0px none">Score</th>
+                                                <th style="border-right: 0px none">Number Of Agents</th>
+                                                <th style="border-right: 0px none">Time</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody ng-repeat="(key, value) in vm.scoresByRound">
+                                            <td>{{value.team.name}}</td>
+                                            <td>{{value.score}}</td>
+                                            <td>{{value.number_of_agents}}</td>
+                                            <td>{{value.time}}</td>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+
+                                </div>
                             </div>
 
                             <hr/>
