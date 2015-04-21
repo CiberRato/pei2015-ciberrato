@@ -65,237 +65,237 @@ using std::ofstream;
 	\brief Default lab.
 */
 static const char *LAB =
-	"<Lab Name=\"Default LAB\" Height=\"14\" Width=\"28\">\n"
-		"\t<Beacon X=\"24\" Y=\"7.0\" Height=\"4.0\"/>\n"
-		"\t<Target X=\"24\" Y=\"7.0\" Radius=\"2.0\"/>\n"
-		"\t<Target X=\"7\" Y=\"7.0\" Radius=\"2.0\"/>\n"  // HOME AREA - for cooperative version
-		"\t<Wall Height=\"5.0\">\n"
-			"\t\t<Corner X=\"10.0\" Y=\"6.0\"/>\n"
-			"\t\t<Corner X=\"11.0\" Y=\"6.0\"/>\n"
-			"\t\t<Corner X=\"11.0\" Y=\"8.0\"/>\n"
-			"\t\t<Corner X=\"10.0\" Y=\"8.0\"/>\n"
-		"\t</Wall>\n"
-		"\t<Wall Height=\"5.0\">\n"
-			"\t\t<Corner X=\"4.0\" Y=\"4.0\"/>\n"
-			"\t\t<Corner X=\"5.0\" Y=\"4.0\"/>\n"
-			"\t\t<Corner X=\"5.0\" Y=\"10.0\"/>\n"
-			"\t\t<Corner X=\"4.0\" Y=\"10.0\"/>\n"
-		"\t</Wall>\n"
-	"</Lab>\n";
+    "<Lab Name=\"Default LAB\" Height=\"14\" Width=\"28\">\n"
+    "\t<Beacon X=\"24\" Y=\"7.0\" Height=\"4.0\"/>\n"
+    "\t<Target X=\"24\" Y=\"7.0\" Radius=\"2.0\"/>\n"
+    "\t<Target X=\"7\" Y=\"7.0\" Radius=\"2.0\"/>\n"  // HOME AREA - for cooperative version
+    "\t<Wall Height=\"5.0\">\n"
+    "\t\t<Corner X=\"10.0\" Y=\"6.0\"/>\n"
+    "\t\t<Corner X=\"11.0\" Y=\"6.0\"/>\n"
+    "\t\t<Corner X=\"11.0\" Y=\"8.0\"/>\n"
+    "\t\t<Corner X=\"10.0\" Y=\"8.0\"/>\n"
+    "\t</Wall>\n"
+    "\t<Wall Height=\"5.0\">\n"
+    "\t\t<Corner X=\"4.0\" Y=\"4.0\"/>\n"
+    "\t\t<Corner X=\"5.0\" Y=\"4.0\"/>\n"
+    "\t\t<Corner X=\"5.0\" Y=\"10.0\"/>\n"
+    "\t\t<Corner X=\"4.0\" Y=\"10.0\"/>\n"
+    "\t</Wall>\n"
+    "</Lab>\n";
 
 /*!
 	\constant GRID
 	\brief Default grid
 */
 static const char *GRID =
-	"<Grid>\n"
-		"\t<Position X=\"7.0\" Y=\"7.0\" Dir=\"0.0\"/>\n"
-		"\t<Position X=\"6.0\" Y=\"11.0\" Dir=\"0.0\"/>\n"
-		"\t<Position X=\"6.0\" Y=\"9.0\" Dir=\"0.0\"/>\n"
-		"\t<Position X=\"6.0\" Y=\"5.0\" Dir=\"0.0\"/>\n"
-		"\t<Position X=\"6.0\" Y=\"3.0\" Dir=\"0.0\"/>\n"
-	"</Grid>\n";
+    "<Grid>\n"
+    "\t<Position X=\"7.0\" Y=\"7.0\" Dir=\"0.0\"/>\n"
+    "\t<Position X=\"6.0\" Y=\"11.0\" Dir=\"0.0\"/>\n"
+    "\t<Position X=\"6.0\" Y=\"9.0\" Dir=\"0.0\"/>\n"
+    "\t<Position X=\"6.0\" Y=\"5.0\" Dir=\"0.0\"/>\n"
+    "\t<Position X=\"6.0\" Y=\"3.0\" Dir=\"0.0\"/>\n"
+    "</Grid>\n";
 
 /*! \constant SIMPARAM
 	\brief Default simulation parameteres
 */
 static const char *SIMPARAM =
-        "<Parameters SimTime=\"1800\" KeyTime=\"1350\" CycleTime=\"50\"\n"
-		"\t\tCompassNoise=\"2.0\" BeaconNoise=\"2.0\" ObstacleNoise=\"0.1\"\n"
-		"\t\tNRequestsPerCycle=\"4\"\n"
-		"\t\tCompassLatency=\"4\" BeaconLatency=\"4\"\n"
-        "\t\tMotorsNoise=\"1.5\"\n"
-        "\t\tReturnTimePenalty=\"25\" ArrivalTimePenalty=\"100\"\n"
-        "\t\tCollisionWallPenalty=\"2\" CollisionRobotPenalty=\"2\"\n"
-        "\t\tTargetReward=\"100\" HomeReward=\"100\"/>\n";
+    "<Parameters SimTime=\"1800\" KeyTime=\"1350\" CycleTime=\"50\"\n"
+    "\t\tCompassNoise=\"2.0\" BeaconNoise=\"2.0\" ObstacleNoise=\"0.1\"\n"
+    "\t\tNRequestsPerCycle=\"4\"\n"
+    "\t\tCompassLatency=\"4\" BeaconLatency=\"4\"\n"
+    "\t\tMotorsNoise=\"1.5\"\n"
+    "\t\tReturnTimePenalty=\"25\" ArrivalTimePenalty=\"100\"\n"
+    "\t\tCollisionWallPenalty=\"2\" CollisionRobotPenalty=\"2\"\n"
+    "\t\tTargetReward=\"100\" HomeReward=\"100\"/>\n";
 
 
 cbSimulator::cbSimulator()
 {
 	lab = 0;
 	curCycle = 0;
-    endCycle = 3000; // provisório
+	endCycle = 3000; // provisório
 	cycle = 50;
 
 	curState = nextState = INIT;
 
-    logging=false;
-    logStream=0;
+	logging = false;
+	logStream = 0;
 
-	distMaxToTarget=0.0;
+	distMaxToTarget = 0.0;
 
-	lab=0;grid=0;param=0;receptionist=0;
-	gui=0;
-    graph=0; grAux=0;
-    labScene=0;labView=0;
+	lab = 0; grid = 0; param = 0; receptionist = 0;
+	gui = 0;
+	graph = 0; grAux = 0;
+	labScene = 0; labView = 0;
 
-    defaultParam = 0; defaultLab = 0; defaultGrid = 0;
+	defaultParam = 0; defaultLab = 0; defaultGrid = 0;
 
-    QXmlInputSource *sourceParam = new QXmlInputSource;
-    QXmlInputSource *sourceLab = new QXmlInputSource;
-    QXmlInputSource *sourceGrid = new QXmlInputSource;
+	QXmlInputSource *sourceParam = new QXmlInputSource;
+	QXmlInputSource *sourceLab = new QXmlInputSource;
+	QXmlInputSource *sourceGrid = new QXmlInputSource;
 
-    sourceParam->setData(QByteArray(SIMPARAM));
-    sourceLab->setData(QByteArray(LAB));
-    sourceGrid->setData(QByteArray(GRID));
+	sourceParam->setData(QByteArray(SIMPARAM));
+	sourceLab->setData(QByteArray(LAB));
+	sourceGrid->setData(QByteArray(GRID));
 
-    QXmlSimpleReader xmlParserParam, xmlParserLab, xmlParserGrid;
+	QXmlSimpleReader xmlParserParam, xmlParserLab, xmlParserGrid;
 
-    cbParamHandler *paramHandler = new cbParamHandler(defaultParam);
-    cbLabHandler *labHandler = new cbLabHandler;
-    cbGridHandler *gridHandler = new cbGridHandler;
+	cbParamHandler *paramHandler = new cbParamHandler(defaultParam);
+	cbLabHandler *labHandler = new cbLabHandler;
+	cbGridHandler *gridHandler = new cbGridHandler;
 
-    xmlParserParam.setContentHandler(paramHandler);
-    xmlParserLab.setContentHandler(labHandler);
-    xmlParserGrid.setContentHandler(gridHandler);
+	xmlParserParam.setContentHandler(paramHandler);
+	xmlParserLab.setContentHandler(labHandler);
+	xmlParserGrid.setContentHandler(gridHandler);
 
-    if(xmlParserParam.parse(*sourceParam))
-        defaultParam = paramHandler->parsedParameters();
-    else {
-        cerr << "Error parsing DEFAULT parameters\n";
-        gui->appendMessage(QString("Error parsing DEFAULT parameters"), true);
-        assert(0);
-    }
+	if (xmlParserParam.parse(*sourceParam))
+		defaultParam = paramHandler->parsedParameters();
+	else {
+		cerr << "Error parsing DEFAULT parameters\n";
+		gui->appendMessage(QString("Error parsing DEFAULT parameters"), true);
+		assert(0);
+	}
 
-    if(xmlParserLab.parse(*sourceLab))
-        defaultLab = labHandler->parsedLab();
-    else {
-        cerr << "Error parsing DEFAULT lab\n";
-        gui->appendMessage(QString("Error parsing DEFAULT lab"), true);
-        assert(0);
-    }
+	if (xmlParserLab.parse(*sourceLab))
+		defaultLab = labHandler->parsedLab();
+	else {
+		cerr << "Error parsing DEFAULT lab\n";
+		gui->appendMessage(QString("Error parsing DEFAULT lab"), true);
+		assert(0);
+	}
 
-    if(xmlParserGrid.parse(*sourceGrid))
-        defaultGrid = gridHandler->parsedGrid();
-    else {
-        cerr << "Error parsing DEFAULT grid\n";
-        gui->appendMessage(QString("Error parsing DEFAULT grid"), true);
-        assert(0);
-    }
+	if (xmlParserGrid.parse(*sourceGrid))
+		defaultGrid = gridHandler->parsedGrid();
+	else {
+		cerr << "Error parsing DEFAULT grid\n";
+		gui->appendMessage(QString("Error parsing DEFAULT grid"), true);
+		assert(0);
+	}
 
-    delete sourceParam;
-    delete sourceLab;
-    delete sourceGrid;
-    delete paramHandler;
-    delete labHandler;
-    delete gridHandler;
+	delete sourceParam;
+	delete sourceLab;
+	delete sourceGrid;
+	delete paramHandler;
+	delete labHandler;
+	delete gridHandler;
 
 	setDefaultParameters();
 	setDefaultGrid();
 	setDefaultLab();
 
-    setRegistrations(true);
-    setShowPositions(false);
+	setRegistrations(true);
+	setShowPositions(false);
 }
 
 cbSimulator::~cbSimulator()
 {
-	if(logging && logStream != 0) {
+	if (logging && logStream != 0) {
 		*logStream << "</Log>\n";
 		delete logStream;
-		logStream=0;
+		logStream = 0;
 	}
 }
 
 void cbSimulator::reset()
 {
-    unsigned int j;
+	unsigned int j;
 
 	// Close Log
 	closeLog();
 
 	// notify viewers
-	for (j=0; j<views.size(); j++)
+	for (j = 0; j < views.size(); j++)
 	{
-		views[j]->send("<Restart/>",11);
+		views[j]->send("<Restart/>", 11);
 	}
 
 	//delete Viewers
-	for (j=0; j<views.size(); j++)
+	for (j = 0; j < views.size(); j++)
 	{
 		views.clear();
 	}
 
-    // delete robots
-    for (unsigned int i=0; i<robots.size(); i++) {
-        /*if(robots[i] != 0) {
-            delete robots[i];
-            robots[i]=0;
-        }*/
-        deleteRobot(i+1);
+	// delete robots
+	for (unsigned int i = 0; i < robots.size(); i++) {
+		/*if(robots[i] != 0) {
+		    delete robots[i];
+		    robots[i]=0;
+		}*/
+		deleteRobot(i + 1);
 	}
 
-    gui->appendMessage( "RESETTING" );
+	gui->appendMessage( "RESETTING" );
 	cout << "RESETTING\n";
 
-    curCycle = 0;
-    curState = nextState = INIT;
+	curCycle = 0;
+	curState = nextState = INIT;
 
-    cbGPSSensor::offsetX   = randUniform(0.0,1000.0);
-    cbGPSSensor::offsetY   = randUniform(0.0,1000.0);
+	cbGPSSensor::offsetX   = randUniform(0.0, 1000.0);
+	cbGPSSensor::offsetY   = randUniform(0.0, 1000.0);
 
 	// Open New Log
-    if(logging) {
-        QString logFilename = QFileDialog::getSaveFileName(0, "Choose New Log Filename", ".","Logs (*.log)");
-        if(!logFilename.isNull()) {
-            setLogFilename(logFilename);
-            //openLog(logFilename.toLatin1().constData());
-            gui->appendMessage( QString("Logfile changed to ")+ logFilename );
+	if (logging) {
+		QString logFilename = QFileDialog::getSaveFileName(0, "Choose New Log Filename", ".", "Logs (*.log)");
+		if (!logFilename.isNull()) {
+			setLogFilename(logFilename);
+			//openLog(logFilename.toLatin1().constData());
+			gui->appendMessage( QString("Logfile changed to ") + logFilename );
 		}
-        else {
-            logging=false;
-            gui->appendMessage( "Logging disabled" );
-        }
-    }
+		else {
+			logging = false;
+			gui->appendMessage( "Logging disabled" );
+		}
+	}
 
-    emit stateChanged(curStateAsString());
-    emit simReset(true);
-    emit simReady(false);
-    emit simRunning(false);
-    emit curTimeChanged(0);
+	emit stateChanged(curStateAsString());
+	emit simReset(true);
+	emit simReady(false);
+	emit simRunning(false);
+	emit curTimeChanged(0);
 }
 
 void cbSimulator::setLab(cbLab *l)
 {
-	if(lab!=0) delete lab;
+	if (lab != 0) delete lab;
 	lab = l;
 
 	//update parameters
-    param->nBeacons= Lab()->nBeacons();
+	param->nBeacons = Lab()->nBeacons();
 
-    // emit signal
-    emit labChanged ( Lab()->Name() );
+	// emit signal
+	emit labChanged ( Lab()->Name() );
 }
 
 void cbSimulator::setGrid(cbGrid *g)
 {
-    unsigned int i;
-	for (i=0; i<robots.size(); i++)
-		if(robots[i] != 0) delete robots[i];
+	unsigned int i;
+	for (i = 0; i < robots.size(); i++)
+		if (robots[i] != 0) delete robots[i];
 
-	if(grid!=0) delete grid;
+	if (grid != 0) delete grid;
 	/* set the new grid */
 	grid = g;
 	/* resize robot array to new grid size */
 	robots.resize(grid->size());
-    for (i=0; i<robots.size(); i++) robots[i] = 0;
+	for (i = 0; i < robots.size(); i++) robots[i] = 0;
 
-    emit gridChanged(grid->size());
+	emit gridChanged(grid->size());
 }
 
 void cbSimulator::setParameters(cbParameters *p)
 {
-	if(param!=0) delete param;
+	if (param != 0) delete param;
 
 	param = p;
 
 	// update simulator variables according to parameters
 	processEditParameters();
 
-	if(!param->labFilename.isNull())
+	if (!param->labFilename.isNull())
 		changeLab(param->labFilename);
 
-	if(!param->gridFilename.isNull())
+	if (!param->gridFilename.isNull())
 		changeGrid(param->gridFilename);
 }
 
@@ -307,10 +307,10 @@ void cbSimulator::setReceptionistAt(int port)
 {
 	cbReceptionist *receptionist = new cbReceptionist(port);
 	if (receptionist == 0 || receptionist->bad()) {
-        cerr << "Could not initialize receptionist\n";
-        QMessageBox::critical(0,"Error",
-                              QString("Error creating socket. Please check running processes!"),
-                              QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
+		cerr << "Could not initialize receptionist\n";
+		QMessageBox::critical(0, "Error",
+		                      QString("Error creating socket. Please check running processes!"),
+		                      QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
 		exit(-1);
 		assert(0);
 	}
@@ -319,18 +319,18 @@ void cbSimulator::setReceptionistAt(int port)
 
 void cbSimulator::setGPS(bool g)
 {
-    if (g == param->GPSOn) return;
+	if (g == param->GPSOn) return;
 
-    if (curState == INIT)
-    {
-        param->GPSOn = g;
-        cbRobot::GPSOn = g;
-    }
-    else
-        gui->appendMessage(QString("Cannot Change Configuration After Start - Use Reset"), true);
+	if (curState == INIT)
+	{
+		param->GPSOn = g;
+		cbRobot::GPSOn = g;
+	}
+	else
+		gui->appendMessage(QString("Cannot Change Configuration After Start - Use Reset"), true);
 
 
-    emit toggleGPS(param->GPSOn);
+	emit toggleGPS(param->GPSOn);
 
 }
 
@@ -341,17 +341,17 @@ bool cbSimulator::getGPS(void)
 
 void cbSimulator::setScoreSensor(bool g)
 {
-    if (g == param->scoreSensorOn) return;
+	if (g == param->scoreSensorOn) return;
 
-    if (curState == INIT)
-    {
-        param->scoreSensorOn = g;
-        cbRobot::scoreSensorOn = g;
-    }
-    else
-        gui->appendMessage(QString("Cannot Change Configuration After Start - Use Reset"), true);
+	if (curState == INIT)
+	{
+		param->scoreSensorOn = g;
+		cbRobot::scoreSensorOn = g;
+	}
+	else
+		gui->appendMessage(QString("Cannot Change Configuration After Start - Use Reset"), true);
 
-    emit toggleScoreSensor(param->scoreSensorOn);
+	emit toggleScoreSensor(param->scoreSensorOn);
 
 }
 
@@ -362,108 +362,108 @@ bool cbSimulator::getScoreSensor(void)
 
 void cbSimulator::setTime(bool timeOn)
 {
-    //if (timeOn == isTimed()) return;
+	//if (timeOn == isTimed()) return;
 
-    endCycle = timeOn ? param->simTime : 0;
+	endCycle = timeOn ? param->simTime : 0;
 
-    emit simTimeChanged(endCycle);
-    emit toggleTime(timeOn);
+	emit simTimeChanged(endCycle);
+	emit toggleTime(timeOn);
 }
 
 bool cbSimulator::isTimed()
 {
-    return simTime() > 0;
+	return simTime() > 0;
 }
 
 void cbSimulator::setCollisions(bool collisions)
 {
-    if (cbRobot::ignoreOthers == !collisions) return;
+	if (cbRobot::ignoreOthers == !collisions) return;
 
-    cbRobot::ignoreOthers = !collisions;
-    emit toggleCollisions(collisions);
+	cbRobot::ignoreOthers = !collisions;
+	emit toggleCollisions(collisions);
 }
 
 bool cbSimulator::collisionsIgnored()
 {
-    return cbRobot::ignoreOthers;
+	return cbRobot::ignoreOthers;
 }
 
 void cbSimulator::setRegistrations(bool allow)
 {
-    if (allow == allowRegistrations) return;
+	if (allow == allowRegistrations) return;
 
-    allowRegistrations = allow;
-    emit toggleRegistrations(allow);
+	allowRegistrations = allow;
+	emit toggleRegistrations(allow);
 }
 
 bool cbSimulator::isRegistrationAllowed()
 {
-    return allowRegistrations;
+	return allowRegistrations;
 }
 
 void cbSimulator::setShowActions(bool s)
 {
-    cbRobot::showActions = s;
-    param->showActions = s;
+	cbRobot::showActions = s;
+	param->showActions = s;
 }
 
 void cbSimulator::setShowMeasures(bool s)
 {
-    cbRobot::showMeasures = s;
+	cbRobot::showMeasures = s;
 }
 
 void cbSimulator::setShowPositions(bool s)
 {
-    showPositions = s;
+	showPositions = s;
 }
 
 int cbSimulator::openLog(const char *logFilename)
 {
-	char buff[1024*128];
+	char buff[1024 * 128];
 
-	if (logFilename!=0) logStream=new ofstream(logFilename);
+	if (logFilename != 0) logStream = new ofstream(logFilename);
 	else logStream = 0;
 
-        if(!logStream) {
-            cerr << "ERROR: Could not open " << logFilename << " for writing\n";
-            gui->appendMessage( QString("ERROR: Could not open ") + logFilename + " for writing" , true);
-            logging=false;
-            return -1;
-        }
+	if (!logStream) {
+		cerr << "ERROR: Could not open " << logFilename << " for writing\n";
+		gui->appendMessage( QString("ERROR: Could not open ") + logFilename + " for writing" , true);
+		logging = false;
+		return -1;
+	}
 
 	cout << "Logfile \"" << logFilename;
 	cout << "\" opened.\n";
 
-    logging=true;
+	logging = true;
 
 #ifndef MicWindows
 	char datestr[1024];
-	time_t datet=time(0);
-	strcpy(datestr,ctime(&datet));
-	datestr[strlen(datestr)-1] = '\0';  // discard '\n'
-	*logStream << "<Log Date=\"" << datestr <<"\" >\n";
+	time_t datet = time(0);
+	strcpy(datestr, ctime(&datet));
+	datestr[strlen(datestr) - 1] = '\0'; // discard '\n'
+	*logStream << "<Log Date=\"" << datestr << "\" >\n";
 #else
 	*logStream << "<Log>\n";
 #endif
 
 
-	param->toXml(buff,sizeof(buff));
+	param->toXml(buff, sizeof(buff));
 	*logStream << buff;
-	lab->toXml(buff,sizeof(buff));
+	lab->toXml(buff, sizeof(buff));
 	*logStream << buff;
-	grid->toXml(buff,sizeof(buff));
+	grid->toXml(buff, sizeof(buff));
 	*logStream << buff;
 
-    return 0;
+	return 0;
 }
 
 int cbSimulator::closeLog(void)
 {
-    if(logging && logStream!=0) {
-        gui->appendMessage( "Logfile  closed." );
+	if (logging && logStream != 0) {
+		gui->appendMessage( "Logfile  closed." );
 		*logStream << "</Log>\n";
 		delete logStream;
-		logStream=0;
+		logStream = 0;
 	}
 
 	return 0;
@@ -476,51 +476,51 @@ int cbSimulator::closeLog(void)
 */
 bool cbSimulator::registerRobot(cbRobot *robot)
 {
-    unsigned int i;
+	unsigned int i;
 
 	bool isRobotBeacon = ( (dynamic_cast<cbRobotBeacon *> (robot)) != 0);
 
-	if(isRobotBeacon && lab->nBeacons()!=0)
+	if (isRobotBeacon && lab->nBeacons() != 0)
 	{
 		cerr << "beacon already exists";
 		return false;
 	}
 
 	/* check existence of grid */
-    if (grid == 0) return false;
-    if (curState==RUNNING && !allowRegistrations) return false;
-    if (curState==INIT) {
-        nextState=STOPPED;
-        if(logging)
-            openLog(logFilename.toLatin1().constData());
+	if (grid == 0) return false;
+	if (curState == RUNNING && !allowRegistrations) return false;
+	if (curState == INIT) {
+		nextState = STOPPED;
+		if (logging)
+			openLog(logFilename.toLatin1().constData());
 	}
 
 	/* check id */
 	unsigned int id = robot->Id();
-    if(id==0) {   // first available position in the grid is occupied
-        for(i=1; i<robots.size()+1 && robots[i-1]!=0; i++);
-        if(i==robots.size()+1) return false;
-        id=i;
-        robot->setId(id);
+	if (id == 0) { // first available position in the grid is occupied
+		for (i = 1; i < robots.size() + 1 && robots[i - 1] != 0; i++);
+		if (i == robots.size() + 1) return false;
+		id = i;
+		robot->setId(id);
 	}
 	else
-    {
-        if (id > robots.size()) return false;
+	{
+		if (id > robots.size()) return false;
 
-        /* check existence of another robot with the same id */
-        if (robots[id-1] != 0) return false;
+		/* check existence of another robot with the same id */
+		if (robots[id - 1] != 0) return false;
 
-	    /* add robot and set attributes */
+		/* add robot and set attributes */
 	}
-    robots[id-1] = robot;
-    robot->setSimulator(this);
-    const cbPosition &pos = grid->at(id-1);
+	robots[id - 1] = robot;
+	robot->setSimulator(this);
+	const cbPosition &pos = grid->at(id - 1);
 	robot->setPosition(pos);
 
-    if(isRobotBeacon)
-        lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
+	if (isRobotBeacon)
+		lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
 
-    emit robotRegistered((int) id);
+	emit robotRegistered((int) id);
 	return true;
 }
 
@@ -531,7 +531,7 @@ unsigned int cbSimulator::curTime()
 
 unsigned int cbSimulator::simTime()
 {
-    return endCycle;
+	return endCycle;
 }
 
 unsigned int cbSimulator::cycleTime()
@@ -546,7 +546,7 @@ unsigned int cbSimulator::keyTime()
 
 const char *cbSimulator::curStateAsString()
 {
-    static const char *sas[] = { "Ready", "Stopped", "Running", "Finished" };
+	static const char *sas[] = { "Ready", "Stopped", "Running", "Finished" };
 	return sas[curState];
 }
 
@@ -554,12 +554,12 @@ void cbSimulator::step()
 {
 	//cout.form("Reading robot actions (%u)\n", curCycle);
 	RobotActions();
-	if(logging) 
+	if (logging)
 		RobotsToXml(*logStream, true, false);
 	//cout.form("Checking new registrations (%u)\n", curCycle);
 	CheckIn();
 	//cout.form("Reading view commands (%u)\n", curCycle);
-	
+
 	// Viewer can't send messages anymore!
 	// There's a PanelView to do that kind of actions.
 	//ViewCommands();
@@ -568,8 +568,8 @@ void cbSimulator::step()
 	if (curState == RUNNING)
 	{
 		//cout.form("Processing a RUNNING cycle (%u)\n", curCycle);
-        curCycle++;
-        emit curTimeChanged(curCycle);
+		curCycle++;
+		emit curTimeChanged(curCycle);
 		//cout.form("Computing next positions (%u)\n", curCycle);
 		NextPositions();
 		//cout.form("Check collisions (%u)\n", curCycle);
@@ -613,101 +613,101 @@ void cbSimulator::CheckIn()
 		int cnt;
 		switch (form.type)
 		{
-			case cbClientForm::VIEW:
-				//cout << "View form is going to be processed\n";
-				cnt = views.size();
-				views.resize(cnt+1);
-				views[cnt] = form.client.view;
+		case cbClientForm::VIEW:
+			//cout << "View form is going to be processed\n";
+			cnt = views.size();
+			views.resize(cnt + 1);
+			views[cnt] = form.client.view;
 
-				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+			views[cnt]->Reply(form.addr, form.port, param, grid, lab);
 
-                if (curState==INIT) {
-				    nextState=STOPPED;
-                    if(logging)
-                        openLog(logFilename.toLatin1().constData());
-                }
-                cout << "Viewer has been registered\n";
-                gui->appendMessage( "Viewer has been registered\n" );
-				break;
-			case cbClientForm::PANEL:
-				//cout << "Panel form is going to be processed\n";
-				cnt = panels.size();
-				panels.resize(cnt+1);
-				panels[cnt] = form.client.panel;
-				panels[cnt]->Reply(form.addr, form.port, param);
-
-				cout << "Panel has been registered\n";
-                gui->appendMessage( "Panel has been registered\n" );
-				break;
-			case cbClientForm::PANELVIEW:
-				cnt = panels.size();
-				panels.resize(cnt+1);
-				panels[cnt] = form.client.panelview;
-				panels[cnt]->Reply(form.addr, form.port, param, grid, lab);
-
-				cnt = views.size();
-				views.resize(cnt+1);
-				views[cnt] = form.client.panelview;
-				views[cnt]->AcceptWithoutReply(form.addr, form.port);
-
-                if (curState==INIT) {
-				    nextState=STOPPED;
-                    if (logging)
-                        openLog(logFilename.toLatin1().constData());
-                }
-				cout << "PanelView has been registered\n";
-                gui->appendMessage( "PanelView has been registered\n" );
-                break;
-			case cbClientForm::ROBOT:
-			case cbClientForm::ROBOTBEACON:
-			{
-				//cout << "Robot form is going to be processed\n";
-				cbRobot *robot = form.client.robot;
-				if (registerRobot(robot))
-				{
-					robot->Reply(form.addr, form.port, param);
-                    cout << robot->Name() << " has been registered\n";
-                    gui->appendMessage( QString(robot->Name())+" has been registered" );
-				}
-				else // robot was refused
-				{
-					robot->Refuse(form.addr, form.port);
-                    cout << robot->Name() << " has been refused\n";
-                    gui->appendMessage( QString(robot->Name())+" has been refused", true);
-					delete robot;
-				}
-				break;
+			if (curState == INIT) {
+				nextState = STOPPED;
+				if (logging)
+					openLog(logFilename.toLatin1().constData());
 			}
-			case cbClientForm::UNKNOWN:
-                cerr << "UNKNOWN form was received, and discarded\n";
-                gui->appendMessage( "UNKNOWN form was received, and discarded", true);
-				// a refused replied must be sent
-				break;
-			case cbClientForm::NOBODY:
-                cerr << "NOBODY form was received, and discarded\n";
-                gui->appendMessage( "NOBODY form was received, and discarded", true);
-				break;
+			cout << "Viewer has been registered\n";
+			gui->appendMessage( "Viewer has been registered\n" );
+			break;
+		case cbClientForm::PANEL:
+			//cout << "Panel form is going to be processed\n";
+			cnt = panels.size();
+			panels.resize(cnt + 1);
+			panels[cnt] = form.client.panel;
+			panels[cnt]->Reply(form.addr, form.port, param);
+
+			cout << "Panel has been registered\n";
+			gui->appendMessage( "Panel has been registered\n" );
+			break;
+		case cbClientForm::PANELVIEW:
+			cnt = panels.size();
+			panels.resize(cnt + 1);
+			panels[cnt] = form.client.panelview;
+			panels[cnt]->Reply(form.addr, form.port, param, grid, lab);
+
+			cnt = views.size();
+			views.resize(cnt + 1);
+			views[cnt] = form.client.panelview;
+			views[cnt]->AcceptWithoutReply(form.addr, form.port);
+
+			if (curState == INIT) {
+				nextState = STOPPED;
+				if (logging)
+					openLog(logFilename.toLatin1().constData());
+			}
+			cout << "PanelView has been registered\n";
+			gui->appendMessage( "PanelView has been registered\n" );
+			break;
+		case cbClientForm::ROBOT:
+		case cbClientForm::ROBOTBEACON:
+		{
+			//cout << "Robot form is going to be processed\n";
+			cbRobot *robot = form.client.robot;
+			if (registerRobot(robot))
+			{
+				robot->Reply(form.addr, form.port, param);
+				cout << robot->Name() << " has been registered\n";
+				gui->appendMessage( QString(robot->Name()) + " has been registered" );
+			}
+			else // robot was refused
+			{
+				robot->Refuse(form.addr, form.port);
+				cout << robot->Name() << " has been refused\n";
+				gui->appendMessage( QString(robot->Name()) + " has been refused", true);
+				delete robot;
+			}
+			break;
+		}
+		case cbClientForm::UNKNOWN:
+			cerr << "UNKNOWN form was received, and discarded\n";
+			gui->appendMessage( "UNKNOWN form was received, and discarded", true);
+			// a refused replied must be sent
+			break;
+		case cbClientForm::NOBODY:
+			cerr << "NOBODY form was received, and discarded\n";
+			gui->appendMessage( "NOBODY form was received, and discarded", true);
+			break;
 		}
 	}
 }
 
 void cbSimulator::start()
 {
-    if(curState==STOPPED)
-    {
-        nextState = RUNNING;
-        emit simRunning(true);
-        emit simReset(false);
-    }
+	if (curState == STOPPED)
+	{
+		nextState = RUNNING;
+		emit simRunning(true);
+		emit simReset(false);
+	}
 }
 
 void cbSimulator::stop()
 {
-	if(curState==RUNNING)
-    {
-        nextState = STOPPED;
-        emit simRunning(false);
-    }
+	if (curState == RUNNING)
+	{
+		nextState = STOPPED;
+		emit simRunning(false);
+	}
 }
 
 /*!
@@ -718,12 +718,12 @@ void cbSimulator::stop()
 void cbSimulator::RobotActions()
 {
 	cbRobotAction action;
-	for (unsigned int i=0; i<robots.size(); i++)
+	for (unsigned int i = 0; i < robots.size(); i++)
 	{
 		cbRobot *robot = robots[i];
-        if (robot==0) continue;
-        robot->resetReceivedFlags();
-        robot->resetRequestedSensors();
+		if (robot == 0) continue;
+		robot->resetReceivedFlags();
+		robot->resetRequestedSensors();
 		while (robot->readAction(&action))
 		{
 			//cerr << "Robot action received l=" << action.leftMotor
@@ -734,7 +734,7 @@ void cbSimulator::RobotActions()
 			if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
 			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
 
-			for (unsigned int r=0; r< action.sensorRequests.size(); r++) {
+			for (unsigned int r = 0; r < action.sensorRequests.size(); r++) {
 				robot->requestSensor(action.sensorRequests[r]);
 			}
 
@@ -752,10 +752,10 @@ void cbSimulator::RobotActions()
 */
 void cbSimulator::NextPositions()
 {
-	for (unsigned int i=0; i<robots.size(); i++)
+	for (unsigned int i = 0; i < robots.size(); i++)
 	{
 		cbRobot *robot = robots[i];
-		if (robot==0 || robot->isRemoved()) continue;
+		if (robot == 0 || robot->isRemoved()) continue;
 		robot->computeNextPosition();
 #ifdef DEBUG_ROBOT
 		robot->showAllAttributes();
@@ -769,15 +769,15 @@ void cbSimulator::NextPositions()
 */
 void cbSimulator::CheckCollisions()
 {
-    unsigned int n = robots.size();
-    unsigned int i;
+	unsigned int n = robots.size();
+	unsigned int i;
 
 	/* reset collision flag for every robot */
-	for (i=0; i<n; i++) // for all robots
+	for (i = 0; i < n; i++) // for all robots
 	{
 		/* skip unregistered robots */
 		cbRobot *robot = robots[i];
-		if (robot==0) continue;
+		if (robot == 0) continue;
 
 		/* discard removed robots */
 		if (robot->isRemoved()) continue;
@@ -787,11 +787,11 @@ void cbSimulator::CheckCollisions()
 	}
 
 	/* check collision with walls */
-	for (i=0; i<n; i++) // for all robots
+	for (i = 0; i < n; i++) // for all robots
 	{
 		/* skip unregistered robots */
 		cbRobot *robot = robots[i];
-		if (robot==0) continue;
+		if (robot == 0) continue;
 
 		/* discard removed robots */
 		if (robot->isRemoved()) continue;
@@ -800,24 +800,24 @@ void cbSimulator::CheckCollisions()
 		if (lab->wallDistance(robots[i]->nextCenter()) < ROBOT_RADIUS)
 		{
 			//cout.form("Collision set (1)\n");
-            //robot->setCollision();
-            robot->setCollisionWall();
+			//robot->setCollision();
+			robot->setCollisionWall();
 		}
 	}
 
 	/* check collision between robots */
-    for (i=0; i<n-1 && !collisionsIgnored(); i++) // for all robots
+	for (i = 0; i < n - 1 && !collisionsIgnored(); i++) // for all robots
 	{
 		/* skip unregistered robots */
 		cbRobot *robot = robots[i];
-		if (robot==0) continue;
+		if (robot == 0) continue;
 
 		/* skip removed robots */
 		if (robot->isRemoved()) continue;
 
 		/* check collision with other robots */
 		cbPoint nc = robot->nextCenter();
-		for (unsigned int j=i+1; j<n; j++)
+		for (unsigned int j = i + 1; j < n; j++)
 		{
 			/* skip unregistered robots */
 			cbRobot *otherRobot = robots[j];
@@ -830,20 +830,20 @@ void cbSimulator::CheckCollisions()
 			cbPoint onc = otherRobot->nextCenter();
 			double d = nc.distance(onc);
 			//cout.form("Distance netween robot centers %u and %u = %g\n", i+1, j+1, d);
-			if (d >= 2*ROBOT_RADIUS) continue; // too far
+			if (d >= 2 * ROBOT_RADIUS) continue; // too far
 
 			/* look for collision responsability */
 			if (robot->isMovingTowards(otherRobot->Center()))
 			{
-                robot->setCollisionRobot();
-                //robot->setCollision();
+				robot->setCollisionRobot();
+				//robot->setCollision();
 				//cout.form("Collision set (2)\n");
 				//robot->showAllAttributes();
 			}
 			if (otherRobot->isMovingTowards(robot->Center()))
 			{
-                otherRobot->setCollisionRobot();
-                //otherRobot->setCollision();
+				otherRobot->setCollisionRobot();
+				//otherRobot->setCollision();
 				//cout.form("Collision set (3)\n");
 				//otherRobot->showAllAttributes();
 			}
@@ -858,7 +858,7 @@ void cbSimulator::CheckCollisions()
 */
 void cbSimulator::Commit()
 {
-	for (unsigned int i=0; i<robots.size(); i++) // for all robots
+	for (unsigned int i = 0; i < robots.size(); i++) // for all robots
 	{
 		cbRobot *robot = robots[i];
 		if (robot == 0) continue;
@@ -870,14 +870,14 @@ void cbSimulator::Commit()
 
 void cbSimulator::UpdateScores()
 {
-	*grAux=*graph;// all computation is based in grAux, graph keeps the graph nodes without final points
-	for (unsigned int i=0; i<robots.size(); i++) // for all robots
+	*grAux = *graph; // all computation is based in grAux, graph keeps the graph nodes without final points
+	for (unsigned int i = 0; i < robots.size(); i++) // for all robots
 	{
 		cbRobot *robot = robots[i];
-        if (robot == 0) continue;
+		if (robot == 0) continue;
 
-        //robot->updateScoreCompetitive();
-        robot->updateScore();
+		//robot->updateScoreCompetitive();
+		robot->updateScore();
 	}
 }
 
@@ -887,7 +887,7 @@ void cbSimulator::UpdateScores()
 void cbSimulator::UpdateSensors()
 {
 	unsigned int n = robots.size();
-	for (unsigned int i=0; i<n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		cbRobot *robot = robots[i];
 		if (robot == 0) continue;
@@ -904,7 +904,7 @@ void cbSimulator::SendSensors()
 {
 	unsigned int n = robots.size();
 	//cerr << "SEND Sensors " << curTime() << "\n";
-	for (unsigned int i=0; i<n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		cbRobot *robot = robots[i];
 		if (robot == 0) continue;
@@ -929,7 +929,7 @@ void cbSimulator::UpdateViews()
 
 		for (unsigned int j = 0; j < views.size(); j++) {
 			cbView *view = views[j];
-			view->send(xmlCharA, xmlString.length()+1);
+			view->send(xmlCharA, xmlString.length() + 1);
 		}
 	}
 }
@@ -941,26 +941,26 @@ void cbSimulator::UpdateViews()
 */
 void cbSimulator::UpdateState()
 {
-    if(simTime() <= curTime() && isTimed()) {
-        nextState = FINISHED;
-	    if (logging) 
-	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
-	    closeLog();
-    }
+	if (simTime() <= curTime() && isTimed()) {
+		nextState = FINISHED;
+		if (logging)
+			RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
+		closeLog();
+	}
 
-    if (nextState != curState) {
-        if (curState == INIT)
-            emit simReady(true);
-        curState = nextState;
-        emit stateChanged(curStateAsString());
-    }
+	if (nextState != curState) {
+		if (curState == INIT)
+			emit simReady(true);
+		curState = nextState;
+		emit stateChanged(curStateAsString());
+	}
 
-    for (unsigned int i=0; i<robots.size(); i++)
+	for (unsigned int i = 0; i < robots.size(); i++)
 	{
 		cbRobot *robot = robots[i];
 		if (robot == 0) continue;
-        //robot->updateStateCompetitive();
-        robot->updateState();
+		//robot->updateStateCompetitive();
+		robot->updateState();
 	}
 
 }
@@ -969,91 +969,91 @@ void cbSimulator::RobotsToXml(ostream &log, bool withActions, bool stateIndepend
 {
 	char buff[1024 * 16];
 	unsigned int n = robots.size();
-	if(curState == RUNNING || stateIndependent) {
+	if (curState == RUNNING || stateIndependent) {
 		log << "<LogInfo Time=\"" << curCycle << "\">\n";
-		for (unsigned int i = 0; i<n; i++)
+		for (unsigned int i = 0; i < n; i++)
 		{
 			cbRobot *robot = robots[i];
-            if (robot == 0) continue;
-            robot->toXml(buff, sizeof(buff), withActions);
+			if (robot == 0) continue;
+			robot->toXml(buff, sizeof(buff), withActions);
 			log << buff;
 
-            if (guiShowPositions) {
-            	gui->writeOnBoard("Position of " + QString(robot->Name()) + " (robot " + QString::number(robot->Id()) + ") sent to Viewer(s):\n" + buff, (int) robot->Id(), 2);
-            }
+			if (guiShowPositions) {
+				gui->writeOnBoard("Position of " + QString(robot->Name()) + " (robot " + QString::number(robot->Id()) + ") sent to Viewer(s):\n" + buff, (int) robot->Id(), 2);
+			}
 		}
-        log << "</LogInfo>\n";
+		log << "</LogInfo>\n";
 	}
 }
 
-void cbSimulator::PanelCommands(){
+void cbSimulator::PanelCommands() {
 	cbPanelCommand command;
-	for (unsigned int i=0; i < panels.size(); i++)
+	for (unsigned int i = 0; i < panels.size(); i++)
 	{
 		while (panels[i]->readCommand(&command))
 		{
 			switch (command.type)
 			{
-				case cbPanelCommand::START:
-					start();
-					break;
-				case cbPanelCommand::RESTART:
-					reset();
-					break;
-				case cbPanelCommand::STOP:
-					stop();
-					break;
-				case cbPanelCommand::ROBOTDEL:
-					{
-						unsigned int id = command.robot.id;
-						if (id >=1 && id <= robots.size())
-						{
-                            cbRobot *robot = robots[id-1];
-                            if (robot != 0)
-                                robot->remove();
-                        }
-						break;
-					}
-				case cbPanelCommand::PARAMETERS:
-					setParameters(command.param);
-					break;
-				case cbPanelCommand::LAB:
-					setLab(command.lab);
-					if(grid != 0) {
-				       buildGraph();
-				       setDistMaxFromGridToTarget();
-					}
-
-					break;
-				case cbPanelCommand::GRID:
-					setGrid(command.grid);
+			case cbPanelCommand::START:
+				start();
+				break;
+			case cbPanelCommand::RESTART:
+				reset();
+				break;
+			case cbPanelCommand::STOP:
+				stop();
+				break;
+			case cbPanelCommand::ROBOTDEL:
+			{
+				unsigned int id = command.robot.id;
+				if (id >= 1 && id <= robots.size())
+				{
+					cbRobot *robot = robots[id - 1];
+					if (robot != 0)
+						robot->remove();
+				}
+				break;
+			}
+			case cbPanelCommand::PARAMETERS:
+				setParameters(command.param);
+				break;
+			case cbPanelCommand::LAB:
+				setLab(command.lab);
+				if (grid != 0) {
 					buildGraph();
-				    setDistMaxFromGridToTarget();
-					break;
-				case cbPanelCommand::UNKNOWN:
-					break;
+					setDistMaxFromGridToTarget();
+				}
+
+				break;
+			case cbPanelCommand::GRID:
+				setGrid(command.grid);
+				buildGraph();
+				setDistMaxFromGridToTarget();
+				break;
+			case cbPanelCommand::UNKNOWN:
+				break;
 			}
 		}
-	}	
+	}
 }
 
 void cbSimulator::buildGraph(void)
 {
-    int g;
+	int g;
 
-	if(graph!=0) delete graph;
-	if(grAux!=0) delete grAux;
+	if (graph != 0) delete graph;
+	if (grAux != 0) delete grAux;
 
-	graph=new cbGraph;
+	graph = new cbGraph;
 
 	graph->setLab(lab);
 
 	graph->buildCornerGraph();
 
-	assert(grid!=0);
-	assert(grid->count()>0);
-    for(g=0; g<grid->count();g++)
-        graph->addInitPoint(cbPosition(grid->at(g)).Coord());
+	assert(grid != 0);
+	assert(grid->count() > 0);
+	for (g = 0; g < grid->count(); g++)
+		graph->addInitPoint(cbPosition(grid->at(g)).Coord());
 
 	//graph->writeGraph();
 
@@ -1068,200 +1068,200 @@ void cbSimulator::buildGraph(void)
 	//graph->setInitState();  // Tentativa de optimizacao
 	//fprintf(stderr,"graph setted init\n");
 
-	grAux=new cbGraph;
+	grAux = new cbGraph;
 }
 
 double cbSimulator::calcDistMaxFromGridTo(cbPoint &p)
 {
-    int g;
+	int g;
 
-    if(lab->nTargets()==0) return 1e10;
+	if (lab->nTargets() == 0) return 1e10;
 
-	*grAux=*graph; // all computation is based in grAux, graph keeps the graph nodes without final points
+	*grAux = *graph; // all computation is based in grAux, graph keeps the graph nodes without final points
 
-	for(g=0; g<grid->count();g++)
-	    grAux->addFinalPoint(g+1,p);
+	for (g = 0; g < grid->count(); g++)
+		grAux->addFinalPoint(g + 1, p);
 
-	double distMax=0.0;
-	for(g=0; g<grid->count();g++)
-		if(grAux->dist(g+1)>distMax) distMax=grAux->dist(g+1);
+	double distMax = 0.0;
+	for (g = 0; g < grid->count(); g++)
+		if (grAux->dist(g + 1) > distMax) distMax = grAux->dist(g + 1);
 
 	return distMax;
 }
 
 void cbSimulator::setDistMaxFromGridToTarget(void)
 {
-    if(lab->nTargets()==0) return;
+	if (lab->nTargets() == 0) return;
 
-    distMaxToTarget=calcDistMaxFromGridTo(lab->Target(0)->Center());  //TODO: Hack para versao de 2006
-                         // aparentemente este valor ja nao e usado para nada!!!
+	distMaxToTarget = calcDistMaxFromGridTo(lab->Target(0)->Center()); //TODO: Hack para versao de 2006
+	// aparentemente este valor ja nao e usado para nada!!!
 }
 
 class cbGraphView : public QGraphicsView
 {
 public:
-    cbGraphView(QGraphicsScene *scene, cbSimulator *sim);
-    void contentsMouseMoveEvent(QMouseEvent *e);
+	cbGraphView(QGraphicsScene *scene, cbSimulator *sim);
+	void contentsMouseMoveEvent(QMouseEvent *e);
 private:
-    QGraphicsSimpleTextItem *distLabel;
+	QGraphicsSimpleTextItem *distLabel;
 	cbSimulator *simulator;
 };
 
 cbGraphView::cbGraphView(QGraphicsScene *scene, cbSimulator *sim) : QGraphicsView(scene)
 {
-	simulator=sim;
+	simulator = sim;
 
-    distLabel = new QGraphicsSimpleTextItem(0, scene);
-    distLabel->setText("");
-    distLabel->setZValue(10);
-    distLabel->setPen(QPen(Qt::red));
+	distLabel = new QGraphicsSimpleTextItem(0, scene);
+	distLabel->setText("");
+	distLabel->setZValue(10);
+	distLabel->setPen(QPen(Qt::red));
 	distLabel->setVisible(true);
 }
 
 void cbGraphView::contentsMouseMoveEvent(QMouseEvent *e)
 {
-	double x,y,dist;
-	int xi,yi;
+	double x, y, dist;
+	int xi, yi;
 
-    xi=(int)(e->x()/(simulator->labCanvasWidth/(double)GRIDSIZE));
-    yi=(int)(e->y()/(simulator->labCanvasHeight/(double)GRIDSIZE));
+	xi = (int)(e->x() / (simulator->labCanvasWidth / (double)GRIDSIZE));
+	yi = (int)(e->y() / (simulator->labCanvasHeight / (double)GRIDSIZE));
 
-    if(xi>=0 && xi < GRIDSIZE && yi >=0 && yi < GRIDSIZE) {
-        x=(xi+0.5)*simulator->Lab()->Width()/GRIDSIZE;
-        y=(GRIDSIZE-yi-0.5)*simulator->Lab()->Height()/GRIDSIZE;
-	    dist = simulator->distGrid[xi][yi];
-        if(xi<GRIDSIZE/2) {
-            distLabel->setPos(e->x()+10,e->y());
-	    }
-        else {
-            distLabel->setPos(e->x()-200,e->y());
-        }
-        distLabel->setText(QString("(%1,%2) -> dist=%3").arg(x).arg(y).arg(dist));
+	if (xi >= 0 && xi < GRIDSIZE && yi >= 0 && yi < GRIDSIZE) {
+		x = (xi + 0.5) * simulator->Lab()->Width() / GRIDSIZE;
+		y = (GRIDSIZE - yi - 0.5) * simulator->Lab()->Height() / GRIDSIZE;
+		dist = simulator->distGrid[xi][yi];
+		if (xi < GRIDSIZE / 2) {
+			distLabel->setPos(e->x() + 10, e->y());
+		}
+		else {
+			distLabel->setPos(e->x() - 200, e->y());
+		}
+		distLabel->setText(QString("(%1,%2) -> dist=%3").arg(x).arg(y).arg(dist));
 	}
-    else {
-        distLabel->setText("Out of bounds");
+	else {
+		distLabel->setText("Out of bounds");
 	}
 
-    scene()->update();
+	scene()->update();
 }
 
 
 void cbSimulator::showGraph(int id)
 {
-    unsigned int w,c;
-    QGraphicsPolygonItem *wallCanvas;
-    QGraphicsRectItem *grCanvas;
+	unsigned int w, c;
+	QGraphicsPolygonItem *wallCanvas;
+	QGraphicsRectItem *grCanvas;
 
-	if(id<1 || id > (int)robots.size()) {
+	if (id < 1 || id > (int)robots.size()) {
 		cerr << "Cannot show graph of robot " << id << "\n";
 		return;
 	}
 
-	labCanvasWidth=(int)(lab->Width()*30);
-	labCanvasHeight=(int)(lab->Height()*30);
+	labCanvasWidth = (int)(lab->Width() * 30);
+	labCanvasHeight = (int)(lab->Height() * 30);
 
-    labScene=new QGraphicsScene(0, 0, labCanvasWidth,labCanvasHeight);
+	labScene = new QGraphicsScene(0, 0, labCanvasWidth, labCanvasHeight);
 
-    labView=new cbGraphView(labScene,this);
-    labView->viewport()->setMouseTracking(true);
+	labView = new cbGraphView(labScene, this);
+	labView->viewport()->setMouseTracking(true);
 
-    QPolygon *pa;
+	QPolygon *pa;
 
-    for(w=1; w<lab->nWalls();w++) {
-        vector<cbPoint> &corners=lab->Wall(w)->Corners();
-        //pa.resize(corners.size());
-        pa = new QPolygon(corners.size());
-        for(c=0; c<corners.size();c++)
-            pa->setPoint(c,(int)(corners[c].X()*labCanvasWidth/lab->Width()),
-                         (int)(labCanvasHeight-corners[c].Y()*labCanvasHeight/lab->Height()) );
-        wallCanvas = new QGraphicsPolygonItem(0, labScene);
-        wallCanvas->setPolygon(*pa);
-        wallCanvas->setBrush(QBrush(Qt::black));
+	for (w = 1; w < lab->nWalls(); w++) {
+		vector<cbPoint> &corners = lab->Wall(w)->Corners();
+		//pa.resize(corners.size());
+		pa = new QPolygon(corners.size());
+		for (c = 0; c < corners.size(); c++)
+			pa->setPoint(c, (int)(corners[c].X()*labCanvasWidth / lab->Width()),
+			             (int)(labCanvasHeight - corners[c].Y()*labCanvasHeight / lab->Height()) );
+		wallCanvas = new QGraphicsPolygonItem(0, labScene);
+		wallCanvas->setPolygon(*pa);
+		wallCanvas->setBrush(QBrush(Qt::black));
 		wallCanvas->setVisible(true);
 	}
 
 
-	unsigned int x,y;
-	double distMax=0.0;
+	unsigned int x, y;
+	double distMax = 0.0;
 
 	//grAux=graph;  Tentativa de optimizacao
-	for(x = 0; x < GRIDSIZE; x++)
-	    for(y = 0; y < GRIDSIZE; y++) {
-		    *grAux=*graph;
+	for (x = 0; x < GRIDSIZE; x++)
+		for (y = 0; y < GRIDSIZE; y++) {
+			*grAux = *graph;
 
-		    //grAux->resetInitState();  Tentativa de optimizacao - testes indicam que fica muito mais lento!!
-		    //grAux->writeGraph();
+			//grAux->resetInitState();  Tentativa de optimizacao - testes indicam que fica muito mais lento!!
+			//grAux->writeGraph();
 
-		    cbPoint p((0.5+x)*lab->Width()/GRIDSIZE, (GRIDSIZE-0.5-y)*lab->Height()/GRIDSIZE);
-		    grAux->addFinalPoint(id,p);
-		    distGrid[x][y]=grAux->dist(id);
-		    if(distGrid[x][y] < 2000 && distGrid[x][y]>distMax)
-			    distMax=distGrid[x][y];
-	    }
+			cbPoint p((0.5 + x)*lab->Width() / GRIDSIZE, (GRIDSIZE - 0.5 - y)*lab->Height() / GRIDSIZE);
+			grAux->addFinalPoint(id, p);
+			distGrid[x][y] = grAux->dist(id);
+			if (distGrid[x][y] < 2000 && distGrid[x][y] > distMax)
+				distMax = distGrid[x][y];
+		}
 
 //        fprintf(stderr,"distmax=%f labCanvasWidth=%d labCanvasHeight=%d\n",
 //			 distMax,labCanvasWidth,labCanvasHeight);
 
-	for(x = 0; x < GRIDSIZE; x++)
-	    for(y = 0; y < GRIDSIZE; y++) {
+	for (x = 0; x < GRIDSIZE; x++)
+		for (y = 0; y < GRIDSIZE; y++) {
 
-            if(distGrid[x][y]<2000) {
-                grCanvas = new QGraphicsRectItem(x*labCanvasWidth/GRIDSIZE,y*labCanvasHeight/GRIDSIZE,
-                                                 (x+1)*labCanvasWidth/GRIDSIZE - x*labCanvasWidth/GRIDSIZE,
-                                                 (y+1)*labCanvasHeight/GRIDSIZE -y*labCanvasHeight/GRIDSIZE,
-                                                 0, labScene);
-                QColor color((int)(0+distGrid[x][y]/distMax*250),
-                             (int)(0+distGrid[x][y]/distMax*250),
-                             (int)(0+distGrid[x][y]/distMax*250));
-                grCanvas->setBrush(QBrush(color));
-                grCanvas->setPen(QPen(color));
-			    grCanvas->setVisible(true);
-			    //debug
-			    //distGrid[x][y]=(int)(0+distGrid[x][y]/distMax*250);
-		    }
+			if (distGrid[x][y] < 2000) {
+				grCanvas = new QGraphicsRectItem(x * labCanvasWidth / GRIDSIZE, y * labCanvasHeight / GRIDSIZE,
+				                                 (x + 1)*labCanvasWidth / GRIDSIZE - x * labCanvasWidth / GRIDSIZE,
+				                                 (y + 1)*labCanvasHeight / GRIDSIZE - y * labCanvasHeight / GRIDSIZE,
+				                                 0, labScene);
+				QColor color((int)(0 + distGrid[x][y] / distMax * 250),
+				             (int)(0 + distGrid[x][y] / distMax * 250),
+				             (int)(0 + distGrid[x][y] / distMax * 250));
+				grCanvas->setBrush(QBrush(color));
+				grCanvas->setPen(QPen(color));
+				grCanvas->setVisible(true);
+				//debug
+				//distGrid[x][y]=(int)(0+distGrid[x][y]/distMax*250);
+			}
 
-        }
-    labScene->update();
+		}
+	labScene->update();
 
 }
 
 bool cbSimulator::changeLab(QString labFilename)
 {
-	if( curState != INIT ) {
-        cerr << "Cannot open lab after start\n";
-        gui->appendMessage( "Cannot open lab after start", true);
+	if ( curState != INIT ) {
+		cerr << "Cannot open lab after start\n";
+		gui->appendMessage( "Cannot open lab after start", true);
 		return false;
 	}
 
 	QXmlInputSource *source;
 
-    //cout << " using given file...";
-    QFile srcFile(labFilename);
+	//cout << " using given file...";
+	QFile srcFile(labFilename);
 
-    if(!srcFile.exists()) {
-        cerr << "Could not open " << labFilename.toStdString() << "\n";
-        gui->appendMessage( QString( "Could not open " ) +
-                            labFilename, true) ;
-        return false;
-    }
-    if ((source = new QXmlInputSource(&srcFile)) == 0)
+	if (!srcFile.exists()) {
+		cerr << "Could not open " << labFilename.toStdString() << "\n";
+		gui->appendMessage( QString( "Could not open " ) +
+		                    labFilename, true) ;
+		return false;
+	}
+	if ((source = new QXmlInputSource(&srcFile)) == 0)
 	{
-        cerr << "Fail sourcing lab file\n";
-        gui->appendMessage("Fail sourcing lab file", true);
+		cerr << "Fail sourcing lab file\n";
+		gui->appendMessage("Fail sourcing lab file", true);
 		return false;
 	}
 
-    QXmlSimpleReader xmlParser;
+	QXmlSimpleReader xmlParser;
 
 	cbLabHandler *labHandler = new cbLabHandler;
 	xmlParser.setContentHandler(labHandler);
 
-	cbLab *labnew=0;
-    if(xmlParser.parse(*source))
-        labnew = labHandler->parsedLab();
-    else {
-        cerr << "Error parsing "<< labFilename.toStdString() <<"\n";
-        gui->appendMessage(QString("Error parsing ")+labFilename, true);
+	cbLab *labnew = 0;
+	if (xmlParser.parse(*source))
+		labnew = labHandler->parsedLab();
+	else {
+		cerr << "Error parsing " << labFilename.toStdString() << "\n";
+		gui->appendMessage(QString("Error parsing ") + labFilename, true);
 		return false;
 	}
 
@@ -1270,13 +1270,13 @@ bool cbSimulator::changeLab(QString labFilename)
 	delete source;
 
 	//rebuild graph
-	if(grid != 0) {
-       buildGraph();
-       setDistMaxFromGridToTarget();
+	if (grid != 0) {
+		buildGraph();
+		setDistMaxFromGridToTarget();
 	}
 
 	// update parameters
-    param->labFilename = labFilename;
+	param->labFilename = labFilename;
 
 	return true;
 	//cout << " done.\n";
@@ -1284,40 +1284,40 @@ bool cbSimulator::changeLab(QString labFilename)
 
 bool cbSimulator::changeGrid(QString gridFilename)
 {
-	if( curState!=INIT ) {
-        cerr << "Cannot open grid after start\n";
-        gui->appendMessage("Cannot open grid after start", true);
+	if ( curState != INIT ) {
+		cerr << "Cannot open grid after start\n";
+		gui->appendMessage("Cannot open grid after start", true);
 		return false;
 	}
 
 
-    QXmlInputSource *source;
-    QFile srcFile(gridFilename);
+	QXmlInputSource *source;
+	QFile srcFile(gridFilename);
 
-    if(!srcFile.exists()) {
-        cerr << "Could not open " << gridFilename.toStdString() << "\n";
-        gui->appendMessage( QString( "Could not open " ) +
-                            gridFilename, true) ;
+	if (!srcFile.exists()) {
+		cerr << "Could not open " << gridFilename.toStdString() << "\n";
+		gui->appendMessage( QString( "Could not open " ) +
+		                    gridFilename, true) ;
 		return false;
-    }
-    if ((source = new QXmlInputSource(&srcFile)) == 0)
+	}
+	if ((source = new QXmlInputSource(&srcFile)) == 0)
 	{
-        cerr << "Fail sourcing lab file\n";
-        gui->appendMessage("Fail sourcing lab file", true);
+		cerr << "Fail sourcing lab file\n";
+		gui->appendMessage("Fail sourcing lab file", true);
 		return false;
-    }
+	}
 
-    QXmlSimpleReader xmlParser;
+	QXmlSimpleReader xmlParser;
 
 	cbGridHandler *gridHandler = new cbGridHandler;
 	xmlParser.setContentHandler(gridHandler);
 
 	cbGrid *grid;
-    if(xmlParser.parse(*source))
-        grid = gridHandler->parsedGrid();
-    else {
-        cerr << "Error parsing "<< gridFilename.toStdString() <<"\n";
-        gui->appendMessage(QString("Error parsing ")+gridFilename, true);
+	if (xmlParser.parse(*source))
+		grid = gridHandler->parsedGrid();
+	else {
+		cerr << "Error parsing " << gridFilename.toStdString() << "\n";
+		gui->appendMessage(QString("Error parsing ") + gridFilename, true);
 		return false;
 	}
 
@@ -1326,8 +1326,8 @@ bool cbSimulator::changeGrid(QString gridFilename)
 	delete source;
 
 	//rebuild graph
-    buildGraph();
-    setDistMaxFromGridToTarget();
+	buildGraph();
+	setDistMaxFromGridToTarget();
 
 	// update parameters
 	param->gridFilename = gridFilename;
@@ -1338,40 +1338,40 @@ bool cbSimulator::changeGrid(QString gridFilename)
 
 bool cbSimulator::changeParameters(QString paramFilename)
 {
-	if( curState!=INIT ) {
-        cerr << "Cannot open parameters after start\n";
-        gui->appendMessage("Cannot open parameters after start", true);
+	if ( curState != INIT ) {
+		cerr << "Cannot open parameters after start\n";
+		gui->appendMessage("Cannot open parameters after start", true);
 		return false;
 	}
 
 	QXmlInputSource *source;
 
-    QFile srcFile(paramFilename);
+	QFile srcFile(paramFilename);
 
-    if(!srcFile.exists()) {
-        cerr << "Could not open " << paramFilename.toStdString() << "\n";
-        gui->appendMessage( QString( "Could not open " ) +
-                            paramFilename, true) ;
+	if (!srcFile.exists()) {
+		cerr << "Could not open " << paramFilename.toStdString() << "\n";
+		gui->appendMessage( QString( "Could not open " ) +
+		                    paramFilename, true) ;
 		return false;
-    }
-    if ((source = new QXmlInputSource(&srcFile)) == 0)
+	}
+	if ((source = new QXmlInputSource(&srcFile)) == 0)
 	{
-        cerr << "Fail sourcing parameters file\n";
-        gui->appendMessage("Fail sourcing parameters file", true);
+		cerr << "Fail sourcing parameters file\n";
+		gui->appendMessage("Fail sourcing parameters file", true);
 		return false;
 	}
 
-    QXmlSimpleReader xmlParser;
+	QXmlSimpleReader xmlParser;
 
 	cbParamHandler *paramHandler = new cbParamHandler(param);
 	xmlParser.setContentHandler(paramHandler);
 
 	cbParameters *param;
-	if(xmlParser.parse(*source))
-	    param = paramHandler->parsedParameters();
-    else {
-        cerr << "Error parsing "<< paramFilename.toStdString() <<"\n";
-        gui->appendMessage(QString("Error parsing ")+paramFilename, true);
+	if (xmlParser.parse(*source))
+		param = paramHandler->parsedParameters();
+	else {
+		cerr << "Error parsing " << paramFilename.toStdString() << "\n";
+		gui->appendMessage(QString("Error parsing ") + paramFilename, true);
 		return false;
 	}
 
@@ -1385,23 +1385,23 @@ bool cbSimulator::changeParameters(QString paramFilename)
 
 void cbSimulator::saveConfiguration(QString paramFilename)
 {
-	if( curState!=INIT ) {
-        cerr << "Cannot save after start\n";
-        gui->appendMessage("Cannot save after start", true);
+	if ( curState != INIT ) {
+		cerr << "Cannot save after start\n";
+		gui->appendMessage("Cannot save after start", true);
 	}
 
-    FILE *fp = fopen(paramFilename.toLatin1().constData(),"wt");
-    if(fp==0) {
-        cerr << "Cannot open " << paramFilename.toStdString() << " for writing\n";
-        gui->appendMessage(QString("Cannot open ")+paramFilename+" for writing", true);
+	FILE *fp = fopen(paramFilename.toLatin1().constData(), "wt");
+	if (fp == 0) {
+		cerr << "Cannot open " << paramFilename.toStdString() << " for writing\n";
+		gui->appendMessage(QString("Cannot open ") + paramFilename + " for writing", true);
 		return;
 	}
 
-    char buff[4096*16];
+	char buff[4096 * 16];
 
-	param->toXml(buff,sizeof(buff));
+	param->toXml(buff, sizeof(buff));
 
-    fprintf(fp, "%s", buff);
+	fprintf(fp, "%s", buff);
 
 	fclose(fp);
 }
@@ -1437,63 +1437,63 @@ void cbSimulator::processEditParameters(void)
 
 	cbBeaconSensor::sensorAperture   = param->beaconAperture;
 
-    cbRobot::GPSOn             = param->GPSOn;
+	cbRobot::GPSOn             = param->GPSOn;
 	cbRobot::scoreSensorOn     = param->scoreSensorOn;
 
-    //Scores
-    cbRobot::returnTimePenalty = param->returnTimePenalty;
-    cbRobot::arrivalTimePenalty = param->arrivalTimePenalty;
-    cbRobot::collisionWallPenalty = param->collisionWallPenalty;
-    cbRobot::collisionRobotPenalty = param->collisionRobotPenalty;
-    cbRobot::targetReward = param->targetReward;
-    cbRobot::homeReward = param->homeReward;
+	//Scores
+	cbRobot::returnTimePenalty = param->returnTimePenalty;
+	cbRobot::arrivalTimePenalty = param->arrivalTimePenalty;
+	cbRobot::collisionWallPenalty = param->collisionWallPenalty;
+	cbRobot::collisionRobotPenalty = param->collisionRobotPenalty;
+	cbRobot::targetReward = param->targetReward;
+	cbRobot::homeReward = param->homeReward;
 
-    timer.setInterval(cycle);
+	timer.setInterval(cycle);
 
-    emit toggleGPS(param->GPSOn);
+	emit toggleGPS(param->GPSOn);
 
-    emit toggleScoreSensor(param->scoreSensorOn);
+	emit toggleScoreSensor(param->scoreSensorOn);
 
-    emit simTimeChanged(param->simTime);
-    emit toggleTime(isTimed());
+	emit simTimeChanged(param->simTime);
+	emit toggleTime(isTimed());
 
 }
 
 void cbSimulator::setDefaultLab(void)
 {
-    //assert(lab==0);
+	//assert(lab==0);
 
 	QXmlInputSource *source;
 
-    source = new QXmlInputSource;
-    source->setData(QByteArray(LAB));
+	source = new QXmlInputSource;
+	source->setData(QByteArray(LAB));
 
-    QXmlSimpleReader xmlParser;
+	QXmlSimpleReader xmlParser;
 
 	cbLabHandler *labHandler = new cbLabHandler;
 	xmlParser.setContentHandler(labHandler);
 
-    cbLab *labnew=0;
-    if(xmlParser.parse(*source))
-        labnew = labHandler->parsedLab();
+	cbLab *labnew = 0;
+	if (xmlParser.parse(*source))
+		labnew = labHandler->parsedLab();
 	else {
-        cerr << "Error parsing DEFAULT lab\n";
-        gui->appendMessage(QString("Error parsing DEFAULT lab"), true);
+		cerr << "Error parsing DEFAULT lab\n";
+		gui->appendMessage(QString("Error parsing DEFAULT lab"), true);
 		assert(0);
 	}
 
-    setLab(labnew);
+	setLab(labnew);
 	delete labHandler;
 	delete source;
 
 	//rebuild graph
-	if(grid!=0) {
-       buildGraph();
-       setDistMaxFromGridToTarget();
+	if (grid != 0) {
+		buildGraph();
+		setDistMaxFromGridToTarget();
 	}
 
-    // update parameters
-    //param->labFilename = "";
+	// update parameters
+	//param->labFilename = "";
 
 	//cout << " done.\n";
 }
@@ -1502,35 +1502,35 @@ void cbSimulator::setDefaultGrid(void)
 {
 	QXmlInputSource *source;
 
-    source = new QXmlInputSource;
-        source->setData(QByteArray(GRID));
+	source = new QXmlInputSource;
+	source->setData(QByteArray(GRID));
 
-        QXmlSimpleReader xmlParser;
+	QXmlSimpleReader xmlParser;
 
 	cbGridHandler *gridHandler = new cbGridHandler;
 	xmlParser.setContentHandler(gridHandler);
 
-    cbGrid *grid;
-	if(xmlParser.parse(*source))
-        grid = gridHandler->parsedGrid();
+	cbGrid *grid;
+	if (xmlParser.parse(*source))
+		grid = gridHandler->parsedGrid();
 	else {
-        cerr << "Error parsing DEFAULT grid\n";
-        gui->appendMessage(QString("Error parsing DEFAULT grid"), true);
+		cerr << "Error parsing DEFAULT grid\n";
+		gui->appendMessage(QString("Error parsing DEFAULT grid"), true);
 		assert(0);
 	}
 
-    setGrid(grid);
+	setGrid(grid);
 	delete gridHandler;
 	delete source;
 
 	//rebuild graph
-	if(lab!=0) {
-        buildGraph();
-        setDistMaxFromGridToTarget();
+	if (lab != 0) {
+		buildGraph();
+		setDistMaxFromGridToTarget();
 	}
 
-    // update parameters
-    //param->gridFilename = "";
+	// update parameters
+	//param->gridFilename = "";
 }
 
 void cbSimulator::setDefaultParameters(void)
@@ -1538,23 +1538,23 @@ void cbSimulator::setDefaultParameters(void)
 	QXmlInputSource *source;
 
 	source = new QXmlInputSource;
-    source->setData(QByteArray(SIMPARAM));
+	source->setData(QByteArray(SIMPARAM));
 
-    QXmlSimpleReader xmlParser;
+	QXmlSimpleReader xmlParser;
 
 	cbParamHandler *paramHandler = new cbParamHandler(param);
 	xmlParser.setContentHandler(paramHandler);
 
-    cbParameters *param;
-    if(xmlParser.parse(*source))
-        param = paramHandler->parsedParameters();
+	cbParameters *param;
+	if (xmlParser.parse(*source))
+		param = paramHandler->parsedParameters();
 	else {
-        cerr << "Error parsing DEFAULT parameters\n";
-        gui->appendMessage(QString("Error parsing DEFAULT parameters"), true);
+		cerr << "Error parsing DEFAULT parameters\n";
+		gui->appendMessage(QString("Error parsing DEFAULT parameters"), true);
 		assert(0);
 	}
 
-    setParameters(param);
+	setParameters(param);
 	delete paramHandler;
 	delete source;
 
@@ -1563,55 +1563,55 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    timer.start(cycleTime());
-    QObject::connect(&timer,SIGNAL(timeout()),this,SLOT(step()));
+	timer.start(cycleTime());
+	QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)
 {
 	unsigned int n = robots.size();
 	bool allVisit = true;
-	for (unsigned int i=0; i<n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		if (robots[i] == 0) continue;
-        if(! (robots[i]->visitedTarget(targId)
-              || (robots[i]->isOnTarget(targId) && robots[i]->visitingLedOn())))
-        {
-            allVisit = false;
-        }
+		if (! (robots[i]->visitedTarget(targId)
+		        || (robots[i]->isOnTarget(targId) && robots[i]->visitingLedOn())))
+		{
+			allVisit = false;
+		}
 
 	}
 
 	return allVisit;
-	
+
 }
 
 bool cbSimulator::allRobotsOnTarget(int targId)
 {
 	unsigned int n = robots.size();
 	bool allOnTarget = true;
-	for (unsigned int i=0; i<n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		if (robots[i] == 0) continue;
-		if(! robots[i]->isOnTarget(targId) ) {
-            allOnTarget = false;
-        }
+		if (! robots[i]->isOnTarget(targId) ) {
+			allOnTarget = false;
+		}
 	}
 
 	return allOnTarget;
-	
+
 }
 
 void cbSimulator::deleteRobot(uint id)
 {
-    assert (id >= 1 && id <= robots.size());
+	assert (id >= 1 && id <= robots.size());
 
-    if (robots[id-1] != 0) {
-        const char *name = ((cbRobot *) robots[id-1])->Name();
-        delete robots[id-1];
-        robots[id-1] = 0;
-        gui->appendMessage(QString(name) + " has been deleted from position " + QString::number(id));
+	if (robots[id - 1] != 0) {
+		const char *name = ((cbRobot *) robots[id - 1])->Name();
+		delete robots[id - 1];
+		robots[id - 1] = 0;
+		gui->appendMessage(QString(name) + " has been deleted from position " + QString::number(id));
 
-        emit robotDeleted((int) id);
-    }
+		emit robotDeleted((int) id);
+	}
 }
