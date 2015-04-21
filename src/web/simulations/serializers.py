@@ -11,6 +11,16 @@ class LogSimulation(serializers.ModelSerializer):
         read_only_fields = ()
 
 
+class ErrorSimulation(serializers.ModelSerializer):
+    simulation_identifier = serializers.CharField(max_length=100)
+    msg = serializers.CharField(max_length=150)
+
+    class Meta:
+        model = Simulation
+        fields = ('simulation_identifier', 'msg',)
+        read_only_fields = ()
+
+
 class AgentXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         if not instance.files:

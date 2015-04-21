@@ -19,9 +19,6 @@
 		"starter_end_point_host": "127.0.0.1",
 		"starter_end_point_port": 7500,
 
-		"test_end_point_host": "127.0.0.1",
-		"test_end_point_port": 7501,
-
 		///host and port for GetSimId and Tests end-point connection
 		"end_point_host": "127.0.0.1",
 		"end_point_port": 9000,
@@ -53,7 +50,15 @@
 
 		///url to post a sim_id to be executed
 		///PARAMS: params={'simulation_identifier': <SIM_ID> }
-		"post_sim_id": "/api/v1/simulation_id/"
+		"post_sim_id": "/api/v1/simulation_id/",
+
+		///url to post a test to be executed
+		///PARAMS: params={'agent_name': <agent_name> }
+		"test_agent": "/api/v1/test_agent/",
+
+		///url to post error msg from stater
+		///PARAMS: params={'msg': <msg> }
+		"error_msg": "/api/v1/simulations/simulation_error/"
 	}
 }
 

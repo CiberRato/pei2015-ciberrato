@@ -127,8 +127,8 @@ class SimulationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Simulation
-        fields = ('identifier', 'round_name', 'state', 'created_at', 'updated_at',)
-        read_only_fields = ('identifier', 'state', 'created_at', 'updated_at',)
+        fields = ('identifier', 'round_name', 'state', 'errors', 'created_at', 'updated_at',)
+        read_only_fields = ('identifier', 'state', 'errors', 'created_at', 'updated_at',)
 
 
 class SimulationGridsSerializer(serializers.ModelSerializer):

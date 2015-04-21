@@ -1,23 +1,16 @@
 import multiprocessing
 import time
 import re
-from starter import *
-from testReceiver import *
+from manager import *
 from serverEndpoints import *
 
 def main():
 
-	starter = Starter()
-	starter = multiprocessing.Process(target=starter.main)
-	starter.daemon = True
-	starter.start()
-	print "Starter has been started.."
-
-	test = Test()
-	test = multiprocessing.Process(target=test.main)
-	test.daemon = True
-	test.start()
-	print "Test receiver has been started.."
+	manager = Manager()
+	manager = multiprocessing.Process(target=manager.main)
+	manager.daemon = True
+	manager.start()
+	print "Manager has been started.."
 
 	time.sleep(0.5)
 	endPoint = EndPoint()
@@ -26,7 +19,7 @@ def main():
 	endPoint.start()
 	print "Webservice has been started.."
 
-	starter.join()
+	manager.join()
 
 if __name__ == "__main__":
 	main()

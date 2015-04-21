@@ -52,7 +52,25 @@
                         life: 2500,
                         theme: 'success'
                     });
+                    setTimeout(function () {
+                        Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+                    }, 1000);
                     $route.reload();
+                }
+
+                function getAgentSuccessFn(data) {
+                    if (!(data.data.code_valid==false && data.data.validation_result == "submitted")){
+                        vm.agent = data.data;
+                        $route.reload();
+                    }else{
+                        setTimeout(function () {
+                            Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+                        }, 1000);
+                    }
+                }
+
+                function getAgentErrorFn(data) {
+                    console.error(data.data);
                 }
 
                 function validateErrorFn(data) {
