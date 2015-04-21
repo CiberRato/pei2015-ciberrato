@@ -29,7 +29,7 @@
                                 <td ng-if="value.state_of_competition=='Competition' || value.state_of_competition=='Past'"><a href="panel/{{ value.name }}">{{value.name}}</a></td>
                                 <td>{{value.type_of_competition.name}}</td>
                                 <td>{{value.state_of_competition}}</td>
-                                <td><a data-toggle="modal" href="#competitionScore{{key}}" ng-click="vm.getScoresByCompetition(value.name)">Consult</a>
+                                <td><a data-toggle="modal" href="#competitionScore{{key}}" ng-click="vm.getScoresByCompetition(value.name)">Competition Scores</a>
                                     <div class="modal fade"  id="competitionScore{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>

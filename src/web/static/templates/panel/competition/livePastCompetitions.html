@@ -78,7 +78,7 @@
                         </div>
                         <hr/>
 
-                        <div ng-repeat="(key, value) in vm.rounds" class="span8">
+                        <div ng-repeat="(key, value) in vm.rounds" class="span10">
                             <div class="tab-pane active" id="static">
                                 <h3>{{value.name}}</h3>
                                 <p ng-if="value.simulations.length == 0"> This round doesn't have any trials.</p>
@@ -98,7 +98,7 @@
                                             <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.state}}</td>
                                             <td ng-if="value1.grids.length == 0"><strong> There are no teams</strong></td>
                                             <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first"><a href="/panel/{{value2.grid_positions.group_name}}/teamMembers">{{value2.grid_positions.group_name}}</a></td>
-                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}"><a data-toggle="modal" ng-click="vm.identifier=value1.identifier; vm.getScoresByTrial()" href="#addScores">Score</a>
+                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}"><a data-toggle="modal" ng-click="vm.identifier=value1.identifier; vm.getScoresByTrial()" href="#addScores">Trial Scores</a>
                                                 <div class="modal fade"  id="addScores">
                                                     <div class="modal-header">
                                                         <button type="button" class="close" data-dismiss="modal">×</button>
