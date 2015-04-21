@@ -14,6 +14,24 @@ import zipfile
 from xml.dom import minidom
 
 class Starter:
+	def main(self,sim_id):
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+
+		DJANGO_HOST = settings["settings"]["django_host"]
+		DJANGO_PORT = settings["settings"]["django_port"]
+
+		URL = settings["urls"]["error_msg"]
+
+		try:
+			self.run(sim_id)
+		except Exception as e:
+			print e.args[0]
+			params = {'msg': e.args[0]}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, params=params)
+			if response.status_code != 200:
+				print "[STARTER] ERROR: Posting error to end point"
+
 	def run(self,sim_id):
 		# Find docker ip
 		DOCKERIP = None
@@ -22,8 +40,7 @@ class Starter:
 				DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
 				break
 		if DOCKERIP == None:
-			print "[STARTER] Please check your docker interface."
-			sys.exit(-1)
+			raise Exception("[STARTER] ERROR: Please check your docker interface")
 		else:
 			print "[STARTER] Docker interface: %s" % (DOCKERIP, )
 
@@ -49,8 +66,7 @@ class Starter:
 		# Get simulation
 		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
 		if result.status_code != 200:
-			print "[STARTER] ERROR: simulation failed to load data"
-			sys.exit(-1)
+			raise Exception("[STARTER] ERROR: Simulation failed to load data")
 
 		simJson = json.loads(result.text)
 		tempFilesList = {}
@@ -61,20 +77,17 @@ class Starter:
 				n_agents = len(simJson[key])
 				agents = simJson[key]
 				if n_agents == 0:
-					print "[STARTER] ERROR: simulation had no agents"
-					sys.exit(-1)
+					raise Exception("[STARTER] ERROR: Simulation has no agents")
 				continue
 			if key == "simulation_id":
 				if sim_id != simJson[key]:
-					print "[STARTER] ERROR: sim_id received not the the same in the simulation"
-					sys.exit(-1)
+					raise Exception("[STARTER] ERROR: sim_id received not the the same as the one in the simulation")
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
 			r = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + simJson[key])
 			if r.status_code != 200:
-				print "[STARTER] ERROR: error getting " + key + " file from end-point"
-				sys.exit(-1)
+				raise Exception("[STARTER] ERROR: Error getting " + key + " file from end-point")
 			fp.write(r.text)
 			fp.seek(0)
 			tempFilesList[key] = fp
@@ -124,7 +137,7 @@ class Starter:
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
-										  " | tar -xz;" 
+										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
@@ -178,22 +191,7 @@ class Starter:
 			print "[STARTER] Closing tmp files"
 			for key in tempFilesList:
 				tempFilesList[key].close()
-			sys.exit(-1)
-
-		# # Read how many robots have registered
-		# robotsXML = minidom.parseString(data)
-		# robots = robotsXML.getElementsByTagName('Robots')
-		# robotsRegistered = int(robots[0].attributes['Registered'].value)
-
-		# if robotsRegistered != n_agents:
-		# 	if robotsRegistered == 0:
-		# 		# No robots were registered, needs to kill everything that is running and return
-		# 		# TO DO
-		# 		pass
-
-		# 	# Not all robots registered, decide what to do either continue or kill the simulation
-		# 	# TO DO
-		# 	pass
+			raise Exception("[STARTER] ERROR: Agents weren't all registered")
 
 		viewer_c.settimeout(None)
 
@@ -238,8 +236,7 @@ class Starter:
 		response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + POST_SIM_URL, data=data, files=files)
 
 		if response.status_code != 201:
-			print "[STARTER] ERROR: error posting log file to end point"
-			return
+			raise Exception("[STARTER] ERROR: error posting log file to end point")
 
 		print "[STARTER] Log successfully posted, starter closing now.."
 

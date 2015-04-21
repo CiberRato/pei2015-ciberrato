@@ -73,7 +73,7 @@ class Sims:
 			sim_id = self.simulations.get(block=True)
 			print "[MANAGER] Received simulation with sim_id=" + sim_id + ", starting now.."
 			starter = Starter()
-			starter_thread = Thread(target=starter.run, args=(sim_id,))
+			starter_thread = Thread(target=starter.main, args=(sim_id,))
 			starter_thread.start()
 			starter_thread.join()
 
