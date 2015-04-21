@@ -61,6 +61,8 @@ bool cbGridHandler::startElement( const QString&, const QString&, const QString&
 		if (!y.isNull()) point.setY(y.toDouble());
 		const QString &direction = attr.value(QString("Dir"));
 		if (!direction.isNull()) pos.setDegDirection(direction.toDouble());
+		const QString &nrobots = attr.value(QString("MaxAgents"));
+		if (!nrobots.isNull()) pos.setNumberRobots(nrobots.toInt());
 	}
     return TRUE;
 }
