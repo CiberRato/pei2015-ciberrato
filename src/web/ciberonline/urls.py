@@ -12,15 +12,15 @@ from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, Co
     MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, RoundViewSet, RoundViewAdminSet, \
     RoundFile
-from competition.views.simulation import SimulationViewSet, SimulationByAgent, SimulationByRound, \
-    SimulationByCompetition, GetSimulationAgents, StartSimulation, SimulationGridViewSet
+from competition.views.simulation import TrialViewSet, TrialByAgent, TrialByRound, \
+    TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition
 
-from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog, SaveSimErrors
+from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors
 
 from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation
@@ -80,14 +80,14 @@ router_competitions.register(r'round_agents', AgentsRound)
 router_competitions.register(r'round_participants', RoundParticipants)
 router_competitions.register(r'round_groups', RoundGroups)
 router_competitions.register(r'round_files', RoundFile)
-# Simulation
-router_competitions.register(r'trial', SimulationViewSet)
-router_competitions.register(r'trials_by_agent', SimulationByAgent)
-router_competitions.register(r'trials_by_round', SimulationByRound)
-router_competitions.register(r'trials_by_competition', SimulationByCompetition)
-router_competitions.register(r'trial_agents', GetSimulationAgents)
-router_competitions.register(r'simulation_grid', SimulationGridViewSet)
-# Simulation => Machine to Machine
+# Trial
+router_competitions.register(r'trial', TrialViewSet)
+router_competitions.register(r'trials_by_agent', TrialByAgent)
+router_competitions.register(r'trials_by_round', TrialByRound)
+router_competitions.register(r'trials_by_competition', TrialByCompetition)
+router_competitions.register(r'trial_agents', GetTrialAgents)
+router_competitions.register(r'simulation_grid', TrialGridViewSet)
+# Trial => Machine to Machine
 
 # COMPETITIONS URLs#
 
@@ -101,18 +101,18 @@ router_agents.register(r'agent_files', ListAgentsFiles)
 router_agents.register(r'code_validation', AgentCodeValidation)
 router_agents.register(r'validate_code', SubmitCodeForValidation)
 
-# SIMULATION URL's
-router_simulations = routers.SimpleRouter()
-router_simulations.register(r'simulation_log', SaveLogs)
-router_simulations.register(r'simulation_error', SaveSimErrors)
-router_simulations.register(r'get_simulation', GetSimulation)
+# TRIAL URL's
+router_trials = routers.SimpleRouter()
+router_trials.register(r'simulation_log', SaveLogs)
+router_trials.register(r'simulation_error', SaveSimErrors)
+router_trials.register(r'get_simulation', GetTrial)
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/groups/', include(router_groups.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
-                       url(r'^api/v1/simulations/', include(router_simulations.urls)),
+                       url(r'^api/v1/simulations/', include(router_trials.urls)),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
@@ -129,12 +129,12 @@ urlpatterns = patterns('',
                        url(r'^api/v1/agents/allowed_languages/$', GetAllowedLanguages.as_view(),
                            name="Allowed languages"),
 
-                       # stat simulation
-                       url(r'^api/v1/simulations/start/$', StartSimulation.as_view(), name="Start simulation"),
-                       # get simulation log
+                       # stat trial
+                       url(r'^api/v1/simulations/start/$', StartTrial.as_view(), name="Start trial"),
+                       # get trial log
                        url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$',
-                           GetSimulationLog.as_view(),
-                           name="Get simulation log"),
+                           GetTrialLog.as_view(),
+                           name="Get trial log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),
