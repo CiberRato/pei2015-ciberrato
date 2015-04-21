@@ -29,7 +29,7 @@
         vm.destroy = destroy;
         vm.removeSimulation = removeSimulation;
         vm.uploadAll = uploadAll;
-        vm.reload = reload;
+
         vm.getSimulationGrids = getSimulationGrids;
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
@@ -157,6 +157,10 @@
 
                 }
             }
+            console.log(vm.models.lists.Available);
+            $timeout(function(){
+                reloadGridsTotal();
+            });
 
         }
 
@@ -198,7 +202,6 @@
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
 
-
                 Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
                 function associateAgentSuccessFn() {
@@ -208,7 +211,7 @@
                     });
 
                     $timeout(function(){
-                        getSimulationGrids();
+                        reloadGridsTotal();
                     });
 
                 }
@@ -265,6 +268,7 @@
                             gridAssociate(vm.models.lists.Simulation[k].identifier, k+1);
                         }
                         Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
                     }
 
                     function getErrorFn(data){
@@ -277,6 +281,7 @@
                     console.error(data.data);
                     $location.path('/panel/');
                 }
+
             }
 
             function disassociateAgentErrorFn(data) {
@@ -481,12 +486,6 @@
             }
         }
 
-        function reload(){
-            $route.reload();
-            $('.modal-backdrop').remove();
-
-        }
-
         function getSimulationGrids(){
             Round.getSimulationGrids(vm.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
 
@@ -559,10 +558,6 @@
                         vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                     }
                 }
-
-                $timeout(function(){
-                    reloadSimulations();
-                });
 
                 function getNewSimulationGridsErrorFn(data){
                     console.error(data.data);
@@ -682,6 +677,30 @@
                 console.error(data.data);
                 $location.path('/panel/');
             }
+        }
+
+        function reloadGridsTotal(){
+            Round.getSimulationGrids(vm.identifier).then(getSimulationGridsFirstSuccessFn, getSimulationGridsFirstErrorFn);
+
+            function getSimulationGridsFirstSuccessFn(data){
+                vm.models.lists.Simulation = [];
+                for (var k = 0; k < data.data.length; ++k) {
+                    vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                }
+
+                for(var i = 0; i<vm.simulations.length; i++){
+                    if(vm.identifier === vm.simulations[i].identifier){
+                        vm.simulations[i].gridsTotal= vm.models.lists.Simulation;
+                    }
+                }
+
+            }
+
+            function getSimulationGridsFirstErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+
         }
 
 
