@@ -51,7 +51,7 @@
 
                         <div class="modal fade"  id="uploadParams">
                             <div class="modal-header">
-                                <button type="button" data-dismiss="modal" class="close" ng-click="vm.reload()" >×</button>
+                                <button type="button" data-dismiss="modal" class="close" >×</button>
                                 <h2 align="center">Upload your Params</h2>
                             </div>
                             <div class="modal-body">
@@ -92,18 +92,19 @@
                                 <th>Manage Grids</th>
                                 <th>Grids</th>
                                 <th>Start Trial</th>
+                                <th>Scores</th>
                                 <th>Remove Trial</th>
 
                             </tr>
                             </thead>
                             <tbody ng-repeat="(key, value) in vm.simulations" >
-                            <tr >
+                            <tr>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" id="identifier">{{$index+1}} - {{value.identifier}}</td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">{{value.state}}</td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" ng-click="vm.reload()">×</button>
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
 
                                             <h2 align="center">Drag the grids for this trial (Max: {{vm.competition.type_of_competition.number_teams_for_trial}})</h2>
                                         </div>
@@ -158,7 +159,69 @@
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids(); vm.getScoresByTrial()" href="#addScores">Manage Scores</a>
+                                    <div class="modal fade"  id="addScores">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
 
+                                            <h2 align="center">Consult/Manage the Score Table</h2>
+                                        </div>
+                                        <div class="modal-body" style="text-align: center">
+                                            <p ng-if="vm.models.lists.Simulation.length == 0">There are no teams associated to this trial</p>
+                                            <form class="form-horizontal" ng-if="vm.models.lists.Simulation.length != 0" role="form">
+
+                                                <!-- Second level tabs -->
+                                                <div class="tabbable tabs-left">
+                                                    <ul class="nav nav-tabs">
+                                                        <li id="score" class="active"><a href="#tab1" data-toggle="tab">Scores</a></li>
+                                                        <li id="manage"><a href="#tab2" data-toggle="tab">Manage Scores</a></li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane active" id="tab1">
+                                                            <br/>
+                                                            <p ng-if="vm.scoresByTrial.length == 0">There are no Scores!</p>
+                                                            <table ng-if="vm.scoresByTrial.length != 0" style="width: 95%" class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="border-right: 0px none">Team</th>
+                                                                        <th style="border-right: 0px none">Score</th>
+                                                                        <th style="border-right: 0px none">Number Of Agents</th>
+                                                                        <th style="border-right: 0px none">Time</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody ng-repeat="(key, value) in vm.scoresByTrial">
+                                                                    <td>{{value.team.name}}</td>
+                                                                    <td>{{value.score}}</td>
+                                                                    <td>{{value.number_of_agents}}</td>
+                                                                    <td>{{value.time}}</td>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="tab-pane" id="tab2">
+                                                            <fieldset>
+                                                                <div ng-repeat="(key1, value1) in vm.models.lists.Simulation" class="control-group">
+                                                                    <label class="control-label" for="score{{value1.label}}">{{value1.label}}</label>
+                                                                    <div class="controls">
+                                                                        <input style="margin-bottom: 5%; width: 65%" value="" id="score{{value1.label}}" type="number" placeholder="Score" name="Score" >
+                                                                        <input style="margin-bottom: 5%; width: 65%" value="" id="agents{{value1.label}}" type="number" placeholder="Number Of Agents" name="Number">
+                                                                        <input style="width: 65%" id="time{{value1.label}}" type="number" placeholder="Time" name="Time">
+                                                                    </div>
+                                                                </div>
+                                                            </fieldset>
+                                                            <div ng-if="vm.models.lists.Simulation.length != 0" class="modal-footer">
+                                                                <a ng-click="vm.saveScores()" data-toggle="tab" href="#tab1" class="btn btn-alt btn-large btn-success">Save Scores</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    <!-- Second level tabs -->
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+                                </td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a class="btn btn-primary btn-flat" ng-click="vm.removeSimulation(value.identifier)">X</a></td>
                             </tr>
                             <tr ng-repeat="(key2, value2) in value.gridsTotal" ng-if="!$first">
@@ -211,5 +274,11 @@
         ev.target.appendChild(document.getElementById(data));
     }
 </script>
+
+
+
+
+
+
 
 

@@ -12,6 +12,7 @@
         var vm = this;
         vm.deleteCompetition = deleteCompetition;
         vm.changeState = changeState;
+        vm.getScoresByCompetition = getScoresByCompetition;
 
         activate();
 
@@ -78,6 +79,18 @@
                 $location.path('/panel/');
             }
 
+        }
+
+        function getScoresByCompetition(name){
+            Competition.getScoresByCompetition(name).then(getScoresByCompetitionSuccessFn, getScoresByCompetitionErrorFn);
+
+            function getScoresByCompetitionSuccessFn(data){
+                vm.scoresByCompetition = data.data;
+            }
+
+            function getScoresByCompetitionErrorFn(data){
+                console.error(data.data);
+            }
         }
 
     }

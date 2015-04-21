@@ -6,10 +6,12 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'Competition'];
+    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$scope', '$routeParams', 'Round', 'Competition'];
 
-    function DetailRoundController($location, $route, $routeParams, Round, Competition){
+    function DetailRoundController($location, $route, $timeout, $scope, $routeParams, Round, Competition){
         var vm = this;
+
+        vm.saveScores = saveScores;
 
         vm.models = {
             selected: null,
@@ -27,12 +29,13 @@
         vm.destroy = destroy;
         vm.removeSimulation = removeSimulation;
         vm.uploadAll = uploadAll;
-        vm.reload = reload;
+
         vm.getSimulationGrids = getSimulationGrids;
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
         vm.startSimulation = startSimulation;
         vm.all = false;
+        vm.getScoresByTrial = getScoresByTrial;
         activate();
 
         function activate() {
@@ -43,6 +46,7 @@
 
             function getSimulationsSuccessFn(data) {
                 vm.simulations = data.data;
+                console.log(vm.simulations);
                 for (var i= 0; i<vm.simulations.length; i++){
                     getSimulationGridsFirst(vm.simulations[i], i);
                 }
@@ -153,6 +157,10 @@
 
                 }
             }
+            console.log(vm.models.lists.Available);
+            $timeout(function(){
+                reloadGridsTotal();
+            });
 
         }
 
@@ -170,7 +178,9 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $route.reload();
+                $timeout(function(){
+                    reloadSimulations();
+                });
             }
 
             function createSimulationErrorFn(data){
@@ -179,7 +189,9 @@
                     life: 2500,
                     theme: 'btn-danger'
                 });
-                $route.reload();
+                $timeout(function(){
+                    reloadSimulations();
+                });
             }
         }
 
@@ -190,7 +202,6 @@
             function getSimulationAgentsSuccessFn(data) {
                 var pos = data.data.length + 1;
 
-
                 Round.associateGrid(grid_identifier, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
                 function associateAgentSuccessFn() {
@@ -198,7 +209,10 @@
                         life: 2500,
                         theme: 'success'
                     });
-                    getSimulationGrids();
+
+                    $timeout(function(){
+                        reloadGridsTotal();
+                    });
 
                 }
 
@@ -240,31 +254,34 @@
                         for(var j = 0; j<vm.models.lists.Simulation.length; j++){
                             disassociate(vm.models.lists.Simulation[j].position);
                         }
-                        Round.getSimulationGrids(vm.identifier).then(ola, ole);
+                        Round.getSimulationGrids(vm.identifier).then(getSuccessFn, getErrorFn);
 
                     }
 
-                    function ola(data){
+                    function getSuccessFn(data){
                         vm.Simulation=[];
                         for (var i = 0; i < data.data.length; ++i) {
                             vm.Simulation.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
                         }
 
                         for(var k= 0; k<vm.models.lists.Simulation.length; k++){
-                            gridAssociate(vm.models.lists.Simulation[k].identifier, k+1, vm.models.lists.Simulation[k].label);
+                            gridAssociate(vm.models.lists.Simulation[k].identifier, k+1);
                         }
                         Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
+
                     }
 
-                    function ole(data){
+                    function getErrorFn(data){
                         console.error(data.data);
                     }
+
                 }
 
                 function getSimulationGridsNErrorFn(data){
                     console.error(data.data);
                     $location.path('/panel/');
                 }
+
             }
 
             function disassociateAgentErrorFn(data) {
@@ -297,11 +314,17 @@
                     }else if(selectedFile3 != undefined){
                         uploadLab();
                     }else{
-                        $route.reload();
+                        $timeout(function(){
+                            getFiles();
+                        });
                         $('.modal-backdrop').remove();
                         vm.all = false;
                     }
 
+                }else {
+                    $timeout(function () {
+                        getFiles();
+                    });
                 }
             }
 
@@ -348,11 +371,17 @@
                     if(selectedFile3 != undefined){
                         uploadLab();
                     }else{
-                        $route.reload();
+                        $timeout(function(){
+                            getFiles();
+                        });
                         $('.modal-backdrop').remove();
                         vm.all = false;
                     }
 
+                }else {
+                    $timeout(function () {
+                        getFiles();
+                    });
                 }
             }
 
@@ -378,9 +407,15 @@
                     theme: 'success'
                 });
                 if(vm.all === true){
-                    $route.reload();
+                    $timeout(function(){
+                        getFiles();
+                    });
                     $('.modal-backdrop').remove();
                     vm.all = false;
+                }else{
+                    $timeout(function(){
+                        getFiles();
+                    });
                 }
 
             }
@@ -424,7 +459,11 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $route.reload();
+
+                $timeout(function(){
+                    reloadSimulations();
+                });
+
             }
 
             function removeSimulationErrorFn(data){
@@ -447,15 +486,8 @@
             }
         }
 
-        function reload(){
-            $route.reload();
-            $('.modal-backdrop').remove();
-
-        }
-
         function getSimulationGrids(){
             Round.getSimulationGrids(vm.identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
-
 
         }
 
@@ -481,7 +513,9 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $route.reload();
+                $timeout(function(){
+                    reloadSimulations();
+                });
             }
 
             function startSimulationErrorFn(data){
@@ -512,7 +546,7 @@
 
         }
 
-        function gridAssociate(grid, pos, name){
+        function gridAssociate(grid, pos){
             Round.associateGrid(grid, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
 
             function associateAgentSuccessFn(){
@@ -545,6 +579,128 @@
             function disassociateErrorFn(data){
                 console.error(data.data);
             }
+        }
+
+        function saveScores(){
+            console.log(vm.models.lists.Simulation);
+            for(var i=0; i< vm.models.lists.Simulation.length; i++){
+                var score = document.getElementById("score"+vm.models.lists.Simulation[i].label).value;
+                var agents = document.getElementById("agents"+vm.models.lists.Simulation[i].label).value;
+                var time = document.getElementById("time"+vm.models.lists.Simulation[i].label).value;
+
+                console.log(score + " " + agents + " " + time);
+                if(score !== "" && agents !== "" && time !==""){
+                    saveScore(score, agents, time, vm.models.lists.Simulation[i].label);
+                }
+            }
+        }
+
+        function saveScore(score, agents, time, team){
+            Round.saveScore(vm.identifier, team, score, agents, time).then(saveScoreSuccessFn, saveScoreErrorFn);
+
+            function saveScoreSuccessFn(){
+                $.jGrowl("Scores has been updated successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function(){
+                    getScoresByTrial();
+                });
+            }
+
+            function saveScoreErrorFn(data){
+                console.error(data.data);
+
+            }
+        }
+
+        function getScoresByTrial(){
+            Round.getScoresByTrial(vm.identifier).then(getScoresByTrialSuccessFn, getScoresByTrialErrorFn);
+
+            function getScoresByTrialSuccessFn(data){
+                vm.scoresByTrial = data.data;
+                console.log(vm.scoresByTrial);
+            }
+
+            function getScoresByTrialErrorFn(data){
+                console.error(data.data);
+            }
+
+
+        }
+
+        function reloadSimulations(){
+            Round.getSimulations(vm.roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
+
+            function getSimulationsSuccessFn(data) {
+                vm.simulations = data.data;
+                console.log(vm.simulations);
+                for (var i= 0; i<vm.simulations.length; i++){
+                    getSimulationGridsFirst(vm.simulations[i], i);
+                }
+            }
+
+            function getSimulationGridsFirst(simulation, i){
+                Round.getSimulationGrids(simulation.identifier).then(getSimulationGridsFirstSuccessFn, getSimulationGridsFirstErrorFn);
+
+                function getSimulationGridsFirstSuccessFn(data){
+                    vm.models.lists.Simulation = [];
+                    for (var k = 0; k < data.data.length; ++k) {
+                        vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                    }
+                    vm.simulations[i].gridsTotal= vm.models.lists.Simulation;
+                }
+
+                function getSimulationGridsFirstErrorFn(data){
+                    console.error(data.data);
+                    $location.path('/panel/');
+                }
+            }
+
+            function getSimulationsErrorFn(data) {
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+        }
+
+        function getFiles(){
+            Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
+
+            function getRoundFilesSuccessFn(data){
+                vm.files = data.data;
+                vm.grid = vm.files.grid;
+                vm.lab = vm.files.lab;
+                vm.param_list = vm.files.param_list;
+            }
+
+            function getRoundFilesErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+        }
+
+        function reloadGridsTotal(){
+            Round.getSimulationGrids(vm.identifier).then(getSimulationGridsFirstSuccessFn, getSimulationGridsFirstErrorFn);
+
+            function getSimulationGridsFirstSuccessFn(data){
+                vm.models.lists.Simulation = [];
+                for (var k = 0; k < data.data.length; ++k) {
+                    vm.models.lists.Simulation.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                }
+
+                for(var i = 0; i<vm.simulations.length; i++){
+                    if(vm.identifier === vm.simulations[i].identifier){
+                        vm.simulations[i].gridsTotal= vm.models.lists.Simulation;
+                    }
+                }
+
+            }
+
+            function getSimulationGridsFirstErrorFn(data){
+                console.error(data.data);
+                $location.path('/panel/');
+            }
+
         }
 
 
