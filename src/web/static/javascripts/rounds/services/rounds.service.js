@@ -28,7 +28,8 @@
             getFiles: getFiles,
             saveScore: saveScore,
             getScoresByTrial: getScoresByTrial,
-            getScoresByRound: getScoresByRound
+            getScoresByRound: getScoresByRound,
+            updateScore: updateScore
         };
 
         return Round;
@@ -148,6 +149,16 @@
 
         function getScoresByRound(name){
             return $http.get("/api/v1/competitions/ranking_round/" + name +"/")
+        }
+
+        function updateScore(identifier, team, score, agents, time){
+            return $http.put("/api/v1/competitions/team_score/" + identifier + "/", {
+                trial_id: identifier,
+                team_name: team,
+                score: score,
+                number_of_agents: agents,
+                time: time
+            });
         }
 
     }

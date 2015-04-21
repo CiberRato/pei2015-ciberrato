@@ -588,9 +588,26 @@
                 var agents = document.getElementById("agents"+vm.models.lists.Simulation[i].label).value;
                 var time = document.getElementById("time"+vm.models.lists.Simulation[i].label).value;
 
+                var exists = false;
+                for(var k=0; k<vm.scoresByTrial.length; k++){
+                    if(vm.models.lists.Simulation[i].label === vm.scoresByTrial[k].team.name){
+                        exists = true;
+                        vm.team = vm.scoresByTrial[k];
+                    }
+                }
                 console.log(score + " " + agents + " " + time);
-                if(score !== "" && agents !== "" && time !==""){
+
+                console.log(exists);
+                if(exists === true){
+                    updateScore(score, agents, time, vm.models.lists.Simulation[i].label, vm.team);
+                }
+                else if((score !== "" && agents !== "" && time !=="") && exists === false){
                     saveScore(score, agents, time, vm.models.lists.Simulation[i].label);
+                }else{
+                    $.jGrowl("Scores can't be created successfully. Please fill all fields", {
+                        life: 2500,
+                        theme: 'btn-danger'
+                    });
                 }
             }
         }
@@ -599,7 +616,7 @@
             Round.saveScore(vm.identifier, team, score, agents, time).then(saveScoreSuccessFn, saveScoreErrorFn);
 
             function saveScoreSuccessFn(){
-                $.jGrowl("Scores has been updated successfully.", {
+                $.jGrowl("Scores has been created successfully.", {
                     life: 2500,
                     theme: 'success'
                 });
@@ -611,6 +628,35 @@
             function saveScoreErrorFn(data){
                 console.error(data.data);
 
+
+            }
+        }
+
+        function updateScore(score, agents, time, team, teamDetail){
+            if(score === ""){
+                score = teamDetail.score;
+            }
+            if(agents === ""){
+                agents = teamDetail.number_of_agents;
+            }
+            if(time === ""){
+                time = teamDetail.time;
+            }
+
+            Round.updateScore(vm.identifier, team, score, agents, time).then(updateScoreSuccessFn, updateScoreErrorFn);
+
+            function updateScoreSuccessFn(){
+                $.jGrowl("Scores has been updated successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function(){
+                    getScoresByTrial();
+                });
+            }
+
+            function updateScoreErrorFn(data){
+                console.error(data.data);
             }
         }
 

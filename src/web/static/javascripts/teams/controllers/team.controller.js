@@ -167,7 +167,7 @@
 
         function addAdmin(user_name, i){
             Team.manageAdmin(teamName, user_name).then(addAdminSuccessFn, addAdminErrorFn);
-            
+
             function addAdminSuccessFn(){
                 $.jGrowl("Admin has been added successfully.", {
                     life: 2500,
