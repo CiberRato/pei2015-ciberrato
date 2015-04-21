@@ -50,7 +50,15 @@
 
 		///url to post a sim_id to be executed
 		///PARAMS: params={'simulation_identifier': <SIM_ID> }
-		"post_sim_id": "/api/v1/simulation_id/"
+		"post_sim_id": "/api/v1/simulation_id/",
+
+		///url to post a test to be executed
+		///PARAMS: params={'agent_name': <agent_name> }
+		"test_agent": "/api/v1/test_agent/",
+
+		///url to post error msg from stater
+		///PARAMS: params={'msg': <msg> }
+		"error_msg": ""
 	}
 }
 
