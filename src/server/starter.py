@@ -14,6 +14,12 @@ import zipfile
 from xml.dom import minidom
 
 class Starter:
+	def main(self,sim_id):
+		try:
+			run(sim_id)
+		except Exception as e:
+			print e.args
+
 	def run(self,sim_id):
 		# Find docker ip
 		DOCKERIP = None
@@ -124,7 +130,7 @@ class Starter:
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
-										  " | tar -xz;" 
+										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
