@@ -277,11 +277,7 @@ void cbSimulator::setGrid(cbGrid *g)
 	/* set the new grid */
 	grid = g;
 	/* resize robot array to new grid size */
-	unsigned int sum = 0;
-	for (int i = 0; i < grid->size(); i++) {
-		sum += grid->at(i).getNumberRobotsAllowed();
-	}
-	robots.resize(sum);
+	robots.resize(grid->size());
     for (i=0; i<robots.size(); i++) robots[i] = 0;
 
     emit gridChanged(grid->size());

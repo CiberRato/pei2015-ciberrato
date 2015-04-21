@@ -52,6 +52,7 @@ bool cbGridHandler::startElement( const QString&, const QString&, const QString&
 	}
 	else if (tag == "Position" && grid!=0)
 	{
+		nRobots = 1;
 		pos = cbPosition();
 		point = cbPoint();
 		/* process attributes */
@@ -61,6 +62,8 @@ bool cbGridHandler::startElement( const QString&, const QString&, const QString&
 		if (!y.isNull()) point.setY(y.toDouble());
 		const QString &direction = attr.value(QString("Dir"));
 		if (!direction.isNull()) pos.setDegDirection(direction.toDouble());
+		const QString &maxRobots = attr.value(QString("MaxAgents"));
+		if (!maxRobots.isNull()) nRobots = maxRobots.toInt();
 	}
     return TRUE;
 }
@@ -75,7 +78,8 @@ bool cbGridHandler::endElement( const QString&, const QString&, const QString& q
 	else if (tag == "Position")
     {
         pos.setCoord(point);
-        grid->append(pos);
+    	for (unsigned int i = 0; i < nRobots; i++)
+       		grid->append(pos);
 	}
     return TRUE;
 }
