@@ -496,7 +496,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['updated_at']
         simulation_identifier = rsp['identifier']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY'})
+        self.assertEqual(rsp, {'errors': u'', 'round_name': u'R1', 'state': u'READY'})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the simulation data
@@ -506,7 +506,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY'})
+        self.assertEqual(rsp, {'errors': u'', 'round_name': u'R1', 'state': u'READY'})
         self.assertEqual(response.status_code, 200)
 
         # associate GridPosition to simulation
@@ -593,7 +593,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by round
@@ -603,7 +603,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
         # get the simulations by competition
@@ -613,7 +613,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY'})
+        self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
         # get the simulation groups
@@ -707,8 +707,8 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
-
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        
         # ranking by round
         url = "/api/v1/competitions/ranking_round/R1/"
         response = client.get(path=url)
@@ -721,8 +721,8 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
-
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        
         # ranking by competition
         url = "/api/v1/competitions/ranking_competition/C1/"
         response = client.get(path=url)
@@ -735,8 +735,8 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
-
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+                         
         # update ranking
         url = "/api/v1/competitions/team_score/" + simulation_identifier + "/"
         data = {'trial_id': simulation_identifier, 'team_name': 'XPTO2', 'score': 14, 'number_of_agents': 3, 'time': 10}
@@ -756,8 +756,8 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 14), ('number_of_agents', 3), ('time', 10)])])
-
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 14), ('number_of_agents', 3), ('time', 10)])])
+        
         # delete the team score
         url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO3"
         response = client.delete(path=url)

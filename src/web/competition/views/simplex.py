@@ -29,6 +29,7 @@ class SimulationSimplex:
     def __init__(self, ss):
         self.round_name = ss.round.name
         self.identifier = ss.identifier
+        self.errors = ss.errors
         self.created_at = ss.created_at
         self.updated_at = ss.updated_at
         if simulation_done(ss):
