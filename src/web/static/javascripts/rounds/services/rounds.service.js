@@ -25,7 +25,9 @@
             destroy: destroy,
             removeSimulation: removeSimulation,
             getSimulation: getSimulation,
-            getFiles: getFiles
+            getFiles: getFiles,
+            saveScore: saveScore,
+            getScoresByTrial: getScoresByTrial
         };
 
         return Round;
@@ -127,6 +129,20 @@
 
         function getFiles(roundName){
             return $http.get("/api/v1/competitions/round_files/" + roundName + "/");
+        }
+
+        function saveScore(identifier, team, score, agents, time){
+            return $http.post("/api/v1/competitions/team_score/", {
+                trial_id: identifier,
+                team_name: team,
+                score: score,
+                number_of_agents: agents,
+                time: time
+            });
+        }
+
+        function getScoresByTrial(identifier){
+            return $http.get("/api/v1/competitions/ranking_trial/" + identifier + "/");
         }
 
     }
