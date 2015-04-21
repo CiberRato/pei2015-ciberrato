@@ -82,7 +82,7 @@ double cbPosition::degreeDirection()
 	return (180 * direction) / M_PI;
 }
 
-unsigned int cbPosition::getNumberRobotsAllowed() {
+unsigned int cbPosition::getNumberRobotsAllowed() const {
     return nRobots;
 }
 void cbPosition::set(double x, double y, double dir)

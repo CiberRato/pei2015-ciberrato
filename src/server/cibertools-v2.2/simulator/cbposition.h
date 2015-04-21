@@ -61,7 +61,7 @@ public:
 	double Y();
 	double radianDirection();
 	double degreeDirection();
-	unsigned int getNumberRobotsAllowed();
+	unsigned int getNumberRobotsAllowed() const;
 	inline double Direction() { return direction; }
 	inline double directionInDegrees() { return direction*(180/M_PI); }
 
