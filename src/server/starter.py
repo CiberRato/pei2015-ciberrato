@@ -15,10 +15,22 @@ from xml.dom import minidom
 
 class Starter:
 	def main(self,sim_id):
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+
+		DJANGO_HOST = settings["settings"]["django_host"]
+		DJANGO_PORT = settings["settings"]["django_port"]
+
+		URL = settings["url"]["error_msg"]
+
 		try:
-			run(sim_id)
+			self.run(sim_id)
 		except Exception as e:
-			print e.args
+			print e.args[0]
+			params = {'msg': e.args[0]}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, params=params)
+			if response.status_code != 200:
+				print "[STARTER] ERROR: Posting error to end point"
 
 	def run(self,sim_id):
 		# Find docker ip
