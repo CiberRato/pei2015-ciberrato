@@ -91,3 +91,7 @@ void cbPosition::set(double x, double y, double dir)
 	coord.x = x;
 	coord.y = y;
 }
+bool cbPosition::operator==(const cbPosition& pos1) 
+{
+    return coord == pos1.coord && direction == pos1.direction;
+}

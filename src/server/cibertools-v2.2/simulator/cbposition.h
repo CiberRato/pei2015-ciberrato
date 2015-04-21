@@ -64,6 +64,7 @@ public:
 	unsigned int getNumberRobotsAllowed();
 	inline double Direction() { return direction; }
 	inline double directionInDegrees() { return direction*(180/M_PI); }
+	bool operator==(const cbPosition& pos1);
 
 private:
 	cbPoint coord;
