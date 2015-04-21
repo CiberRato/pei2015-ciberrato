@@ -260,7 +260,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', True), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
 
         # get agents by user
         url = "/api/v1/agents/agents_by_user/gipmon/"
@@ -272,7 +272,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', True), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('group_name', u'XPTO3')]))
 
         # get the agent information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/"
@@ -285,7 +285,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp,{'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
+        self.assertEqual(rsp,{'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
 
         # upload agent code
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
@@ -340,7 +340,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
+        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
 
         url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
@@ -760,6 +760,38 @@ class AuthenticationTestCase(TestCase):
                                    "trial": {"identifier": simulation_identifier, "round_name": "R1",
                                              "state": "STARTED"},
                                    "team": {"name": "XPTO2", "max_members": 10}, "score": 10, "number_of_agents": 3,
+                                   "time": 10}])
+
+        # update ranking
+        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/"
+        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO2', 'score': 14, 'number_of_agents': 3, 'time': 10}
+        response = client.put(path=url, data=data)
+        self.assertEqual(response.data, {'score': 14, 'number_of_agents': 3, 'time': 10})
+        self.assertEqual(response.status_code, 200)
+
+        # ranking by competition
+        url = "/api/v1/competitions/ranking_competition/C1/"
+        response = client.get(path=url)
+        rsp = response.data
+
+        del rsp[0]['trial']["created_at"]
+        del rsp[0]['trial']["updated_at"]
+        del rsp[1]['trial']["created_at"]
+        del rsp[1]['trial']["updated_at"]
+        del rsp[2]['trial']["created_at"]
+        del rsp[2]['trial']["updated_at"]
+
+        self.assertEqual(rsp, [{"trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                          "state": "STARTED"},
+                                "team": {"name": "XPTO1", "max_members": 10}, "score": 10, "number_of_agents": 5,
+                                "time": 9}, {
+                                   "trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                             "state": "STARTED"},
+                                   "team": {"name": "XPTO3", "max_members": 10}, "score": 10, "number_of_agents": 5,
+                                   "time": 10}, {
+                                   "trial": {"identifier": simulation_identifier, "round_name": "R1",
+                                             "state": "STARTED"},
+                                   "team": {"name": "XPTO2", "max_members": 10}, "score": 14, "number_of_agents": 3,
                                    "time": 10}])
 
         # delete the team score

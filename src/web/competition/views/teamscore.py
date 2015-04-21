@@ -15,7 +15,7 @@ from ..permissions import IsStaff
 
 
 class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
-                       viewsets.GenericViewSet):
+                       mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = TeamScore.objects.all()
     serializer_class = TeamScoreOutSerializer
 
@@ -45,7 +45,13 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         @type  trial_id: str
         @param trial_id: The trial identifier
         @type  team_name: str
-        @type  team_name: The team name
+        @param team_name: The team name
+        @type  score: Integer
+        @param score: The score
+        @type  number_of_agents: Integer
+        @param number_of_agents: The number of agents
+        @type  time: Integer
+        @param time: The time
         """
         serializer = TeamScoreInSerializer(data=request.data)
 
@@ -83,6 +89,64 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'There is already a score for that team in the trial!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} a team score
+        B{URL:} ../api/v1/competitions/team_score/<trial_id>/
+
+        @type  trial_id: str
+        @param trial_id: The trial identifier
+        @type  team_name: str
+        @param team_name: The team name
+        @type  score: Integer
+        @param score: The score
+        @type  number_of_agents: Integer
+        @param number_of_agents: The number of agents
+        @type  time: Integer
+        @param time: The time
+        """
+        serializer = TeamScoreInSerializer(data=request.data)
+
+        if serializer.is_valid():
+            trial = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['trial_id'])
+
+            if trial.round.parent_competition.state_of_competition == 'Past':
+                return Response({'status': 'Bad Request',
+                                 'message': 'The competition is in \'Past\' state.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            team = get_object_or_404(Group.objects.all(), name=serializer.validated_data['team_name'])
+
+            group_enrolled = GroupEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+
+            if len(group_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The team must be enrolled in the competition.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if not group_enrolled[0].valid:
+                return Response({'status': 'Permission denied',
+                                 'message': 'The team must be enrolled in the competition with valid inscription.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            team_score = get_object_or_404(TeamScore.objects.all(), trial=trial, team=team)
+
+            try:
+                with transaction.atomic():
+                    team_score.score = serializer.validated_data['score']
+                    team_score.number_of_agents = serializer.validated_data['number_of_agents']
+                    team_score.time = serializer.validated_data['time']
+                    team_score.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The team score can\'t be updated!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'status': 'Bad Request',
