@@ -9,7 +9,7 @@ from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 
 from ..simplex import SimulationX
-from ..serializers import SimulationXSerializer, LogSimulation
+from ..serializers import SimulationXSerializer, LogSimulation, ErrorSimulation
 from ..models import Simulation
 
 from competition.shortcuts import *
@@ -52,6 +52,35 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
+
+class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Simulation.objects.all()
+    serializer_class = ErrorSimulation
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Create} the simulation error
+        B{URL:} ../api/v1/simulations/simulation_error/
+
+        @type  msg: str
+        @param msg: The error
+        @type  simulation_identifier: str
+        @param simulation_identifier: The simulation identifier
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
+
+            simulation.errors = serializer.validated_data['msg']
+            simulation.save()
+
+            return Response({'status': 'Created',
+                             'message': 'The msg error has been uploaded!'}, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 class GetSimulationLog(views.APIView):
     @staticmethod

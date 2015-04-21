@@ -171,7 +171,11 @@ class Simulation(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
     round = models.ForeignKey(Round, blank=False)
+
     started = models.BooleanField(default=False)
+    waiting = models.BooleanField(default=False)
+    errors = models.CharField(max_length=150)
+
     log_json = models.FileField(upload_to="json_logs/%Y/%m/%d")
 
     created_at = models.DateTimeField(auto_now_add=True)

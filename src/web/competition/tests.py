@@ -659,6 +659,14 @@ class AuthenticationTestCase(TestCase):
 
         simulation.log_json.delete()
 
+        # save simulation errors (only server by server)
+        url = "/api/v1/simulations/simulation_error/"
+        data = {'simulation_identifier': simulation_identifier, 'msg': "cenas"}
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 201)
+        simulation = Simulation.objects.get(identifier=simulation_identifier)
+        self.assertEqual(simulation.errors, "cenas")
+
         # create team score
         url = "/api/v1/competitions/team_score/"
         data = {'trial_id': simulation_identifier, 'team_name': 'XPTO3', 'score': 10, 'number_of_agents': 5, 'time': 10}
