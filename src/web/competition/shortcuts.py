@@ -1,21 +1,21 @@
-def simulation_started(simulation):
-    return simulation.started
+def trial_started(trial):
+    return trial.started
 
 
-def simulation_waiting(simulation):
-    return simulation.waiting
+def trial_waiting(trial):
+    return trial.waiting
 
 
-def simulation_done(simulation):
+def trial_done(trial):
     try:
-        return (simulation.log_json.url is not None) and simulation.started
+        return (trial.log_json.url is not None) and trial.started
     except ValueError:
         return False
 
 
-def simulation_error(simulation):
-    return len(simulation.errors) != 0
+def trial_error(trial):
+    return len(trial.errors) != 0
 
 
-def simulation_not_started(simulation):
-    return not simulation_waiting(simulation) and not simulation_done(simulation) and not simulation_started(simulation)
+def trial_not_started(trial):
+    return not trial_waiting(trial) and not trial_done(trial) and not trial_started(trial)

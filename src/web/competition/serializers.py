@@ -141,23 +141,23 @@ class TrialGridsSerializer(serializers.ModelSerializer):
 
 
 class TrialGridInputSerializer(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=128)
+    trial_identifier = serializers.CharField(max_length=128)
     grid_identifier = serializers.CharField(max_length=128)
 
     class Meta:
         model = TrialGrid
-        fields = ('simulation_identifier', 'grid_identifier', 'position')
+        fields = ('trial_identifier', 'grid_identifier', 'position')
         read_only_fields = ()
 
 
 class TrialAgentSerializer(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=100)
+    trial_identifier = serializers.CharField(max_length=100)
     agent_name = serializers.CharField(max_length=128)
     round_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = LogTrialAgent
-        fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos',)
+        fields = ('trial_identifier', 'agent_name', 'round_name', 'pos',)
         read_only_fields = ()
 
 

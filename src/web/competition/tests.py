@@ -487,20 +487,20 @@ class AuthenticationTestCase(TestCase):
         # print dict(response.data) # show the round files
         self.assertEqual(len(dict(response.data)), 5)
 
-        # create simulation (only by admin)
+        # create trial (only by admin)
         url = "/api/v1/competitions/trial/"
         data = {'round_name': 'R1'}
         response = client.post(path=url, data=data)
         rsp = dict(response.data)
         del rsp['created_at']
         del rsp['updated_at']
-        simulation_identifier = rsp['identifier']
+        trial_identifier = rsp['identifier']
         del rsp['identifier']
         self.assertEqual(rsp, {'errors': u'', 'round_name': u'R1', 'state': u'READY'})
         self.assertEqual(response.status_code, 201)
 
-        # retrieve the simulation data
-        url = "/api/v1/competitions/trial/" + simulation_identifier + "/"
+        # retrieve the trial data
+        url = "/api/v1/competitions/trial/" + trial_identifier + "/"
         response = client.get(url)
         rsp = dict(response.data)
         del rsp['created_at']
@@ -509,16 +509,16 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'errors': u'', 'round_name': u'R1', 'state': u'READY'})
         self.assertEqual(response.status_code, 200)
 
-        # associate GridPosition to simulation
-        url = "/api/v1/competitions/simulation_grid/"
-        data = {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1}
+        # associate GridPosition to trial
+        url = "/api/v1/competitions/trial_grid/"
+        data = {'grid_identifier': identifier, 'trial_identifier': trial_identifier, 'position': 1}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data,
-                         {'grid_identifier': identifier, 'simulation_identifier': simulation_identifier, 'position': 1})
+                         {'grid_identifier': identifier, 'trial_identifier': trial_identifier, 'position': 1})
         self.assertEqual(response.status_code, 201)
 
-        # get gridpositions by simulation
-        url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/"
+        # get gridpositions by trial
+        url = "/api/v1/competitions/trial_grid/" + trial_identifier + "/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
@@ -537,9 +537,9 @@ class AuthenticationTestCase(TestCase):
 
         self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'group_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
-        # start simulation
-        url = "/api/v1/simulations/start/"
-        data = {'trial_id': simulation_identifier}
+        # start trial
+        url = "/api/v1/trials/start/"
+        data = {'trial_id': trial_identifier}
         response = client.post(path=url, data=data)
 
         if response.status_code == 200:
@@ -586,7 +586,7 @@ class AuthenticationTestCase(TestCase):
         competition_agent.eligible = False
         competition_agent.save()
 
-        # get the simulations by agent
+        # get the trials by agent
         url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/"
         response = client.get(url)
         rsp = response.data[0]
@@ -596,7 +596,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
-        # get the simulations by round
+        # get the trials by round
         url = "/api/v1/competitions/trials_by_round/R1/"
         response = client.get(url)
         rsp = response.data[0]
@@ -606,7 +606,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
-        # get the simulations by competition
+        # get the trials by competition
         url = "/api/v1/competitions/trials_by_competition/C1/"
         response = client.get(url)
         rsp = response.data[0]
@@ -616,60 +616,60 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'round_name': u'R1', 'state': u'READY', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
-        # get the simulation groups
-        url = "/api/v1/competitions/trial_agents/" + simulation_identifier + "/"
+        # get the trial groups
+        url = "/api/v1/competitions/trial_agents/" + trial_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict(
-            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+            [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
              ('round_name', u'R1'), ('pos', 1)]), OrderedDict(
-            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+            [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
              ('round_name', u'R1'), ('pos', 2)]), OrderedDict(
-            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+            [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
              ('round_name', u'R1'), ('pos', 3)]), OrderedDict(
-            [('simulation_identifier', simulation_identifier), ('agent_name', u'KAMIKAZE'),
+            [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
              ('round_name', u'R1'), ('pos', 4)])])
 
-        # get simulation for simulate
-        url = "/api/v1/simulations/get_simulation/" + simulation_identifier + "/"
+        # get trial for simulate
+        url = "/api/v1/trials/get_trial/" + trial_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = response.data
-        del rsp['simulation_id']
+        del rsp['trial_id']
         del rsp['agents']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
                                'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
                                'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
 
-        # save simulation logs (only server by server)
+        # save trial logs (only server by server)
         f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
-        url = "/api/v1/simulations/simulation_log/"
-        data = {'simulation_identifier': simulation_identifier, 'log_json': f}
+        url = "/api/v1/trials/trial_log/"
+        data = {'trial_identifier': trial_identifier, 'log_json': f}
         response = client.post(url, data)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
         self.assertEqual(response.status_code, 201)
-        simulation = Trial.objects.get(identifier=simulation_identifier)
-        self.assertEqual(simulation.log_json is None, False)
+        trial = Trial.objects.get(identifier=trial_identifier)
+        self.assertEqual(trial.log_json is None, False)
 
         # get log sent
-        url = "/api/v1/competitions/get_simulation_log/" + simulation_identifier + "/"
+        url = "/api/v1/competitions/get_trial_log/" + trial_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        simulation.log_json.delete()
+        trial.log_json.delete()
 
-        # save simulation errors (only server by server)
-        url = "/api/v1/simulations/simulation_error/"
-        data = {'simulation_identifier': simulation_identifier, 'msg': "cenas"}
+        # save trial errors (only server by server)
+        url = "/api/v1/trials/trial_error/"
+        data = {'trial_identifier': trial_identifier, 'msg': "cenas"}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        simulation = Trial.objects.get(identifier=simulation_identifier)
-        self.assertEqual(simulation.errors, "cenas")
+        trial = Trial.objects.get(identifier=trial_identifier)
+        self.assertEqual(trial.errors, "cenas")
 
         # create team score
         url = "/api/v1/competitions/team_score/"
-        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO3', 'score': 10, 'number_of_agents': 5, 'time': 10}
+        data = {'trial_id': trial_identifier, 'team_name': 'XPTO3', 'score': 10, 'number_of_agents': 5, 'time': 10}
         response = client.post(path=url, data=data)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.status_code, 201)
@@ -683,20 +683,20 @@ class AuthenticationTestCase(TestCase):
 
         # create team score
         url = "/api/v1/competitions/team_score/"
-        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO1', 'score': 10, 'number_of_agents': 5, 'time': 9}
+        data = {'trial_id': trial_identifier, 'team_name': 'XPTO1', 'score': 10, 'number_of_agents': 5, 'time': 9}
         response = client.post(path=url, data=data)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.status_code, 201)
 
         # create team score
         url = "/api/v1/competitions/team_score/"
-        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO2', 'score': 10, 'number_of_agents': 3, 'time': 10}
+        data = {'trial_id': trial_identifier, 'team_name': 'XPTO2', 'score': 10, 'number_of_agents': 3, 'time': 10}
         response = client.post(path=url, data=data)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.status_code, 201)
 
         # ranking by trial
-        url = "/api/v1/competitions/ranking_trial/" + simulation_identifier + "/"
+        url = "/api/v1/competitions/ranking_trial/" + trial_identifier + "/"
         response = client.get(path=url)
         rsp = response.data
 
@@ -707,7 +707,7 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
         
         # ranking by round
         url = "/api/v1/competitions/ranking_round/R1/"
@@ -721,7 +721,7 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
         
         # ranking by competition
         url = "/api/v1/competitions/ranking_competition/C1/"
@@ -735,11 +735,11 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
                          
         # update ranking
-        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/"
-        data = {'trial_id': simulation_identifier, 'team_name': 'XPTO2', 'score': 14, 'number_of_agents': 3, 'time': 10}
+        url = "/api/v1/competitions/team_score/" + trial_identifier + "/"
+        data = {'trial_id': trial_identifier, 'team_name': 'XPTO2', 'score': 14, 'number_of_agents': 3, 'time': 10}
         response = client.put(path=url, data=data)
         self.assertEqual(response.data, {'score': 14, 'number_of_agents': 3, 'time': 10})
         self.assertEqual(response.status_code, 200)
@@ -756,22 +756,22 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', simulation_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 14), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 14), ('number_of_agents', 3), ('time', 10)])])
         
         # delete the team score
-        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO3"
+        url = "/api/v1/competitions/team_score/" + trial_identifier + "/?team_name=XPTO3"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
 
         # delete the team score
-        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO2"
+        url = "/api/v1/competitions/team_score/" + trial_identifier + "/?team_name=XPTO2"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
 
         # delete the team score
-        url = "/api/v1/competitions/team_score/" + simulation_identifier + "/?team_name=XPTO1"
+        url = "/api/v1/competitions/team_score/" + trial_identifier + "/?team_name=XPTO1"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
@@ -834,7 +834,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # delete the grid position
-        url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=1"
+        url = "/api/v1/competitions/trial_grid/" + trial_identifier + "/?position=1"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(TrialGrid.objects.all()), 0)
@@ -846,14 +846,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(GridPositions.objects.all()), 0)
 
-        # delete the simulation data
-        url = "/api/v1/competitions/trial/" + simulation_identifier + "/"
+        # delete the trial data
+        url = "/api/v1/competitions/trial/" + trial_identifier + "/"
         response = client.delete(url)
-        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The simulation has been deleted'})
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The trial has been deleted'})
         self.assertEqual(response.status_code, 200)
 
-        # retrieve the simulation data
-        url = "/api/v1/competitions/trial/" + simulation_identifier + "/"
+        # retrieve the trial data
+        url = "/api/v1/competitions/trial/" + trial_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.data, {u'detail': u'Not found.'})
 
@@ -1057,15 +1057,15 @@ class AuthenticationTestCase(TestCase):
         group_enrolled = GroupEnrolled.objects.create(competition=c3, group=group)
         references += [group_enrolled]
 
-        # create simulation
-        simulation = Trial.objects.create(round=r7)
-        references += [simulation]
+        # create trial
+        trial = Trial.objects.create(round=r7)
+        references += [trial]
 
-        # create simulation agent
-        lga = LogTrialAgent.objects.create(competition_agent=competition_agent, simulation=simulation, pos=1)
+        # create trial agent
+        lga = LogTrialAgent.objects.create(competition_agent=competition_agent, trial=trial, pos=1)
         references += [lga]
 
-        # c3|r7|r8|r9|a|competition_agent|group_enroll|simulation|lga
+        # c3|r7|r8|r9|a|competition_agent|group_enroll|trial|lga
         return references
 
     def test_cascade_delete_competition(self):
@@ -1077,8 +1077,8 @@ class AuthenticationTestCase(TestCase):
         agent_len = len(Agent.objects.all())  # 1 => RQ7
         competition_agent_len = len(CompetitionAgent.objects.all())  # 1
         group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
-        simulation_len = len(Trial.objects.all())  # 1
-        log_simulation_agent_len = len(LogTrialAgent.objects.all())  # 1
+        trial_len = len(Trial.objects.all())  # 1
+        log_trial_agent_len = len(LogTrialAgent.objects.all())  # 1
 
         references[0].delete()
 
@@ -1091,8 +1091,8 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(Agent.objects.all()), agent_len)
         self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
         self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len - 1)
-        self.assertEqual(len(Trial.objects.all()), simulation_len - 1)
-        self.assertEqual(len(LogTrialAgent.objects.all()), log_simulation_agent_len - 1)
+        self.assertEqual(len(Trial.objects.all()), trial_len - 1)
+        self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
 
     def test_cascade_delete_round(self):
         return
@@ -1103,8 +1103,8 @@ class AuthenticationTestCase(TestCase):
         agent_len = len(Agent.objects.all())  # 1 => RQ7
         competition_agent_len = len(CompetitionAgent.objects.all())  # 1
         group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
-        simulation_len = len(Trial.objects.all())  # 1
-        log_simulation_agent_len = len(LogTrialAgent.objects.all())  # 1
+        trial_len = len(Trial.objects.all())  # 1
+        log_trial_agent_len = len(LogTrialAgent.objects.all())  # 1
 
         references[1].delete()
 
@@ -1117,8 +1117,8 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(Agent.objects.all()), agent_len)
         self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
         self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len)
-        self.assertEqual(len(Trial.objects.all()), simulation_len - 1)
-        self.assertEqual(len(LogTrialAgent.objects.all()), log_simulation_agent_len - 1)
+        self.assertEqual(len(Trial.objects.all()), trial_len - 1)
+        self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
 
     def test_uploadFile(self):
         return

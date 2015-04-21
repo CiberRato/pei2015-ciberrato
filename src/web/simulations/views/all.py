@@ -26,25 +26,25 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
     def create(self, request, *args, **kwargs):
         """
         B{Create} the json log
-        B{URL:} ../api/v1/simulations/simulation_log/
+        B{URL:} ../api/v1/trials/trial_log/
 
         @type  log_json: str
         @param log_json: The json log
-        @type  simulation_identifier: str
-        @param simulation_identifier: The simulation identifier
+        @type  trial_identifier: str
+        @param trial_identifier: The trial identifier
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
+            trial = Simulation.objects.get(identifier=serializer.validated_data['trial_identifier'])
 
-            if not simulation_started(simulation):
+            if not trial_started(trial):
                 return Response({'status': 'Bad Request',
-                                 'message': 'The simulation should be stated first!'},
+                                 'message': 'The trial should be stated first!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            simulation.log_json = serializer.validated_data['log_json']
-            simulation.save()
+            trial.log_json = serializer.validated_data['log_json']
+            trial.save()
             return Response({'status': 'Created',
                              'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
 
@@ -59,21 +59,21 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} the simulation error
-        B{URL:} ../api/v1/simulations/simulation_error/
+        B{Create} the trial error
+        B{URL:} ../api/v1/trials/trial_error/
 
         @type  msg: str
         @param msg: The error
-        @type  simulation_identifier: str
-        @param simulation_identifier: The simulation identifier
+        @type  trial_identifier: str
+        @param trial_identifier: The trial identifier
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            simulation = Simulation.objects.get(identifier=serializer.validated_data['simulation_identifier'])
+            trial = Simulation.objects.get(identifier=serializer.validated_data['trial_identifier'])
 
-            simulation.errors = serializer.validated_data['msg']
-            simulation.save()
+            trial.errors = serializer.validated_data['msg']
+            trial.save()
 
             return Response({'status': 'Created',
                              'message': 'The msg error has been uploaded!'}, status=status.HTTP_201_CREATED)
@@ -84,23 +84,23 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class GetSimulationLog(views.APIView):
     @staticmethod
-    def get(request, simulation_id):
+    def get(request, trial_id):
         """
-        B{Get} simulation json log
-        B{URL:} ../api/v1/simulations/get_simulation_log/<simulation_id>/
+        B{Get} trial json log
+        B{URL:} ../api/v1/trials/get_trial_log/<trial_id>/
 
-        @type  simulation_id: str
-        @param simulation_id: The simulation identifier
+        @type  trial_id: str
+        @param trial_id: The trial identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=simulation_id)
+        trial = get_object_or_404(Simulation.objects.all(), identifier=trial_id)
 
-        if not simulation_done(simulation):
+        if not trial_done(trial):
             return Response({'status': 'Bad request',
-                             'message': 'The simulation must have a log!'},
+                             'message': 'The trial must have a log!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            file = default_storage.open(simulation.log_json)
+            file = default_storage.open(trial.log_json)
         except Exception:
             return Response({'status': 'Bad request',
                              'message': 'The file doesn\'t exists'},
@@ -108,7 +108,7 @@ class GetSimulationLog(views.APIView):
 
         wrapper = FileWrapper(file)
         response = HttpResponse(wrapper, content_type="application/x-compressed")
-        response['Content-Disposition'] = 'attachment; filename=' + simulation_id + '.tar.gz'
+        response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.tar.gz'
         response['Content-Length'] = os.path.getsize(file.name)
         file.seek(0)
         return response
@@ -120,15 +120,15 @@ class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the simulation complete, machine-to-machine
-        B{URL:} ../api/v1/simulations/get_simulation/<simulation_id>/
+        B{Retrieve} the trial complete, machine-to-machine
+        B{URL:} ../api/v1/trials/get_trial/<trial_id>/
 
-        @type  simulation_id: str
-        @param simulation_id: The simulation id
+        @type  trial_id: str
+        @param trial_id: The trial id
         """
-        simulation = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
-        serializer = self.serializer_class(SimulationX(simulation))
-        simulation.started = True
-        simulation.save()
+        trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
+        serializer = self.serializer_class(SimulationX(trial))
+        trial.started = True
+        trial.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)

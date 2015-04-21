@@ -12,7 +12,7 @@ from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, Co
     MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
 from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, RoundViewSet, RoundViewAdminSet, \
     RoundFile
-from competition.views.simulation import TrialViewSet, TrialByAgent, TrialByRound, \
+from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
     TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
@@ -86,7 +86,7 @@ router_competitions.register(r'trials_by_agent', TrialByAgent)
 router_competitions.register(r'trials_by_round', TrialByRound)
 router_competitions.register(r'trials_by_competition', TrialByCompetition)
 router_competitions.register(r'trial_agents', GetTrialAgents)
-router_competitions.register(r'simulation_grid', TrialGridViewSet)
+router_competitions.register(r'trial_grid', TrialGridViewSet)
 # Trial => Machine to Machine
 
 # COMPETITIONS URLs#
@@ -103,16 +103,16 @@ router_agents.register(r'validate_code', SubmitCodeForValidation)
 
 # TRIAL URL's
 router_trials = routers.SimpleRouter()
-router_trials.register(r'simulation_log', SaveLogs)
-router_trials.register(r'simulation_error', SaveSimErrors)
-router_trials.register(r'get_simulation', GetTrial)
+router_trials.register(r'trial_log', SaveLogs)
+router_trials.register(r'trial_error', SaveSimErrors)
+router_trials.register(r'get_trial', GetTrial)
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/groups/', include(router_groups.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
-                       url(r'^api/v1/simulations/', include(router_trials.urls)),
+                       url(r'^api/v1/trials/', include(router_trials.urls)),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
@@ -130,9 +130,9 @@ urlpatterns = patterns('',
                            name="Allowed languages"),
 
                        # stat trial
-                       url(r'^api/v1/simulations/start/$', StartTrial.as_view(), name="Start trial"),
+                       url(r'^api/v1/trials/start/$', StartTrial.as_view(), name="Start trial"),
                        # get trial log
-                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$',
+                       url(r'^api/v1/trials/get_trial_log/(?P<trial_id>.+)/$',
                            GetTrialLog.as_view(),
                            name="Get trial log"),
                        # get round file

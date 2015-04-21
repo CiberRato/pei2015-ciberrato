@@ -219,7 +219,7 @@ class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
         trials = []
-        for trial in r.simulation_set.all():
+        for trial in r.trial_set.all():
             trials += trial.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)
@@ -246,7 +246,7 @@ class RankingByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trials = []
 
         for r in competition.round_set.all():
-            for trial in r.simulation_set.all():
+            for trial in r.trial_set.all():
                 trials += trial.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)

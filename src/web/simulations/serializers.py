@@ -3,21 +3,21 @@ from .models import Trial
 
 
 class LogTrial(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=100)
+    trial_identifier = serializers.CharField(max_length=100)
 
     class Meta:
         model = Trial
-        fields = ('simulation_identifier', 'log_json',)
+        fields = ('trial_identifier', 'log_json',)
         read_only_fields = ()
 
 
 class ErrorTrial(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=100)
+    trial_identifier = serializers.CharField(max_length=100)
     msg = serializers.CharField(max_length=150)
 
     class Meta:
         model = Trial
-        fields = ('simulation_identifier', 'msg',)
+        fields = ('trial_identifier', 'msg',)
         read_only_fields = ()
 
 
@@ -44,7 +44,7 @@ class TrialXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         agents = AgentXSerializer(instance.agents, many=True)
         return {
-            'simulation_id': instance.simulation_id,
+            'trial_id': instance.trial_id,
             'grid': instance.grid,
             'param_list': instance.param_list,
             'lab': instance.lab,

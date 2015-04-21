@@ -32,13 +32,13 @@ class TrialSimplex:
         self.errors = ss.errors
         self.created_at = ss.created_at
         self.updated_at = ss.updated_at
-        if simulation_done(ss):
+        if trial_done(ss):
             self.state = "LOG"
-        elif simulation_error(ss):
+        elif trial_error(ss):
             self.state = "ERROR"
-        elif simulation_started(ss):
+        elif trial_started(ss):
             self.state = "STARTED"
-        elif simulation_waiting(ss):
+        elif trial_waiting(ss):
             self.state = "WAITING"
         else:
             self.state = "READY"
@@ -46,9 +46,9 @@ class TrialSimplex:
 
 class TrialAgentSimplex:
     def __init__(self, sas):
-        self.simulation_identifier = sas.simulation.identifier
+        self.trial_identifier = sas.trial.identifier
         self.agent_name = sas.competition_agent.agent.agent_name
-        self.round_name = sas.simulation.round.name
+        self.round_name = sas.trial.round.name
         self.pos = sas.pos
 
 
