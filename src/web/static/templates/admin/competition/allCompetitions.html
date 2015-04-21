@@ -20,6 +20,7 @@
                                 <th>Type Of Competition</th>
                                 <th>State Of Competition</th>
                                 <th>Change State Of Competition</th>
+                                <th>Score</th>
                                 <th>Remove Competition</th>
                             </tr>
                             </thead>
@@ -31,6 +32,34 @@
                                 <td>
                                     <a href="#" ng-click="vm.changeState(value.name, value.state_of_competition)">Change</a>
                                 </td>
+                                <td><a data-toggle="modal" href="#competitionScore{{key}}" ng-click="vm.getScoresByCompetition(value.name)">Competition Scores</a>
+                                    <div class="modal fade"  id="competitionScore{{key}}">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <h2 align="center">{{value.name}} - Scores</h2>
+                                        </div>
+                                        <div class="modal-body" style="text-align: center">
+                                            <p ng-if="vm.scoresByCompetition.length == 0">There are no Scores!</p>
+                                            <table ng-if="vm.scoresByCompetition.length != 0" style="width: 100%" class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th style="border-right: 0px none">Team</th>
+                                                    <th style="border-right: 0px none">Score</th>
+                                                    <th style="border-right: 0px none">Number Of Agents</th>
+                                                    <th style="border-right: 0px none">Time</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody ng-repeat="(key, value) in vm.scoresByCompetition">
+                                                <td>{{value.team.name}}</td>
+                                                <td>{{value.score}}</td>
+                                                <td>{{value.number_of_agents}}</td>
+                                                <td>{{value.time}}</td>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+
+                                    </div></td>
                                 <td><a data-toggle="modal" href="#confirmType{{key}}" class="btn btn-primary btn-flat">X</a>
                                     <div  class="modal fade hide"  id="confirmType{{key}}">
                                         <div class="modal-body">
