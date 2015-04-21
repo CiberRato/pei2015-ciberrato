@@ -180,10 +180,12 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
             # call code validations
             try:
                 requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>", agent.agent_name))
+                agent.code_valid = False
+                agent.validation_result = "submitted"
             except requests.ConnectionError:
                 agent.code_valid = False
                 agent.validation_result = "The endpoint to do the code validation is down!"
-                agent.save()
+            agent.save()
 
             return Response({'status': 'OK',
                              'message': 'The code has been submitted for validation!'},
