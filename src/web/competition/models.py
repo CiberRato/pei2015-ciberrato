@@ -157,17 +157,17 @@ class CompetitionAgent(models.Model):
         ordering = ['created_at']
 
 
-class LogSimulationAgent(models.Model):
+class LogTrialAgent(models.Model):
     competition_agent = models.ForeignKey('CompetitionAgent')
-    simulation = models.ForeignKey('Simulation')
+    trial = models.ForeignKey('Trial')
 
     pos = models.IntegerField(blank=False)
 
     class Meta:
-        unique_together = ('pos', 'simulation',)
+        unique_together = ('pos', 'trial',)
 
 
-class Simulation(models.Model):
+class Trial(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
     round = models.ForeignKey(Round, blank=False)
@@ -189,21 +189,21 @@ class Simulation(models.Model):
         return self.identifier
 
 
-class SimulationGrid(models.Model):
+class TrialGrid(models.Model):
     grid_positions = models.ForeignKey(GridPositions, blank=False)
-    simulation = models.ForeignKey(Simulation, blank=False)
+    trial = models.ForeignKey(Trial, blank=False)
     position = models.IntegerField(validators=[MinValueValidator(1)], blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('position', 'simulation',)
-        ordering = ('position', 'grid_positions', 'simulation')
+        unique_together = ('position', 'trial',)
+        ordering = ('position', 'grid_positions', 'trial')
 
 
 class TeamScore(models.Model):
-    trial = models.ForeignKey(Simulation, blank=False)
+    trial = models.ForeignKey(Trial, blank=False)
     team = models.ForeignKey(Group, blank=False)
     score = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
     number_of_agents = models.IntegerField(validators=[MinValueValidator(0)], blank=False)

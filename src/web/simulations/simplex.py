@@ -1,4 +1,4 @@
-from competition.models import LogSimulationAgent
+from competition.models import LogTrialAgent
 
 
 class AgentX():
@@ -18,7 +18,7 @@ class AgentX():
             self.files = "/api/v1/agents/agent_file/" + log_simulation_agent.competition_agent.agent.agent_name + "/"
 
 
-class SimulationX():
+class TrialX():
     def __init__(self, simulation):
         self.simulation_id = simulation.identifier
 
@@ -28,7 +28,7 @@ class SimulationX():
         self.lab = "/api/v1/competitions/round_file/" + simulation.round.name + "/?file=lab"
 
         # get the agents
-        log_simulation_agents = LogSimulationAgent.objects.filter(simulation=simulation)
+        log_simulation_agents = LogTrialAgent.objects.filter(simulation=simulation)
         self.agents = []
         for log_simulation_agent in log_simulation_agents:
             self.agents += [AgentX(log_simulation_agent, self.simulation_id)]

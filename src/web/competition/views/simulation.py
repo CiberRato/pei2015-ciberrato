@@ -9,19 +9,19 @@ from rest_framework.response import Response
 
 from agent.models import Agent
 
-from .simplex import SimulationSimplex, SimulationAgentSimplex, SimulationGridSimplex
-from ..serializers import SimulationSerializer, SimulationAgentSerializer, SimulationGridsSerializer, \
-    SimulationGridInputSerializer
-from ..models import Competition, Round, Simulation, CompetitionAgent, LogSimulationAgent, SimulationGrid, \
+from .simplex import TrialSimplex, TrialAgentSimplex, TrialGridSimplex
+from ..serializers import TrialSerializer, TrialAgentSerializer, TrialGridsSerializer, \
+    TrialGridInputSerializer
+from ..models import Competition, Round, Trial, CompetitionAgent, LogTrialAgent, TrialGrid, \
     GridPositions, GroupEnrolled, AgentGrid
 from ..shortcuts import *
 from ..permissions import IsStaff
 
 
-class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationSerializer
+    queryset = Trial.objects.all()
+    serializer_class = TrialSerializer
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -46,8 +46,8 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'Is missing files to the Round take place!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            s = Simulation.objects.create(round=r)
-            serializer = SimulationSerializer(SimulationSimplex(s))
+            s = Trial.objects.create(round=r)
+            serializer = TrialSerializer(TrialSimplex(s))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
@@ -62,8 +62,8 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  identifier: str
         @param identifier: The trial identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
-        serializer = self.serializer_class(SimulationSimplex(simulation))
+        simulation = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
+        serializer = self.serializer_class(TrialSimplex(simulation))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -75,7 +75,7 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  identifier: str
         @param identifier: The trial identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        simulation = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         simulation.delete()
 
         return Response({'status': 'Deleted',
@@ -83,9 +83,9 @@ class SimulationViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
-class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationAgentSerializer
+class GetTrialAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialAgentSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -98,11 +98,11 @@ class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  identifier: str
         @param identifier: The trial identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        simulation = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         simulations = []
 
         for lga in simulation.logsimulationagent_set.all():
-            simulations += [SimulationAgentSimplex(lga)]
+            simulations += [TrialAgentSimplex(lga)]
 
         # Competition Agents name
         serializer = self.serializer_class(simulations, many=True)
@@ -110,9 +110,9 @@ class GetSimulationAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationSerializer
+class TrialByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -129,17 +129,17 @@ class SimulationByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         simulations = []
 
         for competition_agent in agent.competitionagent_set.all():
-            for lga in LogSimulationAgent.objects.filter(competition_agent=competition_agent):
-                simulations += [SimulationSimplex(lga.simulation)]
+            for lga in LogTrialAgent.objects.filter(competition_agent=competition_agent):
+                simulations += [TrialSimplex(lga.simulation)]
 
         serializer = self.serializer_class(simulations, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationSerializer
+class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -153,14 +153,14 @@ class SimulationByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
-        serializer = self.serializer_class([SimulationSimplex(sim) for sim in r.simulation_set.all()], many=True)
+        serializer = self.serializer_class([TrialSimplex(sim) for sim in r.simulation_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationSerializer
+class TrialByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -177,17 +177,17 @@ class SimulationByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         simulations = []
 
         for r in competition.round_set.all():
-            simulations += [SimulationSimplex(sim) for sim in r.simulation_set.all()]
+            simulations += [TrialSimplex(sim) for sim in r.simulation_set.all()]
 
         serializer = self.serializer_class(simulations, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                             mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = SimulationGrid.objects.all()
-    serializer_class = SimulationGridInputSerializer
+    queryset = TrialGrid.objects.all()
+    serializer_class = TrialGridInputSerializer
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -209,10 +209,10 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         if serializer.is_valid():
             grid_positions = get_object_or_404(GridPositions.objects.all(),
                 identifier=serializer.validated_data['grid_identifier'])
-            simulation = get_object_or_404(Simulation.objects.all(),
+            simulation = get_object_or_404(Trial.objects.all(),
                 identifier=serializer.validated_data['simulation_identifier'])
 
-            groups_in_grid = len(SimulationGrid.objects.filter(simulation=simulation))
+            groups_in_grid = len(TrialGrid.objects.filter(simulation=simulation))
 
             if groups_in_grid >= grid_positions.competition.type_of_competition.number_teams_for_trial:
                 return Response({'status': 'Bad Request',
@@ -243,13 +243,13 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The position can\'t be higher than the number of teams allowed by trial.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if len(SimulationGrid.objects.filter(simulation=simulation,
+            if len(TrialGrid.objects.filter(simulation=simulation,
                                                  position=serializer.validated_data['position'])) != 0:
                 return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            SimulationGrid.objects.create(grid_positions=grid_positions, simulation=simulation,
+            TrialGrid.objects.create(grid_positions=grid_positions, simulation=simulation,
                                           position=serializer.validated_data['position'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
@@ -266,10 +266,10 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  simulation_identifier: str
         @param simulation_identifier: The simulation identifier
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
-        grid_sim_list = SimulationGrid.objects.filter(simulation=simulation)
+        simulation = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
+        grid_sim_list = TrialGrid.objects.filter(simulation=simulation)
 
-        serializer = SimulationGridsSerializer([SimulationGridSimplex(gs) for gs in grid_sim_list], many=True)
+        serializer = TrialGridsSerializer([TrialGridSimplex(gs) for gs in grid_sim_list], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -283,8 +283,8 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @type  simulation_identifier: str
         @type  simulation_identifier: The agent name
         """
-        sim = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
-        sim_grid = get_object_or_404(SimulationGrid.objects.all(), simulation=sim,
+        sim = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
+        sim_grid = get_object_or_404(TrialGrid.objects.all(), simulation=sim,
             position=request.GET.get('position', ''))
 
         if sim_grid.grid_positions.competition.state_of_competition == 'Past':
@@ -305,7 +305,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'The group must be enrolled in the competition with valid inscription.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        sim = get_object_or_404(SimulationGrid.objects.all(), simulation=sim, position=request.GET.get('position', ''))
+        sim = get_object_or_404(TrialGrid.objects.all(), simulation=sim, position=request.GET.get('position', ''))
         sim.delete()
 
         return Response({'status': 'Deleted',
@@ -313,7 +313,7 @@ class SimulationGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
-class StartSimulation(views.APIView):
+class StartTrial(views.APIView):
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsStaff(),
 
@@ -326,7 +326,7 @@ class StartSimulation(views.APIView):
         @type  trial_id: str
         @param trial_id: The trial id
         """
-        simulation = get_object_or_404(Simulation.objects.all(), identifier=request.data.get('trial_id', ''))
+        simulation = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if the round doen't started already
         if not simulation_not_started(simulation):
@@ -341,7 +341,7 @@ class StartSimulation(views.APIView):
                              'message': 'Is missing files to the Round take place!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        simulation_grids = SimulationGrid.objects.filter(simulation=simulation)
+        simulation_grids = TrialGrid.objects.filter(simulation=simulation)
 
         if len(simulation_grids) == 0:
             return Response({'status': 'Bad Request',
@@ -380,14 +380,14 @@ class StartSimulation(views.APIView):
                                 agent=agent_grid.agent,
                                 round=simulation.round)
 
-                        log_sim_agent_not_exists = (len(LogSimulationAgent.objects.filter(
+                        log_sim_agent_not_exists = (len(LogTrialAgent.objects.filter(
                             competition_agent=competition_agent,
                             simulation=simulation,
                             pos=pos)) == 0)
 
                         # log simulation agent
                         if log_sim_agent_not_exists:
-                            LogSimulationAgent.objects.create(competition_agent=competition_agent,
+                            LogTrialAgent.objects.create(competition_agent=competition_agent,
                                                               simulation=simulation,
                                                               pos=pos)
 

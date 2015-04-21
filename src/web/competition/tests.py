@@ -649,7 +649,7 @@ class AuthenticationTestCase(TestCase):
         response = client.post(url, data)
         self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
         self.assertEqual(response.status_code, 201)
-        simulation = Simulation.objects.get(identifier=simulation_identifier)
+        simulation = Trial.objects.get(identifier=simulation_identifier)
         self.assertEqual(simulation.log_json is None, False)
 
         # get log sent
@@ -664,7 +664,7 @@ class AuthenticationTestCase(TestCase):
         data = {'simulation_identifier': simulation_identifier, 'msg': "cenas"}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        simulation = Simulation.objects.get(identifier=simulation_identifier)
+        simulation = Trial.objects.get(identifier=simulation_identifier)
         self.assertEqual(simulation.errors, "cenas")
 
         # create team score
@@ -837,7 +837,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=1"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(SimulationGrid.objects.all()), 0)
+        self.assertEqual(len(TrialGrid.objects.all()), 0)
 
         # delete grid position
         url = "/api/v1/competitions/grid_position/C1/?group_name=XPTO3"
@@ -1058,11 +1058,11 @@ class AuthenticationTestCase(TestCase):
         references += [group_enrolled]
 
         # create simulation
-        simulation = Simulation.objects.create(round=r7)
+        simulation = Trial.objects.create(round=r7)
         references += [simulation]
 
         # create simulation agent
-        lga = LogSimulationAgent.objects.create(competition_agent=competition_agent, simulation=simulation, pos=1)
+        lga = LogTrialAgent.objects.create(competition_agent=competition_agent, simulation=simulation, pos=1)
         references += [lga]
 
         # c3|r7|r8|r9|a|competition_agent|group_enroll|simulation|lga
@@ -1077,22 +1077,22 @@ class AuthenticationTestCase(TestCase):
         agent_len = len(Agent.objects.all())  # 1 => RQ7
         competition_agent_len = len(CompetitionAgent.objects.all())  # 1
         group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
-        simulation_len = len(Simulation.objects.all())  # 1
-        log_simulation_agent_len = len(LogSimulationAgent.objects.all())  # 1
+        simulation_len = len(Trial.objects.all())  # 1
+        log_simulation_agent_len = len(LogTrialAgent.objects.all())  # 1
 
         references[0].delete()
 
         """
         Is suppose when it's deleted a Competition to delete all the Rounds, GroupEnrolled,
-        Simulations and SimulationsLogs. The agent is suppose to not be deleted.
+        Trials and TrialsLogs. The agent is suppose to not be deleted.
         """
         self.assertEqual(len(Competition.objects.all()), competition_len - 1)
         self.assertEqual(len(Round.objects.all()), round_len - 3)
         self.assertEqual(len(Agent.objects.all()), agent_len)
         self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
         self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len - 1)
-        self.assertEqual(len(Simulation.objects.all()), simulation_len - 1)
-        self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len - 1)
+        self.assertEqual(len(Trial.objects.all()), simulation_len - 1)
+        self.assertEqual(len(LogTrialAgent.objects.all()), log_simulation_agent_len - 1)
 
     def test_cascade_delete_round(self):
         return
@@ -1103,22 +1103,22 @@ class AuthenticationTestCase(TestCase):
         agent_len = len(Agent.objects.all())  # 1 => RQ7
         competition_agent_len = len(CompetitionAgent.objects.all())  # 1
         group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
-        simulation_len = len(Simulation.objects.all())  # 1
-        log_simulation_agent_len = len(LogSimulationAgent.objects.all())  # 1
+        simulation_len = len(Trial.objects.all())  # 1
+        log_simulation_agent_len = len(LogTrialAgent.objects.all())  # 1
 
         references[1].delete()
 
         """
         Is suppose when it's deleted a Round,
-        Simulations and SimulationsLogs. The agent is suppose to not be deleted.
+        Trials and TrialsLogs. The agent is suppose to not be deleted.
         """
         self.assertEqual(len(Competition.objects.all()), competition_len)
         self.assertEqual(len(Round.objects.all()), round_len - 1)
         self.assertEqual(len(Agent.objects.all()), agent_len)
         self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
         self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len)
-        self.assertEqual(len(Simulation.objects.all()), simulation_len - 1)
-        self.assertEqual(len(LogSimulationAgent.objects.all()), log_simulation_agent_len - 1)
+        self.assertEqual(len(Trial.objects.all()), simulation_len - 1)
+        self.assertEqual(len(LogTrialAgent.objects.all()), log_simulation_agent_len - 1)
 
     def test_uploadFile(self):
         return

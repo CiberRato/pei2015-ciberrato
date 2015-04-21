@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from authentication.models import Group
 
 from .simplex import TeamScoreSimplex
-from ..models import Competition, TeamScore, GroupEnrolled, Simulation, Round
+from ..models import Competition, TeamScore, GroupEnrolled, Trial, Round
 from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
 from ..permissions import IsStaff
 
@@ -56,7 +56,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         serializer = TeamScoreInSerializer(data=request.data)
 
         if serializer.is_valid():
-            trial = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['trial_id'])
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
 
             if trial.round.parent_competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
@@ -114,7 +114,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         serializer = TeamScoreInSerializer(data=request.data)
 
         if serializer.is_valid():
-            trial = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['trial_id'])
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
 
             if trial.round.parent_competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
@@ -163,7 +163,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         @type  team_name: str
         @type  team_name: The team name
         """
-        trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
+        trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
 
         if trial.round.parent_competition.state_of_competition == 'Past':
             return Response({'status': 'Bad Request',
@@ -195,7 +195,7 @@ class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  trial_id: str
         @param trial_id: The trial id
         """
-        trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trial.teamscore_set.all()],
                                            many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

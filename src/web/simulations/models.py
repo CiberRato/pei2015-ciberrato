@@ -1,1 +1,1 @@
-from competition.models import Simulation
+from competition.models import Trial

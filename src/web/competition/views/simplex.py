@@ -25,7 +25,7 @@ class CompetitionAgentSimplex:
         self.updated_at = cas.updated_at
 
 
-class SimulationSimplex:
+class TrialSimplex:
     def __init__(self, ss):
         self.round_name = ss.round.name
         self.identifier = ss.identifier
@@ -44,7 +44,7 @@ class SimulationSimplex:
             self.state = "READY"
 
 
-class SimulationAgentSimplex:
+class TrialAgentSimplex:
     def __init__(self, sas):
         self.simulation_identifier = sas.simulation.identifier
         self.agent_name = sas.competition_agent.agent.agent_name
@@ -59,7 +59,7 @@ class GridPositionsSimplex:
         self.identifier = ps.identifier
 
 
-class SimulationGridSimplex:
+class TrialGridSimplex:
     def __init__(self, sgs):
         self.grid_positions = GridPositionsSimplex(sgs.grid_positions)
         self.position = sgs.position
@@ -74,7 +74,7 @@ class AgentGridSimplex:
 
 class TeamScoreSimplex:
     def __init__(self, tss):
-        self.trial = SimulationSimplex(tss.trial)
+        self.trial = TrialSimplex(tss.trial)
         self.team = tss.team
         self.score = tss.score
         self.number_of_agents = tss.number_of_agents
