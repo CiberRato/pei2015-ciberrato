@@ -14,35 +14,23 @@ import zipfile
 from xml.dom import minidom
 
 class Starter:
-	def main(self):
-		# Loading settings
+	def main(self,sim_id):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
-		END_POINT_HOST = settings["settings"]["starter_end_point_host"]
-		END_POINT_PORT = settings["settings"]["starter_end_point_port"]
+		DJANGO_HOST = settings["settings"]["django_host"]
+		DJANGO_PORT = settings["settings"]["django_port"]
 
-		print "[STARTER] Starter is in deamon mode"
-		end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		end_point_tcp.bind((END_POINT_HOST, END_POINT_PORT))
-		end_point_tcp.listen(1)
-		end_point_c, end_point_add = end_point_tcp.accept()
+		URL = settings["urls"]["error_msg"]
 
-		# Waiting for a post to be done
-		data = None
-		while 1:
-			print "[STARTER] Waiting for simulation.."
-			while data == None or data == "":
-				data = end_point_c.recv(1024)
-			print "[STARTER] Received simulation with sim_id= " + data + ", starting now.."
-			self.run(data)
-			data = None
-
-		end_point_c.shutdown(socket.SHUT_RDWR)
-		end_point_c.close()
-		end_point_tcp.shutdown(socket.SHUT_RDWR)
-		end_point_tcp.close()
+		try:
+			self.run(sim_id)
+		except Exception as e:
+			print e.args[0]
+			params = {'simulation_identifier': sim_id,'msg': e.args[0]}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, params=params)
+			if response.status_code != 201:
+				print "[STARTER] ERROR: Posting error to end point"
 
 	def run(self,sim_id):
 		# Find docker ip
@@ -52,8 +40,7 @@ class Starter:
 				DOCKERIP = netifaces.ifaddresses(interface)[2][0]['addr']
 				break
 		if DOCKERIP == None:
-			print "[STARTER] Please check your docker interface."
-			return
+			raise Exception("[STARTER] ERROR: Please check your docker interface")
 		else:
 			print "[STARTER] Docker interface: %s" % (DOCKERIP, )
 
@@ -79,7 +66,7 @@ class Starter:
 		# Get simulation
 		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
 		if result.status_code != 200:
-			return
+			raise Exception("[STARTER] ERROR: Simulation failed to load data")
 
 		simJson = json.loads(result.text)
 		tempFilesList = {}
@@ -90,20 +77,17 @@ class Starter:
 				n_agents = len(simJson[key])
 				agents = simJson[key]
 				if n_agents == 0:
-					print "[STARTER] ERROR: simulation had no agents"
-					return
+					raise Exception("[STARTER] ERROR: Simulation has no agents")
 				continue
 			if key == "simulation_id":
 				if sim_id != simJson[key]:
-					print "[STARTER] ERROR: sim_id received not the the same in the simulation"
-					return
+					raise Exception("[STARTER] ERROR: sim_id received not the the same as the one in the simulation")
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
 			r = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + simJson[key])
 			if r.status_code != 200:
-				print "[STARTER] ERROR: error getting " + key + " file from end-point"
-				return
+				raise Exception("[STARTER] ERROR: Error getting " + key + " file from end-point")
 			fp.write(r.text)
 			fp.seek(0)
 			tempFilesList[key] = fp
@@ -153,7 +137,7 @@ class Starter:
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
-										  " | tar -xz;" 
+										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
@@ -207,22 +191,7 @@ class Starter:
 			print "[STARTER] Closing tmp files"
 			for key in tempFilesList:
 				tempFilesList[key].close()
-			return
-
-		# # Read how many robots have registered
-		# robotsXML = minidom.parseString(data)
-		# robots = robotsXML.getElementsByTagName('Robots')
-		# robotsRegistered = int(robots[0].attributes['Registered'].value)
-
-		# if robotsRegistered != n_agents:
-		# 	if robotsRegistered == 0:
-		# 		# No robots were registered, needs to kill everything that is running and return
-		# 		# TO DO
-		# 		pass
-
-		# 	# Not all robots registered, decide what to do either continue or kill the simulation
-		# 	# TO DO
-		# 	pass
+			raise Exception("[STARTER] ERROR: Agents weren't all registered")
 
 		viewer_c.settimeout(None)
 
@@ -267,8 +236,7 @@ class Starter:
 		response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + POST_SIM_URL, data=data, files=files)
 
 		if response.status_code != 201:
-			print "[STARTER] ERROR: error posting log file to end point"
-			return
+			raise Exception("[STARTER] ERROR: error posting log file to end point")
 
 		print "[STARTER] Log successfully posted, starter closing now.."
 
@@ -280,7 +248,7 @@ class Starter:
 			tempFilesList[key].close()
 
 		print "[STARTER] Simulation " + sim_id + " finished successfully..\n"
-
+		sys.exit(0)
 
 if __name__ == "__main__":
 	main()
