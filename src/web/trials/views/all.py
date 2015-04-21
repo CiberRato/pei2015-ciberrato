@@ -8,16 +8,16 @@ import os
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 
-from ..simplex import SimulationX
-from ..serializers import SimulationXSerializer, LogSimulation, ErrorSimulation
-from ..models import Simulation
+from ..simplex import TrialX
+from ..serializers import TrialXSerializer, LogTrial, ErrorTrial
+from ..models import Trial
 
 from competition.shortcuts import *
 
 
 class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = LogSimulation
+    queryset = Trial.objects.all()
+    serializer_class = LogTrial
 
     """
     Must be discussed one simple way of authentication server to server
@@ -36,7 +36,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            trial = Simulation.objects.get(identifier=serializer.validated_data['trial_identifier'])
+            trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
 
             if not trial_started(trial):
                 return Response({'status': 'Bad Request',
@@ -54,8 +54,8 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 
 class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = ErrorSimulation
+    queryset = Trial.objects.all()
+    serializer_class = ErrorTrial
 
     def create(self, request, *args, **kwargs):
         """
@@ -70,7 +70,7 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            trial = Simulation.objects.get(identifier=serializer.validated_data['trial_identifier'])
+            trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
 
             trial.errors = serializer.validated_data['msg']
             trial.save()
@@ -82,7 +82,7 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
-class GetSimulationLog(views.APIView):
+class GetTrialLog(views.APIView):
     @staticmethod
     def get(request, trial_id):
         """
@@ -92,7 +92,7 @@ class GetSimulationLog(views.APIView):
         @type  trial_id: str
         @param trial_id: The trial identifier
         """
-        trial = get_object_or_404(Simulation.objects.all(), identifier=trial_id)
+        trial = get_object_or_404(Trial.objects.all(), identifier=trial_id)
 
         if not trial_done(trial):
             return Response({'status': 'Bad request',
@@ -114,9 +114,9 @@ class GetSimulationLog(views.APIView):
         return response
 
 
-class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Simulation.objects.all()
-    serializer_class = SimulationXSerializer
+class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialXSerializer
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -127,7 +127,7 @@ class GetSimulation(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @param trial_id: The trial id
         """
         trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
-        serializer = self.serializer_class(SimulationX(trial))
+        serializer = self.serializer_class(TrialX(trial))
         trial.started = True
         trial.save()
 
