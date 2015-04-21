@@ -21,7 +21,7 @@ class Starter:
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
 
-		URL = settings["url"]["error_msg"]
+		URL = settings["urls"]["error_msg"]
 
 		try:
 			self.run(sim_id)
