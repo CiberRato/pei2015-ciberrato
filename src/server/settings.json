@@ -58,7 +58,7 @@
 
 		///url to post error msg from stater
 		///PARAMS: params={'msg': <msg> }
-		"error_msg": ""
+		"error_msg": "/api/v1/simulations/simulation_error/"
 	}
 }
 
