@@ -275,6 +275,8 @@ void cbSimulator::setGrid(cbGrid *g)
 
 	if(grid!=0) delete grid;
 	/* set the new grid */
+	if (g->getPositionsCollide()) 
+		setCollisions(false);
 	grid = g;
 	/* resize robot array to new grid size */
 	robots.resize(grid->size());

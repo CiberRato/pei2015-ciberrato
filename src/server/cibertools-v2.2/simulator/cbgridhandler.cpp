@@ -63,7 +63,11 @@ bool cbGridHandler::startElement( const QString&, const QString&, const QString&
 		const QString &direction = attr.value(QString("Dir"));
 		if (!direction.isNull()) pos.setDegDirection(direction.toDouble());
 		const QString &maxRobots = attr.value(QString("MaxAgents"));
-		if (!maxRobots.isNull()) nRobots = maxRobots.toInt();
+		if (!maxRobots.isNull()) { 
+			nRobots = maxRobots.toInt();
+			if (nRobots > 1) 
+				grid->positionsCollide(true);
+		}
 	}
     return TRUE;
 }
