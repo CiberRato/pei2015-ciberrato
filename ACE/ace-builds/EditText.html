@@ -22,17 +22,28 @@
         }
     </style>
 
-
+    <!--<input value="cenfdndfndfdsffffffffffffffffffffff"/> -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <button id="btnReq">Send an HTTP GET request to a page and get the result back</button>
+    <button onclick="httpGet(http://stackoverflow.com/)">URL</button>
+
     <script>
-        $(document).ready(function(){
-            $("#btnReq").click(function(){
-                $.get("droplet_status.py", function(data, status){
-                    alert("Data: " + data + "\nStatus: " + status);
+
+
+        $(document).ready(function () {
+            $("#btnReq").click(function () {
+                var url = "droplet_status.py";
+                console.log(url);
+                $.get(url, function (data, status) {
+                    //alert("Data: " + data + "\nStatus: " + status
+                    editor.setValue("", 0);
+                    editor.insert(data);
                 });
             });
         });
+
     </script>
+
 
     <script>
         $(document).ready(function(){
@@ -48,6 +59,8 @@
             });
         });
     </script>
+
+
 
 
     <script>
@@ -70,6 +83,7 @@
             }
 
             else {
+                editor.setValue("", 0); // eliminar conteudo no editor para não haver "sobreposição" de codigo carregado
                 file = input.files[0];
                 fr = new FileReader();
                 fr.onload = receivedText;
@@ -125,26 +139,49 @@
 </head>
 <body>
 
-    <button id="btnReq">Send an HTTP GET request to a page and get the result back</button>
-    <div>OR</div>
-    <input type="file" id="fileinput" onchange="handleFileSelect();"/>  <!-- o onchange carrega directamente o ficheiro -->
+    <input type="file" id="fileinput" onchange="handleFileSelect();"/><!-- o onchange carrega directamente o ficheiro -->
 
     <form action="C:\Users\Gabriel Vieira\Dropbox\ACE\ace-builds\edit.html" method="post" onsubmit="window.close();">
         <br>
         <div id="editor"></div>
 
-        <script src="src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-        <script>
 
+        <script src="src/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="src/ext-modelist.js"></script>
+        <script>
             // select theme
-            var editor = (function() {
+            var editor = ace.edit("editor");
+            editor.setTheme("../ace/theme/merbivore");
+            editor.getSession().setMode("../ace/mode/python");
+           /* var editor = ace.edit("editor");
+            editor.setTheme("../ace/theme/merbivore");
+            (function () {
+
+                var modelist = ace.require("../ace/ext/modelist");
+                // the file path could come from an xmlhttp request, a drop event,
+                // or any other scriptable file loading process.
+                // Extensions could consume the modelist and use it to dynamically
+                // set the editor mode. Webmasters could use it in their scripts
+                // for site specific purposes as well.
+                var filePath = "../ace/mode/python_highlight_rules.js";
+                var mode = modelist.getModeForPath(filePath).mode;
+                console.log(mode);
+                editor.getSession().setMode(mode);
+            }());*/
+
+            /*var editor = (function() {
                 var aceEditor = ace.edit("editor");
                 // default theme
                 aceEditor.setTheme("../ace/theme/merbivore");
                 aceEditor.getSession().setMode("../ace/mode/javascript");
 
+                var modelist = ace.require("../ace/ext/modelist")
+                var filePath = "//some.js"
+                var mode = modelist.getModeForPath(filePath).mode
+                editor.session.setMode(mode) // mode now contains "ace/mode/javascript"
+
                 return aceEditor;
-            })();
+            })();*/
 
             // Change theme on the fly
             //editor.setTheme("../ace/theme/terminal");
@@ -204,7 +241,7 @@
 
 
         </script>
-
+        <script src="./show_own_source.js"></script>
         <br>
         <input type="submit" value="Save & Exit" />
         <br>
