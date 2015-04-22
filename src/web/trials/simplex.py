@@ -27,6 +27,9 @@ class TrialX():
         self.param_list = "/api/v1/competitions/round_file/" + trial.round.name + "/?file=param_list"
         self.lab = "/api/v1/competitions/round_file/" + trial.round.name + "/?file=lab"
 
+        # send type of competition information
+        self.type_of_competition = trial.round.parent_competition.type_of_competition
+
         # get the agents
         log_trial_agents = LogTrialAgent.objects.filter(trial=trial)
         self.agents = []

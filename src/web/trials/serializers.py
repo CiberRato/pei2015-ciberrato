@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Trial
+from competition.serializers import TypeOfCompetitionSerializer
 
 
 class LogTrial(serializers.ModelSerializer):
@@ -43,10 +44,13 @@ class AgentXSerializer(serializers.BaseSerializer):
 class TrialXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         agents = AgentXSerializer(instance.agents, many=True)
+        type_of_competition = TypeOfCompetitionSerializer(instance.type_of_competition)
+
         return {
             'trial_id': instance.trial_id,
             'grid': instance.grid,
             'param_list': instance.param_list,
             'lab': instance.lab,
+            'type_of_competition': type_of_competition.data,
             'agents': agents.data
         }
