@@ -36,7 +36,7 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
-                                    <td><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
+                                    <td><a href="panel/{{ value.team.name }}/teamMembers">{{value.team.name}}</a></td>
                                     <td ng-if="value.valid == false"><span class="label label-important">Not Valid</span></td>
                                     <td ng-if="value.valid == true"><span class="label label-success">Valid</span></td>
 
@@ -97,7 +97,7 @@
                                             <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{$index+1}} - {{value1.identifier}}</td>
                                             <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">{{value1.state}}</td>
                                             <td ng-if="value1.grids.length == 0"><strong> There are no teams</strong></td>
-                                            <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first"><a href="/panel/{{value2.grid_positions.group_name}}/teamMembers">{{value2.grid_positions.group_name}}</a></td>
+                                            <td ng-repeat="(key2, value2) in value1.grids" ng-if="$first"><a href="/panel/{{value2.grid_positions.team_name}}/teamMembers">{{value2.grid_positions.team_name}}</a></td>
                                             <td style="vertical-align: middle" rowspan="{{value1.grids.length}}"><a data-toggle="modal" ng-click="vm.identifier=value1.identifier; vm.getScoresByTrial()" href="#addScores">Trial Scores</a>
                                                 <div class="modal fade"  id="addScores">
                                                     <div class="modal-header">
@@ -136,7 +136,7 @@
                                         </tr>
                                         <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">
                                             <td bgcolor="#f8f8f8">
-                                                <a href="/panel/{{value2.grid_positions.group_name}}/teamMembers">{{value2.grid_positions.group_name}}</a>
+                                                <a href="/panel/{{value2.grid_positions.team_name}}/teamMembers">{{value2.grid_positions.team_name}}</a>
                                             </td>
                                         </tr>
 

@@ -58,7 +58,7 @@
                 function getTrialGridsFirstSuccessFn(data){
                     vm.models.lists.Trial = [];
                     for (var k = 0; k < data.data.length; ++k) {
-                        vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                        vm.models.lists.Trial.push({label: data.data[k].grid_positions.team_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                     }
                     vm.trials[i].gridsTotal= vm.models.lists.Trial;
                 }
@@ -81,7 +81,7 @@
 
                 function getGridsFirstSuccessFn(data){
                     for (var i = 0; i < data.data.length; ++i) {
-                        vm.Available.push({label: data.data[i].group_name, identifier: data.data[i].identifier});
+                        vm.Available.push({label: data.data[i].team_name, identifier: data.data[i].identifier});
                     }
                     Competition.getCompetition(vm.round.parent_competition_name).then(getCompetitionSuccessFn, getCompetitionErrorFn);
 
@@ -121,24 +121,24 @@
 
         }
 
-        function moved(group_name ,identifier){
-            if(isInTrial(group_name)) {
+        function moved(team_name ,identifier){
+            if(isInTrial(team_name)) {
                 associateGrid(identifier);
             }
         }
 
-        function isInTrial(group_name){
+        function isInTrial(team_name){
             for (var i=0; i<vm.models.lists.Available.length; i++){
-                if (vm.models.lists.Available[i].label===group_name){
+                if (vm.models.lists.Available[i].label===team_name){
                     return false;
                 }
             }
             return true;
         }
 
-        function isInTrialNew(group_name){
+        function isInTrialNew(team_name){
             for (var i=0; i<vm.models.lists.Trial.length; i++){
-                if (vm.models.lists.Trial[i].label===group_name){
+                if (vm.models.lists.Trial[i].label===team_name){
                     return true;
                 }
             }
@@ -148,10 +148,10 @@
         function getGridsSuccessFn(data) {
             vm.models.lists.Available=[];
             for (var i = 0; i < data.data.length; ++i) {
-                if(isInTrialNew(data.data[i].group_name) === false){
+                if(isInTrialNew(data.data[i].team_name) === false){
 
                     vm.models.lists.Available.push({
-                        label: data.data[i].group_name,
+                        label: data.data[i].team_name,
                         identifier: data.data[i].identifier
                     });
 
@@ -247,7 +247,7 @@
                 function getTrialGridsNSuccessFn(data){
                     vm.models.lists.Trial = [];
                     for (var i = 0; i < data.data.length; ++i) {
-                        vm.models.lists.Trial.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                        vm.models.lists.Trial.push({label: data.data[i].grid_positions.team_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
                     }
 
                     if(vm.models.lists.Trial !== []){
@@ -261,7 +261,7 @@
                     function getSuccessFn(data){
                         vm.Trial=[];
                         for (var i = 0; i < data.data.length; ++i) {
-                            vm.Trial.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                            vm.Trial.push({label: data.data[i].grid_positions.team_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
                         }
 
                         for(var k= 0; k<vm.models.lists.Trial.length; k++){
@@ -494,7 +494,7 @@
         function getTrialGridsSuccessFn(data){
             vm.models.lists.Trial = [];
             for (var i = 0; i < data.data.length; ++i) {
-                vm.models.lists.Trial.push({label: data.data[i].grid_positions.group_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
+                vm.models.lists.Trial.push({label: data.data[i].grid_positions.team_name, identifier: data.data[i].grid_positions.identifier, position: data.data[i].position});
             }
             Round.getGrids(vm.round.parent_competition_name).then(getGridsSuccessFn, getGridsErrorFn);
 
@@ -555,7 +555,7 @@
                 function getNewTrialGridsSuccessFn(data){
                     vm.models.lists.Trial = [];
                     for (var k = 0; k < data.data.length; ++k) {
-                        vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                        vm.models.lists.Trial.push({label: data.data[k].grid_positions.team_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                     }
                 }
 
@@ -692,7 +692,7 @@
                 function getTrialGridsFirstSuccessFn(data){
                     vm.models.lists.Trial = [];
                     for (var k = 0; k < data.data.length; ++k) {
-                        vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                        vm.models.lists.Trial.push({label: data.data[k].grid_positions.team_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                     }
                     vm.trials[i].gridsTotal= vm.models.lists.Trial;
                 }
@@ -731,7 +731,7 @@
             function getTrialGridsFirstSuccessFn(data){
                 vm.models.lists.Trial = [];
                 for (var k = 0; k < data.data.length; ++k) {
-                    vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
+                    vm.models.lists.Trial.push({label: data.data[k].grid_positions.team_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                 }
 
                 for(var i = 0; i<vm.trials.length; i++){

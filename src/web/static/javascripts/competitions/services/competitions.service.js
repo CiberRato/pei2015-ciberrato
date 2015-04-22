@@ -52,23 +52,23 @@
         }
 
         function getTeams(competitionName){
-            return $http.get('/api/v1/competitions/groups/' + competitionName +'/');
+            return $http.get('/api/v1/competitions/teams/' + competitionName +'/');
         }
 
         function enroll(competitionName, teamName){
             return $http.post('/api/v1/competitions/enroll/',{
                 competition_name: competitionName,
-                group_name: teamName,
+                team_name: teamName,
                 valid: false
             });
         }
 
         function deleteEnroll(teamName, competitionName){
-            return $http.delete('/api/v1/competitions/enroll/'+ competitionName + '/?group_name=' + teamName);
+            return $http.delete('/api/v1/competitions/enroll/'+ competitionName + '/?team_name=' + teamName);
         }
 
         function getMyCompetitions(username){
-            return $http.get('/api/v1/competitions/my_enrolled_groups/' + username + '/');
+            return $http.get('/api/v1/competitions/my_enrolled_teams/' + username + '/');
         }
 
         function getPast(){
@@ -80,11 +80,11 @@
         }
 
         function getMyTeams(username, competitionName){
-            return $http.get("/api/v1/competitions/my_enrolled_groups_competition/" +username +"/?competition_name=" +competitionName);
+            return $http.get("/api/v1/competitions/my_enrolled_teams_competition/" +username +"/?competition_name=" +competitionName);
         }
 
         function getCompetitions(competitionName){
-            return $http.get("/api/v1/competitions/group_enrolled_competitions/" + competitionName+ "/");
+            return $http.get("/api/v1/competitions/team_enrolled_competitions/" + competitionName+ "/");
         }
 
         function getFirstRound(competitionName){
@@ -103,9 +103,9 @@
         }
 
         function validateInscription(teamName, competitionName){
-            return $http.post("/api/v1/competitions/toggle_group_inscription/", {
+            return $http.post("/api/v1/competitions/toggle_team_inscription/", {
                 competition_name: competitionName,
-                group_name: teamName
+                team_name: teamName
             });
         }
 
@@ -119,8 +119,8 @@
             });
         }
 
-        function agents(groupName, competitionName){
-            return $http.get("/api/v1/competitions/agents_by_competition_group/" + groupName+ "/?competition_name=" + competitionName)
+        function agents(teamName, competitionName){
+            return $http.get("/api/v1/competitions/agents_by_competition_team/" + teamName+ "/?competition_name=" + competitionName)
         }
 
         function createTypeOfCompetition(typeName, teamsForTrial, agentsByGrid){

@@ -51,7 +51,7 @@
                     for (var i = 0; i < vm.userAdmin.length; i++) {
                         confirm = false;
                         for (var j = 0; j < vm.competitionTeamsInfo.length; j++) {
-                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].group.name) {
+                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].team.name) {
                                 confirm = true;
                                 vm.competitionTeamsInfo[j].canRemove = true;
                             }
@@ -80,7 +80,7 @@
                 for(var i = 0; i<vm.competitionTeamsInfo.length; i++){
                     vm.competitionTeamsInfo[i].show=false;
                     for(var j =0; j<vm.myTeams.length; j++){
-                        if(vm.myTeams[j].group_name === vm.competitionTeamsInfo[i].group.name){
+                        if(vm.myTeams[j].team_name === vm.competitionTeamsInfo[i].team.name){
                             vm.competitionTeamsInfo[i].show=true;
                         }
                     }
@@ -194,7 +194,7 @@
                     for (var i = 0; i < vm.userAdmin.length; i++) {
                         confirm = false;
                         for (var j = 0; j < vm.competitionTeamsInfo.length; j++) {
-                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].group.name) {
+                            if (vm.userAdmin[i].name === vm.competitionTeamsInfo[j].team.name) {
                                 confirm = true;
                                 vm.competitionTeamsInfo[j].canRemove = true;
                             }
@@ -222,7 +222,7 @@
                 for(var i = 0; i<vm.competitionTeamsInfo.length; i++){
                     vm.competitionTeamsInfo[i].show=false;
                     for(var j =0; j<vm.myTeams.length; j++){
-                        if(vm.myTeams[j].group_name === vm.competitionTeamsInfo[i].group.name){
+                        if(vm.myTeams[j].team_name === vm.competitionTeamsInfo[i].team.name){
                             vm.competitionTeamsInfo[i].show=true;
                         }
                     }

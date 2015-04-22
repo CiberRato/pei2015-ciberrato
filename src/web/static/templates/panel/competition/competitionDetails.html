@@ -22,13 +22,13 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitionTeamsInfo" >
-                                <td ng-if="value.show==true"><a href="panel/{{ value.group.name }}/editTeam">{{value.group.name}}</a></td>
-                                <td ng-if="value.show==false"><a href="panel/{{ value.group.name }}/teamMembers">{{value.group.name}}</a></td>
+                                <td ng-if="value.show==true"><a href="panel/{{ value.team.name }}/editTeam">{{value.team.name}}</a></td>
+                                <td ng-if="value.show==false"><a href="panel/{{ value.team.name }}/teamMembers">{{value.team.name}}</a></td>
                                 <td ng-if="value.valid == false && value.show == true"><span class="label label-important">Not Valid</span></td>
                                 <td ng-if="value.valid == true && value.show == true"><span class="label label-success">Valid</span></td>
                                 <td ng-if="value.show == false"></td>
 
-                                <td ng-if="value.canRemove == true && value.valid == false"><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.group.name)">X</a></td>
+                                <td ng-if="value.canRemove == true && value.valid == false"><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.team.name)">X</a></td>
                                 <td ng-if="value.canRemove == true && value.valid == true">
                                     <a data-toggle="modal"  href="#RemoveError" class="btn btn-primary btn-flat" >X</a>
                                     <div class="modal fade"  id="RemoveError">

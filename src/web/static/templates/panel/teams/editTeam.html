@@ -9,8 +9,8 @@
 		<div class="data-container">
             <section class="tab-content">
                 <header>
-                    <h2>{{ vm.team.group.name }}</h2>
-                    <a ng-if="vm.member.is_admin==true" href="/panel/{{ vm.team.group.name }}/editTeamProfile">( Edit Team Profile ) </a>
+                    <h2>{{ vm.team.team.name }}</h2>
+                    <a ng-if="vm.member.is_admin==true" href="/panel/{{ vm.team.team.name }}/editTeamProfile">( Edit Team Profile ) </a>
 
                 </header>
                 <br></br>
@@ -44,7 +44,7 @@
                                                 <div class="modal-body">
                                                     <button type="button" class="close" data-dismiss="modal">×</button>
 
-                                                    <p align="center">Your Team <strong>({{vm.team.group.name}})</strong> will be removed!</p>
+                                                    <p align="center">Your Team <strong>({{vm.team.team.name}})</strong> will be removed!</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <a data-dismiss="modal" ng-click="vm.destroy()" class="btn btn-alt btn-danger" >Delete</a>

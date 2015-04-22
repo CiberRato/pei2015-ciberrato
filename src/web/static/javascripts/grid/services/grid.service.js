@@ -22,7 +22,7 @@
         function create(teamName, competitionName){
             return $http.post('/api/v1/competitions/grid_position/', {
                 competition_name: competitionName,
-                group_name: teamName
+                team_name: teamName
             });
         }
 
@@ -31,7 +31,7 @@
         }
 
         function destroy(teamName, competitionName){
-            return $http.delete('/api/v1/competitions/grid_position/' + competitionName + '/?group_name=' + teamName)
+            return $http.delete('/api/v1/competitions/grid_position/' + competitionName + '/?team_name=' + teamName)
         }
 
         function getAgents(identifier){

@@ -90,8 +90,8 @@
         }
 
 
-        function validateInscription(group_name, competition_name, i){
-            Competition.validateInscription(group_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
+        function validateInscription(team_name, competition_name, i){
+            Competition.validateInscription(team_name, competition_name).then(validateInscriptionSuccessFn, validateInscriptionErrorFn);
 
             function validateInscriptionSuccessFn(){
                 $timeout(function(){

@@ -28,13 +28,13 @@
         function create(name, teamName, type, language){
             return $http.post('/api/v1/agents/agent/',{
                 agent_name: name,
-                group_name: teamName,
+                team_name: teamName,
                 is_local: type,
                 language: language
             })
         }
         function getByTeam(teamName){
-            return $http.get('/api/v1/agents/agents_by_group/' + teamName + '/');
+            return $http.get('/api/v1/agents/agents_by_team/' + teamName + '/');
         }
 
         function getByUser(username){
