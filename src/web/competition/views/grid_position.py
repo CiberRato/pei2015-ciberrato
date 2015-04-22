@@ -6,10 +6,10 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from authentication.models import Group, GroupMember
+from authentication.models import Team, TeamMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
-from ..models import Competition, GridPositions, GroupEnrolled, AgentGrid, Agent
+from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent
 from ..serializers import GridPositionsSerializer, AgentGridSerializer
 from ..permissions import IsStaff
 
@@ -57,14 +57,14 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            group = get_object_or_404(Team.objects.all(), name=serializer.validated_data['group_name'])
 
-            if len(GroupMember.objects.filter(group=group, account=request.user)) != 1:
+            if len(TeamMember.objects.filter(group=group, account=request.user)) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'You must be part of the group.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=group, competition=competition)
+            group_enrolled = TeamEnrolled.objects.filter(group=group, competition=competition)
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'Your group must be enrolled in the competition.'},
@@ -108,14 +108,14 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+        group = get_object_or_404(Team.objects.all(), name=request.GET.get('group_name', ''))
 
-        if len(GroupMember.objects.filter(group=group, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(group=group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        group_enrolled = GroupEnrolled.objects.filter(group=group, competition=competition)
+        group_enrolled = TeamEnrolled.objects.filter(group=group, competition=competition)
         if len(group_enrolled) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'Your group must be enrolled in the competition.'},
@@ -149,14 +149,14 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+        group = get_object_or_404(Team.objects.all(), name=request.GET.get('group_name', ''))
 
-        if len(GroupMember.objects.filter(group=group, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(group=group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        group_enrolled = GroupEnrolled.objects.filter(group=group, competition=competition)
+        group_enrolled = TeamEnrolled.objects.filter(group=group, competition=competition)
         if len(group_enrolled) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'Your group must be enrolled in the competition.'},
@@ -220,7 +220,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=grid.competition)
+            group_enrolled = TeamEnrolled.objects.filter(group=agent.group, competition=grid.competition)
 
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -291,7 +291,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group_enrolled = GroupEnrolled.objects.filter(group=agent.group, competition=grid.competition)
+        group_enrolled = TeamEnrolled.objects.filter(group=agent.group, competition=grid.competition)
 
         if len(group_enrolled) != 1:
             return Response({'status': 'Permission denied',

@@ -6,10 +6,10 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from authentication.models import Group
+from authentication.models import Team
 
 from .simplex import TeamScoreSimplex
-from ..models import Competition, TeamScore, GroupEnrolled, Trial, Round
+from ..models import Competition, TeamScore, TeamEnrolled, Trial, Round
 from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
 from ..permissions import IsStaff
 
@@ -63,9 +63,9 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            team = get_object_or_404(Group.objects.all(), name=serializer.validated_data['team_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            group_enrolled = GroupEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+            group_enrolled = TeamEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
 
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -121,9 +121,9 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            team = get_object_or_404(Group.objects.all(), name=serializer.validated_data['team_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            group_enrolled = GroupEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+            group_enrolled = TeamEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
 
             if len(group_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -170,7 +170,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        team = get_object_or_404(Group.objects.all(), name=request.GET.get('team_name', ''))
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
         team_score = get_object_or_404(TeamScore.objects.all(), trial=trial, team=team)
         team_score.delete()

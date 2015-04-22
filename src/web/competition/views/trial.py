@@ -13,7 +13,7 @@ from .simplex import TrialSimplex, TrialAgentSimplex, TrialGridSimplex
 from ..serializers import TrialSerializer, TrialAgentSerializer, TrialGridsSerializer, \
     TrialGridInputSerializer
 from ..models import Competition, Round, Trial, CompetitionAgent, LogTrialAgent, TrialGrid, \
-    GridPositions, GroupEnrolled, AgentGrid
+    GridPositions, TeamEnrolled, AgentGrid
 from ..shortcuts import *
 from ..permissions import IsStaff
 
@@ -224,7 +224,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            group_enrolled = GroupEnrolled.objects.filter(group=grid_positions.group,
+            group_enrolled = TeamEnrolled.objects.filter(group=grid_positions.group,
                                                           competition=grid_positions.competition)
 
             if len(group_enrolled) != 1:
@@ -292,7 +292,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group_enrolled = GroupEnrolled.objects.filter(group=sim_grid.grid_positions.group,
+        group_enrolled = TeamEnrolled.objects.filter(group=sim_grid.grid_positions.group,
                                                       competition=sim_grid.grid_positions.competition)
 
         if len(group_enrolled) != 1:
@@ -360,7 +360,7 @@ class StartTrial(views.APIView):
                 # print agent_grid.position
 
                 if agent_grid.agent.code_valid:
-                    group_enroll = GroupEnrolled.objects.get(group=agent_grid.agent.group,
+                    group_enroll = TeamEnrolled.objects.get(group=agent_grid.agent.group,
                                                              competition=trial.round.parent_competition)
                     if group_enroll.valid:
                         # competition agent

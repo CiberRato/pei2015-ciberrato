@@ -1,21 +1,21 @@
 from collections import OrderedDict
 
 from django.test import TestCase
-from authentication.models import Group, GroupMember, Account
+from authentication.models import Team, TeamMember, Account
 from rest_framework.test import APIClient
 
 
-class GroupsModelsTestCase(TestCase):
+class TeamsModelsTestCase(TestCase):
     def setUp(self):
-        g = Group.objects.create(name="XPTO", max_members=10)
+        g = Team.objects.create(name="XPTO", max_members=10)
         a1 = Account.objects.create(email="rf@rf.pt", username="gipmon", first_name="Rafael", last_name="Ferreira",
                                     teaching_institution="Universidade de Aveiro")
         a2 = Account.objects.create(email="ey@rf.pt", username="eypo", first_name="Costa", last_name="Ferreira",
                                     teaching_institution="Universidade de Aveiro")
         Account.objects.create(email="af@rf.pt", username="eypo94", first_name="Antonio", last_name="Ferreira",
                                teaching_institution="Universidade de Aveiro")
-        GroupMember.objects.create(account=a1, group=g)
-        GroupMember.objects.create(account=a2, group=g)
+        TeamMember.objects.create(account=a1, group=g)
+        TeamMember.objects.create(account=a2, group=g)
 
     def test_account_details(self):
         a1 = Account.objects.get(username="gipmon")
@@ -34,7 +34,7 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(a2.teaching_institution, "Universidade de Aveiro")
 
     def test_group_details(self):
-        group = Group.objects.get(name="XPTO")
+        group = Team.objects.get(name="XPTO")
         self.assertEqual(group.name, "XPTO")
         self.assertEqual(group.max_members, 10)
 
@@ -42,8 +42,8 @@ class GroupsModelsTestCase(TestCase):
         a1 = Account.objects.get(username="gipmon")
         a2 = Account.objects.get(username="eypo")
 
-        gm1 = GroupMember.objects.get(account=a1)
-        gm2 = GroupMember.objects.get(account=a2)
+        gm1 = TeamMember.objects.get(account=a1)
+        gm2 = TeamMember.objects.get(account=a2)
 
         self.equal = self.assertEqual(str(gm1), str(a1) + " is in group XPTO (as False)")
         self.assertEqual(str(gm2), str(a2) + " is in group XPTO (as False)")
@@ -61,27 +61,27 @@ class GroupsModelsTestCase(TestCase):
         u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)])])]))
 
         # create a group
-        data = {'name': 'TestGroup', 'max_members': 10}
+        data = {'name': 'TestTeam', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
+        self.assertEqual(response.data, OrderedDict([('name', u'TestTeam'), ('max_members', 10)]))
 
         # only two groups must be stored
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, OrderedDict([(u'count', 2), (u'next', None), (u'previous', None), (u'results', [
             OrderedDict([('name', u'XPTO'), ('max_members', 10)]),
-            OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])]))
+            OrderedDict([('name', u'TestTeam'), ('max_members', 10)])])]))
 
         # only two groups must be admin
         url = "/api/v1/groups/user_admin/gipmon/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'TestGroup'), ('max_members', 10)])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'TestTeam'), ('max_members', 10)])])
 
         # the user must be administrator of the group
-        url = "/api/v1/groups/member/TestGroup/?username=gipmon"
+        url = "/api/v1/groups/member/TestTeam/?username=gipmon"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -90,17 +90,17 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': True, 'account': OrderedDict(
             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # only one member in the group
-        url = "/api/v1/groups/members/TestGroup/"
+        url = "/api/v1/groups/members/TestTeam/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
         # add one member to the group
         url = "/api/v1/groups/member/"
-        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        data = {'group_name': 'TestTeam', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
@@ -111,10 +111,10 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # verify if the user is in the group and is not an admin
-        url = "/api/v1/groups/member/TestGroup/?username=eypo"
+        url = "/api/v1/groups/member/TestTeam/?username=eypo"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -124,16 +124,16 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # only two members in the group
-        url = "/api/v1/groups/members/TestGroup/"
+        url = "/api/v1/groups/members/TestTeam/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
         # make the user a group admin
-        url = "/api/v1/groups/admin/TestGroup/?username=eypo"
+        url = "/api/v1/groups/admin/TestTeam/?username=eypo"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -143,10 +143,10 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': True, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # delete the user from the admins list
-        url = "/api/v1/groups/admin/TestGroup/?username=eypo"
+        url = "/api/v1/groups/admin/TestTeam/?username=eypo"
         response = client.put(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -156,22 +156,22 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # delete the user from the grou
-        url = "/api/v1/groups/member/TestGroup/?username=eypo"
+        url = "/api/v1/groups/member/TestTeam/?username=eypo"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
 
         # only one member in the group
-        url = "/api/v1/groups/members/TestGroup/"
+        url = "/api/v1/groups/members/TestTeam/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
         # add the user again
         url = "/api/v1/groups/member/"
-        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        data = {'group_name': 'TestTeam', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
@@ -182,10 +182,10 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 10)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # update the group
-        url = "/api/v1/groups/crud/TestGroup/"
+        url = "/api/v1/groups/crud/TestTeam/"
         data = {'name': "XPTO2", 'max_members': 10}
         response = client.put(url, data)
         self.assertEqual(response.status_code, 200)
@@ -220,9 +220,9 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data, {u'detail': u'Not found.'})
 
-        # no GroupMembers instances
+        # no TeamMembers instances
         # two from the SetUp
-        self.assertEqual(len(GroupMember.objects.all()), 2)
+        self.assertEqual(len(TeamMember.objects.all()), 2)
 
         client.force_authenticate(user=None)
 
@@ -231,7 +231,7 @@ class GroupsModelsTestCase(TestCase):
 
         # create a group
         url = "/api/v1/groups/crud/"
-        data = {'name': 'TestGroup', 'max_members': 10}
+        data = {'name': 'TestTeam', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'Authentication credentials were not provided.'})
@@ -291,15 +291,15 @@ class GroupsModelsTestCase(TestCase):
 
         # create a group
         url = "/api/v1/groups/crud/"
-        data = {'name': 'TestGroup', 'max_members': 10}
+        data = {'name': 'TestTeam', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
+        self.assertEqual(response.data, OrderedDict([('name', u'TestTeam'), ('max_members', 10)]))
 
         # can not create a group
         url = "/api/v1/groups/crud/"
-        data = {'name': 'TestGroup', 'max_members': 10}
+        data = {'name': 'TestTeam', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {'status': 'Bad request', 'message': {'name': [u'This field must be unique.']}})
@@ -313,7 +313,7 @@ class GroupsModelsTestCase(TestCase):
 
         # create a group
         url = "/api/v1/groups/crud/"
-        data = {'name': 'TestGroup', 'max_members': 0}
+        data = {'name': 'TestTeam', 'max_members': 0}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 400)
@@ -330,12 +330,12 @@ class GroupsModelsTestCase(TestCase):
 
         # create a group
         url = "/api/v1/groups/crud/"
-        data = {'name': 'TestGroup', 'max_members': 2}
+        data = {'name': 'TestTeam', 'max_members': 2}
         response = client.post(path=url, data=data, format='json')
 
         # add one member to the group
         url = "/api/v1/groups/member/"
-        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        data = {'group_name': 'TestTeam', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
@@ -346,10 +346,10 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 2)])})
 
         # verify if the user is in the group and is not an admin
-        url = "/api/v1/groups/member/TestGroup/?username=eypo"
+        url = "/api/v1/groups/member/TestTeam/?username=eypo"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -359,11 +359,11 @@ class GroupsModelsTestCase(TestCase):
         self.assertEqual(rsp, {'is_admin': False, 'account': OrderedDict(
             [('email', u'ey@rf.pt'), ('username', u'eypo'),
              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'),
-             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestGroup'), ('max_members', 2)])})
+             ('last_name', u'Ferreira')]), 'group': OrderedDict([('name', u'TestTeam'), ('max_members', 2)])})
 
         # can't add another member
         url = "/api/v1/groups/member/"
-        data = {'group_name': 'TestGroup', 'user_name': 'eypo94'}
+        data = {'group_name': 'TestTeam', 'user_name': 'eypo94'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data,
@@ -376,13 +376,13 @@ class GroupsModelsTestCase(TestCase):
 
         # add one member to the group
         url = "/api/v1/groups/member/"
-        data = {'group_name': 'TestGroup', 'user_name': 'eypo'}
+        data = {'group_name': 'TestTeam', 'user_name': 'eypo'}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
 
         # delete the group
-        url = "/api/v1/groups/crud/TestGroup/"
+        url = "/api/v1/groups/crud/TestTeam/"
         response = client.delete(url)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, {u'detail': u'You do not have permission to perform this action.'})
@@ -396,19 +396,19 @@ class GroupsModelsTestCase(TestCase):
 
         # create a group slug
         url = "/api/v1/groups/crud/"
-        data = {'name': 'Test.Group', 'max_members': 10}
+        data = {'name': 'Test.Team', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
 
         # create a group slug
         url = "/api/v1/groups/crud/"
-        data = {'name': 'Test*Group', 'max_members': 10}
+        data = {'name': 'Test*Team', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
 
         # create a group slug
         url = "/api/v1/groups/crud/"
-        data = {'name': 'Test$Group', 'max_members': 10}
+        data = {'name': 'Test$Team', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
 

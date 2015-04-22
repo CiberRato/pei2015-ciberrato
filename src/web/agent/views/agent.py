@@ -10,8 +10,8 @@ from ..models import Agent
 from ..serializers import AgentSerializer, AgentCodeValidationSerializer, SubmitCodeAgentSerializer
 from ..simplex import AgentSimplex
 
-from authentication.models import Group, Account, GroupMember
-from groups.permissions import IsAdminOfGroup
+from authentication.models import Team, Account, TeamMember
+from groups.permissions import IsAdminOfTeam
 from competition.serializers import CompetitionSerializer
 
 
@@ -23,7 +23,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+        return permissions.IsAuthenticated(), IsAdminOfTeam(),
 
     def create(self, request, *args, **kwargs):
         """
@@ -41,7 +41,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             user = request.user
-            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            group = get_object_or_404(Team.objects.all(), name=serializer.validated_data['group_name'])
             agent_name = serializer.validated_data['agent_name']
 
             if serializer.validated_data['is_local']:
@@ -88,7 +88,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
-class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class AgentsByTeamViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
 
@@ -103,7 +103,7 @@ class AgentsByGroupViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  group_name: str
         @param group_name: The group name
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class([AgentSimplex(agent) for agent in group.agent_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -172,7 +172,7 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
         if serializer.is_valid():
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
 
-            if len(GroupMember.objects.filter(group=agent.group, account=request.user)) == 0:
+            if len(TeamMember.objects.filter(group=agent.group, account=request.user)) == 0:
                 return Response({'status': 'Permission denied',
                                  'message': 'You must be part of the group.'},
                                 status=status.HTTP_403_FORBIDDEN)

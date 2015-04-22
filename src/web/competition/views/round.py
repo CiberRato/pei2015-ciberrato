@@ -9,10 +9,10 @@ from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 
-from authentication.models import GroupMember
+from authentication.models import TeamMember
 from authentication.serializers import AccountSerializer
 
-from groups.serializers import GroupSerializer
+from groups.serializers import TeamSerializer
 
 from ..models import Competition, Round, CompetitionAgent
 from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer, RoundFilesSerializer
@@ -157,16 +157,16 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         competition_groups = [agent.agent.group for agent in competition_agents]
         accounts = []
         for group in competition_groups:
-            group_members = GroupMember.objects.filter(group=group)
+            group_members = TeamMember.objects.filter(group=group)
             accounts += [group_member.account for group_member in group_members]
         serializer = self.serializer_class(accounts, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RoundGroups(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = TeamSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),

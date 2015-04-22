@@ -1,4 +1,4 @@
 """
-See the Group models in authentication/models.py
-The Group models has dependencies with Account model
+See the Team models in authentication/models.py
+The Team models has dependencies with Account model
 """

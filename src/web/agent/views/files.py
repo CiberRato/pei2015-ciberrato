@@ -14,7 +14,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-from authentication.models import GroupMember
+from authentication.models import TeamMember
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent, AgentFile
 from ..simplex import AgentFileSimplex
@@ -44,7 +44,7 @@ class UploadAgent(views.APIView):
                              'message': 'You can\'t upload code to a virtual agent!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group_member = GroupMember.objects.filter(group=agent.group, account=request.user)
+        group_member = TeamMember.objects.filter(group=agent.group, account=request.user)
 
         if len(group_member) == 0:
             return Response({'status': 'Permission denied',
@@ -104,7 +104,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         """
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
 
-        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) == 0:
+        if len(TeamMember.objects.filter(group=agent.group, account=request.user)) == 0:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -141,7 +141,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
 
-        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(group=agent.group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -165,7 +165,7 @@ class GetAllAgentFiles(views.APIView):
         agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
 
         # see if user owns the agent
-        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(group=agent.group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -226,7 +226,7 @@ class GetAgentFile(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         # see if user owns the agent
-        if len(GroupMember.objects.filter(group=agent.group, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(group=agent.group, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the group.'},
                             status=status.HTTP_403_FORBIDDEN)

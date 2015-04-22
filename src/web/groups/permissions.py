@@ -1,14 +1,14 @@
 # coding=utf-8
 from rest_framework import permissions
 
-from authentication.models import Group, GroupMember
+from authentication.models import Team, TeamMember
 from competition.models import Agent
 
 
-class IsAdminOfGroup(permissions.BasePermission):
+class IsAdminOfTeam(permissions.BasePermission):
     def has_permission(self, request, view):
         """
-        If the GroupMember is admin of Group.
+        If the TeamMember is admin of Team.
 
         @type  request: WSGIRequest
         @param request: WSGIRequest (https://github.com/django/django/blob/master/django/core/handlers/wsgi.py)
@@ -26,25 +26,25 @@ class IsAdminOfGroup(permissions.BasePermission):
         except ValueError:
             return False
 
-        group = Group.objects.filter(name=group_name)
+        group = Team.objects.filter(name=group_name)
         if len(group) == 0:
-            if view.__class__.__name__ == 'MemberInGroupViewSet' and request.method == 'POST':
+            if view.__class__.__name__ == 'MemberInTeamViewSet' and request.method == 'POST':
                 try:
                     data = dict(request.data)
                     group_name = data['group_name']
-                    group = Group.objects.filter(name=group_name)
+                    group = Team.objects.filter(name=group_name)
                 except KeyError:
                     return False
-            elif view.__class__.__name__ == 'EnrollGroup' and request.method == 'POST':
+            elif view.__class__.__name__ == 'EnrollTeam' and request.method == 'POST':
                 try:
                     group_name = request.data['group_name']
-                    group = Group.objects.filter(name=group_name)
+                    group = Team.objects.filter(name=group_name)
                 except KeyError:
                     return False
             elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'POST':
                 try:
                     group_name = request.data['group_name']
-                    group = Group.objects.filter(name=group_name)
+                    group = Team.objects.filter(name=group_name)
                 except KeyError:
                     return False
             elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'DELETE':
@@ -58,13 +58,13 @@ class IsAdminOfGroup(permissions.BasePermission):
                 except AttributeError:
                     return False
             elif 'group_name' in request.GET:
-                group = Group.objects.filter(name=request.GET.get('group_name', ''))
+                group = Team.objects.filter(name=request.GET.get('group_name', ''))
                 if len(group) == 0:
                     return False
             else:
                 return False
 
-        group_member = GroupMember.objects.filter(account=request.user, group=group)
+        group_member = TeamMember.objects.filter(account=request.user, group=group)
         if len(group_member) >= 1:
             return group_member[0].is_admin
         return False

@@ -10,7 +10,7 @@ class RoundSimplex:
         self.lab_path = r.lab_path
 
 
-class GroupEnrolledSimplex:
+class TeamEnrolledSimplex:
     def __init__(self, ge):
         self.competition = ge.competition
         self.group_name = ge.group.name

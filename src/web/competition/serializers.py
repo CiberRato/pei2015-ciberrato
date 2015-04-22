@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Trial, LogTrialAgent, \
+from competition.models import Competition, Round, TeamEnrolled, CompetitionAgent, Trial, LogTrialAgent, \
     TypeOfCompetition, GridPositions, AgentGrid, TrialGrid, TeamScore
-from groups.serializers import GroupSerializer
+from groups.serializers import TeamSerializer
 
 
 class TypeOfCompetitionSerializer(serializers.ModelSerializer):
@@ -79,7 +79,7 @@ class AdminRoundSerializer(serializers.ModelSerializer):
         read_only_fields = ('param_list_path', 'grid_path', 'lab_path',)
 
 
-class GroupEnrolledSerializer(serializers.ModelSerializer):
+class TeamEnrolledSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128, write_only=True)
     group_name = serializers.CharField(max_length=128)
     valid = serializers.BooleanField(read_only=True)
@@ -87,16 +87,16 @@ class GroupEnrolledSerializer(serializers.ModelSerializer):
     competition = CompetitionSerializer(read_only=True)
 
     class Meta:
-        model = GroupEnrolled
+        model = TeamEnrolled
         fields = ('competition', 'competition_name', 'group_name', 'valid',)
         read_only_fields = ('competition', 'valid',)
 
 
-class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
-    group = GroupSerializer(read_only=True)
+class TeamEnrolledOutputSerializer(serializers.ModelSerializer):
+    group = TeamSerializer(read_only=True)
 
     class Meta:
-        model = GroupEnrolled
+        model = TeamEnrolled
         fields = ('group', 'valid',)
         read_only_fields = ('group', 'valid')
 
@@ -196,7 +196,7 @@ class TeamScoreInSerializer(serializers.ModelSerializer):
 
 class TeamScoreOutSerializer(serializers.ModelSerializer):
     trial = TrialSerializer(read_only=True)
-    team = GroupSerializer(read_only=True)
+    team = TeamSerializer(read_only=True)
 
     class Meta:
         model = TeamScore

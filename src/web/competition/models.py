@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator, MinLengthValidator
 from ciberonline.validators import validate_word
 from django.db import models
 from django.conf import settings
-from authentication.models import Account, Group
+from authentication.models import Account, Team
 
 
 class Competition(models.Model):
@@ -20,7 +20,7 @@ class Competition(models.Model):
         (PAST, 'Past'),
     )
 
-    enrolled_groups = models.ManyToManyField(Group, through='GroupEnrolled', related_name="competition")
+    enrolled_groups = models.ManyToManyField(Team, through='TeamEnrolled', related_name="competition")
 
     type_of_competition = models.ForeignKey('TypeOfCompetition', blank=False)
     state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
@@ -47,9 +47,9 @@ class TypeOfCompetition(models.Model):
         return self.name
 
 
-class GroupEnrolled(models.Model):
+class TeamEnrolled(models.Model):
     competition = models.ForeignKey(Competition, blank=False)
-    group = models.ForeignKey(Group, blank=False)
+    group = models.ForeignKey(Team, blank=False)
 
     valid = models.BooleanField(default=False, blank=False)
 
@@ -88,7 +88,7 @@ class Agent(models.Model):
     agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word,
                                                                                         MinLengthValidator(1)])
     user = models.ForeignKey(Account, blank=False)
-    group = models.ForeignKey(Group, blank=False)
+    group = models.ForeignKey(Team, blank=False)
 
     language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100, default="Python")
 
@@ -119,7 +119,7 @@ class AgentFile(models.Model):
 class GridPositions(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
     competition = models.ForeignKey(Competition, blank=False)
-    group = models.ForeignKey(Group, blank=False)
+    group = models.ForeignKey(Team, blank=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -204,7 +204,7 @@ class TrialGrid(models.Model):
 
 class TeamScore(models.Model):
     trial = models.ForeignKey(Trial, blank=False)
-    team = models.ForeignKey(Group, blank=False)
+    team = models.ForeignKey(Team, blank=False)
     score = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
     number_of_agents = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
     time = models.IntegerField(validators=[MinValueValidator(0)], blank=False)

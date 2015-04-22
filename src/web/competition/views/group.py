@@ -6,29 +6,29 @@ from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
 
-from groups.serializers import GroupSerializer
-from groups.permissions import IsAdminOfGroup
+from groups.serializers import TeamSerializer
+from groups.permissions import IsAdminOfTeam
 
 from ..permissions import IsStaff
-from .simplex import RoundSimplex, GroupEnrolledSimplex
-from ..models import Competition, Round, GroupEnrolled
-from ..serializers import RoundSerializer, GroupEnrolledSerializer, GroupEnrolledOutputSerializer, \
+from .simplex import RoundSimplex, TeamEnrolledSimplex
+from ..models import Competition, Round, TeamEnrolled
+from ..serializers import RoundSerializer, TeamEnrolledSerializer, TeamEnrolledOutputSerializer, \
     CompetitionSerializer
 
-from authentication.models import Group
+from authentication.models import Team
 from authentication.models import Account
 
 
-class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
-    serializer_class = GroupEnrolledOutputSerializer
+    serializer_class = TeamEnrolledOutputSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled and with valid inscription or not in the Competition
+        B{Retrieve} the list of a Teams enrolled and with valid inscription or not in the Competition
         B{URL:} ../api/v1/competitions/groups/<competition_name>/
 
         @type  competition_name: str
@@ -40,16 +40,16 @@ class CompetitionGetGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericVie
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class MyEnrolledGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class MyEnrolledTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
-    serializer_class = GroupEnrolledSerializer
+    serializer_class = TeamEnrolledSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled
+        B{Retrieve} the list of a Teams enrolled
         B{URL:} ../api/v1/competitions/my_enrolled_groups/<username>/
 
         @type  username: str
@@ -60,30 +60,30 @@ class MyEnrolledGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet
         enrolled_groups = []
         for group in user.groups.all():
             for eg in group.groupenrolled_set.all():
-                enrolled_groups += [GroupEnrolledSimplex(eg)]
+                enrolled_groups += [TeamEnrolledSimplex(eg)]
 
         serializer = self.serializer_class(enrolled_groups, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CompetitionGetNotValidGroupsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class CompetitionGetNotValidTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = TeamSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled with inscription not valid in the Competition
+        B{Retrieve} the list of a Teams enrolled with inscription not valid in the Competition
         B{URL:} ../api/v1/competitions/groups_not_valid/<competition_name>/
 
         @type  competition_name: str
         @param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
-        not_valid = GroupEnrolled.objects.filter(valid=False, competition=competition)
+        not_valid = TeamEnrolled.objects.filter(valid=False, competition=competition)
         not_valid_groups = [g.group for g in not_valid]
         serializer = self.serializer_class(not_valid_groups, many=True)
 
@@ -144,30 +144,30 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ToggleGroupValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = GroupEnrolled.objects.all()
-    serializer_class = GroupEnrolledSerializer
+class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = TeamEnrolled.objects.all()
+    serializer_class = TeamEnrolledSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):
         """
-        B{Toggle} the Group Enrolled inscription
+        B{Toggle} the Team Enrolled inscription
         B{URL:} ../api/v1/competitions/toggle_group_inscription/
 
         @type  competition_name: str
         @param competition_name: The Competition name
         @type  group_name: str
-        @param group_name: The Group name
+        @param group_name: The Team name
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
                 name=serializer.validated_data['competition_name'])
-            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
-            group_enrolled = get_object_or_404(GroupEnrolled.objects.all(), competition=competition, group=group)
+            group = get_object_or_404(Team.objects.all(), name=serializer.validated_data['group_name'])
+            group_enrolled = get_object_or_404(TeamEnrolled.objects.all(), competition=competition, group=group)
             group_enrolled.valid = not group_enrolled.valid
             group_enrolled.save()
 
@@ -180,16 +180,16 @@ class ToggleGroupValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class MyEnrolledGroupsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class MyEnrolledTeamsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
-    serializer_class = GroupEnrolledSerializer
+    serializer_class = TeamEnrolledSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of a Groups enrolled by username and competition
+        B{Retrieve} the list of a Teams enrolled by username and competition
         B{URL:} ../api/v1/competitions/my_enrolled_groups_competition/<username>/?competition_name=<competition_name>
 
         @type  username: str
@@ -202,16 +202,16 @@ class MyEnrolledGroupsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.G
 
         enrolled_groups = []
         for group in user.groups.all():
-            enrolled_group = GroupEnrolled.objects.filter(group=group, competition=competition)
+            enrolled_group = TeamEnrolled.objects.filter(group=group, competition=competition)
             if len(enrolled_group) == 1:
-                enrolled_groups += [GroupEnrolledSimplex(enrolled_group[0])]
+                enrolled_groups += [TeamEnrolledSimplex(enrolled_group[0])]
 
         serializer = self.serializer_class(enrolled_groups, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class GetEnrolledGroupCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class GetEnrolledTeamCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = CompetitionSerializer
 
@@ -226,8 +226,8 @@ class GetEnrolledGroupCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         @type  group_name: str
         @param group_name: The group name
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-        groups = GroupEnrolled.objects.filter(group=group, valid=True)
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
+        groups = TeamEnrolled.objects.filter(group=group, valid=True)
 
         competitions = []
         for group_enrolled in groups:
@@ -238,22 +238,22 @@ class GetEnrolledGroupCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
+class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
                   mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = GroupEnrolled.objects.all()
-    serializer_class = GroupEnrolledSerializer
+    queryset = TeamEnrolled.objects.all()
+    serializer_class = TeamEnrolledSerializer
 
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+        return permissions.IsAuthenticated(), IsAdminOfTeam(),
 
     def list(self, request, **kwargs):
         """
         B{List} the enrolled groups
         B{URL:} ../api/v1/competitions/enroll/
         """
-        serializer = self.serializer_class([GroupEnrolledSimplex(ge=query) for query in GroupEnrolled.objects.all()],
+        serializer = self.serializer_class([TeamEnrolledSimplex(ge=query) for query in TeamEnrolled.objects.all()],
                                            many=True)
         return Response(serializer.data)
 
@@ -265,29 +265,29 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
         @type  competition_name: str
         @param competition_name: The Competition name
         @type  group_name: str
-        @param group_name: The Group name
+        @param group_name: The Team name
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
-        group_enrolled = get_list_or_404(GroupEnrolled.objects.all(), group=group, valid=True)
-        serializer = self.serializer_class([GroupEnrolledSimplex(group) for group in group_enrolled], many=True)
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
+        group_enrolled = get_list_or_404(TeamEnrolled.objects.all(), group=group, valid=True)
+        serializer = self.serializer_class([TeamEnrolledSimplex(group) for group in group_enrolled], many=True)
         return Response(serializer.data)
 
     def create(self, request, **kwargs):
         """
-        B{Create} a Group Enrolled to a competition
+        B{Create} a Team Enrolled to a competition
         B{URL:} ../api/v1/competitions/enroll/
 
         @type  competition_name: str
         @param competition_name: The Competition name
         @type  group_name: str
-        @param group_name: The Group name
+        @param group_name: The Team name
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
                 name=serializer.validated_data['competition_name'])
-            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            group = get_object_or_404(Team.objects.all(), name=serializer.validated_data['group_name'])
 
             if competition.state_of_competition != "Register":
                 return Response({'status': 'Not allowed',
@@ -295,7 +295,7 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
                                 status=status.HTTP_401_UNAUTHORIZED)
             try:
                 with transaction.atomic():
-                    GroupEnrolled.objects.create(competition=competition, group=group)
+                    TeamEnrolled.objects.create(competition=competition, group=group)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'The group already enrolled.'},
@@ -325,9 +325,9 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
-        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+        group = get_object_or_404(Team.objects.all(), name=request.GET.get('group_name', ''))
 
-        group_not_enrolled = (len(GroupEnrolled.objects.filter(competition=competition, group=group)) == 0)
+        group_not_enrolled = (len(TeamEnrolled.objects.filter(competition=competition, group=group)) == 0)
 
         if group_not_enrolled:
             return Response({'status': 'Bad request',
@@ -336,9 +336,9 @@ class EnrollGroup(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retr
 
         # validations update values
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
-        group = get_object_or_404(Group.objects.all(), name=request.GET.get('group_name', ''))
+        group = get_object_or_404(Team.objects.all(), name=request.GET.get('group_name', ''))
 
-        group_enrolled = GroupEnrolled.objects.get(competition=competition, group=group)
+        group_enrolled = TeamEnrolled.objects.get(competition=competition, group=group)
         group_enrolled.delete()
 
         return Response(status=status.HTTP_200_OK)

@@ -2,15 +2,15 @@ from collections import OrderedDict
 
 from django.test import TestCase
 from competition.models import *
-from authentication.models import GroupMember
+from authentication.models import TeamMember
 from rest_framework.test import APIClient
 
 
 class AuthenticationTestCase(TestCase):
     def setUp(self):
-        g1 = Group.objects.create(name="XPTO1", max_members=10)
-        g2 = Group.objects.create(name="XPTO2", max_members=10)
-        g3 = Group.objects.create(name="XPTO3", max_members=10)
+        g1 = Team.objects.create(name="XPTO1", max_members=10)
+        g2 = Team.objects.create(name="XPTO2", max_members=10)
+        g3 = Team.objects.create(name="XPTO3", max_members=10)
 
         TypeOfCompetition.objects.create(name='Competitive', number_teams_for_trial=3, number_agents_by_grid=1)
         colaborativa = TypeOfCompetition.objects.create(name='Collaborative', number_teams_for_trial=1,
@@ -26,15 +26,15 @@ class AuthenticationTestCase(TestCase):
         a3 = Account.objects.create(email="af@rf.pt", username="eypo94", first_name="Antonio", last_name="Ferreira",
                                     teaching_institution="Universidade de Aveiro")
 
-        GroupMember.objects.create(account=a1, group=g1, is_admin=True)
+        TeamMember.objects.create(account=a1, group=g1, is_admin=True)
 
-        GroupMember.objects.create(account=a2, group=g2, is_admin=True)
-        GroupMember.objects.create(account=a1, group=g2, is_admin=True)
+        TeamMember.objects.create(account=a2, group=g2, is_admin=True)
+        TeamMember.objects.create(account=a1, group=g2, is_admin=True)
 
-        GroupMember.objects.create(account=a3, group=g3, is_admin=True)
-        GroupMember.objects.create(account=a1, group=g3, is_admin=True)
+        TeamMember.objects.create(account=a3, group=g3, is_admin=True)
+        TeamMember.objects.create(account=a1, group=g3, is_admin=True)
 
-    def test_enrollGroup(self):
+    def test_enrollTeam(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
         client.force_authenticate(user=user)
@@ -1045,7 +1045,7 @@ class AuthenticationTestCase(TestCase):
 
         # create an agent
         user = Account.objects.get(username="gipmon")
-        group = Group.objects.get(name="XPTO1")
+        group = Team.objects.get(name="XPTO1")
         a = Agent.objects.create(agent_name="RQ7", user=user, group=group)
         references += [a]
 
@@ -1054,7 +1054,7 @@ class AuthenticationTestCase(TestCase):
         references += [competition_agent]
 
         # enroll in competition
-        group_enrolled = GroupEnrolled.objects.create(competition=c3, group=group)
+        group_enrolled = TeamEnrolled.objects.create(competition=c3, group=group)
         references += [group_enrolled]
 
         # create trial
@@ -1076,21 +1076,21 @@ class AuthenticationTestCase(TestCase):
         round_len = len(Round.objects.all())  # 4 => R1, R7, R8 e R9
         agent_len = len(Agent.objects.all())  # 1 => RQ7
         competition_agent_len = len(CompetitionAgent.objects.all())  # 1
-        group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
+        group_enrolled_len = len(TeamEnrolled.objects.all())  # 1
         trial_len = len(Trial.objects.all())  # 1
         log_trial_agent_len = len(LogTrialAgent.objects.all())  # 1
 
         references[0].delete()
 
         """
-        Is suppose when it's deleted a Competition to delete all the Rounds, GroupEnrolled,
+        Is suppose when it's deleted a Competition to delete all the Rounds, TeamEnrolled,
         Trials and TrialsLogs. The agent is suppose to not be deleted.
         """
         self.assertEqual(len(Competition.objects.all()), competition_len - 1)
         self.assertEqual(len(Round.objects.all()), round_len - 3)
         self.assertEqual(len(Agent.objects.all()), agent_len)
         self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
-        self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len - 1)
+        self.assertEqual(len(TeamEnrolled.objects.all()), group_enrolled_len - 1)
         self.assertEqual(len(Trial.objects.all()), trial_len - 1)
         self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
 
@@ -1102,7 +1102,7 @@ class AuthenticationTestCase(TestCase):
         round_len = len(Round.objects.all())  # 4 => R1, R7, R8 e R9
         agent_len = len(Agent.objects.all())  # 1 => RQ7
         competition_agent_len = len(CompetitionAgent.objects.all())  # 1
-        group_enrolled_len = len(GroupEnrolled.objects.all())  # 1
+        group_enrolled_len = len(TeamEnrolled.objects.all())  # 1
         trial_len = len(Trial.objects.all())  # 1
         log_trial_agent_len = len(LogTrialAgent.objects.all())  # 1
 
@@ -1116,7 +1116,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(Round.objects.all()), round_len - 1)
         self.assertEqual(len(Agent.objects.all()), agent_len)
         self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
-        self.assertEqual(len(GroupEnrolled.objects.all()), group_enrolled_len)
+        self.assertEqual(len(TeamEnrolled.objects.all()), group_enrolled_len)
         self.assertEqual(len(Trial.objects.all()), trial_len - 1)
         self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
 

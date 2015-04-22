@@ -4,7 +4,7 @@ from competition.permissions import IsStaff, IsSuperUser
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
-from authentication.models import Account, GroupMember
+from authentication.models import Account, TeamMember
 from authentication.serializers import AccountSerializer, AccountSerializerUpdate, PasswordSerializer
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
@@ -90,9 +90,9 @@ class AccountViewSet(viewsets.ModelViewSet):
         groups = instance.groups.all()
 
         for group in groups:
-            group_member = GroupMember.objects.get(group=group, account=instance)
+            group_member = TeamMember.objects.get(group=group, account=instance)
             if group_member and group_member.is_admin:
-                group_members = GroupMember.objects.filter(group=group)
+                group_members = TeamMember.objects.filter(group=group)
                 has_other_admin = False
                 for gm in group_members:
                     if gm.is_admin and gm.account != instance:

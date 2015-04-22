@@ -5,23 +5,23 @@ from django.db import transaction
 from rest_framework import permissions, viewsets, status, mixins
 from rest_framework.response import Response
 
-from authentication.models import Group, GroupMember, Account
+from authentication.models import Team, TeamMember, Account
 from authentication.serializers import AccountSerializer
 
-from groups.permissions import IsAdminOfGroup
-from groups.serializers import GroupSerializer, Member2GroupSerializer, MemberSerializer
+from groups.permissions import IsAdminOfTeam
+from groups.serializers import TeamSerializer, Member2TeamSerializer, MemberSerializer
 
 
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.order_by('-name')
-    serializer_class = GroupSerializer
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.order_by('-name')
+    serializer_class = TeamSerializer
 
     def get_permissions(self):
         """
         Any operation is permitted only if the user is Authenticated.
         The create method is permitted only too if the user is Authenticated.
         Note: The create method isn't a SAFE_METHOD
-        The others actions (Destroy) is only permitted if the user IsAdminOfGroup
+        The others actions (Destroy) is only permitted if the user IsAdminOfTeam
         :return:
         :rtype:
         """
@@ -29,11 +29,11 @@ class GroupViewSet(viewsets.ModelViewSet):
             return permissions.IsAuthenticated(),
         if self.request.method == 'POST':
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+        return permissions.IsAuthenticated(), IsAdminOfTeam(),
 
     def create(self, request, **kwargs):
         """
-        B{Create} a group and the GroupMember admin by the user that requested the group create method
+        B{Create} a group and the TeamMember admin by the user that requested the group create method
         B{URL:} ../api/v1/groups/crud/
 
         @type  name: str
@@ -46,8 +46,8 @@ class GroupViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             try:
                 with transaction.atomic():
-                    g = Group.objects.create(**serializer.validated_data)
-                    GroupMember.objects.create(group=g, account=self.request.user, is_admin=True)
+                    g = Team.objects.create(**serializer.validated_data)
+                    TeamMember.objects.create(group=g, account=self.request.user, is_admin=True)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'There is a group with that name already!'},
@@ -67,7 +67,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @type  pk: str
         @param pk: The group name
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class(group)
         return Response(serializer.data)
 
@@ -79,7 +79,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @type  pk: str
         @param pk: The group name
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         group.delete()
         return Response({'status': 'Deleted',
                          'message': 'The group has been deleted and the group members too.'},
@@ -93,7 +93,7 @@ class GroupViewSet(viewsets.ModelViewSet):
         @type  pk: str
         @param pk: The group name
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -109,10 +109,10 @@ class GroupViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class AccountGroupsViewSet(mixins.RetrieveModelMixin,
+class AccountTeamsViewSet(mixins.RetrieveModelMixin,
                            viewsets.GenericViewSet):
     queryset = Account.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = TeamSerializer
 
     def get_permissions(self):
         """
@@ -132,10 +132,10 @@ class AccountGroupsViewSet(mixins.RetrieveModelMixin,
         return Response(serializer.data)
 
 
-class AccountGroupsAdminViewSet(mixins.RetrieveModelMixin,
+class AccountTeamsAdminViewSet(mixins.RetrieveModelMixin,
                                 viewsets.GenericViewSet):
     queryset = Account.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = TeamSerializer
 
     def get_permissions(self):
         """
@@ -153,7 +153,7 @@ class AccountGroupsAdminViewSet(mixins.RetrieveModelMixin,
         self.queryset = self.queryset.get(username=kwargs.get('pk'))
         groups = []
         for group in self.queryset.groups.all():
-            gm = GroupMember.objects.get(account=self.queryset, group=group)
+            gm = TeamMember.objects.get(account=self.queryset, group=group)
             if gm.is_admin:
                 groups += [group]
 
@@ -161,9 +161,9 @@ class AccountGroupsAdminViewSet(mixins.RetrieveModelMixin,
         return Response(serializer.data)
 
 
-class GroupMembersViewSet(mixins.RetrieveModelMixin,
+class TeamMembersViewSet(mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet):
-    queryset = GroupMember.objects.all()
+    queryset = TeamMember.objects.all()
     serializer_class = AccountSerializer
 
     def get_permissions(self):
@@ -176,19 +176,19 @@ class GroupMembersViewSet(mixins.RetrieveModelMixin,
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the Group members list
+        B{Retrieve} the Team members list
         B{URL:} ../api/v1/groups/members/<group_name>/
         """
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         queryset = [gm.account for gm in group.groupmember_set.all()]
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
 
-class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                            mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Group.objects.all()
-    serializer_class = Member2GroupSerializer
+    queryset = Team.objects.all()
+    serializer_class = Member2TeamSerializer
 
     def get_permissions(self):
         """
@@ -198,11 +198,11 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+        return permissions.IsAuthenticated(), IsAdminOfTeam(),
 
     def create(self, request, **kwargs):
         """
-        B{Create} a GroupMember to a Group
+        B{Create} a TeamMember to a Team
         B{URL:} ../api/v1/groups/member/
 
         @type  user_name: str
@@ -213,7 +213,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            group = get_object_or_404(Group.objects.all(), name=serializer.validated_data['group_name'])
+            group = get_object_or_404(Team.objects.all(), name=serializer.validated_data['group_name'])
             user = get_object_or_404(Account.objects.all(), username=serializer.validated_data['user_name'])
 
             number_of_members = len(group.groupmember_set.all())
@@ -223,7 +223,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
             try:
                 with transaction.atomic():
-                    group_member = GroupMember.objects.create(group=group, account=user)
+                    group_member = TeamMember.objects.create(group=group, account=user)
                     group_member_serializer = MemberSerializer(group_member)
                     return Response(group_member_serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
@@ -237,7 +237,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
     def destroy(self, request, *args, **kwargs):
         """
-        B{Destroy} a GroupMember from a Group
+        B{Destroy} a TeamMember from a Team
         B{URL:} ../api/v1/groups/member/<group_name>/?username=<user_name>
 
         @type  user_name: str
@@ -250,28 +250,28 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
-        member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
+        member_not_in_group = (len(TeamMember.objects.filter(group=group, account=user)) == 0)
 
         if member_not_in_group:
             return Response({'status': 'Bad request',
                              'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group_member = GroupMember.objects.get(group=group, account=user)
+        group_member = TeamMember.objects.get(group=group, account=user)
         group_member.delete()
 
         if len(group.groupmember_set.all()) == 0:
-            group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+            group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
             group.delete()
 
         return Response(status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the GroupMember of a Group
+        B{Retrieve} the TeamMember of a Team
         B{URL:} ../api/v1/groups/member/<group_name>/?username=<user_name>
 
         @type  user_name: str
@@ -284,17 +284,17 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
-        member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
+        member_not_in_group = (len(TeamMember.objects.filter(group=group, account=user)) == 0)
 
         if member_not_in_group:
             return Response({'status': 'Bad request',
                              'message': 'The user is not in the group'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group_member = GroupMember.objects.get(group=group, account=user)
+        group_member = TeamMember.objects.get(group=group, account=user)
         group_member_serializer = MemberSerializer(group_member)
 
         return Response(group_member_serializer.data, status=status.HTTP_200_OK)
@@ -302,7 +302,7 @@ class MemberInGroupViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
 class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
                              viewsets.GenericViewSet):
-    queryset = Group.objects.all()
+    queryset = Team.objects.all()
     serializer_class = MemberSerializer
 
     def get_permissions(self):
@@ -311,11 +311,11 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
         If one user wants to remove other user from the admin list of group it must be a admin of the group.
         The others methods: retrieve it must be only Authenticated.
         """
-        return permissions.IsAuthenticated(), IsAdminOfGroup(),
+        return permissions.IsAuthenticated(), IsAdminOfTeam(),
 
     def update(self, request, *args, **kwargs):
         """
-        B{Update}: make admin of the Group
+        B{Update}: make admin of the Team
         B{URL:} ../api/v1/groups/admin/<group_name>/?username=<user_name>
 
         @type  username: str
@@ -328,10 +328,10 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
                              'message': 'Please provide the ?username=*username*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group = get_object_or_404(Group.objects.all(), name=kwargs.get('pk'))
+        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
-        member_not_in_group = (len(GroupMember.objects.filter(group=group, account=user)) == 0)
+        member_not_in_group = (len(TeamMember.objects.filter(group=group, account=user)) == 0)
 
         if member_not_in_group:
             return Response({'status': 'Bad request',
@@ -343,7 +343,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
             if member.is_admin:
                 num_admins += 1
 
-        group_member = GroupMember.objects.get(group=group, account=user)
+        group_member = TeamMember.objects.get(group=group, account=user)
 
         if group_member.is_admin and num_admins == 1:
             return Response({'status': 'Bad request',
