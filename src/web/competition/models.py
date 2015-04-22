@@ -40,6 +40,9 @@ class TypeOfCompetition(models.Model):
     number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
     number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
 
+    single_position = models.BooleanField(default=False)
+    timeout = models.IntegerField(validators=[MinValueValidator(0)], default=5)
+
     class Meta:
         unique_together = ('name', 'number_teams_for_trial', 'number_agents_by_grid',)
 
