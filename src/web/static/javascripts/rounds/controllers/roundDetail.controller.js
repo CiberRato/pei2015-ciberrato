@@ -87,6 +87,7 @@
 
                     function getCompetitionSuccessFn(data){
                         vm.competition = data.data;
+                        console.log(vm.competition);
                     }
 
                     function getCompetitionErrorFn(data){

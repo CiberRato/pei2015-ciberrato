@@ -154,7 +154,7 @@
                                 <td ng-repeat="(key2, value2) in value.gridsTotal" ng-if="$first"><a href="/panel/{{value2.label}}/teamMembers">{{value2.label}}</a>
                                 </td>
 
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startTrial(value.identifier)">Start</a>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'READY'" ng-click = "vm.startTrial(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>
