@@ -107,7 +107,7 @@
                 Round.getTrials(roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
                 function getTrialsSuccessFn(data){
-                    vm.rounds[i].simulations = data.data;
+                    vm.rounds[i].trials = data.data;
                 }
 
                 function getTrialsErrorFn(data){

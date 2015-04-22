@@ -11,7 +11,7 @@
         var username;
         var x2js = new X2JS();
         var parameters;
-        var simulation;
+        var trial;
         var grid;
         var lab;
         var identifier = $routeParams.identifier;
@@ -19,11 +19,11 @@
 
         Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
         function getTrialSuccessFn(data){
-            simulation = data.data;
-            //console.log("simulation" + simulation);
+            trial = data.data;
+            //console.log("trial" + trial);
             console.log("ACTIVATED");
 
-            StreamViewer.getLabViewer(simulation.round_name).then(getLabSuccessFn, getErrorFn);
+            StreamViewer.getLabViewer(trial.round_name).then(getLabSuccessFn, getErrorFn);
         }
 
         function getTrialErrorFn(data){
@@ -35,13 +35,13 @@
             console.log("TENHO O FICHEIRO: lab!");
             lab = x2js.xml_str2json(data.data);
             //console.log("lab" + lab);
-            StreamViewer.getParametersViewer(simulation.round_name).then(getParametersSuccessFn, getErrorFn);
+            StreamViewer.getParametersViewer(trial.round_name).then(getParametersSuccessFn, getErrorFn);
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
             parameters = x2js.xml_str2json(data.data);
             //console.log("parameters" + parameters);
-            StreamViewer.getGridViewer(simulation.round_name).then(getGridSuccessFn, getErrorFn);
+            StreamViewer.getGridViewer(trial.round_name).then(getGridSuccessFn, getErrorFn);
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");

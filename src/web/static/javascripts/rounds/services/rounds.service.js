@@ -85,19 +85,19 @@
         }
 
         function getTrialGrids(identifier){
-            return $http.get("/api/v1/competitions/simulation_grid/" + identifier + "/");
+            return $http.get("/api/v1/competitions/trial_grid/" + identifier + "/");
         }
 
-        function associateGrid(grid_identifier, simulation_identifier, pos){
-            return $http.post("/api/v1/competitions/simulation_grid/", {
+        function associateGrid(grid_identifier, trial_identifier, pos){
+            return $http.post("/api/v1/competitions/trial_grid/", {
                 grid_identifier: grid_identifier,
-                simulation_identifier: simulation_identifier,
+                trial_identifier: trial_identifier,
                 position: pos
             });
         }
 
-        function disassociateAgent(simulation_identifier, pos){
-            return $http.delete("/api/v1/competitions/simulation_grid/" + simulation_identifier + "/?position=" + pos);
+        function disassociateAgent(trial_identifier, pos){
+            return $http.delete("/api/v1/competitions/trial_grid/" + trial_identifier + "/?position=" + pos);
         }
 
         function create(roundName, competitionName){
@@ -108,7 +108,7 @@
         }
 
         function startTrial(identifier){
-            return $http.post("/api/v1/simulations/start/", {
+            return $http.post("/api/v1/trials/start/", {
                 trial_id: identifier
             })
         }

@@ -45,22 +45,22 @@
 
 
             function getTrialsSuccessFn(data) {
-                vm.simulations = data.data;
-                console.log(vm.simulations);
-                for (var i= 0; i<vm.simulations.length; i++){
-                    getTrialGridsFirst(vm.simulations[i], i);
+                vm.trials = data.data;
+                console.log(vm.trials);
+                for (var i= 0; i<vm.trials.length; i++){
+                    getTrialGridsFirst(vm.trials[i], i);
                 }
             }
 
-            function getTrialGridsFirst(simulation, i){
-                Round.getTrialGrids(simulation.identifier).then(getTrialGridsFirstSuccessFn, getTrialGridsFirstErrorFn);
+            function getTrialGridsFirst(trial, i){
+                Round.getTrialGrids(trial.identifier).then(getTrialGridsFirstSuccessFn, getTrialGridsFirstErrorFn);
 
                 function getTrialGridsFirstSuccessFn(data){
                     vm.models.lists.Trial = [];
                     for (var k = 0; k < data.data.length; ++k) {
                         vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                     }
-                    vm.simulations[i].gridsTotal= vm.models.lists.Trial;
+                    vm.trials[i].gridsTotal= vm.models.lists.Trial;
                 }
 
                 function getTrialGridsFirstErrorFn(data){
@@ -679,22 +679,22 @@
             Round.getTrials(vm.roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
             function getTrialsSuccessFn(data) {
-                vm.simulations = data.data;
-                console.log(vm.simulations);
-                for (var i= 0; i<vm.simulations.length; i++){
-                    getTrialGridsFirst(vm.simulations[i], i);
+                vm.trials = data.data;
+                console.log(vm.trials);
+                for (var i= 0; i<vm.trials.length; i++){
+                    getTrialGridsFirst(vm.trials[i], i);
                 }
             }
 
-            function getTrialGridsFirst(simulation, i){
-                Round.getTrialGrids(simulation.identifier).then(getTrialGridsFirstSuccessFn, getTrialGridsFirstErrorFn);
+            function getTrialGridsFirst(trial, i){
+                Round.getTrialGrids(trial.identifier).then(getTrialGridsFirstSuccessFn, getTrialGridsFirstErrorFn);
 
                 function getTrialGridsFirstSuccessFn(data){
                     vm.models.lists.Trial = [];
                     for (var k = 0; k < data.data.length; ++k) {
                         vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                     }
-                    vm.simulations[i].gridsTotal= vm.models.lists.Trial;
+                    vm.trials[i].gridsTotal= vm.models.lists.Trial;
                 }
 
                 function getTrialGridsFirstErrorFn(data){
@@ -734,9 +734,9 @@
                     vm.models.lists.Trial.push({label: data.data[k].grid_positions.group_name, identifier: data.data[k].grid_positions.identifier, position: data.data[k].position});
                 }
 
-                for(var i = 0; i<vm.simulations.length; i++){
-                    if(vm.identifier === vm.simulations[i].identifier){
-                        vm.simulations[i].gridsTotal= vm.models.lists.Trial;
+                for(var i = 0; i<vm.trials.length; i++){
+                    if(vm.identifier === vm.trials[i].identifier){
+                        vm.trials[i].gridsTotal= vm.models.lists.Trial;
                     }
                 }
 

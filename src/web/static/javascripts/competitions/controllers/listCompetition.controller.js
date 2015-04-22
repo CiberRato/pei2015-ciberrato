@@ -54,10 +54,10 @@
                 Round.getTrials(roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
                 function getTrialsSuccessFn(data){
-                    vm.rounds[i].simulations = data.data;
-                    console.log(vm.rounds[i].simulations);
-                    for(var k = 0; k<vm.rounds[i].simulations.length; k++){
-                        getGrids(vm.rounds[i].simulations[k].identifier, k, i);
+                    vm.rounds[i].trials = data.data;
+                    console.log(vm.rounds[i].trials);
+                    for(var k = 0; k<vm.rounds[i].trials.length; k++){
+                        getGrids(vm.rounds[i].trials[k].identifier, k, i);
                     }
                 }
 
@@ -68,12 +68,12 @@
                 }
             }
 
-            function getGrids(simulationIdentifier, k, i){
-                Round.getTrialGrids(simulationIdentifier, k, i).then(getTrialGridsSuccessFn, getTrialGridsErrorFn);
+            function getGrids(trialIdentifier, k, i){
+                Round.getTrialGrids(trialIdentifier, k, i).then(getTrialGridsSuccessFn, getTrialGridsErrorFn);
 
                 function getTrialGridsSuccessFn(data){
-                    vm.rounds[i].simulations[k].grids = data.data;
-                    console.log(vm.rounds[i].simulations[k]);
+                    vm.rounds[i].trials[k].grids = data.data;
+                    console.log(vm.rounds[i].trials[k]);
 
                 }
 

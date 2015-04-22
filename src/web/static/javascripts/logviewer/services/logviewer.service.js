@@ -15,7 +15,7 @@
         return logViewer;
 
         function getLog(identifier){
-            return $http.get('/api/v1/simulations/get_simulation_log/'+identifier+'/');
+            return $http.get('/api/v1/trials/get_trial_log/'+identifier+'/');
         }
     }
 })();
