@@ -657,8 +657,10 @@ class AuthenticationTestCase(TestCase):
         del rsp['agents']
         self.assertEqual(response.status_code, 200)
         self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/R1/?file=param_list',
+                               'lab': u'/api/v1/competitions/round_file/R1/?file=lab',
                                'grid': u'/api/v1/competitions/round_file/R1/?file=grid',
-                               'lab': u'/api/v1/competitions/round_file/R1/?file=lab'})
+                               'type_of_competition': {'timeout': 5, 'single_position': False, 'name': u'Collaborative',
+                                                       'number_agents_by_grid': 5, 'number_teams_for_trial': 1}})
 
         # save trial logs (only server by server)
         f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
@@ -1056,15 +1058,16 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "timeout": 5},
                                                           "state_of_competition": "Register"}, "team_name": "XPTO1",
                                           "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
-        "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-        "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
-                                         "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
-                                                                                               "number_teams_for_trial": 1,
-                                                                                               "number_agents_by_grid": 5,
-                                                                                               "single_position": False,
-                                                                                               "timeout": 5},
-                                                         "state_of_competition": "Register"}, "team_name": "XPTO3",
-                                         "valid": True}])
+            "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
+            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+                                             "competition": {"name": "C1",
+                                                             "type_of_competition": {"name": "Collaborative",
+                                                                                     "number_teams_for_trial": 1,
+                                                                                     "number_agents_by_grid": 5,
+                                                                                     "single_position": False,
+                                                                                     "timeout": 5},
+                                                             "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                             "valid": True}])
 
         # get my enrolled teams
         url = "/api/v1/competitions/my_enrolled_teams_competition/gipmon/?competition_name=C1"
@@ -1104,7 +1107,10 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/team_enrolled_competitions/XPTO3/"
         response = client.get(url)
 
-        self.assertEqual(response.data, [{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"}])
+        self.assertEqual(response.data, [{"name": "C1",
+                                          "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
+                                                                  "number_agents_by_grid": 5, "single_position": False,
+                                                                  "timeout": 5}, "state_of_competition": "Register"}])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
@@ -1130,7 +1136,11 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/get/Competition/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Competition"}])
+        self.assertEqual(response.data, [{"name": "C1",
+                                          "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
+                                                                  "number_agents_by_grid": 5, "single_position": False,
+                                                                  "timeout": 5},
+                                          "state_of_competition": "Competition"}])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -1306,7 +1316,13 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [{"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3","valid":False}])
+        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                                "number_teams_for_trial": 1,
+                                                                                                "number_agents_by_grid": 5,
+                                                                                                "single_position": False,
+                                                                                                "timeout": 5},
+                                                          "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                          "valid": False}])
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
@@ -1370,7 +1386,13 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/enroll/XPTO3/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [{"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3","valid":True}])
+        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                                "number_teams_for_trial": 1,
+                                                                                                "number_agents_by_grid": 5,
+                                                                                                "single_position": False,
+                                                                                                "timeout": 5},
+                                                          "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                          "valid": True}])
 
         # create grid position
         url = "/api/v1/competitions/grid_position/"
@@ -1378,7 +1400,15 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
 
-        self.assertEqual(response.data, {"identifier":identifier,"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3"})
+        self.assertEqual(response.data, {"identifier": identifier, "competition": {"name": "C1",
+                                                                                   "type_of_competition": {
+                                                                                   "name": "Collaborative",
+                                                                                   "number_teams_for_trial": 1,
+                                                                                   "number_agents_by_grid": 5,
+                                                                                   "single_position": False,
+                                                                                   "timeout": 5},
+                                                                                   "state_of_competition": "Register"},
+                                         "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         # associate agent to the grid
@@ -1477,7 +1507,15 @@ class AuthenticationTestCase(TestCase):
         data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
-        self.assertEqual(response.data, {"identifier":identifier,"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3"})
+        self.assertEqual(response.data, {"identifier": identifier, "competition": {"name": "C1",
+                                                                                   "type_of_competition": {
+                                                                                   "name": "Collaborative",
+                                                                                   "number_teams_for_trial": 1,
+                                                                                   "number_agents_by_grid": 5,
+                                                                                   "single_position": False,
+                                                                                   "timeout": 5},
+                                                                                   "state_of_competition": "Register"},
+                                         "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         url = "/api/v1/competitions/agent_grid/"
