@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Group',
+            name='Team',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=128, validators=[django.core.validators.RegexValidator(re.compile(b'^[-a-zA-Z0-9_ ]+$'), b'Enter a valid word consisting of letters, numbers, underscores, spaces or hyphens.', b'invalid'), django.core.validators.MinLengthValidator(1)])),
@@ -50,25 +50,25 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='GroupMember',
+            name='TeamMember',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('is_admin', models.BooleanField(default=False)),
                 ('account', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('group', models.ForeignKey(to='authentication.Group')),
+                ('team', models.ForeignKey(to='authentication.Team')),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.AlterUniqueTogether(
-            name='groupmember',
-            unique_together=set([('account', 'group')]),
+            name='teammember',
+            unique_together=set([('account', 'team')]),
         ),
         migrations.AddField(
             model_name='account',
-            name='groups',
-            field=models.ManyToManyField(related_name='account', through='authentication.GroupMember', to='authentication.Group'),
+            name='teams',
+            field=models.ManyToManyField(related_name='account', through='authentication.TeamMember', to='authentication.Team'),
             preserve_default=True,
         ),
     ]

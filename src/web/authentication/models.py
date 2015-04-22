@@ -57,7 +57,7 @@ class Account(AbstractBaseUser):
 
     is_staff = models.BooleanField(default=False, blank=False)
     is_superuser = models.BooleanField(default=False, blank=False)
-    groups = models.ManyToManyField('Group', through='GroupMember', related_name="account")
+    teams = models.ManyToManyField('Team', through='TeamMember', related_name="account")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -83,7 +83,7 @@ class Account(AbstractBaseUser):
 """ GROUP MODELS """
 
 
-class Group(models.Model):
+class Team(models.Model):
     name = models.CharField(max_length=128, unique=True, blank=False, validators=[validate_word, MinLengthValidator(1)])
     max_members = models.IntegerField(default=5, validators=[MinValueValidator(1)])
 
@@ -97,13 +97,13 @@ class Group(models.Model):
         return self.name
 
 
-class GroupMember(models.Model):
+class TeamMember(models.Model):
     account = models.ForeignKey(Account, blank=False)
-    group = models.ForeignKey(Group, blank=False)
+    team = models.ForeignKey(Team, blank=False)
     is_admin = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('account', 'group',)
+        unique_together = ('account', 'team',)
 
     def __unicode__(self):
-        return "%s is in group %s (as %s)" % (self.account, self.group, self.is_admin)
+        return "%s is in team %s (as %s)" % (self.account, self.team, self.is_admin)

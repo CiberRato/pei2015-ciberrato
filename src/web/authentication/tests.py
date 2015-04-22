@@ -151,13 +151,13 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # create a group
-        url = "/api/v1/groups/crud/"
-        data = {'name': 'TestGroup', 'max_members': 10}
+        # create a team
+        url = "/api/v1/teams/crud/"
+        data = {'name': 'TestTeam', 'max_members': 10}
         response = client.post(path=url, data=data, format='json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'TestGroup'), ('max_members', 10)]))
+        self.assertEqual(response.data, OrderedDict([('name', u'TestTeam'), ('max_members', 10)]))
 
         url = "/api/v1/accounts/test/"
         response = client.delete(url)

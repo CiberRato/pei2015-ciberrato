@@ -6,10 +6,10 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from authentication.models import Group
+from authentication.models import Team
 
 from .simplex import TeamScoreSimplex
-from ..models import Competition, TeamScore, GroupEnrolled, Simulation, Round
+from ..models import Competition, TeamScore, TeamEnrolled, Trial, Round
 from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
 from ..permissions import IsStaff
 
@@ -31,8 +31,8 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         """
         team_score_list = []
 
-        for group in request.user.groups.all():
-            team_score_list += group.teamscore_set.all()
+        for team in request.user.teams.all():
+            team_score_list += team.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in team_score_list], many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -56,23 +56,23 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         serializer = TeamScoreInSerializer(data=request.data)
 
         if serializer.is_valid():
-            trial = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['trial_id'])
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
 
             if trial.round.parent_competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            team = get_object_or_404(Group.objects.all(), name=serializer.validated_data['team_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            group_enrolled = GroupEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
 
-            if len(group_enrolled) != 1:
+            if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if not group_enrolled[0].valid:
+            if not team_enrolled[0].valid:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -114,23 +114,23 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         serializer = TeamScoreInSerializer(data=request.data)
 
         if serializer.is_valid():
-            trial = get_object_or_404(Simulation.objects.all(), identifier=serializer.validated_data['trial_id'])
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
 
             if trial.round.parent_competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            team = get_object_or_404(Group.objects.all(), name=serializer.validated_data['team_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            group_enrolled = GroupEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
 
-            if len(group_enrolled) != 1:
+            if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if not group_enrolled[0].valid:
+            if not team_enrolled[0].valid:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -163,14 +163,14 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         @type  team_name: str
         @type  team_name: The team name
         """
-        trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk', ''))
+        trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
 
         if trial.round.parent_competition.state_of_competition == 'Past':
             return Response({'status': 'Bad Request',
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        team = get_object_or_404(Group.objects.all(), name=request.GET.get('team_name', ''))
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
         team_score = get_object_or_404(TeamScore.objects.all(), trial=trial, team=team)
         team_score.delete()
@@ -195,7 +195,7 @@ class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         @type  trial_id: str
         @param trial_id: The trial id
         """
-        trial = get_object_or_404(Simulation.objects.all(), identifier=kwargs.get('pk'))
+        trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trial.teamscore_set.all()],
                                            many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -219,7 +219,7 @@ class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
         trials = []
-        for trial in r.simulation_set.all():
+        for trial in r.trial_set.all():
             trials += trial.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)
@@ -246,7 +246,7 @@ class RankingByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trials = []
 
         for r in competition.round_set.all():
-            for trial in r.simulation_set.all():
+            for trial in r.trial_set.all():
                 trials += trial.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trials], many=True)

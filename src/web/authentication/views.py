@@ -4,7 +4,7 @@ from competition.permissions import IsStaff, IsSuperUser
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
-from authentication.models import Account, GroupMember
+from authentication.models import Account, TeamMember
 from authentication.serializers import AccountSerializer, AccountSerializerUpdate, PasswordSerializer
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
@@ -87,19 +87,19 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
-        groups = instance.groups.all()
+        teams = instance.teams.all()
 
-        for group in groups:
-            group_member = GroupMember.objects.get(group=group, account=instance)
-            if group_member and group_member.is_admin:
-                group_members = GroupMember.objects.filter(group=group)
+        for team in teams:
+            team_member = TeamMember.objects.get(team=team, account=instance)
+            if team_member and team_member.is_admin:
+                team_members = TeamMember.objects.filter(team=team)
                 has_other_admin = False
-                for gm in group_members:
+                for gm in team_members:
                     if gm.is_admin and gm.account != instance:
                         has_other_admin = True
                         break
                 if not has_other_admin:
-                    group.delete()
+                    team.delete()
 
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
         instance.delete()

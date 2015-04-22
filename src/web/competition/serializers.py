@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from competition.models import Competition, Round, GroupEnrolled, CompetitionAgent, Simulation, LogSimulationAgent, \
-    TypeOfCompetition, GridPositions, AgentGrid, SimulationGrid, TeamScore
-from groups.serializers import GroupSerializer
+from competition.models import Competition, Round, TeamEnrolled, CompetitionAgent, Trial, LogTrialAgent, \
+    TypeOfCompetition, GridPositions, AgentGrid, TrialGrid, TeamScore
+from teams.serializers import TeamSerializer
 
 
 class TypeOfCompetitionSerializer(serializers.ModelSerializer):
@@ -44,13 +44,13 @@ class CompetitionInputSerializer(serializers.ModelSerializer):
 
 class GridPositionsSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(write_only=True)
-    group_name = serializers.CharField()
+    team_name = serializers.CharField()
 
     competition = CompetitionSerializer(read_only=True)
 
     class Meta:
         model = GridPositions
-        fields = ('identifier', 'competition', 'competition_name', 'group_name')
+        fields = ('identifier', 'competition', 'competition_name', 'team_name')
         read_only_fields = ('competition', 'identifier',)
 
 
@@ -79,26 +79,26 @@ class AdminRoundSerializer(serializers.ModelSerializer):
         read_only_fields = ('param_list_path', 'grid_path', 'lab_path',)
 
 
-class GroupEnrolledSerializer(serializers.ModelSerializer):
+class TeamEnrolledSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128, write_only=True)
-    group_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
     valid = serializers.BooleanField(read_only=True)
 
     competition = CompetitionSerializer(read_only=True)
 
     class Meta:
-        model = GroupEnrolled
-        fields = ('competition', 'competition_name', 'group_name', 'valid',)
+        model = TeamEnrolled
+        fields = ('competition', 'competition_name', 'team_name', 'valid',)
         read_only_fields = ('competition', 'valid',)
 
 
-class GroupEnrolledOutputSerializer(serializers.ModelSerializer):
-    group = GroupSerializer(read_only=True)
+class TeamEnrolledOutputSerializer(serializers.ModelSerializer):
+    team = TeamSerializer(read_only=True)
 
     class Meta:
-        model = GroupEnrolled
-        fields = ('group', 'valid',)
-        read_only_fields = ('group', 'valid')
+        model = TeamEnrolled
+        fields = ('team', 'valid',)
+        read_only_fields = ('team', 'valid')
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):
@@ -121,43 +121,43 @@ class RoundAgentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at',)
 
 
-class SimulationSerializer(serializers.ModelSerializer):
+class TrialSerializer(serializers.ModelSerializer):
     round_name = serializers.CharField(max_length=128)
     state = serializers.CharField(max_length=128, read_only=True)
 
     class Meta:
-        model = Simulation
+        model = Trial
         fields = ('identifier', 'round_name', 'state', 'errors', 'created_at', 'updated_at',)
         read_only_fields = ('identifier', 'state', 'errors', 'created_at', 'updated_at',)
 
 
-class SimulationGridsSerializer(serializers.ModelSerializer):
+class TrialGridsSerializer(serializers.ModelSerializer):
     grid_positions = GridPositionsSerializer()
 
     class Meta:
-        model = SimulationGrid
+        model = TrialGrid
         fields = ('grid_positions', 'position')
         read_only_fields = ()
 
 
-class SimulationGridInputSerializer(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=128)
+class TrialGridInputSerializer(serializers.ModelSerializer):
+    trial_identifier = serializers.CharField(max_length=128)
     grid_identifier = serializers.CharField(max_length=128)
 
     class Meta:
-        model = SimulationGrid
-        fields = ('simulation_identifier', 'grid_identifier', 'position')
+        model = TrialGrid
+        fields = ('trial_identifier', 'grid_identifier', 'position')
         read_only_fields = ()
 
 
-class SimulationAgentSerializer(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=100)
+class TrialAgentSerializer(serializers.ModelSerializer):
+    trial_identifier = serializers.CharField(max_length=100)
     agent_name = serializers.CharField(max_length=128)
     round_name = serializers.CharField(max_length=128)
 
     class Meta:
-        model = LogSimulationAgent
-        fields = ('simulation_identifier', 'agent_name', 'round_name', 'pos',)
+        model = LogTrialAgent
+        fields = ('trial_identifier', 'agent_name', 'round_name', 'pos',)
         read_only_fields = ()
 
 
@@ -195,8 +195,8 @@ class TeamScoreInSerializer(serializers.ModelSerializer):
 
 
 class TeamScoreOutSerializer(serializers.ModelSerializer):
-    trial = SimulationSerializer(read_only=True)
-    team = GroupSerializer(read_only=True)
+    trial = TrialSerializer(read_only=True)
+    team = TeamSerializer(read_only=True)
 
     class Meta:
         model = TeamScore

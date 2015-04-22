@@ -1,1 +1,0 @@
-from competition.models import Simulation

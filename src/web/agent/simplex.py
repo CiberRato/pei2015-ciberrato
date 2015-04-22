@@ -16,7 +16,7 @@ class AgentSimplex:
         for r in [cp_agent.round for cp_agent in ag.competitionagent_set.all()]:
             self.rounds += [RoundSimplex(r)]
 
-        self.group_name = ag.group.name
+        self.team_name = ag.team.name
         self.validation_result = ag.validation_result
         self.code_valid = ag.code_valid
         self.created_at = ag.created_at

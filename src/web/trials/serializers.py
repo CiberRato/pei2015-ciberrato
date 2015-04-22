@@ -1,23 +1,23 @@
 from rest_framework import serializers
-from .models import Simulation
+from .models import Trial
 
 
-class LogSimulation(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=100)
+class LogTrial(serializers.ModelSerializer):
+    trial_identifier = serializers.CharField(max_length=100)
 
     class Meta:
-        model = Simulation
-        fields = ('simulation_identifier', 'log_json',)
+        model = Trial
+        fields = ('trial_identifier', 'log_json',)
         read_only_fields = ()
 
 
-class ErrorSimulation(serializers.ModelSerializer):
-    simulation_identifier = serializers.CharField(max_length=100)
+class ErrorTrial(serializers.ModelSerializer):
+    trial_identifier = serializers.CharField(max_length=100)
     msg = serializers.CharField(max_length=150)
 
     class Meta:
-        model = Simulation
-        fields = ('simulation_identifier', 'msg',)
+        model = Trial
+        fields = ('trial_identifier', 'msg',)
         read_only_fields = ()
 
 
@@ -40,11 +40,11 @@ class AgentXSerializer(serializers.BaseSerializer):
             }
 
 
-class SimulationXSerializer(serializers.BaseSerializer):
+class TrialXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         agents = AgentXSerializer(instance.agents, many=True)
         return {
-            'simulation_id': instance.simulation_id,
+            'trial_id': instance.trial_id,
             'grid': instance.grid,
             'param_list': instance.param_list,
             'lab': instance.lab,

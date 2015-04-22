@@ -7,14 +7,14 @@ from .models import Agent
 
 
 class AgentSerializer(serializers.ModelSerializer):
-    group_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
     user = AccountSerializer(read_only=True)
     rounds = RoundSerializer(many=True, read_only=True)
     competitions = CompetitionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'is_local', 'rounds', 'code_valid', 'validation_result', 'language', 'competitions', 'user', 'group_name', 'created_at',
+        fields = ('agent_name', 'is_local', 'rounds', 'code_valid', 'validation_result', 'language', 'competitions', 'user', 'team_name', 'created_at',
                   'updated_at')
         read_only_fields = ('user', 'rounds', 'code_valid', 'validation_result', 'competitions', 'created_at', 'updated_at',)
 

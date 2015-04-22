@@ -4,25 +4,25 @@ from django.views.generic.base import TemplateView
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
     AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails
 
-from groups.views import GroupMembersViewSet, AccountGroupsViewSet, GroupViewSet, MakeMemberAdminViewSet, \
-    MemberInGroupViewSet, AccountGroupsAdminViewSet
+from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, MakeMemberAdminViewSet, \
+    MemberInTeamViewSet, AccountTeamsAdminViewSet
 
-from competition.views.group import EnrollGroup, CompetitionGetGroupsViewSet, CompetitionGetNotValidGroupsViewSet, \
-    CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledGroupsViewSet, ToggleGroupValid, \
-    MyEnrolledGroupsInCompetitionViewSet, GetEnrolledGroupCompetitionsViewSet
-from competition.views.round import AgentsRound, RoundParticipants, RoundGroups, RoundViewSet, RoundViewAdminSet, \
+from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
+    CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledTeamsViewSet, ToggleTeamValid, \
+    MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet
+from competition.views.round import AgentsRound, RoundParticipants, RoundTeams, RoundViewSet, RoundViewAdminSet, \
     RoundFile
-from competition.views.simulation import SimulationViewSet, SimulationByAgent, SimulationByRound, \
-    SimulationByCompetition, GetSimulationAgents, StartSimulation, SimulationGridViewSet
+from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
+    TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition
 
-from simulations.views.all import SaveLogs, GetSimulation, GetSimulationLog, SaveSimErrors
+from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors
 
-from agent.views.agent import AgentViewSets, AgentsByGroupViewSet, AgentsByUserViewSet, AgentCodeValidation, \
+from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
@@ -39,14 +39,14 @@ router_accounts.register(r'toggle_super_user', ToggleUserToSuperUser)
 router_accounts.register(r'login_to', LoginToOtherUser)
 router_accounts.register(r'me', MyDetails)
 # GROUPS URLs
-router_groups = routers.SimpleRouter()
-router_groups.register(r'members', GroupMembersViewSet)
-router_groups.register(r'user', AccountGroupsViewSet)
-router_groups.register(r'user_admin', AccountGroupsAdminViewSet)
+router_teams = routers.SimpleRouter()
+router_teams.register(r'members', TeamMembersViewSet)
+router_teams.register(r'user', AccountTeamsViewSet)
+router_teams.register(r'user_admin', AccountTeamsAdminViewSet)
 # crud = create read update delete
-router_groups.register(r'crud', GroupViewSet)
-router_groups.register(r'admin', MakeMemberAdminViewSet)
-router_groups.register(r'member', MemberInGroupViewSet)
+router_teams.register(r'crud', TeamViewSet)
+router_teams.register(r'admin', MakeMemberAdminViewSet)
+router_teams.register(r'member', MemberInTeamViewSet)
 # GROUPS URLs
 
 # COMPETITIONS URLs#
@@ -63,56 +63,56 @@ router_competitions.register(r'team_score', TeamScoreViewSet)
 router_competitions.register(r'ranking_trial', RankingByTrial)
 router_competitions.register(r'ranking_round', RankingByRound)
 router_competitions.register(r'ranking_competition', RankingByCompetition)
-# Groups
-router_competitions.register(r'enroll', EnrollGroup)
-router_competitions.register(r'groups', CompetitionGetGroupsViewSet)
-router_competitions.register(r'groups_not_valid', CompetitionGetNotValidGroupsViewSet)
+# Teams
+router_competitions.register(r'enroll', EnrollTeam)
+router_competitions.register(r'teams', CompetitionGetTeamsViewSet)
+router_competitions.register(r'teams_not_valid', CompetitionGetNotValidTeamsViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
-router_competitions.register(r'my_enrolled_groups', MyEnrolledGroupsViewSet)
-router_competitions.register(r'my_enrolled_groups_competition', MyEnrolledGroupsInCompetitionViewSet)
-router_competitions.register(r'group_enrolled_competitions', GetEnrolledGroupCompetitionsViewSet)
-router_competitions.register(r'toggle_group_inscription', ToggleGroupValid)
+router_competitions.register(r'my_enrolled_teams', MyEnrolledTeamsViewSet)
+router_competitions.register(r'my_enrolled_teams_competition', MyEnrolledTeamsInCompetitionViewSet)
+router_competitions.register(r'team_enrolled_competitions', GetEnrolledTeamCompetitionsViewSet)
+router_competitions.register(r'toggle_team_inscription', ToggleTeamValid)
 # Round
 router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'round_admin', RoundViewAdminSet)
 router_competitions.register(r'round_agents', AgentsRound)
 router_competitions.register(r'round_participants', RoundParticipants)
-router_competitions.register(r'round_groups', RoundGroups)
+router_competitions.register(r'round_teams', RoundTeams)
 router_competitions.register(r'round_files', RoundFile)
-# Simulation
-router_competitions.register(r'trial', SimulationViewSet)
-router_competitions.register(r'trials_by_agent', SimulationByAgent)
-router_competitions.register(r'trials_by_round', SimulationByRound)
-router_competitions.register(r'trials_by_competition', SimulationByCompetition)
-router_competitions.register(r'trial_agents', GetSimulationAgents)
-router_competitions.register(r'simulation_grid', SimulationGridViewSet)
-# Simulation => Machine to Machine
+# Trial
+router_competitions.register(r'trial', TrialViewSet)
+router_competitions.register(r'trials_by_agent', TrialByAgent)
+router_competitions.register(r'trials_by_round', TrialByRound)
+router_competitions.register(r'trials_by_competition', TrialByCompetition)
+router_competitions.register(r'trial_agents', GetTrialAgents)
+router_competitions.register(r'trial_grid', TrialGridViewSet)
+# Trial => Machine to Machine
 
 # COMPETITIONS URLs#
 
 # AGENTS URL's
 router_agents = routers.SimpleRouter()
 router_agents.register(r'agent', AgentViewSets)
-router_agents.register(r'agents_by_group', AgentsByGroupViewSet)
+router_agents.register(r'agents_by_team', AgentsByTeamViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', ListAgentsFiles)
 router_agents.register(r'code_validation', AgentCodeValidation)
 router_agents.register(r'validate_code', SubmitCodeForValidation)
 
-# SIMULATION URL's
-router_simulations = routers.SimpleRouter()
-router_simulations.register(r'simulation_log', SaveLogs)
-router_simulations.register(r'simulation_error', SaveSimErrors)
-router_simulations.register(r'get_simulation', GetSimulation)
+# TRIAL URL's
+router_trials = routers.SimpleRouter()
+router_trials.register(r'trial_log', SaveLogs)
+router_trials.register(r'trial_error', SaveSimErrors)
+router_trials.register(r'get_trial', GetTrial)
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
-                       url(r'^api/v1/groups/', include(router_groups.urls)),
+                       url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
-                       url(r'^api/v1/simulations/', include(router_simulations.urls)),
+                       url(r'^api/v1/trials/', include(router_trials.urls)),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
@@ -129,12 +129,12 @@ urlpatterns = patterns('',
                        url(r'^api/v1/agents/allowed_languages/$', GetAllowedLanguages.as_view(),
                            name="Allowed languages"),
 
-                       # stat simulation
-                       url(r'^api/v1/simulations/start/$', StartSimulation.as_view(), name="Start simulation"),
-                       # get simulation log
-                       url(r'^api/v1/simulations/get_simulation_log/(?P<simulation_id>.+)/$',
-                           GetSimulationLog.as_view(),
-                           name="Get simulation log"),
+                       # stat trial
+                       url(r'^api/v1/trials/start/$', StartTrial.as_view(), name="Start trial"),
+                       # get trial log
+                       url(r'^api/v1/trials/get_trial_log/(?P<trial_id>.+)/$',
+                           GetTrialLog.as_view(),
+                           name="Get trial log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),

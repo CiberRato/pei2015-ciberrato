@@ -10,10 +10,10 @@ class RoundSimplex:
         self.lab_path = r.lab_path
 
 
-class GroupEnrolledSimplex:
+class TeamEnrolledSimplex:
     def __init__(self, ge):
         self.competition = ge.competition
-        self.group_name = ge.group.name
+        self.team_name = ge.team.name
         self.valid = ge.valid
 
 
@@ -25,41 +25,41 @@ class CompetitionAgentSimplex:
         self.updated_at = cas.updated_at
 
 
-class SimulationSimplex:
+class TrialSimplex:
     def __init__(self, ss):
         self.round_name = ss.round.name
         self.identifier = ss.identifier
         self.errors = ss.errors
         self.created_at = ss.created_at
         self.updated_at = ss.updated_at
-        if simulation_done(ss):
+        if trial_done(ss):
             self.state = "LOG"
-        elif simulation_error(ss):
+        elif trial_error(ss):
             self.state = "ERROR"
-        elif simulation_started(ss):
+        elif trial_started(ss):
             self.state = "STARTED"
-        elif simulation_waiting(ss):
+        elif trial_waiting(ss):
             self.state = "WAITING"
         else:
             self.state = "READY"
 
 
-class SimulationAgentSimplex:
+class TrialAgentSimplex:
     def __init__(self, sas):
-        self.simulation_identifier = sas.simulation.identifier
+        self.trial_identifier = sas.trial.identifier
         self.agent_name = sas.competition_agent.agent.agent_name
-        self.round_name = sas.simulation.round.name
+        self.round_name = sas.trial.round.name
         self.pos = sas.pos
 
 
 class GridPositionsSimplex:
     def __init__(self, ps):
         self.competition = ps.competition
-        self.group_name = ps.group.name
+        self.team_name = ps.team.name
         self.identifier = ps.identifier
 
 
-class SimulationGridSimplex:
+class TrialGridSimplex:
     def __init__(self, sgs):
         self.grid_positions = GridPositionsSimplex(sgs.grid_positions)
         self.position = sgs.position
@@ -74,7 +74,7 @@ class AgentGridSimplex:
 
 class TeamScoreSimplex:
     def __init__(self, tss):
-        self.trial = SimulationSimplex(tss.trial)
+        self.trial = TrialSimplex(tss.trial)
         self.team = tss.team
         self.score = tss.score
         self.number_of_agents = tss.number_of_agents

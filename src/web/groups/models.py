@@ -1,4 +1,0 @@
-"""
-See the Group models in authentication/models.py
-The Group models has dependencies with Account model
-"""
