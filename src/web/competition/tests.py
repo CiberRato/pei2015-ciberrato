@@ -53,16 +53,19 @@ class AuthenticationTestCase(TestCase):
         # retrieve type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
         response = client.get(url)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'name', u'IIA'), (u'number_teams_for_trial', 2), (u'number_agents_by_grid', 1)]))
+        self.assertEqual(response.data, {"name": "IIA", "number_teams_for_trial": 2, "number_agents_by_grid": 1,
+                                         "single_position": False, "timeout": 5})
 
         # list type of competition
         url = "/api/v1/competitions/type_of_competition/"
         response = client.get(url)
-        self.assertEqual(response.data, OrderedDict([(u'count', 3), (u'next', None), (u'previous', None), (u'results', [
-            OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)]),
-            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)]),
-            OrderedDict([('name', u'IIA'), ('number_teams_for_trial', 2), ('number_agents_by_grid', 1)])])]))
+        self.assertEqual(response.data, {"count": 3, "next": None, "previous": None, "results": [
+            {"name": "Competitive", "number_teams_for_trial": 3, "number_agents_by_grid": 1, "single_position": False,
+             "timeout": 5},
+            {"name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
+             "timeout": 5},
+            {"name": "IIA", "number_teams_for_trial": 2, "number_agents_by_grid": 1, "single_position": False,
+             "timeout": 5}]})
 
         # delete type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
@@ -81,25 +84,28 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/get/Register/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-                             [('name', u'Collaborative'), ('number_teams_for_trial', 1),
-                              ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
-                             [('name', u'C2'), ('type_of_competition', OrderedDict(
-                                 [('name', u'Competitive'), ('number_teams_for_trial', 3),
-                                  ('number_agents_by_grid', 1)])), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [{"name": "C1",
+                                          "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
+                                                                  "number_agents_by_grid": 5, "single_position": False,
+                                                                  "timeout": 5}, "state_of_competition": "Register"},
+                                         {"name": "C2",
+                                          "type_of_competition": {"name": "Competitive", "number_teams_for_trial": 3,
+                                                                  "number_agents_by_grid": 1, "single_position": False,
+                                                                  "timeout": 5}, "state_of_competition": "Register"}])
 
         # get all competitions
         url = "/api/v1/competitions/get/All/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-                             [('name', u'Collaborative'), ('number_teams_for_trial', 1),
-                              ('number_agents_by_grid', 5)])), ('state_of_competition', 'Register')]), OrderedDict(
-                             [('name', u'C2'), ('type_of_competition', OrderedDict(
-                                 [('name', u'Competitive'), ('number_teams_for_trial', 3),
-                                  ('number_agents_by_grid', 1)])), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [{"name": "C1",
+                                          "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
+                                                                  "number_agents_by_grid": 5, "single_position": False,
+                                                                  "timeout": 5}, "state_of_competition": "Register"},
+                                         {"name": "C2",
+                                          "type_of_competition": {"name": "Competitive", "number_teams_for_trial": 3,
+                                                                  "number_agents_by_grid": 1, "single_position": False,
+                                                                  "timeout": 5}, "state_of_competition": "Register"}])
+
 
         # enroll one team in the competition, the team stays with the inscription valid=False
         url = "/api/v1/competitions/enroll/"
@@ -114,16 +120,13 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO1'), ('valid', False)])])
+        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                                "number_teams_for_trial": 1,
+                                                                                                "number_agents_by_grid": 5,
+                                                                                                "single_position": False,
+                                                                                                "timeout": 5},
+                                                          "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                          "valid": False}])
 
         # the team can't enroll twice
         url = "/api/v1/competitions/enroll/"
@@ -153,34 +156,23 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO1'), ('valid', False)]),
-                          OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO2'), ('valid', False)]),
-                          OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO3'), ('valid', False)])])
+        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                                "number_teams_for_trial": 1,
+                                                                                                "number_agents_by_grid": 5,
+                                                                                                "single_position": False,
+                                                                                                "timeout": 5},
+                                                          "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                          "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
+            "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
+            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+                                             "competition": {"name": "C1",
+                                                             "type_of_competition": {"name": "Collaborative",
+                                                                                     "number_teams_for_trial": 1,
+                                                                                     "number_agents_by_grid": 5,
+                                                                                     "single_position": False,
+                                                                                     "timeout": 5},
+                                                             "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                             "valid": False}])
 
         # only admin
         url = "/api/v1/competitions/toggle_team_inscription/"
@@ -260,7 +252,11 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False),
+             ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
+                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
 
         # get agents by user
         url = "/api/v1/agents/agents_by_user/gipmon/"
@@ -272,7 +268,11 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False),
+             ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
+                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
 
         # get the agent information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/"
@@ -285,7 +285,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp,{'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
+        self.assertEqual(rsp,
+                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                          'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                              ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
 
         # upload agent code
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
@@ -340,7 +345,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
+        self.assertEqual(rsp,
+                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                          'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                              ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
 
         url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
@@ -379,34 +389,37 @@ class AuthenticationTestCase(TestCase):
         data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
-        self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-            'type_of_competition',
-            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                                   'state_of_competition',
-                                                                                                   'Register')]),
-                                         'team_name': u'XPTO3'})
+        self.assertEqual(response.data, {"identifier": identifier,
+                                         "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                               "number_teams_for_trial": 1,
+                                                                                               "number_agents_by_grid": 5,
+                                                                                               "single_position": False,
+                                                                                               "timeout": 5},
+                                                         "state_of_competition": "Register"}, "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the grid position
         url = "/api/v1/competitions/grid_position/C1/?team_name=XPTO3"
         response = client.get(path=url, data=data)
-        self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-            'type_of_competition',
-            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                                   'state_of_competition',
-                                                                                                   'Register')]),
-                                         'team_name': u'XPTO3'})
+        self.assertEqual(response.data, {"identifier": identifier,
+                                         "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                               "number_teams_for_trial": 1,
+                                                                                               "number_agents_by_grid": 5,
+                                                                                               "single_position": False,
+                                                                                               "timeout": 5},
+                                                         "state_of_competition": "Register"}, "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 200)
 
         # ADMIN retrieve the grids by competition
         url = "/api/v1/competitions/grid_positions_competition/C1/"
         response = client.get(path=url, data=data)
-        self.assertEqual(response.data, [{'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-            'type_of_competition',
-            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                                    'state_of_competition',
-                                                                                                    'Register')]),
-                                          'team_name': u'XPTO3'}])
+        self.assertEqual(response.data, [{"identifier": identifier,
+                                          "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                                "number_teams_for_trial": 1,
+                                                                                                "number_agents_by_grid": 5,
+                                                                                                "single_position": False,
+                                                                                                "timeout": 5},
+                                                          "state_of_competition": "Register"}, "team_name": "XPTO3"}])
         self.assertEqual(response.status_code, 200)
 
         # list user grids
@@ -535,7 +548,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
+        self.assertEqual(rsp,
+                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                          'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
+                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
+                              ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
         # start trial
         url = "/api/v1/trials/start/"
@@ -707,8 +725,48 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
-        
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([(
+                                                                                                                    'trial',
+                                                                                                                    OrderedDict(
+                                                                                                                        [
+                                                                                                                            (
+                                                                                                                                'identifier',
+                                                                                                                                trial_identifier),
+                                                                                                                            (
+                                                                                                                                'round_name',
+                                                                                                                                u'R1'),
+                                                                                                                            (
+                                                                                                                                'state',
+                                                                                                                                u'ERROR'),
+                                                                                                                            (
+                                                                                                                                'errors',
+                                                                                                                                u'cenas')])),
+                                                                                                                ('team',
+                                                                                                                 OrderedDict(
+                                                                                                                     [(
+                                                                                                                          'name',
+                                                                                                                          u'XPTO3'),
+                                                                                                                      (
+                                                                                                                          'max_members',
+                                                                                                                          10)])),
+                                                                                                                (
+                                                                                                                    'score',
+                                                                                                                    10),
+                                                                                                                (
+                                                                                                                    'number_of_agents',
+                                                                                                                    5),
+                                                                                                                (
+                                                                                                                    'time',
+                                                                                                                    10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'),
+                                    ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+
         # ranking by round
         url = "/api/v1/competitions/ranking_round/R1/"
         response = client.get(path=url)
@@ -721,8 +779,48 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
-        
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([(
+                                                                                                                    'trial',
+                                                                                                                    OrderedDict(
+                                                                                                                        [
+                                                                                                                            (
+                                                                                                                                'identifier',
+                                                                                                                                trial_identifier),
+                                                                                                                            (
+                                                                                                                                'round_name',
+                                                                                                                                u'R1'),
+                                                                                                                            (
+                                                                                                                                'state',
+                                                                                                                                u'ERROR'),
+                                                                                                                            (
+                                                                                                                                'errors',
+                                                                                                                                u'cenas')])),
+                                                                                                                ('team',
+                                                                                                                 OrderedDict(
+                                                                                                                     [(
+                                                                                                                          'name',
+                                                                                                                          u'XPTO3'),
+                                                                                                                      (
+                                                                                                                          'max_members',
+                                                                                                                          10)])),
+                                                                                                                (
+                                                                                                                    'score',
+                                                                                                                    10),
+                                                                                                                (
+                                                                                                                    'number_of_agents',
+                                                                                                                    5),
+                                                                                                                (
+                                                                                                                    'time',
+                                                                                                                    10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'),
+                                    ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+
         # ranking by competition
         url = "/api/v1/competitions/ranking_competition/C1/"
         response = client.get(path=url)
@@ -735,8 +833,48 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
-                         
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([(
+                                                                                                                    'trial',
+                                                                                                                    OrderedDict(
+                                                                                                                        [
+                                                                                                                            (
+                                                                                                                                'identifier',
+                                                                                                                                trial_identifier),
+                                                                                                                            (
+                                                                                                                                'round_name',
+                                                                                                                                u'R1'),
+                                                                                                                            (
+                                                                                                                                'state',
+                                                                                                                                u'ERROR'),
+                                                                                                                            (
+                                                                                                                                'errors',
+                                                                                                                                u'cenas')])),
+                                                                                                                ('team',
+                                                                                                                 OrderedDict(
+                                                                                                                     [(
+                                                                                                                          'name',
+                                                                                                                          u'XPTO3'),
+                                                                                                                      (
+                                                                                                                          'max_members',
+                                                                                                                          10)])),
+                                                                                                                (
+                                                                                                                    'score',
+                                                                                                                    10),
+                                                                                                                (
+                                                                                                                    'number_of_agents',
+                                                                                                                    5),
+                                                                                                                (
+                                                                                                                    'time',
+                                                                                                                    10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'),
+                                    ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+
         # update ranking
         url = "/api/v1/competitions/team_score/" + trial_identifier + "/"
         data = {'trial_id': trial_identifier, 'team_name': 'XPTO2', 'score': 14, 'number_of_agents': 3, 'time': 10}
@@ -756,8 +894,48 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 14), ('number_of_agents', 3), ('time', 10)])])
-        
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([(
+                                                                                                                    'trial',
+                                                                                                                    OrderedDict(
+                                                                                                                        [
+                                                                                                                            (
+                                                                                                                                'identifier',
+                                                                                                                                trial_identifier),
+                                                                                                                            (
+                                                                                                                                'round_name',
+                                                                                                                                u'R1'),
+                                                                                                                            (
+                                                                                                                                'state',
+                                                                                                                                u'ERROR'),
+                                                                                                                            (
+                                                                                                                                'errors',
+                                                                                                                                u'cenas')])),
+                                                                                                                ('team',
+                                                                                                                 OrderedDict(
+                                                                                                                     [(
+                                                                                                                          'name',
+                                                                                                                          u'XPTO3'),
+                                                                                                                      (
+                                                                                                                          'max_members',
+                                                                                                                          10)])),
+                                                                                                                (
+                                                                                                                    'score',
+                                                                                                                    10),
+                                                                                                                (
+                                                                                                                    'number_of_agents',
+                                                                                                                    5),
+                                                                                                                (
+                                                                                                                    'time',
+                                                                                                                    10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'), ('state', u'ERROR'),
+                                    ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 14), ('number_of_agents', 3), ('time', 10)])])
+
         # delete the team score
         url = "/api/v1/competitions/team_score/" + trial_identifier + "/?team_name=XPTO3"
         response = client.delete(path=url)
@@ -871,87 +1049,42 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition',
-                                                                                                   OrderedDict(
-                                                                                                       [('name', u'C1'),
-                                                                                                        (
-                                                                                                            'type_of_competition',
-                                                                                                            OrderedDict(
-                                                                                                                [(
-                                                                                                                     'name',
-                                                                                                                     u'Collaborative'),
-                                                                                                                 (
-                                                                                                                     'number_teams_for_trial',
-                                                                                                                     1),
-                                                                                                                 (
-                                                                                                                     'number_agents_by_grid',
-                                                                                                                     5)])),
-                                                                                                        (
-                                                                                                            'state_of_competition',
-                                                                                                            'Register')])),
-                                                                                                  ('team_name',
-                                                                                                   u'XPTO2'),
-                                                                                                  ('valid', False)]),
-                          OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO3'), ('valid', True)])])
+        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                                "number_teams_for_trial": 1,
+                                                                                                "number_agents_by_grid": 5,
+                                                                                                "single_position": False,
+                                                                                                "timeout": 5},
+                                                          "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                          "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
+        "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
+        "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+                                         "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                               "number_teams_for_trial": 1,
+                                                                                               "number_agents_by_grid": 5,
+                                                                                               "single_position": False,
+                                                                                               "timeout": 5},
+                                                         "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                         "valid": True}])
 
         # get my enrolled teams
         url = "/api/v1/competitions/my_enrolled_teams_competition/gipmon/?competition_name=C1"
         response = client.get(path=url)
-        self.assertEqual([OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition',
-                                                                                                   OrderedDict(
-                                                                                                       [('name', u'C1'),
-                                                                                                        (
-                                                                                                            'type_of_competition',
-                                                                                                            OrderedDict(
-                                                                                                                [(
-                                                                                                                     'name',
-                                                                                                                     u'Collaborative'),
-                                                                                                                 (
-                                                                                                                     'number_teams_for_trial',
-                                                                                                                     1),
-                                                                                                                 (
-                                                                                                                     'number_agents_by_grid',
-                                                                                                                     5)])),
-                                                                                                        (
-                                                                                                            'state_of_competition',
-                                                                                                            'Register')])),
-                                                                                                  ('team_name',
-                                                                                                   u'XPTO2'),
-                                                                                                  ('valid', False)]),
-                          OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO3'), ('valid', True)])],
+        self.assertEqual([{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                 "number_teams_for_trial": 1,
+                                                                                 "number_agents_by_grid": 5,
+                                                                                 "single_position": False,
+                                                                                 "timeout": 5},
+                                           "state_of_competition": "Register"}, "team_name": "XPTO1",
+                           "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
+            "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
+            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+                              "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
+                                                                                    "number_teams_for_trial": 1,
+                                                                                    "number_agents_by_grid": 5,
+                                                                                    "single_position": False,
+                                                                                    "timeout": 5},
+                                              "state_of_competition": "Register"}, "team_name": "XPTO3",
+                              "valid": True}],
                          response.data)
         self.assertEqual(response.status_code, 200)
 
@@ -971,9 +1104,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/team_enrolled_competitions/XPTO3/"
         response = client.get(url)
 
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])),
-                                                      ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"}])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
@@ -999,9 +1130,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/get/Competition/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
-            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])),
-                                                      ('state_of_competition', 'Competition')])])
+        self.assertEqual(response.data, [{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Competition"}])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -1175,17 +1304,9 @@ class AuthenticationTestCase(TestCase):
         # get my enrolled teams
         url = "/api/v1/competitions/my_enrolled_teams/gipmon/"
         response = client.get(url)
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO3'), ('valid', False)])])
+        self.assertEqual(response.data, [{"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3","valid":False}])
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
@@ -1249,28 +1370,15 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/enroll/XPTO3/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data,
-                         [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
-                                                                                      OrderedDict(
-                                                                                          [('name', u'Collaborative'), (
-                                                                                              'number_teams_for_trial',
-                                                                                              1),
-                                                                                           ('number_agents_by_grid',
-                                                                                            5)])),
-                                                                    ('state_of_competition', 'Register')])),
-                                       ('team_name', u'XPTO3'), ('valid', True)])])
+        self.assertEqual(response.data, [{"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3","valid":True}])
 
         # create grid position
         url = "/api/v1/competitions/grid_position/"
         data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
-        self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-            'type_of_competition',
-            OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5)])), (
-                                                                                                   'state_of_competition',
-                                                                                                   'Register')]),
-                                         'team_name': u'XPTO3'})
+
+        self.assertEqual(response.data, {"identifier":identifier,"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         # associate agent to the grid
@@ -1369,12 +1477,7 @@ class AuthenticationTestCase(TestCase):
         data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
-        self.assertEqual(response.data, {'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), (
-            'type_of_competition',
-            OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1)])), (
-                                                                                                   'state_of_competition',
-                                                                                                   'Register')]),
-                                         'team_name': u'XPTO3'})
+        self.assertEqual(response.data, {"identifier":identifier,"competition":{"name":"C1","type_of_competition":{"name":"Collaborative","number_teams_for_trial":1,"number_agents_by_grid":5,"single_position":False,"timeout":5},"state_of_competition":"Register"},"team_name":"XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         url = "/api/v1/competitions/agent_grid/"
