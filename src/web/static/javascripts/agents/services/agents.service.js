@@ -10,7 +10,7 @@
     function Agent($http) {
         var Agent = {
             create: create,
-            getByGroup: getByGroup,
+            getByTeam: getByTeam,
             getByUser: getByUser,
             getAgent: getAgent,
             upload: upload,
@@ -33,7 +33,7 @@
                 language: language
             })
         }
-        function getByGroup(teamName){
+        function getByTeam(teamName){
             return $http.get('/api/v1/agents/agents_by_group/' + teamName + '/');
         }
 

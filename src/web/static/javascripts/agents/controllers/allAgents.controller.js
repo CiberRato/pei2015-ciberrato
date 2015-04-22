@@ -16,14 +16,14 @@
         function activate(){
             vm.teamName = $routeParams.name;
 
-            Agent.getByGroup(vm.teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
+            Agent.getByTeam(vm.teamName).then(getByTeamSuccessFn, getByTeamErrorFn);
             Team.getTeamInformation(vm.teamName, username).then(getTeamInfoSuccessFn, getTeamInfoErrorFn);
 
-            function getByGroupSuccessFn(data){
+            function getByTeamSuccessFn(data){
                 vm.agents = data.data;
             }
 
-            function getByGroupErrorFn(data){
+            function getByTeamErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }

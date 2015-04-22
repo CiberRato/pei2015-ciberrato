@@ -27,7 +27,7 @@
             Team.getMembers(teamName).then(getMembersSuccessFn, getMembersErrorFn);
             Team.getTeamInformation(teamName, username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
             Profile.get(username).then(getUserSuccessFn, getUserErrorFn);
-            Agent.getByGroup(teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
+            Agent.getByTeam(teamName).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             function getMembersSuccessFn(data){
                 vm.members = data.data;
@@ -63,11 +63,11 @@
                 $location.path('/panel/');
             }
 
-            function getByGroupSuccessFn(data){
+            function getByTeamSuccessFn(data){
                 vm.agents = data.data;
             }
 
-            function getByGroupErrorFn(data){
+            function getByTeamErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }

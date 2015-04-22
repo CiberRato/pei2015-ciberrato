@@ -74,13 +74,13 @@
         }
 
         function getAgents(){
-            Agent.getByGroup(vm.team).then(getByGroupSuccessFn, getByGroupErrorFn);
+            Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
             Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
 
 
         }
 
-        function getByGroupSuccessFn(data){
+        function getByTeamSuccessFn(data){
             vm.models.lists.Available = [];
             for (var i = 0; i < data.data.length; ++i) {
                 vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
@@ -88,7 +88,7 @@
 
         }
 
-        function getByGroupErrorFn(data){
+        function getByTeamErrorFn(data){
             console.error(data.data);
             $location.url('/panel/');
 
@@ -121,7 +121,7 @@
                     theme: 'success'
                 });
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
-                Agent.getByGroup(vm.team).then(getByGroupSuccessFn, getByGroupErrorFn);
+                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             }
 
@@ -139,9 +139,9 @@
                     life: 2500,
                     theme: 'success'
                 });
-                Agent.getByGroup(vm.team).then(getByGroupSuccessFn, getByGroupErrorFn);
+                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
-                function getByGroupSuccessFn(data){
+                function getByTeamSuccessFn(data){
                     vm.models.lists.Available = [];
                     for (var i = 0; i < data.data.length; ++i) {
                         vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
@@ -152,7 +152,7 @@
 
                 }
 
-                function getByGroupErrorFn(data){
+                function getByTeamErrorFn(data){
                     console.error(data.data);
                     $location.url('/panel/');
 
@@ -218,7 +218,7 @@
 
             function associateAgentSuccessFn(){
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
-                Agent.getByGroup(vm.team).then(getByGroupSuccessFn, getByGroupErrorFn);
+                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
             }
 
             function associateAgentErrorFn(data){

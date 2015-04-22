@@ -55,14 +55,14 @@
             }
 
             function getNumberOfAgents(teamName, i){
-                Agent.getByGroup(teamName).then(getByGroupSuccessFn, getByGroupErrorFn);
+                Agent.getByTeam(teamName).then(getByTeamSuccessFn, getByTeamErrorFn);
 
-                function getByGroupSuccessFn(data) {
+                function getByTeamSuccessFn(data) {
                     vm.agents = data.data;
                     vm.team[i].allAgents = vm.agents.length;
                 }
 
-                function getByGroupErrorFn(data){
+                function getByTeamErrorFn(data){
                     console.error(data.data);
                 }
             }
