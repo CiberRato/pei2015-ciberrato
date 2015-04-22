@@ -13,7 +13,7 @@ class RoundSimplex:
 class TeamEnrolledSimplex:
     def __init__(self, ge):
         self.competition = ge.competition
-        self.group_name = ge.group.name
+        self.team_name = ge.team.name
         self.valid = ge.valid
 
 
@@ -55,7 +55,7 @@ class TrialAgentSimplex:
 class GridPositionsSimplex:
     def __init__(self, ps):
         self.competition = ps.competition
-        self.group_name = ps.group.name
+        self.team_name = ps.team.name
         self.identifier = ps.identifier
 
 

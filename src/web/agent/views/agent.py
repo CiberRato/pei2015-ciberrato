@@ -11,7 +11,7 @@ from ..serializers import AgentSerializer, AgentCodeValidationSerializer, Submit
 from ..simplex import AgentSimplex
 
 from authentication.models import Team, Account, TeamMember
-from groups.permissions import IsAdminOfTeam
+from teams.permissions import IsAdminOfTeam
 from competition.serializers import CompetitionSerializer
 
 
@@ -32,8 +32,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         @type  agent_name: str
         @param agent_name: The agent name
-        @type  group_name: str
-        @param group_name: The group name
+        @type  team_name: str
+        @param team_name: The team name
         @type  is_local: boolean
         @param is_local: True if is virtual or False if is not virtual
         """
@@ -41,15 +41,15 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             user = request.user
-            group = get_object_or_404(Team.objects.all(), name=serializer.validated_data['group_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             agent_name = serializer.validated_data['agent_name']
 
             if serializer.validated_data['is_local']:
-                Agent.objects.create(agent_name=agent_name, user=user, group=group, code_valid=True,
+                Agent.objects.create(agent_name=agent_name, user=user, team=team, code_valid=True,
                                      language=serializer.validated_data['language'],
                                      is_local=serializer.validated_data['is_local'])
             else:
-                Agent.objects.create(agent_name=agent_name, user=user, group=group,
+                Agent.objects.create(agent_name=agent_name, user=user, team=team,
                                      language=serializer.validated_data['language'],
                                      is_local=serializer.validated_data['is_local'])
 
@@ -97,14 +97,14 @@ class AgentsByTeamViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the list of agents by group
-        B{URL:} ../api/v1/agents/agents_by_group/<group_name>/
+        B{Retrieve} the list of agents by team
+        B{URL:} ../api/v1/agents/agents_by_team/<team_name>/
 
-        @type  group_name: str
-        @param group_name: The group name
+        @type  team_name: str
+        @param team_name: The team name
         """
-        group = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
-        serializer = self.serializer_class([AgentSimplex(agent) for agent in group.agent_set.all()], many=True)
+        team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in team.agent_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -172,9 +172,9 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
         if serializer.is_valid():
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
 
-            if len(TeamMember.objects.filter(group=agent.group, account=request.user)) == 0:
+            if len(TeamMember.objects.filter(team=agent.team, account=request.user)) == 0:
                 return Response({'status': 'Permission denied',
-                                 'message': 'You must be part of the group.'},
+                                 'message': 'You must be part of the team.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
             # call code validations

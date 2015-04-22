@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from competition.models import Competition, Round, TeamEnrolled, CompetitionAgent, Trial, LogTrialAgent, \
     TypeOfCompetition, GridPositions, AgentGrid, TrialGrid, TeamScore
-from groups.serializers import TeamSerializer
+from teams.serializers import TeamSerializer
 
 
 class TypeOfCompetitionSerializer(serializers.ModelSerializer):
@@ -44,13 +44,13 @@ class CompetitionInputSerializer(serializers.ModelSerializer):
 
 class GridPositionsSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(write_only=True)
-    group_name = serializers.CharField()
+    team_name = serializers.CharField()
 
     competition = CompetitionSerializer(read_only=True)
 
     class Meta:
         model = GridPositions
-        fields = ('identifier', 'competition', 'competition_name', 'group_name')
+        fields = ('identifier', 'competition', 'competition_name', 'team_name')
         read_only_fields = ('competition', 'identifier',)
 
 
@@ -81,24 +81,24 @@ class AdminRoundSerializer(serializers.ModelSerializer):
 
 class TeamEnrolledSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128, write_only=True)
-    group_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
     valid = serializers.BooleanField(read_only=True)
 
     competition = CompetitionSerializer(read_only=True)
 
     class Meta:
         model = TeamEnrolled
-        fields = ('competition', 'competition_name', 'group_name', 'valid',)
+        fields = ('competition', 'competition_name', 'team_name', 'valid',)
         read_only_fields = ('competition', 'valid',)
 
 
 class TeamEnrolledOutputSerializer(serializers.ModelSerializer):
-    group = TeamSerializer(read_only=True)
+    team = TeamSerializer(read_only=True)
 
     class Meta:
         model = TeamEnrolled
-        fields = ('group', 'valid',)
-        read_only_fields = ('group', 'valid')
+        fields = ('team', 'valid',)
+        read_only_fields = ('team', 'valid')
 
 
 class CompetitionAgentSerializer(serializers.ModelSerializer):

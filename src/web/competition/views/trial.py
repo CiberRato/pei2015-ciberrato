@@ -212,11 +212,11 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             trial = get_object_or_404(Trial.objects.all(),
                 identifier=serializer.validated_data['trial_identifier'])
 
-            groups_in_grid = len(TrialGrid.objects.filter(trial=trial))
+            teams_in_grid = len(TrialGrid.objects.filter(trial=trial))
 
-            if groups_in_grid >= grid_positions.competition.type_of_competition.number_teams_for_trial:
+            if teams_in_grid >= grid_positions.competition.type_of_competition.number_teams_for_trial:
                 return Response({'status': 'Bad Request',
-                                 'message': 'You can not add more groups to the grid.'},
+                                 'message': 'You can not add more teams to the grid.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             if grid_positions.competition.state_of_competition == 'Past':
@@ -224,17 +224,17 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            group_enrolled = TeamEnrolled.objects.filter(group=grid_positions.group,
+            team_enrolled = TeamEnrolled.objects.filter(team=grid_positions.team,
                                                           competition=grid_positions.competition)
 
-            if len(group_enrolled) != 1:
+            if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
-                                 'message': 'The group must be enrolled in the competition.'},
+                                 'message': 'The team must be enrolled in the competition.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if not group_enrolled[0].valid:
+            if not team_enrolled[0].valid:
                 return Response({'status': 'Permission denied',
-                                 'message': 'The group must be enrolled in the competition with valid inscription.'},
+                                 'message': 'The team must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
             if serializer.validated_data[
@@ -292,17 +292,17 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'The competition is in \'Past\' state.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        group_enrolled = TeamEnrolled.objects.filter(group=sim_grid.grid_positions.group,
+        team_enrolled = TeamEnrolled.objects.filter(team=sim_grid.grid_positions.team,
                                                       competition=sim_grid.grid_positions.competition)
 
-        if len(group_enrolled) != 1:
+        if len(team_enrolled) != 1:
             return Response({'status': 'Permission denied',
-                             'message': 'The group must be enrolled in the competition.'},
+                             'message': 'The team must be enrolled in the competition.'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        if not group_enrolled[0].valid:
+        if not team_enrolled[0].valid:
             return Response({'status': 'Permission denied',
-                             'message': 'The group must be enrolled in the competition with valid inscription.'},
+                             'message': 'The team must be enrolled in the competition with valid inscription.'},
                             status=status.HTTP_403_FORBIDDEN)
 
         sim = get_object_or_404(TrialGrid.objects.all(), trial=sim, position=request.GET.get('position', ''))
@@ -360,9 +360,9 @@ class StartTrial(views.APIView):
                 # print agent_grid.position
 
                 if agent_grid.agent.code_valid:
-                    group_enroll = TeamEnrolled.objects.get(group=agent_grid.agent.group,
+                    team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
                                                              competition=trial.round.parent_competition)
-                    if group_enroll.valid:
+                    if team_enroll.valid:
                         # competition agent
                         competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
                             competition=trial.round.parent_competition,

@@ -6,7 +6,7 @@ from authentication.serializers import AccountSerializer
 
 class TeamSerializer(serializers.ModelSerializer):
     """
-    This group serializer allow to CRUD the fields: name and max_members
+    This team serializer allow to CRUD the fields: name and max_members
     """
 
     class Meta:
@@ -18,26 +18,26 @@ class TeamSerializer(serializers.ModelSerializer):
 
 class Member2TeamSerializer(serializers.ModelSerializer):
     """
-    This serializer allow to make calls to a specific Team Member. One group member is characterized
-    with a username and a group name. This fields depends of the authentication.models.TeamMember attributes.
+    This serializer allow to make calls to a specific Team Member. One team member is characterized
+    with a username and a team name. This fields depends of the authentication.models.TeamMember attributes.
     """
     user_name = serializers.CharField(max_length=40)
-    group_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = TeamMember
-        fields = ('user_name', 'group_name',)
+        fields = ('user_name', 'team_name',)
 
 
 class MemberSerializer(serializers.ModelSerializer):
     """
-    This serializer depends of two serializes: AccountSerializer and TeamSerializer. One group member is characterized
+    This serializer depends of two serializes: AccountSerializer and TeamSerializer. One team member is characterized
     with a Account object, a Team object and a boolean field "is_admin".
     """
     account = AccountSerializer(read_only=True)
-    group = TeamSerializer(read_only=True)
+    team = TeamSerializer(read_only=True)
 
     class Meta:
         model = TeamMember
-        fields = ('is_admin', 'account', 'group',)
+        fields = ('is_admin', 'account', 'team',)
         read_only_fields = ('is_admin',)

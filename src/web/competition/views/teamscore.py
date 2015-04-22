@@ -31,8 +31,8 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         """
         team_score_list = []
 
-        for group in request.user.groups.all():
-            team_score_list += group.teamscore_set.all()
+        for team in request.user.teams.all():
+            team_score_list += team.teamscore_set.all()
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in team_score_list], many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -65,14 +65,14 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
 
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            group_enrolled = TeamEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
 
-            if len(group_enrolled) != 1:
+            if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if not group_enrolled[0].valid:
+            if not team_enrolled[0].valid:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -123,14 +123,14 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
 
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            group_enrolled = TeamEnrolled.objects.filter(group=team, competition=trial.round.parent_competition)
+            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
 
-            if len(group_enrolled) != 1:
+            if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if not group_enrolled[0].valid:
+            if not team_enrolled[0].valid:
                 return Response({'status': 'Permission denied',
                                  'message': 'The team must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)

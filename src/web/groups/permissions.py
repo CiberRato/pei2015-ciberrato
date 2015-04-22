@@ -22,29 +22,29 @@ class IsAdminOfTeam(permissions.BasePermission):
         @return:  True if the user has permission else False
         """
         try:
-            group_name = request.path.split("/")[-2:-1][0]
+            team_name = request.path.split("/")[-2:-1][0]
         except ValueError:
             return False
 
-        group = Team.objects.filter(name=group_name)
-        if len(group) == 0:
+        team = Team.objects.filter(name=team_name)
+        if len(team) == 0:
             if view.__class__.__name__ == 'MemberInTeamViewSet' and request.method == 'POST':
                 try:
                     data = dict(request.data)
-                    group_name = data['group_name']
-                    group = Team.objects.filter(name=group_name)
+                    team_name = data['team_name']
+                    team = Team.objects.filter(name=team_name)
                 except KeyError:
                     return False
             elif view.__class__.__name__ == 'EnrollTeam' and request.method == 'POST':
                 try:
-                    group_name = request.data['group_name']
-                    group = Team.objects.filter(name=group_name)
+                    team_name = request.data['team_name']
+                    team = Team.objects.filter(name=team_name)
                 except KeyError:
                     return False
             elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'POST':
                 try:
-                    group_name = request.data['group_name']
-                    group = Team.objects.filter(name=group_name)
+                    team_name = request.data['team_name']
+                    team = Team.objects.filter(name=team_name)
                 except KeyError:
                     return False
             elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'DELETE':
@@ -54,17 +54,17 @@ class IsAdminOfTeam(permissions.BasePermission):
                     return False
                 try:
                     agent = Agent.objects.get(agent_name=agent_name)
-                    group = agent.group
+                    team = agent.team
                 except AttributeError:
                     return False
-            elif 'group_name' in request.GET:
-                group = Team.objects.filter(name=request.GET.get('group_name', ''))
-                if len(group) == 0:
+            elif 'team_name' in request.GET:
+                team = Team.objects.filter(name=request.GET.get('team_name', ''))
+                if len(team) == 0:
                     return False
             else:
                 return False
 
-        group_member = TeamMember.objects.filter(account=request.user, group=group)
-        if len(group_member) >= 1:
-            return group_member[0].is_admin
+        team_member = TeamMember.objects.filter(account=request.user, team=team)
+        if len(team_member) >= 1:
+            return team_member[0].is_admin
         return False

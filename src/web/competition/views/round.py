@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from authentication.models import TeamMember
 from authentication.serializers import AccountSerializer
 
-from groups.serializers import TeamSerializer
+from teams.serializers import TeamSerializer
 
 from ..models import Competition, Round, CompetitionAgent
 from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer, RoundFilesSerializer
@@ -58,7 +58,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
                     Round.objects.create(name=serializer.validated_data['name'], parent_competition=competition)
             except IntegrityError:
                 return Response({'status': 'Bad request',
-                                 'message': 'The group already enrolled.'},
+                                 'message': 'The team already enrolled.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             return Response({'status': 'Created',
@@ -154,11 +154,11 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r)
-        competition_groups = [agent.agent.group for agent in competition_agents]
+        competition_teams = [agent.agent.team for agent in competition_agents]
         accounts = []
-        for group in competition_groups:
-            group_members = TeamMember.objects.filter(group=group)
-            accounts += [group_member.account for group_member in group_members]
+        for team in competition_teams:
+            team_members = TeamMember.objects.filter(team=team)
+            accounts += [team_member.account for team_member in team_members]
         serializer = self.serializer_class(accounts, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -173,16 +173,16 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Get} the groups available to compete in the round
-        B{URL:} ../api/v1/competitions/round_groups/<round_name>/
+        B{Get} the teams available to compete in the round
+        B{URL:} ../api/v1/competitions/round_teams/<round_name>/
 
         @type  round_name: str
         @param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r)
-        competition_groups = [agent.agent.group for agent in competition_agents]
-        serializer = self.serializer_class(competition_groups, many=True)
+        competition_teams = [agent.agent.team for agent in competition_agents]
+        serializer = self.serializer_class(competition_teams, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -87,19 +87,19 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
-        groups = instance.groups.all()
+        teams = instance.teams.all()
 
-        for group in groups:
-            group_member = TeamMember.objects.get(group=group, account=instance)
-            if group_member and group_member.is_admin:
-                group_members = TeamMember.objects.filter(group=group)
+        for team in teams:
+            team_member = TeamMember.objects.get(team=team, account=instance)
+            if team_member and team_member.is_admin:
+                team_members = TeamMember.objects.filter(team=team)
                 has_other_admin = False
-                for gm in group_members:
+                for gm in team_members:
                     if gm.is_admin and gm.account != instance:
                         has_other_admin = True
                         break
                 if not has_other_admin:
-                    group.delete()
+                    team.delete()
 
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
         instance.delete()

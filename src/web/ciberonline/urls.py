@@ -4,10 +4,10 @@ from django.views.generic.base import TemplateView
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
     AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails
 
-from groups.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, MakeMemberAdminViewSet, \
+from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, MakeMemberAdminViewSet, \
     MemberInTeamViewSet, AccountTeamsAdminViewSet
 
-from competition.views.group import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
+from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
     CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledTeamsViewSet, ToggleTeamValid, \
     MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet
 from competition.views.round import AgentsRound, RoundParticipants, RoundTeams, RoundViewSet, RoundViewAdminSet, \
@@ -39,14 +39,14 @@ router_accounts.register(r'toggle_super_user', ToggleUserToSuperUser)
 router_accounts.register(r'login_to', LoginToOtherUser)
 router_accounts.register(r'me', MyDetails)
 # GROUPS URLs
-router_groups = routers.SimpleRouter()
-router_groups.register(r'members', TeamMembersViewSet)
-router_groups.register(r'user', AccountTeamsViewSet)
-router_groups.register(r'user_admin', AccountTeamsAdminViewSet)
+router_teams = routers.SimpleRouter()
+router_teams.register(r'members', TeamMembersViewSet)
+router_teams.register(r'user', AccountTeamsViewSet)
+router_teams.register(r'user_admin', AccountTeamsAdminViewSet)
 # crud = create read update delete
-router_groups.register(r'crud', TeamViewSet)
-router_groups.register(r'admin', MakeMemberAdminViewSet)
-router_groups.register(r'member', MemberInTeamViewSet)
+router_teams.register(r'crud', TeamViewSet)
+router_teams.register(r'admin', MakeMemberAdminViewSet)
+router_teams.register(r'member', MemberInTeamViewSet)
 # GROUPS URLs
 
 # COMPETITIONS URLs#
@@ -65,20 +65,20 @@ router_competitions.register(r'ranking_round', RankingByRound)
 router_competitions.register(r'ranking_competition', RankingByCompetition)
 # Teams
 router_competitions.register(r'enroll', EnrollTeam)
-router_competitions.register(r'groups', CompetitionGetTeamsViewSet)
-router_competitions.register(r'groups_not_valid', CompetitionGetNotValidTeamsViewSet)
+router_competitions.register(r'teams', CompetitionGetTeamsViewSet)
+router_competitions.register(r'teams_not_valid', CompetitionGetNotValidTeamsViewSet)
 router_competitions.register(r'oldest_round', CompetitionOldestRoundViewSet)
 router_competitions.register(r'earliest_round', CompetitionEarliestRoundViewSet)
-router_competitions.register(r'my_enrolled_groups', MyEnrolledTeamsViewSet)
-router_competitions.register(r'my_enrolled_groups_competition', MyEnrolledTeamsInCompetitionViewSet)
-router_competitions.register(r'group_enrolled_competitions', GetEnrolledTeamCompetitionsViewSet)
-router_competitions.register(r'toggle_group_inscription', ToggleTeamValid)
+router_competitions.register(r'my_enrolled_teams', MyEnrolledTeamsViewSet)
+router_competitions.register(r'my_enrolled_teams_competition', MyEnrolledTeamsInCompetitionViewSet)
+router_competitions.register(r'team_enrolled_competitions', GetEnrolledTeamCompetitionsViewSet)
+router_competitions.register(r'toggle_team_inscription', ToggleTeamValid)
 # Round
 router_competitions.register(r'round', RoundViewSet)
 router_competitions.register(r'round_admin', RoundViewAdminSet)
 router_competitions.register(r'round_agents', AgentsRound)
 router_competitions.register(r'round_participants', RoundParticipants)
-router_competitions.register(r'round_groups', RoundTeams)
+router_competitions.register(r'round_teams', RoundTeams)
 router_competitions.register(r'round_files', RoundFile)
 # Trial
 router_competitions.register(r'trial', TrialViewSet)
@@ -94,7 +94,7 @@ router_competitions.register(r'trial_grid', TrialGridViewSet)
 # AGENTS URL's
 router_agents = routers.SimpleRouter()
 router_agents.register(r'agent', AgentViewSets)
-router_agents.register(r'agents_by_group', AgentsByTeamViewSet)
+router_agents.register(r'agents_by_team', AgentsByTeamViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', ListAgentsFiles)
@@ -109,7 +109,7 @@ router_trials.register(r'get_trial', GetTrial)
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
-                       url(r'^api/v1/groups/', include(router_groups.urls)),
+                       url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),

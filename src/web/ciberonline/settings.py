@@ -39,7 +39,7 @@ INSTALLED_APPS = (
     'compressor',
     'rest_framework',
     'authentication',
-    'groups',
+    'teams',
     'agent',
     'competition',
     'trials'
