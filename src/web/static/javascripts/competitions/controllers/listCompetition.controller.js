@@ -46,14 +46,14 @@
             function getAllRoundsSuccessFn(data){
                 vm.rounds = data.data;
                 for(var i = 0; i<vm.rounds.length; i++){
-                    getSimulations(vm.rounds[i].name, i);
+                    getTrials(vm.rounds[i].name, i);
                 }
             }
 
-            function getSimulations(roundName, i){
-                Round.getSimulations(roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
+            function getTrials(roundName, i){
+                Round.getTrials(roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
-                function getSimulationsSuccessFn(data){
+                function getTrialsSuccessFn(data){
                     vm.rounds[i].simulations = data.data;
                     console.log(vm.rounds[i].simulations);
                     for(var k = 0; k<vm.rounds[i].simulations.length; k++){
@@ -61,7 +61,7 @@
                     }
                 }
 
-                function getSimulationsErrorFn(data){
+                function getTrialsErrorFn(data){
                     console.error(data.data);
                     $location.path('/panel/');
 
@@ -69,15 +69,15 @@
             }
 
             function getGrids(simulationIdentifier, k, i){
-                Round.getSimulationGrids(simulationIdentifier, k, i).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+                Round.getTrialGrids(simulationIdentifier, k, i).then(getTrialGridsSuccessFn, getTrialGridsErrorFn);
 
-                function getSimulationGridsSuccessFn(data){
+                function getTrialGridsSuccessFn(data){
                     vm.rounds[i].simulations[k].grids = data.data;
                     console.log(vm.rounds[i].simulations[k]);
 
                 }
 
-                function getSimulationGridsErrorFn(data){
+                function getTrialGridsErrorFn(data){
                     console.error(data.data);
                     $location.path('/panel/');
                 }
@@ -114,15 +114,15 @@
         }
 
         function getGrids(identifier){
-            Round.getSimulationGrids(identifier).then(getSimulationGridsSuccessFn, getSimulationGridsErrorFn);
+            Round.getTrialGrids(identifier).then(getTrialGridsSuccessFn, getTrialGridsErrorFn);
 
-            function getSimulationGridsSuccessFn(data){
+            function getTrialGridsSuccessFn(data){
                 vm.grids = data.data;
                 console.log(vm.grids);
 
             }
 
-            function getSimulationGridsErrorFn(data){
+            function getTrialGridsErrorFn(data){
                 console.error(data.data);
                 $location.path('/panel/');
             }

@@ -99,18 +99,18 @@
             function getAllRoundsSuccessFn(data){
                 vm.rounds = data.data;
                 for(var i = 0; i<vm.rounds.length; i++){
-                    getSimulations(vm.rounds[i].name, i);
+                    getTrials(vm.rounds[i].name, i);
                 }
             }
 
-            function getSimulations(roundName, i){
-                Round.getSimulations(roundName).then(getSimulationsSuccessFn, getSimulationsErrorFn);
+            function getTrials(roundName, i){
+                Round.getTrials(roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
-                function getSimulationsSuccessFn(data){
+                function getTrialsSuccessFn(data){
                     vm.rounds[i].simulations = data.data;
                 }
 
-                function getSimulationsErrorFn(data){
+                function getTrialsErrorFn(data){
                     console.error(data.data);
                     $location.path('/panel/');
 

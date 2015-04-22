@@ -13,18 +13,18 @@
             uploadParamList: uploadParamList,
             uploadGrid: uploadGrid,
             uploadLab: uploadLab,
-            getSimulations: getSimulations,
-            createSimulation: createSimulation,
+            getTrials: getTrials,
+            createTrial: createTrial,
             getGrids: getGrids,
             associateGrid: associateGrid,
             disassociateAgent: disassociateAgent,
-            getSimulationGrids: getSimulationGrids,
+            getTrialGrids: getTrialGrids,
             create: create,
-            startSimulation: startSimulation,
+            startTrial: startTrial,
             getRound: getRound,
             destroy: destroy,
-            removeSimulation: removeSimulation,
-            getSimulation: getSimulation,
+            removeTrial: removeTrial,
+            getTrial: getTrial,
             getFiles: getFiles,
             saveScore: saveScore,
             getScoresByTrial: getScoresByTrial,
@@ -71,11 +71,11 @@
             });
         }
 
-        function getSimulations(roundName){
+        function getTrials(roundName){
             return $http.get("/api/v1/competitions/trials_by_round/" + roundName + "/");
         }
 
-        function createSimulation(roundName){
+        function createTrial(roundName){
             return $http.post("/api/v1/competitions/trial/", {
                 round_name: roundName
             });
@@ -84,7 +84,7 @@
             return $http.get("/api/v1/competitions/grid_positions_competition/" + competitionName + "/");
         }
 
-        function getSimulationGrids(identifier){
+        function getTrialGrids(identifier){
             return $http.get("/api/v1/competitions/simulation_grid/" + identifier + "/");
         }
 
@@ -107,7 +107,7 @@
             })
         }
 
-        function startSimulation(identifier){
+        function startTrial(identifier){
             return $http.post("/api/v1/simulations/start/", {
                 trial_id: identifier
             })
@@ -121,11 +121,11 @@
             return $http.delete("/api/v1/competitions/round/" + roundName + "/");
         }
 
-        function removeSimulation(identifier){
+        function removeTrial(identifier){
             return $http.delete("/api/v1/competitions/trial/" +identifier+"/");
         }
 
-        function getSimulation(identifier){
+        function getTrial(identifier){
             return $http.get("/api/v1/competitions/trial/" + identifier + "/");
         }
 

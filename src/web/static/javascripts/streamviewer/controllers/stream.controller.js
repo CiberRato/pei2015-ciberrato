@@ -17,8 +17,8 @@
         var identifier = $routeParams.identifier;
         $scope.logBuff_obj = [];
 
-        Round.getSimulation(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
-        function getSimulationSuccessFn(data){
+        Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
+        function getTrialSuccessFn(data){
             simulation = data.data;
             //console.log("simulation" + simulation);
             console.log("ACTIVATED");
@@ -26,7 +26,7 @@
             StreamViewer.getLabViewer(simulation.round_name).then(getLabSuccessFn, getErrorFn);
         }
 
-        function getSimulationErrorFn(data){
+        function getTrialErrorFn(data){
             console.error(data.data);
             $location.path('/panel/');
         }

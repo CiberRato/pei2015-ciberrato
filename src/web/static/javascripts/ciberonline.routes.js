@@ -179,9 +179,9 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/round/newRound.html',
             title: 'Create Round'
-        }).when('/panel/:identifier/watchSimulation',{
+        }).when('/panel/:identifier/watchTrial',{
             templateUrl: '/static/templates/viewer/logViewer.html',
-            title: 'Watch Simulation'
+            title: 'Watch Trial'
         }).when('/panel/:identifier/liveStream',{
             templateUrl: '/static/templates/viewer/streamViewer.html',
             title: 'Live Stream'

@@ -101,7 +101,7 @@
                             <tr>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" id="identifier">{{$index+1}} - {{value.identifier}}</td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">{{value.state}}</td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids();" href="#addAgents{{key}}">Manage</a>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getTrialGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
@@ -119,7 +119,7 @@
                                                              transfer the object that was assigned to it. If an element was
                                                              dragged away, you have to remove it from the original list
                                                              yourself using the dnd-moved attribute -->
-                                                        <li ng-if="listName == 'Simulation'"ng-repeat="item in list"
+                                                        <li ng-if="listName == 'Trial'"ng-repeat="item in list"
                                                             dnd-draggable="item"
                                                             dnd-moved="list.splice($index, 1); "
                                                             dnd-effect-allowed="move"
@@ -135,7 +135,7 @@
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"
-                                                            dnd-disable-if="vm.models.lists.Simulation.length == vm.competition.type_of_competition.number_teams_for_trial"
+                                                            dnd-disable-if="vm.models.lists.Trial.length == vm.competition.type_of_competition.number_teams_for_trial"
 
                                                                 >
                                                             {{item.label}}
@@ -143,7 +143,7 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <p ng-if = "vm.models.lists.Simulation.length == vm.competition.type_of_competition.number_teams_for_trial"><strong>You can't associate more agents, limit reached.</strong></p>
+                                            <p ng-if = "vm.models.lists.Trial.length == vm.competition.type_of_competition.number_teams_for_trial"><strong>You can't associate more agents, limit reached.</strong></p>
 
                                         </div>
                                         
@@ -154,12 +154,12 @@
                                 <td ng-repeat="(key2, value2) in value.gridsTotal" ng-if="$first"><a href="/panel/{{value2.label}}/teamMembers">{{value2.label}}</a>
                                 </td>
 
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startSimulation(value.identifier)">Start</a>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'WAITING'" ng-click = "vm.startTrial(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getSimulationGrids(); vm.getScoresByTrial()" href="#addScores">Manage Scores</a>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getTrialGrids(); vm.getScoresByTrial()" href="#addScores">Manage Scores</a>
                                     <div class="modal fade"  id="addScores">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
@@ -167,8 +167,8 @@
                                             <h2 align="center">Consult/Manage the Score Table</h2>
                                         </div>
                                         <div class="modal-body" style="text-align: center">
-                                            <p ng-if="vm.models.lists.Simulation.length == 0">There are no teams associated to this trial</p>
-                                            <form class="form-horizontal" ng-if="vm.models.lists.Simulation.length != 0" role="form">
+                                            <p ng-if="vm.models.lists.Trial.length == 0">There are no teams associated to this trial</p>
+                                            <form class="form-horizontal" ng-if="vm.models.lists.Trial.length != 0" role="form">
 
                                                 <!-- Second level tabs -->
                                                 <div class="tabbable tabs-left">
@@ -199,7 +199,7 @@
                                                         </div>
                                                         <div class="tab-pane" id="tab2">
                                                             <fieldset>
-                                                                <div ng-repeat="(key1, value1) in vm.models.lists.Simulation" class="control-group">
+                                                                <div ng-repeat="(key1, value1) in vm.models.lists.Trial" class="control-group">
                                                                     <label class="control-label" for="score{{value1.label}}">{{value1.label}}</label>
                                                                     <div class="controls">
                                                                         <input style="margin-bottom: 5%; width: 65%" value="" id="score{{value1.label}}" type="number" placeholder="Score" name="Score" >
@@ -208,7 +208,7 @@
                                                                     </div>
                                                                 </div>
                                                             </fieldset>
-                                                            <div ng-if="vm.models.lists.Simulation.length != 0" class="modal-footer">
+                                                            <div ng-if="vm.models.lists.Trial.length != 0" class="modal-footer">
                                                                 <a ng-click="vm.saveScores()" data-toggle="tab" href="#tab1" class="btn btn-alt btn-large btn-success">Save Scores</a>
                                                             </div>
                                                         </div>
@@ -222,7 +222,7 @@
 
                                     </div>
                                 </td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a class="btn btn-primary btn-flat" ng-click="vm.removeSimulation(value.identifier)">X</a></td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a class="btn btn-primary btn-flat" ng-click="vm.removeTrial(value.identifier)">X</a></td>
                             </tr>
                             <tr ng-repeat="(key2, value2) in value.gridsTotal" ng-if="!$first">
                                 <td bgcolor="#f8f8f8">
@@ -233,7 +233,7 @@
                             </tbody>
                         </table>
                         <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
-                        <a ng-click="vm.createSimulation()" class="btn btn-alt btn-large btn-success">Create Trial</a>
+                        <a ng-click="vm.createTrial()" class="btn btn-alt btn-large btn-success">Create Trial</a>
                     </div>
 
                     <footer class="warning">
