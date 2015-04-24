@@ -13,7 +13,7 @@ class Root(object):
 		self.starter_tcp.connect((self.HOST, self.PORT))
 
 	@cherrypy.expose
-	def simulation_id(self, **kwargs):
+	def trial_id(self, **kwargs):
 		if "simulation_identifier" not in kwargs:
 			raise cherrypy.HTTPError(400, "Parameter simulation_identifier was expected.")
 
