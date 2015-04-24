@@ -558,6 +558,7 @@
             function getTrialSuccessFn(data){
                 if (data.data.state === 'STARTED'){
                     vm.trial = data.data;
+                    console.log(vm.trial);
                     $timeout(function(){
                         reloadTrials();
                     });
