@@ -43,9 +43,6 @@
             $("#row4").show("slow");
             $("#row5").show("slow");
 
-            ctx.translate(0,$scope.lab_obj._Height);
-            ctx.scale(1,-1);
-            ctx.save();
             $scope.zoom = 31.5;
 
             console.log("OK");
@@ -64,6 +61,24 @@
             ctx.fillStyle="black";
             ctx.fill();
             drawWalls();
+            drawBeacon();
+
+        }
+
+        function drawBeacon(){
+            if($scope.nBeacon==1){
+                ctx.beginPath();
+                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom+$scope.zoom/15, 0, Math.PI * 2);
+                ctx.fillStyle=$scope.circleBorder;
+                ctx.fill();
+                ctx.stroke();
+                var imageObj = new Image();
+                imageObj.onload = function() {
+                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
+                };
+                imageObj.src = $scope.cheeseColor;
+
+            }
         }
 
         function drawWalls(){
@@ -76,8 +91,6 @@
                 else{
                     ctx.fillStyle = $scope.greatWallColor;
                 }
-
-
                 ctx.beginPath();
                 var b = 0;
                 for(; b < $scope.lab_obj.Wall[i].Corner.length; b++){
@@ -100,6 +113,7 @@
             $scope.param = $scope.parameters_obj;
             /* Map Object */
             $scope.map = $scope.lab_obj;
+            console.log($scope.map);
             /* Grid Object */
             $scope.grid = $scope.grid_obj;
             /* Log Object */
@@ -111,6 +125,7 @@
             /* Number of Beacons */
             if (isArray($scope.lab_obj.Beacon)) {
                 $scope.nBeacon = $scope.lab_obj.Beacon.length;
+
             }
             else {
                 $scope.nBeacon = 1
@@ -207,6 +222,7 @@
                     }
                 }
             }
+
 
             $scope.drawMap();
 
