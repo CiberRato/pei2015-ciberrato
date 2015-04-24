@@ -580,7 +580,7 @@
 
             setTimeout(function () {
                 Round.getTrial(identifier).then(getTrialNSuccessFn, getTrialErrorFn);
-            }, 5000);
+            }, 1000);
 
             function getTrialNSuccessFn(data){
                 if (!(data.data.state === 'READY')) {
