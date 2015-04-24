@@ -31,7 +31,6 @@
             getAllTypesOfCompetition: getAllTypesOfCompetition,
             removeTypeOfCompetition: removeTypeOfCompetition,
             getType: getType,
-            updateType: updateType,
             getValidByTeam: getValidByTeam,
             change: change,
             getScoresByCompetition: getScoresByCompetition
@@ -123,11 +122,13 @@
             return $http.get("/api/v1/competitions/agents_by_competition_team/" + teamName+ "/?competition_name=" + competitionName)
         }
 
-        function createTypeOfCompetition(typeName, teamsForTrial, agentsByGrid){
+        function createTypeOfCompetition(typeName, teamsForTrial, agentsByGrid, single, timeout){
             return $http.post("/api/v1/competitions/type_of_competition/", {
                 name: typeName,
                 number_teams_for_trial: teamsForTrial,
-                number_agents_by_grid: agentsByGrid
+                number_agents_by_grid: agentsByGrid,
+                single_position: single,
+                timeout: timeout
             });
         }
 
@@ -141,14 +142,6 @@
 
         function getType(name){
             return $http.get("/api/v1/competitions/type_of_competition/" + name + "/");
-        }
-
-        function updateType(type, name){
-            return $http.put("/api/v1/competitions/type_of_competition/" + name + "/", {
-                name: type.name,
-                number_teams_for_trial: type.number_teams_for_trial,
-                number_agents_by_grid: type.number_agents_by_grid
-            });
         }
 
         function getValidByTeam(teamName){

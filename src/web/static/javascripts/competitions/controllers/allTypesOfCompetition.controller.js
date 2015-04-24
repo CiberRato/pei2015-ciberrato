@@ -20,6 +20,7 @@
 
             function getAllSuccessFn(data){
                 vm.typesOfCompetitions = data.data;
+                console.log(vm.typesOfCompetitions);
             }
 
             function getAllErrorFn(data){

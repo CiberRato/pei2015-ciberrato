@@ -44,6 +44,23 @@
                                             </div>
                                         </div>
 
+                                        <div  class="control-group">
+                                            <label class="control-label" for="select">Single Position?</label>
+                                            <div class="controls">
+                                                <select id="select" name="option">
+                                                    <option value="true">True</option>
+                                                    <option value="false">False</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="control-group">
+                                            <label class="control-label" for="timeout">Timeout (minutes)</label>
+                                            <div class="controls">
+                                                <input id="timeout" type="number" placeholder="Timeout" name="timeout" ng-model="vm.timeout">
+                                            </div>
+                                        </div>
+
                                         <div class="form-actions">
                                             <button class="btn btn-alt btn-large btn-success" type="submit">Create Type Of Competition</button>
                                         </div>

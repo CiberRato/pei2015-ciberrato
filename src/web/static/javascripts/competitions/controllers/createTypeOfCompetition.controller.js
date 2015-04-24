@@ -19,7 +19,8 @@
         }
 
         function create(){
-            Competition.createTypeOfCompetition(vm.typeOfCompetitionName, vm.teamsForTrial, vm.agentsByGrid).then(createSuccessFn, createErrorFn);
+            var x = document.getElementById("select").value;
+            Competition.createTypeOfCompetition(vm.typeOfCompetitionName, vm.teamsForTrial, vm.agentsByGrid, x, vm.timeout).then(createSuccessFn, createErrorFn);
 
             function createSuccessFn(){
                 $.jGrowl("Type Of Competition has been created successfully.", {
