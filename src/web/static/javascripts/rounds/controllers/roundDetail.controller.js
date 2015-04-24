@@ -556,20 +556,9 @@
 
 
             function getTrialSuccessFn(data){
-                if (!(data.data.state === 'READY' || data.data.state === 'ERROR' || data.data.state === 'LOG')) {
+                if (!(data.data.state === 'READY')) {
                     vm.trial = data.data;
-                    for(var i =0; i<vm.trials.length; i++){
-                        if(vm.trial.identifier === vm.trials[i].identifier){
-                            if(vm.trial.state !== vm.trials[i].state){
-                                vm.trials[i].state = vm.trial.state;
-                            }
-
-                        }
-                    }
-
-                    setTimeout(function () {
-                        Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
-                    }, 5000);
+                    updateState(identifier);
                 }
             }
 
@@ -577,6 +566,31 @@
                 console.error(data.data);
             }
 
+        }
+
+        function updateState(identifier){
+            for(var i =0; i<vm.trials.length; i++){
+                if(vm.trial.identifier === vm.trials[i].identifier){
+                    if(vm.trial.state !== vm.trials[i].state){
+                        vm.trials[i].state = vm.trial.state;
+                    }
+                }
+            }
+
+            setTimeout(function () {
+                Round.getTrial(identifier).then(getTrialNSuccessFn, getTrialErrorFn);
+            }, 5000);
+
+            function getTrialNSuccessFn(data){
+                if (!(data.data.state === 'READY' || data.data.state === 'LOG' || data.data.state === 'ERROR')) {
+                    vm.trial = data.data;
+                    updateState(identifier);
+                }
+            }
+
+            function getTrialErrorFn(data){
+                console.error(data.data);
+            }
         }
 
         function gridAssociate(grid, pos){
