@@ -27,7 +27,7 @@ class Starter:
 			self.run(sim_id)
 		except Exception as e:
 			print e.args[0]
-			data = {'simulation_identifier': sim_id,'msg': e.args[0]}
+			data = {'trial_identifier': sim_id,'msg': e.args[0]}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, data=data)
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
@@ -48,8 +48,6 @@ class Starter:
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
-		TIMEOUT = settings["settings"]["timeout"]
-
 		GET_SIM_URL = settings["urls"]["get_simulation"]
 
 		POST_SIM_URL = settings["urls"]["post_log"]
@@ -64,10 +62,12 @@ class Starter:
 		#end loading settings
 
 		# Get simulation
-		result = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/")
+		url = "http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/"
+		result = requests.get(url)
 		if result.status_code != 200:
 			raise Exception("[STARTER] ERROR: Simulation failed to load data")
 
+		print result.text
 		simJson = json.loads(result.text)
 		tempFilesList = {}
 		n_agents = 0
@@ -79,9 +79,15 @@ class Starter:
 				if n_agents == 0:
 					raise Exception("[STARTER] ERROR: Simulation has no agents")
 				continue
-			if key == "simulation_id":
+			if key == "trial_id":
 				if sim_id != simJson[key]:
 					raise Exception("[STARTER] ERROR: sim_id received not the the same as the one in the simulation")
+				continue
+			if key == "type_of_competition":
+				details = simJson[key]
+				TIMEOUT = details["timeout"] * 60
+				if TIMEOUT < 1:
+					raise Exception("[STARTER] ERROR: Timeout invalid")
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
