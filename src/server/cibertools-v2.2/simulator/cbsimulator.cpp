@@ -200,6 +200,7 @@ cbSimulator::~cbSimulator()
 
 void cbSimulator::activateSyncMode() {
 	syncmode = true;
+	param->sync = true;
 }
 
 void cbSimulator::reset()
@@ -1416,6 +1417,7 @@ void cbSimulator::processEditParameters(void)
 {
 	cycle           = param->cycleTime;
 	endCycle        = param->simTime;
+	syncmode 		= param->sync;
 
 	//Noise
 	cbMotor::noise         = param->motorsNoise;
