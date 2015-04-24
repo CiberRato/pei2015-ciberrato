@@ -55,7 +55,11 @@ class CRobLink:
         sax.parseString( d2, handler )
         self.status = handler.status
         self.measures  = handler.measures
-        
+    
+    def syncRobot(self):
+        msg = '<Actions> <Sync/> </Actions>'
+        self.sock.sendto(msg,(self.host, self.port))
+
     def driveMotors(self, lPow, rPow):
         msg = '<Actions LeftMotor="'+str(lPow)+'" RightMotor="'+str(rPow)+'"/>'
         self.sock.sendto(msg,(self.host,self.port))

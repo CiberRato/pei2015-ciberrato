@@ -74,6 +74,7 @@ public:
 	inline bool   newMessage(int from) { return measures.hearMessage[from-1]!=QString(); }
 	inline QString   message(int from) { return measures.hearMessage[from-1]; }
 
+	void sync();
 	void requestGround();
 	void requestCompass();
 	void requestBeacon(int id);
