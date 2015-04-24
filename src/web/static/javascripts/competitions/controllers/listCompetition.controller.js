@@ -17,6 +17,7 @@
         vm.getScoresByRound = getScoresByRound;
         vm.getScoresByCompetition = getScoresByCompetition;
         vm.identifier;
+        vm.removeInscription = removeInscription;
 
         activate();
 
@@ -165,6 +166,39 @@
             function getScoresByCompetitionErrorFn(data){
                 console.error(data.data);
             }
+        }
+
+        function removeInscription(teamName){
+            console.log(teamName);
+            Competition.deleteEnroll(teamName, vm.competition.name).then(deleteEnrollSuccessFn, deleteEnrollErrorFn);
+
+            function deleteEnrollSuccessFn(){
+                $.jGrowl("Team has been removed from the competition.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function(){
+                    Competition.getTeams(vm.competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
+
+                    function getTeamsSuccessFn(data) {
+                        vm.competitionTeamsInfo = data.data;
+                    }
+
+                    function getTeamsErrorFn(data) {
+                        console.error(data.data);
+                        $location.url('/panel/');
+                    }
+                });
+
+            }
+
+            function deleteEnrollErrorFn(data){
+                $.jGrowl(data.data.message, {
+                    life: 2500,
+                    theme: 'btn-danger'
+                });
+            }
+
         }
 
 

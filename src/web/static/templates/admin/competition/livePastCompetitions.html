@@ -41,8 +41,8 @@
                                     <td ng-if="value.valid == false && vm.competition.state_of_competition!='Register'"><span class="label label-important">Not Valid</span></a></td>
                                     <td ng-if="value.valid == true && vm.competition.state_of_competition!='Register' "><span class="label label-success">Valid</span></a></td>
 
-                                    <td ng-if="vm.competition.state_of_competition!='Register' "><a disabled class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.team.name)">X</a></td>
-                                    <td ng-if="vm.competition.state_of_competition=='Register' "><a  class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.team.name)">X</a></td>
+                                    <td ng-if="vm.competition.state_of_competition!='Register' "><a disabled class="btn btn-primary btn-flat">X</a></td>
+                                    <td ng-if="vm.competition.state_of_competition=='Register' "><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.team.name)">X</a></td>
 
                                 </tr>
                                 </tbody>

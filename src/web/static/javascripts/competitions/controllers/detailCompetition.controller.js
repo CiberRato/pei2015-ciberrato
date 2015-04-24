@@ -150,7 +150,8 @@
 
 
         function removeInscription(teamName){
-            Competition.deleteEnroll(teamName, competitionName).then(deleteEnrollSuccessFn, deleteEnrollErrorFn);
+            console.log(teamName);
+            Competition.deleteEnroll(teamName, vm.competition.name).then(deleteEnrollSuccessFn, deleteEnrollErrorFn);
 
             function deleteEnrollSuccessFn(){
                 $.jGrowl("Team has been removed from the competition.", {
