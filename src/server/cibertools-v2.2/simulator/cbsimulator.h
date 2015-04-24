@@ -129,6 +129,8 @@ public:
 	void setDefaultGrid(void);
 	void setDefaultParameters(void);
 
+    void activateSyncMode();
+
 public:
 	//DEBUG
 #define GRIDSIZE 84
@@ -204,6 +206,7 @@ protected: // data members
 	State curState, nextState;	// current and next states
 
     bool logging;
+    bool syncmode;
     ostream *logStream;
 	QString logFilename;
 	

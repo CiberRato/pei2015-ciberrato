@@ -231,6 +231,10 @@ int main(int argc, char *argv[])
 			// wait until second pass of command line parsing
             p+=1;
 		}
+        else if (strcmp(argv[p], "-sync") == 0) {
+            // wait until second pass of command line parsing
+            p+=1;
+        }
         else {
             CommandLineError();
 		}
@@ -302,6 +306,10 @@ int main(int argc, char *argv[])
 			nogui = true;
 			p+=1;
 		}
+        else if (strcmp(argv[p], "-sync") == 0) {
+            simulator.activateSyncMode();
+            p+=1;
+        }
         else {
             CommandLineError();
 		}

@@ -120,6 +120,7 @@ cbSimulator::cbSimulator()
 	curState = nextState = INIT;
 
     logging=false;
+    syncmode = false;
     logStream=0;
 
 	distMaxToTarget=0.0;
@@ -195,6 +196,10 @@ cbSimulator::~cbSimulator()
 		delete logStream;
 		logStream=0;
 	}
+}
+
+void cbSimulator::activateSyncMode() {
+	syncmode = true;
 }
 
 void cbSimulator::reset()
