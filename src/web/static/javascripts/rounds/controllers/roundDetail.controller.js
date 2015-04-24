@@ -515,7 +515,7 @@
                     theme: 'success'
                 });
                 $timeout(function(){
-                    reloadTrial();
+                    reloadTrial(identifier);
                 });
             }
 
@@ -547,10 +547,10 @@
 
         }
 
-        function reloadTrial(){
+        function reloadTrial(identifier){
             setTimeout(function () {
                 $timeout(function(){
-                    Round.getTrial(vm.identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                    Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
                 });
             }, 1000);
 
@@ -564,7 +564,7 @@
                     });
                 }else{
                     setTimeout(function () {
-                        Round.getTrial(vm.identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                        Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
                     }, 1000);
                 }
             }
