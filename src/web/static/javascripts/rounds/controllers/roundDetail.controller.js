@@ -556,7 +556,7 @@
 
 
             function getTrialSuccessFn(data){
-                if (data.data.state === 'STARTED'){
+                if (data.data.state === 'STARTED' || data.data.state === 'WAITING' || data.data.state === 'FINISHED' || data.data.state === 'ERROR' || data.data.state === 'LOG'){
                     vm.trial = data.data;
                     console.log(vm.trial);
                     $timeout(function(){
