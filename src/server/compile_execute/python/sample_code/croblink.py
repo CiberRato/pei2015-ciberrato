@@ -6,7 +6,6 @@
 
 import socket
 
-UDP_PORT = 6000
 NUM_IR_SENSORS = 4
 
 class CRobLink:
@@ -14,7 +13,14 @@ class CRobLink:
     def __init__ (self, robName, robId, host):
         self.robName = robName
         self.robId = robId
-        self.host = host
+
+        val = host.split(":")
+        port_conn = 6000
+        if len(val) > 1:
+            self.host = val[0]
+            port_conn = int(val[1])
+        else:
+            self.host = host
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
