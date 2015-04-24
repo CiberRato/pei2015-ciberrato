@@ -8,17 +8,13 @@
     LogViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'LogViewer', '$timeout'];
 
     function LogViewer($location, $scope, $routeParams, Round, Authentication, Profile, LogViewer, $timeout){
-        console.log(document.getElementById("svgrow").offsetWidth);
-        console.log((document.getElementById("svgrow").offsetWidth * 31.5) / 880);
+
         $scope.load=false;
 
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
 
-
-        var logInfo_obj;
-        var lab_obj;
-        var parameters_obj;
-        var grid_obj;
-
+        
         var identifier = $routeParams.identifier;
 
         LogViewer.getLog(identifier).then(getLogSuccess, getLogError);
@@ -28,10 +24,10 @@
             console.log("TENHO O FICHEIRO: LOG!");
 
             //console.log(log);
-            logInfo_obj = log.data.Log;
-            parameters_obj = log.data.Parameters;
-            lab_obj = log.data.Lab;
-            grid_obj = log.data.Grid;
+            $scope.logInfo_obj = log.data.Log;
+            $scope.parameters_obj = log.data.Parameters;
+            $scope.lab_obj = log.data.Lab;
+            $scope.grid_obj = log.data.Grid;
 
             showViewer();
         }
@@ -47,24 +43,52 @@
             $("#row4").show("slow");
             $("#row5").show("slow");
 
+            ctx.translate(0,$scope.lab_obj._Height);
+            ctx.scale(1,-1);
+            ctx.save();
+            $scope.zoom = 31.5;
+
             console.log("OK");
             doIt();
         }
-        $scope.convertToStringPoints = function(cornerList, zoom){
-            var out = "";
-            var b = 0;
-            for(; b<cornerList.Corner.length; b++){
-                out+= cornerList.Corner[b]._X*zoom + "," + cornerList.Corner[b]._Y*zoom + " ";
-            }
-            return out;
-        }
+
         function isArray(myArray) {
             return myArray.constructor.toString().indexOf("Array") > -1;
         }
+
+        $scope.drawMap=function(){
+            c.width=$scope.zoom * $scope.lab_obj._Width;
+            c.height=$scope.zoom * $scope.lab_obj._Height;
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.rect(0,0, c.width, c.height);
+            ctx.fillStyle="black";
+            ctx.fill();
+            drawWalls();
+        }
+
+        function drawWalls(){
+            var i;
+            for (i = 0; i < $scope.lab_obj.Wall.length; i++) {
+
+                if($scope.lab_obj.Wall[i]._Height < $scope.beacon_height){
+                    ctx.fillStyle = $scope.smallWallColor;
+                }
+                else{
+                    ctx.fillStyle = $scope.greatWallColor;
+                }
+
+
+                ctx.beginPath();
+                var b = 0;
+                for(; b < $scope.lab_obj.Wall[i].Corner.length; b++){
+                    ctx.lineTo($scope.lab_obj.Wall[i].Corner[b]._X * $scope.zoom ,$scope.lab_obj.Wall[i].Corner[b]._Y * $scope.zoom);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
         function doIt() {
-            /* Zoom variable (30->Standard) */
-            $scope.first_zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
-            $scope.zoom = (document.getElementById("svgrow").offsetWidth *31.5) / 880;
+
             $scope.velButton = '1x';
 
             var b = 0;
@@ -72,44 +96,30 @@
 
             $scope.slow = 0;
             $scope.playvar = 0;
-
-            /* Convert wall points to be integrated in SVG */
-            for (i = 0; i < lab_obj.Wall.length; i++) {
-                //console.log(lab_obj);
-                lab_obj.Wall[i].str = $scope.convertToStringPoints(lab_obj.Wall[i], $scope.zoom);
-            }
-
             /* Parameters Object */
-            $scope.param = parameters_obj;
-
+            $scope.param = $scope.parameters_obj;
             /* Map Object */
-            $scope.map = lab_obj;
-            /* --- slider --- */
-
-
-
+            $scope.map = $scope.lab_obj;
             /* Grid Object */
-            $scope.grid = grid_obj;
-
+            $scope.grid = $scope.grid_obj;
             /* Log Object */
-            $scope.log = logInfo_obj;
+            $scope.log = $scope.logInfo_obj;
 
             /* Beacons Object */
-            $scope.beacon = lab_obj.Beacon;
+            $scope.beacon = $scope.lab_obj.Beacon;
 
             /* Number of Beacons */
-            if (isArray($scope.map.Beacon)) {
-                $scope.nBeacon = $scope.map.Beacon.length;
+            if (isArray($scope.lab_obj.Beacon)) {
+                $scope.nBeacon = $scope.lab_obj.Beacon.length;
             }
             else {
                 $scope.nBeacon = 1
             }
-
             /* Find beacon height */
             if ($scope.nBeacon == 1)
-                $scope.beacon_height = lab_obj.Beacon._Height;
+                $scope.beacon_height = $scope.lab_obj.Beacon._Height;
             else
-                $scope.beacon_height = lab_obj.Beacon[0]._Height;
+                $scope.beacon_height = $scope.lab_obj.Beacon[0]._Height;
 
             /* Number of Robots */
             //console.log($scope.log);
@@ -198,6 +208,7 @@
                 }
             }
 
+            $scope.drawMap();
 
             $scope.activeV = function (str) {
                 if (str == '1x') {
@@ -241,10 +252,7 @@
             var tick = function () {
                 try {
                     $scope.updateValues();
-                    if ($scope.first_zoom != $scope.zoom){
-                        $scope.first_zoom = $scope.zoom;
 
-                    }
                     $(".leftGrip").css("left", ($scope.idx * ($scope.map._Width*$scope.zoom)) / $scope.param._SimTime);
                     if ($scope.playvar) {
                         $scope.idx++;
@@ -259,8 +267,8 @@
 
             /* Update Viewer Values */
             $scope.updateValues = function () {
+                $scope.drawMap();
                 $scope.robot = $scope.log[$scope.idx].LogInfo.Robot;
-                //console.log($scope.robot); O QUE É ISTO?
                 $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */

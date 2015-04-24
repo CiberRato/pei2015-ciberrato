@@ -51,61 +51,9 @@
                 <section>
                     <div class="row" id="svgrow" onload="inform()">
                         <div class="span12 viewer" style="text-align: center; vertical-align: middle">
-                            <svg ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="background-color: {{groundColor}}" >
-                                <g ng-attr-transform="translate(0,{{map._Height*zoom}})">
-                                    <g transform="scale(1,-1)">
-                                        <g><rect ng-attr-width="{{map._Width*zoom}}" ng-attr-height="{{map._Height*zoom}}" style="fill:blue;stroke:grey;stroke-width:2;fill-opacity:0.0" />
-                                            <g ng-repeat="(key, value) in map">
-
-                                                <g ng-if="key == 'Wall'" ng-repeat="(k, v) in value track by $index">
-                                                    <!-- Parede grande - original verde-->
-                                                    <polygon ng-if="v._Height>=beacon_height" ng-attr-points="{{v.str}}" style=" fill:{{greatWallColor}}" />
-                                                    <!-- Parede grande - original azul-->
-                                                    <polygon ng-if="v._Height<beacon_height" ng-attr-points="{{v.str}}" style=" fill:{{smallWallColor}}" />
-                                                </g>
-                                            </g>
-
-                                            <g ng-if="nBeacon != 1" ng-repeat="(i,o) in beacon track by $index">
-                                                <circle ng-attr-cx="{{o._X*zoom}}" ng-attr-cy="{{o._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
-                                                <image ng-attr-x="{{o._X*zoom-zoom}}" ng-attr-y="{{o._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
-                                            </g>
-                                            <g ng-if="nBeacon == 1">
-                                                <circle ng-attr-cx="{{beacon._X*zoom}}" ng-attr-cy="{{beacon._Y*zoom}}" ng-attr-r="{{zoom}}" stroke="{{circleBorder}}" stroke-width="2" />
-                                                <image ng-attr-x="{{beacon._X*zoom-zoom}}" ng-attr-y="{{beacon._Y*zoom-zoom}}" ng-attr-width="{{zoom*2}}" ng-attr-height="{{zoom*2}}" xlink:href="{{cheeseColor}}" />
-                                            </g>
-
-
-                                            <g ng-repeat="(key, value) in grid">
-                                                <g ng-if="key == 'Position'" ng-repeat="(k, v) in value track by $index">
-                                                    <circle ng-attr-cx="{{v._X*zoom}}" ng-attr-cy="{{v._Y*zoom}}" ng-attr-r="{{zoom/2}}" stroke="{{circleBorder}}" stroke-width="2" style=" fill:{{gridColor}}" />
-                                                </g>
-                                            </g>
-                                            <g ng-if="numRobots != 1" ng-repeat="value in robot">
-                                                <polyline ng-show="{{slyne[$index]}}" ng-attr-points="{{pline[$index]}}" style="fill:none;stroke:{{lineColor[$index]}} ;stroke-width:3" />
-                                            </g>
-                                            <g ng-if="numRobots == 1">
-                                                <polyline ng-show="{{'slyne[0]'}}" ng-attr-points="{{pline}}" style="fill:none;stroke:{{lineColor[0]}} ;stroke-width:3" />
-                                            </g>
-
-                                            <g ng-if="numRobots != 1" ng-repeat="value in robot">
-                                                <image ng-if="value.Scores._Collision=='False'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[$index]}}"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
-                                                <image ng-if="value.Scores._Collision=='True'" ng-attr-x="{{value.Pos._X*zoom-zoom/2}}" ng-attr-y="{{value.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="static/img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[$index]}},{{value.Pos._X*zoom}},{{value.Pos._Y*zoom}})" />
-                                                <circle  ng-attr-cx="{{value.Pos._X*zoom}}" ng-attr-cy="{{value.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-
-                                                <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
-                                            </g>
-                                            <g ng-if="numRobots == 1">
-                                                <image ng-if="robot.Scores._Collision=='False'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="{{robotColor[0]}}"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
-                                                <image ng-if="robot.Scores._Collision=='True'" ng-attr-x="{{robot.Pos._X*zoom-zoom/2}}" ng-attr-y="{{robot.Pos._Y*zoom-zoom/2}}" ng-attr-width="{{zoom}}" ng-attr-height="{{zoom}}" xlink:href="static/img/svg/mickey_black_smile.svg"  ng-attr-transform="rotate({{dir[0]}},{{robot.Pos._X*zoom}},{{robot.Pos._Y*zoom}})" />
-                                                <circle  ng-attr-cx="{{robot.Pos._X*zoom}}" ng-attr-cy="{{robot.Pos._Y*zoom}}" ng-attr-r="{{zoom/2-0.5}}" fill-opacity=0.0 stroke="{{circleBorder}}" stroke-width="1" />
-
-                                                <!--No caso das imagens svg inseridas, tem de se retirar á coordenada x e y da imagem, metade do valor da width e height-->
-                                            </g>
-
-                                        </g>
-                                    </g>
-                                </g>
-                            </svg>
+                            <canvas id="myCanvas" style="border:1px solid #000000;">
+                                Your browser does not support the HTML5 canvas tag.
+                            </canvas>
 
                             <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}} "
                                  data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-top: -5px">
