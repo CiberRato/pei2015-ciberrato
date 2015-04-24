@@ -14,10 +14,10 @@ class Root(object):
 
 	@cherrypy.expose
 	def trial_id(self, **kwargs):
-		if "simulation_identifier" not in kwargs:
-			raise cherrypy.HTTPError(400, "Parameter simulation_identifier was expected.")
+		if "trial_identifier" not in kwargs:
+			raise cherrypy.HTTPError(400, "Parameter trial_identifier was expected.")
 
-		sim_id = kwargs["simulation_identifier"]
+		sim_id = kwargs["trial_identifier"]
 
 		self.starter_tcp.send("sim_id="+str(sim_id))
 		return "Received sim id:" + str(sim_id)
