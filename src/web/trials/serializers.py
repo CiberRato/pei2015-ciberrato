@@ -24,7 +24,7 @@ class ErrorTrial(serializers.ModelSerializer):
 
 class AgentXSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
-        if not instance.files:
+        if not hasattr(instance, "files"):
             return {
                 'agent_type': instance.agent_type,
                 'agent_name': instance.agent_name,
