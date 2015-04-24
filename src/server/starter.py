@@ -237,7 +237,7 @@ class Starter:
 		simulator.wait()
 
 		# Save log to the end-point
-		data = {'simulation_identifier': sim_id}
+		data = {'trial_identifier': sim_id}
 		files = {'log_json': open(LOG_FILE, "r")}
 		response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + POST_SIM_URL, data=data, files=files)
 
