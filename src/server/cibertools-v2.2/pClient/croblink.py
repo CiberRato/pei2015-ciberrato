@@ -1,26 +1,33 @@
 
-import socket
+#
+# Authors: Nuno Lau and Luis Seabra Lopes
+# October-November 2013
+#
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 6000
+import socket
 
 NUM_IR_SENSORS = 4
 
 class CRobLink:
 
-
     def __init__ (self, robName, robId, host):
         self.robName = robName
         self.robId = robId
-        self.host = host
 
+        val = host.split(":")
+        port_conn = 6000
+        if len(val) > 1:
+            self.host = val[0]
+            port_conn = int(val[1])
+        else:
+            self.host = host
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
         
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />'
         
-        self.sock.sendto(msg, (UDP_IP, UDP_PORT))  # TODO condider host arg
+        self.sock.sendto(msg, (self.host, port_conn))  # TODO consider host arg
         data, (host,self.port) = self.sock.recvfrom(1024)
         #print "received message:", data, " port ", self.port
 
@@ -31,52 +38,39 @@ class CRobLink:
         parser.setContentHandler( handler )
         
         # Parse reply 
-
         d2 = data[:-1]
-#        try:
         sax.parseString( d2, handler )
-#        except SAXParseException:
-#            self.status = -1
-#            return 
         self.status = handler.status
-
 
     def readSensors(self):
         data, (host,port) = self.sock.recvfrom(4096)
         d2 = data[:-1]
 
-        print "RECV : \"" + d2 +'"'
+        # print "RECV : \"" + d2 +'"'
         parser = sax.make_parser()
         # Tell it what handler to use
         handler = StructureHandler()
         parser.setContentHandler( handler )
 
-#        try:
         sax.parseString( d2, handler )
-#        except SAXParseException:
-#            status = -1
-#            return 
         self.status = handler.status
         self.measures  = handler.measures
         
     def driveMotors(self, lPow, rPow):
         msg = '<Actions LeftMotor="'+str(lPow)+'" RightMotor="'+str(rPow)+'"/>'
-        self.sock.sendto(msg,(UDP_IP,self.port))
+        self.sock.sendto(msg,(self.host,self.port))
 
     def setReturningLed(self,val):
         msg = '<Actions LeftMotor="0.0" RightMotor="0.0" ReturningLed="'+ ("On" if val else "Off") +'"/>'
-        self.sock.sendto(msg,(UDP_IP,self.port))
+        self.sock.sendto(msg,(self.host,self.port))
 
     def setVisitingLed(self,val):
         msg = '<Actions LeftMotor="0.0" RightMotor="0.0" VisitingLed="'+ ("On" if val else "Off") +'"/>'
-        self.sock.sendto(msg,(UDP_IP,self.port))
+        self.sock.sendto(msg,(self.host,self.port))
 
     def finish(self):
         msg = '<Actions LeftMotor="0.0" RightMotor="0.0" EndLed="On"/>'
-        self.sock.sendto(msg,(UDP_IP,self.port))
-
-
-    #my_status = lambda self : self.status
+        self.sock.sendto(msg,(self.host,self.port))
 
 
 class CMeasures:
@@ -91,7 +85,7 @@ class CMeasures:
         self.time = 0
 
         self.groundReady = False
-        self.ground = -1
+        self.ground = False
         self.collisionReady = False
         self.collision = False 
         self.start = False 
@@ -114,7 +108,6 @@ class CMeasures:
         self.gpsReady = False
         self.gpsDirReady = False
 
-
         self.hearMessage=''
 
 
@@ -128,6 +121,7 @@ class StructureHandler(sax.ContentHandler):
         self.measures = CMeasures()
 
     def startElement(self, name, attrs):
+        # print attrs
         if name == "Reply":
             if "Status" not in attrs.keys():
                 self.status = -1
@@ -140,17 +134,17 @@ class StructureHandler(sax.ContentHandler):
         elif name=="Measures":
             self.measures.time = int(attrs["Time"])
         elif name=="Sensors":
-            self.measures.compassReady         = ("Compass" in attrs.keys())
+            self.measures.compassReady = ("Compass" in attrs.keys())
             if self.measures.compassReady:
-                self.measures.compass =   float(attrs["Compass"])
+                self.measures.compass = float_of_string(attrs["Compass"])
 
-            self.measures.collisionReady         = ("Collision" in attrs.keys())
+            self.measures.collisionReady = ("Collision" in attrs.keys())
             if self.measures.collisionReady:
                 self.measures.collision = (attrs["Collision"] == "Yes")
 
-            self.measures.groundReady         = ("Ground" in attrs.keys())
+            self.measures.groundReady = ("Ground" in attrs.keys())
             if self.measures.groundReady:
-                self.measures.ground =    int(attrs["Ground"])
+                self.measures.ground = int(attrs["Ground"])
 
         elif name == "IRSensor":
             id = int(attrs["Id"])
@@ -158,7 +152,7 @@ class StructureHandler(sax.ContentHandler):
             if id < NUM_IR_SENSORS: 
                 self.measures.irSensorReady[id] = True
                 #print "IRSensor val ", attrs["Value"]
-                self.measures.irSensor[id] = float(attrs["Value"])
+                self.measures.irSensor[id] = float_of_string(attrs["Value"])
             else: 
                 self.status = -1
         elif name == "BeaconSensor":
@@ -166,22 +160,24 @@ class StructureHandler(sax.ContentHandler):
             #if id<self.measures.beaconReady.len():
             if 1:
                 self.measures.beaconReady=True
+                #print attrs["Value"]
                 if attrs["Value"] == "NotVisible":
                     #self.measures.beaconReady[id]=(False,0.0)
                     self.measures.beacon=(False,0.0)
                 else:
                     #self.measures.beaconReady[id]=(True,attrs["Value"])
-                    self.measures.beacon=(True,float(attrs["Value"]))
+                    self.measures.beacon=(True,float_of_string(attrs["Value"]))
             else:
                 self.status = -1
         elif name == "GPS":
             if "X" in attrs.keys():
                 self.measures.gpsReady = True
-                self.measures.x = float(attrs["X"])
-                self.measures.y = float(attrs["Y"])
+                # print attrs["X"]
+                self.measures.x = float_of_string(attrs["X"])
+                self.measures.y = float_of_string(attrs["Y"])
                 if "Dir" in attrs.keys():
                      self.measures.gpsDirReady = True
-                     self.measures.dir = float(attrs["Dir"])
+                     self.measures.dir = float_of_string(attrs["Dir"])
                 else:
                      self.measures.gpsDirReady = False
             else:
@@ -194,18 +190,18 @@ class StructureHandler(sax.ContentHandler):
             self.measures.start = (attrs["Start"] == "On")
             self.measures.stop = (attrs["Stop"] == "On")
         elif name == "Score":
-            self.measures.scoreReady         = ("Score" in attrs.keys())
+            self.measures.scoreReady = ("Score" in attrs.keys())
             if self.measures.scoreReady:
-                 self.measures.score=int(attrs["Score"])
-            self.measures.arrivalTimeReady         = ("ArrivalTime" in attrs.keys())
+                 self.measures.score = int(attrs["Score"])
+            self.measures.arrivalTimeReady = ("ArrivalTime" in attrs.keys())
             if self.measures.arrivalTimeReady:
-                 self.measures.arrivalTime=int(attrs["ArrivalTime"])
-            self.measures.returningTimeReady         = ("ReturningTime" in attrs.keys())
+                 self.measures.arrivalTime = int(attrs["ArrivalTime"])
+            self.measures.returningTimeReady = ("ReturningTime" in attrs.keys())
             if self.measures.returningTimeReady:
-                 self.measures.returningTime=int(attrs["ReturningTime"])
-            self.measures.collisionsReady         = ("Collisions" in attrs.keys())
+                 self.measures.returningTime = int(attrs["ReturningTime"])
+            self.measures.collisionsReady = ("Collisions" in attrs.keys())
             if self.measures.collisionsReady:
-                 self.measures.collisions=int(attrs["Collisions"])
+                 self.measures.collisions = int(attrs["Collisions"])
         elif name == "Message":
             self.hearFrom = int(attrs["From"])
 
@@ -214,26 +210,12 @@ class StructureHandler(sax.ContentHandler):
         #print 'End of element:', name
 
 
-#TODO parse heard message in handler::characters
-
-cif=CRobLink("AA",3,"localhost")
-if cif.status!=0:
-    print "Connection refused or error"
-    quit()
-
-while 1:
-     #print "READ"
-     cif.readSensors()
-     #print "IRS "+ str(cif.measures.irSensor[0]) +" " + str(cif.measures.irSensor[1])\
-     #         +" "+ str(cif.measures.irSensor[2]) +" "+ str(cif.measures.irSensor[3])
-     #print "Drive"
-     if cif.measures.irSensor[0]> 3.0\
-        or cif.measures.irSensor[1]> 3.0\
-        or cif.measures.irSensor[2]> 3.0\
-        or cif.measures.irSensor[3]> 3.0:
-     #    print "Rotate"
-         cif.driveMotors(0.1,-0.1)
-     else:
-     #    print "Go"
-         cif.driveMotors(0.1,0.1)
-
+def float_of_string(str):
+    s = ""
+    for c in str:
+        if c==",":
+            s += "."
+        else:
+            s += c
+    # print "--" + s + "--"
+    return float(s)
