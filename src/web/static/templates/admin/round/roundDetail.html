@@ -155,6 +155,7 @@
                                 </td>
 
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'READY'" ng-click = "vm.startTrial(value.identifier)">Start</a>
+                                    <p ng-if="value.state == 'WAITING'">Waiting to Start</p>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>

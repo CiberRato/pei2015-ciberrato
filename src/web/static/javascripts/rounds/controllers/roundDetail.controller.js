@@ -515,7 +515,7 @@
                     theme: 'success'
                 });
                 $timeout(function(){
-                    reloadTrials();
+                    reloadTrial(identifier);
                 });
             }
 
@@ -545,6 +545,84 @@
                 });
             }
 
+        }
+
+        function reloadTrial(identifier){
+            setTimeout(function () {
+                $timeout(function(){
+                    Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                });
+            }, 1000);
+
+
+            function getTrialSuccessFn(data){
+                if (!(data.data.state === 'READY')) {
+                    vm.trial = data.data;
+                    updateState(identifier);
+                }
+            }
+
+            function getTrialErrorFn(data){
+                console.error(data.data);
+            }
+
+        }
+
+        function updateState(identifier){
+            for(var i =0; i<vm.trials.length; i++){
+                if(vm.trial.identifier === vm.trials[i].identifier){
+                    if(vm.trial.state !== vm.trials[i].state){
+                        vm.trials[i].state = vm.trial.state;
+                        console.log(vm.trials[i].state);
+                    }
+                }
+            }
+
+            setTimeout(function () {
+                Round.getTrial(identifier).then(getTrialNSuccessFn, getTrialErrorFn);
+            }, 1000);
+
+            function getTrialNSuccessFn(data){
+                if (!(data.data.state === 'READY')) {
+                    vm.trial = data.data;
+                    if(vm.trial.state === 'LOG' || vm.trial.state === 'ERROR'){
+                        updateState2(identifier);
+                    }else{
+                        updateState(identifier);
+
+                    }
+                }
+            }
+
+            function getTrialErrorFn(data){
+                console.error(data.data);
+            }
+        }
+
+        function updateState2(identifier) {
+            for (var i = 0; i < vm.trials.length; i++) {
+                if (vm.trial.identifier === vm.trials[i].identifier) {
+                    if (vm.trial.state !== vm.trials[i].state) {
+                        vm.trials[i].state = vm.trial.state;
+                        console.log(vm.trials[i].state);
+                    }
+                }
+            }
+
+            setTimeout(function () {
+                Round.getTrial(identifier).then(getTrialNSuccessFn, getTrialErrorFn);
+            }, 5000);
+
+            function getTrialNSuccessFn(data) {
+                if (!(data.data.state === 'READY' || data.data.state === 'LOG' || data.data.state === 'ERROR')) {
+                    vm.trial = data.data;
+                    updateState2(identifier);
+                }
+            }
+
+            function getTrialErrorFn(data) {
+                console.error(data.data);
+            }
         }
 
         function gridAssociate(grid, pos){
