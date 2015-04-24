@@ -562,11 +562,9 @@
                     $timeout(function(){
                         reloadTrials();
                     });
-                }else{
                     setTimeout(function () {
                         Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
-                    }, 1000);
-                }
+                    }, 5000);
             }
 
             function getTrialErrorFn(data){
