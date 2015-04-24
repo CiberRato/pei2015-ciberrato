@@ -103,6 +103,7 @@ def main():
 				robotID = r.attributes['Id'].value
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
+				print "[VIEWER] Robots Registered: " + str(checkedRobots)
 
 	starter_s.send("<RobotsRegistered/>")
 
