@@ -38,7 +38,7 @@ public:
 public:
 	unsigned int simTime, cycleTime;
 	unsigned int keyTime;
-
+	bool sync;
 	//Noise
 	double compassNoise, beaconNoise, obstacleNoise;
 	double motorsNoise;
