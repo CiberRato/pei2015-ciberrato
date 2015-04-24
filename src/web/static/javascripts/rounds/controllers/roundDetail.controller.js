@@ -556,7 +556,7 @@
 
 
             function getTrialSuccessFn(data){
-                if (data.data.state === 'STARTED' || data.data.state === 'WAITING') {
+                if (!(data.data.state === 'READY' || data.data.state === 'ERROR' || data.data.state === 'LOG')) {
                     vm.trial = data.data;
                     for(var i =0; i<vm.trials.length; i++){
                         if(vm.trial.identifier === vm.trials[i].identifier){
