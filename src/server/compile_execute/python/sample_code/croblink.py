@@ -27,7 +27,7 @@ class CRobLink:
         
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />'
         
-        self.sock.sendto(msg, (self.host, UDP_PORT))  # TODO consider host arg
+        self.sock.sendto(msg, (self.host, port_conn))  # TODO consider host arg
         data, (host,self.port) = self.sock.recvfrom(1024)
         #print "received message:", data, " port ", self.port
 
