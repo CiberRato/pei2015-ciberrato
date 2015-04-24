@@ -556,15 +556,12 @@
 
 
             function getTrialSuccessFn(data){
-                vm.i;
                 if (data.data.state === 'STARTED' || data.data.state === 'WAITING') {
                     vm.trial = data.data;
-                    for(vm.i =0; vm.i<vm.trials.length; vm.i++){
-                        if(vm.trial.identifier === vm.trials[vm.i].identifier){
-                            if(vm.trial.state !== vm.trials[vm.i].state){
-                                $timeout(function () {
-                                    vm.trials[vm.i].state = vm.trial.state;
-                                });
+                    for(var i =0; i<vm.trials.length; i++){
+                        if(vm.trial.identifier === vm.trials[i].identifier){
+                            if(vm.trial.state !== vm.trials[i].state){
+                                vm.trials[i].state = vm.trial.state;
                             }
 
                         }
