@@ -135,9 +135,7 @@ double  cbBeaconSensor::sensorAperture    = M_PI;
 
 void CommandLineError()
 {
-    QMessageBox::critical(0,"Error", 
-		    "SYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui]",
-		    QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
+    printf("\nSYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui] [-sync]\n");
     exit(1);
 }
 
