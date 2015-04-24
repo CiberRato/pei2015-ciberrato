@@ -515,7 +515,7 @@
                     theme: 'success'
                 });
                 $timeout(function(){
-                    reloadTrials();
+                    reloadTrial();
                 });
             }
 
@@ -543,6 +543,33 @@
                     life: 5000,
                     theme: 'btn-danger'
                 });
+            }
+
+        }
+
+        function reloadTrial(){
+            setTimeout(function () {
+                $timeout(function(){
+                    Round.getTrial(vm.identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                });
+            }, 1000);
+
+
+            function getTrialSuccessFn(data){
+                if (data.data.state === 'STARTED'){
+                    vm.trial = data.data;
+                    $timeout(function(){
+                        reloadTrials();
+                    });
+                }else{
+                    setTimeout(function () {
+                        Round.getTrial(vm.identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                    }, 1000);
+                }
+            }
+
+            function getTrialErrorFn(data){
+                console.error(data.data);
             }
 
         }
