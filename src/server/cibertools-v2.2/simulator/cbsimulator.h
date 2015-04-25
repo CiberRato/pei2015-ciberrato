@@ -187,6 +187,7 @@ protected: // data members
 	unsigned int curCycle;		// current simulation cycle
 	unsigned int endCycle;		// last simulation cycle
 	unsigned int cycle;			// length in miliseconds of a cycle
+    unsigned int poolCycleTime;
 	
 	cbLab *lab;					// the lab
 	cbGrid *grid;				// the grid
@@ -215,6 +216,7 @@ protected: // data members
 	double distMaxToTarget;
 
     QTimer timer;
+    QTimer poolChanges;
 
     bool allowRegistrations;
     bool showPositions;

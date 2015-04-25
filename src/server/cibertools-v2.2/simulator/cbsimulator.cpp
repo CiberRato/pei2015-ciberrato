@@ -1424,6 +1424,7 @@ void cbSimulator::processEditParameters(void)
 	cycle           = param->cycleTime;
 	endCycle        = param->simTime;
 	syncmode 		= param->sync;
+	poolCycleTime   = 50;
 
 	//Noise
 	cbMotor::noise         = param->motorsNoise;
@@ -1464,6 +1465,8 @@ void cbSimulator::processEditParameters(void)
     cbRobot::homeReward = param->homeReward;
 
     timer.setInterval(cycle);
+    // Pools for changes every poolCycleTime
+    poolChanges.setInterval(poolCycleTime);
 
     emit toggleGPS(param->GPSOn);
 
@@ -1578,8 +1581,12 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    timer.start(cycleTime());
-    QObject::connect(&timer,SIGNAL(timeout()),this,SLOT(step()));
+	if (!syncmode) {
+		timer.start(cycleTime());
+   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
+	}
+    poolChanges.start(poolCycleTime);
+    QObject::connect(&poolChanges, SIGNAL(timeout()), this, SLOT(readChanges()));
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)
