@@ -717,6 +717,11 @@ void cbSimulator::start()
         emit simRunning(true);
         emit simReset(false);
         step();
+        
+        if (!syncmode) {
+			timer.start(cycleTime());
+	   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
+		}
     }
 }
 
@@ -761,9 +766,9 @@ void cbSimulator::RobotActions()
 			if (action.sync) {
 				robot->setWaitingForSync(true);
 
-				if (syncmode && curState != INIT) {
+				if (syncmode && curState == RUNNING) {
 					bool stepSim = true;
-					for (unsigned int i=0; i<robots.size(); i++)
+					for (unsigned int i=0; i < robots.size(); i++)
 					{
 						cbRobot *robot = robots[i];
 						if (robot == 0) continue;
@@ -1601,10 +1606,6 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-	if (!syncmode) {
-		timer.start(cycleTime());
-   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
-	}
     poolChanges.start(poolCycleTime);
     QObject::connect(&poolChanges, SIGNAL(timeout()), this, SLOT(readChanges()));
 }
