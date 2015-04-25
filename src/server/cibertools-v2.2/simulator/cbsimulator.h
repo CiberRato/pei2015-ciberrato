@@ -143,6 +143,7 @@ public:
 	void startTimer(void);
 
 public slots:
+    void readChanges();
 	void step();
 	void reset();
 	void start();

@@ -558,12 +558,11 @@ const char *cbSimulator::curStateAsString()
 	return sas[curState];
 }
 
-void cbSimulator::step()
+void cbSimulator::readChanges() 
 {
 	//cout.form("Reading robot actions (%u)\n", curCycle);
 	RobotActions();
-	if(logging) 
-		RobotsToXml(*logStream, true, false);
+	
 	//cout.form("Checking new registrations (%u)\n", curCycle);
 	CheckIn();
 	//cout.form("Reading view commands (%u)\n", curCycle);
@@ -572,6 +571,12 @@ void cbSimulator::step()
 	// There's a PanelView to do that kind of actions.
 	//ViewCommands();
 	PanelCommands();
+}
+
+void cbSimulator::step()
+{
+	if(logging) 
+		RobotsToXml(*logStream, true, false);
 
 	if (curState == RUNNING)
 	{
@@ -746,7 +751,8 @@ void cbSimulator::RobotActions()
 				robot->requestSensor(action.sensorRequests[r]);
 			}
 
-			if (action.sayReceived)   robot->setSayMessage(action.sayMessage);
+			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
+			if (action.sync) 		  	robot->setWaitingForSync(true);
 
 			action.sensorRequests.clear();
 		}
