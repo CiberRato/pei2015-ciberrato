@@ -105,6 +105,8 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
 
         :type  agent_name: str
         :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
         :type  file_name: str
         :param file_name: The file name
         """
@@ -114,7 +116,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                             status=status.HTTP_400_BAD_REQUEST)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
-        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=request.GET.get('agent_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk', ''))
 
         if len(TeamMember.objects.filter(team=agent.team, account=request.user)) == 0:
             return Response({'status': 'Permission denied',
@@ -127,7 +129,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                             status=status.HTTP_400_BAD_REQUEST)
 
         file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent,
-            original_name=request.GET.get('file_name', ''))
+                                     original_name=request.GET.get('file_name', ''))
         file_obj.delete()
 
         return Response({'status': 'Deleted',
@@ -209,14 +211,8 @@ class GetAllAgentFiles(views.APIView):
 
 class GetAgentFilesSERVER(views.APIView):
     @staticmethod
-    def get(request, agent_name):
-        # agent_name
-        if 'team_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?team_name=<team_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+    def get(request, team_name, agent_name):
+        team = get_object_or_404(Team.objects.all(), name=team_name)
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         if len(AgentFile.objects.filter(agent=agent)) == 0:
@@ -240,14 +236,8 @@ class GetAgentFilesSERVER(views.APIView):
 
 class GetAgentFile(views.APIView):
     @staticmethod
-    def get(request, agent_name, file_name):
-        # agent_name
-        if 'team_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?team_name=<team_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+    def get(request, team_name, agent_name, file_name):
+        team = get_object_or_404(Team.objects.all(), name=team_name)
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         if len(AgentFile.objects.filter(agent=agent)) == 0:
