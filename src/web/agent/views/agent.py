@@ -204,7 +204,9 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             # call code validations
             try:
-                requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>", agent.agent_name))
+                requests.get(settings.TEST_CODE_ENDPOINT.replace("<agent_name>",
+                                                                 agent.agent_name).replace("<team_name>",
+                                                                                           agent.team.name))
                 agent.code_valid = False
                 agent.validation_result = "submitted"
             except requests.ConnectionError:
