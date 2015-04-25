@@ -41,7 +41,7 @@
         function activate() {
             Round.getTrials(vm.roundName, vm.competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
             Round.getRound(vm.roundName, vm.competitionName).then(getRoundSuccessFn, getRoundErrorFn);
-            Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
+            Round.getFiles(vm.roundName, vm.competitionName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
 
             function getTrialsSuccessFn(data) {
