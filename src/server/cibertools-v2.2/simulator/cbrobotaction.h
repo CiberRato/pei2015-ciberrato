@@ -36,9 +36,19 @@ using std::vector;
 class cbRobotAction
 {
 public:
-    cbRobotAction(){leftMotor=0.0;rightMotor=0.0;endLed=false;returningLed=false;
-                    leftMotorChanged=false;rightMotorChanged=false;
-                    endLedChanged=false;returningLedChanged=false;visitingLedChanged=false;}
+    cbRobotAction()
+    {
+        leftMotor=0.0;
+        rightMotor=0.0;
+        endLed=false;
+        returningLed=false;
+        leftMotorChanged=false;
+        rightMotorChanged=false;
+        endLedChanged=false;
+        returningLedChanged=false;
+        visitingLedChanged=false; 
+        sync=false;
+    }
 
     void reset(void);
 
@@ -47,7 +57,7 @@ public: // data members
 	bool endLed, returningLed, visitingLed;
 	bool leftMotorChanged, rightMotorChanged, 
              endLedChanged, returningLedChanged, 
-             visitingLedChanged, sayReceived;
+             visitingLedChanged, sayReceived, sync;
 
 	vector<QString> sensorRequests;
 
