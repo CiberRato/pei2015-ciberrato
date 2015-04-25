@@ -31,7 +31,7 @@
             $scope.parameters_obj = log.data.Parameters;
             $scope.lab_obj = log.data.Lab;
             $scope.grid_obj = log.data.Grid;
-            console.log($scope.grid_obj);
+            console.log($scope.logInfo_obj);
 
             showViewer();
         }
@@ -138,6 +138,44 @@
                 ctx1.fill();
             }
         }
+
+        $scope.drawRobots=function(){
+            ctx2.clearRect(0, 0, c2.width, c2.height);
+            var i;
+            if($scope.numRobots==1){
+
+
+            }
+            else {
+                for (i = 0; i < $scope.robot.length; i++) {
+                    ctx2.beginPath();
+                    ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI);
+                    ctx2.fillStyle = $scope.circleBorder;
+                    ctx2.fill();
+                    ctx2.stroke();
+
+                    /*if($scope.robot[i].Scores._Collision=='True'){
+
+                     }
+                     else{
+                     var imageObj = new Image();
+
+                     //draw the image
+                     imageObj.onload = function() {
+                     ctx1.drawImage(imageObj, $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2, $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2, $scope.zoom,$scope.zoom);
+                     };
+                     imageObj.src = $scope.robotColor[i];
+                     ctx1.fill();
+                     ctx1.stroke();
+                     //drawImageRot($scope.robotColor[i],($scope.robot[i].Pos._X*$scope.zoom-$scope.zoom/2),($scope.robot[i].Pos._Y*$scope.zoom-$scope.zoom/2), $scope.zoom,$scope.zoom,$scope.dir[i]);
+                     }
+                     */
+
+                }
+            }
+
+        }
+
         function doIt() {
             c1.width=$scope.zoom * $scope.lab_obj._Width;
             c1.height=$scope.zoom * $scope.lab_obj._Height;
@@ -145,6 +183,8 @@
             c2.height=$scope.zoom * $scope.lab_obj._Height;
             ctx1.translate(0, $scope.zoom * $scope.lab_obj._Height);
             ctx1.scale(1, -1);
+            ctx2.translate(0, $scope.zoom * $scope.lab_obj._Height);
+            ctx2.scale(1, -1);
 
             $scope.velButton = '1x';
 
@@ -269,6 +309,7 @@
 
 
             $scope.drawMap();
+            $scope.drawRobots();
 
             $scope.activeV = function (str) {
                 if (str == '1x') {
@@ -327,6 +368,7 @@
 
             /* Update Viewer Values */
             $scope.updateValues = function () {
+                $scope.drawRobots();
                 $scope.robot = $scope.log[$scope.idx].LogInfo.Robot;
                 $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 
