@@ -209,12 +209,15 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the teams available to compete in the round
-        B{URL:} ../api/v1/competitions/round_teams/<round_name>/
+        B{URL:} ../api/v1/competitions/round_teams/<round_name>/?competition_name=<competition_name>
 
         :type  round_name: str
         :param round_name: The round name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_teams = [agent.agent.team for agent in competition_agents]
         serializer = self.serializer_class(competition_teams, many=True)
@@ -232,12 +235,15 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the files uploaded to the round
-        B{URL:} ../api/v1/competitions/round_files/<round_name>/
+        B{URL:} ../api/v1/competitions/round_files/<round_name>/?competition_name=<competition_name>
 
         :type  round_name: str
         :param round_name: The round name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
 
         class RFile:
             def __init__(self, f):
