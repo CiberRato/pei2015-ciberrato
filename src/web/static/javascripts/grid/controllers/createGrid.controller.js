@@ -74,12 +74,18 @@
             }
 
             function createErrorFn(data){
-                console.error(data.data);
-                $.jGrowl(data.data.message, {
-                    life: 2500,
+                var errors = "";
+                for (var value in data.data.message) {
+                    errors += "&bull;" + value.replace("_", " ") + ":<br/>"
+                    for (var error in data.data.message[value]){
+                        errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
                     theme: 'btn-danger'
                 });
-                $route.reload();
+
             }
         }
 

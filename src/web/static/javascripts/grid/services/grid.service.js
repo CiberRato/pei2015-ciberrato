@@ -38,10 +38,11 @@
             return $http.get("/api/v1/competitions/agent_grid/"+identifier+"/");
         }
 
-        function associateAgent(agent_name, identifier, pos){
+        function associateAgent(agent_name, identifier, pos, teamName){
             return $http.post('/api/v1/competitions/agent_grid/', {
                 grid_identifier: identifier,
                 agent_name: agent_name,
+                team_name: teamName,
                 position: pos
             });
         }

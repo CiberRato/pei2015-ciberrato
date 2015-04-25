@@ -57,12 +57,12 @@
                                                             ng-class="{'selected': vm.models.selected === item}"
                                                             dnd-disable-if="true"
                                                                 >
-                                                            {{item.pos}} - {{item.label}} <button type="button" class="close" ng-click="vm.disassociate(item.pos)">×</button>
+                                                            {{item.pos}} - {{item.label}} <button type="button" class="close" ng-click="vm.disassociate(item.pos, value.team_name)">×</button>
 
                                                         </li>
                                                         <li ng-if="listName == 'Available'" ng-repeat="item in list"
                                                             dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1); vm.associate(item.label);"
+                                                            dnd-moved="list.splice($index, 1); vm.associate(item.label, value.team_name);"
                                                             dnd-effect-allowed="move"
                                                             dnd-selected="vm.models.selected = item"
                                                             ng-class="{'selected': vm.models.selected === item}"

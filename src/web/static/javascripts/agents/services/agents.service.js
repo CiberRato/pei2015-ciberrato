@@ -40,37 +40,38 @@
             return $http.get('/api/v1/agents/agents_by_user/' + username + '/');
         }
 
-        function getAgent(name){
-            return $http.get('/api/v1/agents/agent/' + name + '/');
+        function getAgent(name, teamName){
+            return $http.get('/api/v1/agents/agent/' + name + '/?team_name=' + teamName);
 
         }
 
-        function upload(agentName, value){
+        function upload(agentName, value, teamName){
             var fd = new FormData();
             fd.append('file', value);
 
-            return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName, fd, {
+            return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName + '&team_name=' + teamName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             });
         }
 
-        function validateAgent(agentName){
+        function validateAgent(agentName, teamName){
             return $http.post("/api/v1/agents/validate_code/", {
-                agent_name: agentName
+                agent_name: agentName,
+                team_name: teamName
             });
         }
 
-        function destroy(agentName){
-            return $http.delete("/api/v1/agents/agent/"+ agentName +"/");
+        function destroy(agentName, teamName){
+            return $http.delete("/api/v1/agents/agent/"+ agentName + '/?team_name=' + teamName);
         }
 
-        function getFiles(agentName){
-            return $http.get("/api/v1/agents/agent_files/" + agentName + "/");
+        function getFiles(agentName, teamName){
+            return $http.get("/api/v1/agents/agent_files/" + agentName + '/?team_name=' + teamName);
         }
 
-        function deleteUpload(agentName, fileName){
-            return $http.delete('/api/v1/agents/delete_agent_file/' + agentName + '/?file_name=' +fileName);
+        function deleteUpload(agentName, fileName, teamName){
+            return $http.delete('/api/v1/agents/delete_agent_file/' + agentName + '/?file_name=' +fileName + '&team_name=' +teamName);
         }
 
         function associate(competitionName, agentName){
@@ -80,8 +81,8 @@
             });
         }
 
-        function deleteAgent(agentName){
-            return $http.delete("/api/v1/agents/agent/" + agentName + "/");
+        function deleteAgent(agentName, teamName){
+            return $http.delete("/api/v1/agents/agent/" + agentName + '/?team_name=' + teamName);
         }
 
         function getLanguages(){
