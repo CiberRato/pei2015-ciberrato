@@ -1022,7 +1022,6 @@ class AuthenticationTestCase(TestCase):
             r.param_list_path.delete()
             r.grid_path.delete()
 
-
         # delete the agent associated
         url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=1"
         response = client.delete(path=url)

@@ -94,7 +94,7 @@ class Agent(models.Model):
     user = models.ForeignKey(Account, blank=False)
     team = models.ForeignKey(Team, blank=False)
 
-    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES, max_length=100, default="Python")
+    language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES+(('Unknown', 'Unknown'),), max_length=100, default="Python")
 
     code_valid = models.BooleanField(default=False)
     validation_result = models.CharField(max_length=512)
