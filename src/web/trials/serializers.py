@@ -28,6 +28,7 @@ class AgentXSerializer(serializers.BaseSerializer):
             return {
                 'agent_type': instance.agent_type,
                 'agent_name': instance.agent_name,
+                'team_name': instance.team_name,
                 'pos': instance.pos,
                 'language': instance.language
             }
@@ -35,6 +36,7 @@ class AgentXSerializer(serializers.BaseSerializer):
             return {
                 'agent_type': instance.agent_type,
                 'agent_name': instance.agent_name,
+                'team_name': instance.team_name,
                 'pos': instance.pos,
                 'language': instance.language,
                 'files': instance.files
