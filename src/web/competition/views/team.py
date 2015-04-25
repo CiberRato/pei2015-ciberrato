@@ -11,7 +11,7 @@ from teams.permissions import IsAdminOfTeam
 
 from ..permissions import IsStaff
 from .simplex import RoundSimplex, TeamEnrolledSimplex
-from ..models import Competition, Round, TeamEnrolled
+from ..models import Competition, Round, TeamEnrolled, Agent
 from ..serializers import RoundSerializer, TeamEnrolledSerializer, TeamEnrolledOutputSerializer, \
     CompetitionSerializer
 
@@ -300,6 +300,11 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
                 return Response({'status': 'Bad request',
                                  'message': 'The team already enrolled.'},
                                 status=status.HTTP_400_BAD_REQUEST)
+
+            # if the competition allow remote agents let's create a remote agent for the team
+            if competition.allow_remote_agents:
+                if Agent.objects.filter(agent_name="Remote", is_remote=True).count() == 0:
+                    Agent.objects.create(agent_name="Remote", user=request.user, is_remote=True, team=team)
 
             return Response({'status': 'Created',
                              'message': 'The team has enrolled.'},
