@@ -110,34 +110,6 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         return Response(status=status.HTTP_200_OK)
 
 
-class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Round.objects.all()
-    serializer_class = AdminRoundSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(), IsStaff(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the round competition for the admin
-        B{URL:} ../api/v1/competitions/round_admin/<round_name>/?competition_name=<competition_name>
-
-        :type  round_name: str
-        :param round_name: The round name
-        :type  competition_name: str
-        :param competition_name: The competition name
-        """
-        if 'competition_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?competition_name=<competition_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
-        serializer = self.serializer_class(RoundSimplex(r))
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CompetitionAgent.objects.all()
     serializer_class = RoundAgentSerializer
@@ -169,34 +141,7 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = CompetitionAgent.objects.all()
-    serializer_class = AccountSerializer
 
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the participants available to compete in the round
-        B{URL:} ../api/v1/competitions/round_participants/<round_name>/?competition_name=<competition_name>
-
-        :type  round_name: str
-        :param round_name: The round name
-        :type  competition_name: str
-        :param competition_name: The competition name
-        """
-        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
-        competition_agents = CompetitionAgent.objects.filter(round=r)
-        competition_teams = [agent.agent.team for agent in competition_agents]
-        accounts = []
-        for team in competition_teams:
-            team_members = TeamMember.objects.filter(team=team)
-            accounts += [team_member.account for team_member in team_members]
-        serializer = self.serializer_class(accounts, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

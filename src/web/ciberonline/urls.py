@@ -10,8 +10,8 @@ from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, Ma
 from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
     CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledTeamsViewSet, ToggleTeamValid, \
     MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet
-from competition.views.round import AgentsRound, RoundParticipants, RoundTeams, RoundViewSet, RoundViewAdminSet, \
-    RoundFile
+from competition.views.round import AgentsRound, RoundTeams, RoundViewSet, RoundFile
+
 from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
     TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
@@ -75,9 +75,7 @@ router_competitions.register(r'team_enrolled_competitions', GetEnrolledTeamCompe
 router_competitions.register(r'toggle_team_inscription', ToggleTeamValid)
 # Round
 router_competitions.register(r'round', RoundViewSet)
-router_competitions.register(r'round_admin', RoundViewAdminSet)
 router_competitions.register(r'round_agents', AgentsRound)
-router_competitions.register(r'round_participants', RoundParticipants)
 router_competitions.register(r'round_teams', RoundTeams)
 router_competitions.register(r'round_files', RoundFile)
 # Trial
