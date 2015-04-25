@@ -72,7 +72,13 @@ class UploadRoundXMLView(views.APIView):
                              'message': 'Please provide the ?round=*round_name*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''))
+        if 'competition_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the &competition_name=*competition_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), competition=competition)
 
         return self.file_save_xml(request.data.get('file', ''), r, request)
 
@@ -102,11 +108,33 @@ class UploadRoundXMLView(views.APIView):
 
 class UploadParamListView(UploadRoundXMLView):
     def __init__(self):
+        """
+        B{Retrieve} the round files
+        B{URL:} ../api/v1/competitions/round/upload/param_list/?round=<round_name>&competition_name=<competition_name>
+
+        Upload Param List
+
+        :type  competition_name: str
+        :param competition_name: The agent name
+        :type  round_name: str
+        :param round_name: The team name
+        """
         UploadRoundXMLView.__init__(self, "param_list_path", "param_list")
 
 
 class UploadGridView(UploadRoundXMLView):
     def __init__(self):
+        """
+        B{Retrieve} the round files
+        B{URL:} ../api/v1/competitions/round/upload/grid/?round=<round_name>&competition_name=<competition_name>
+
+        Upload grid
+
+        :type  competition_name: str
+        :param competition_name: The agent name
+        :type  round_name: str
+        :param round_name: The team name
+        """
         UploadRoundXMLView.__init__(self, "grid_path", "grid")
 
 
