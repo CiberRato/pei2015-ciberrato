@@ -15,8 +15,6 @@
         var ctx1 = c1.getContext("2d");
         var c2 = document.getElementById("layer2");
         var ctx2 = c2.getContext("2d");
-
-
         
         var identifier = $routeParams.identifier;
 
@@ -141,35 +139,80 @@
 
         $scope.drawRobots=function(){
             ctx2.clearRect(0, 0, c2.width, c2.height);
-            var i;
-            if($scope.numRobots==1){
 
+            var i;
+            var x;
+            var y;
+            var color;
+            var dir;
+            if($scope.numRobots==1){
+                ctx2.beginPath();
+                ctx2.arc($scope.robot.Pos._X * $scope.zoom, $scope.robot.Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                ctx2.fillStyle = "rgba(0, 0, 0, 0.0)";
+                ctx2.lineWidth = 1;
+                ctx2.strokeStyle = $scope.circleBorder;
+                ctx2.stroke();
+                if($scope.robot.Scores._Collision=='True'){
+                    x =  $scope.robot.Pos._X * $scope.zoom - $scope.zoom/2;
+                    y =  $scope.robot.Pos._Y * $scope.zoom - $scope.zoom/2;
+                    dir = $scope.dir[0];
+                    ctx2.save();
+                    ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
+                    ctx2.rotate(dir * Math.PI/180);
+                    ctx2.drawImage($scope.blackmouse, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
+                    ctx2.fill();
+                    ctx2.stroke();
+                    ctx2.restore();
+                }
+                else{
+                    x =  $scope.robot.Pos._X * $scope.zoom - $scope.zoom/2;
+                    y =  $scope.robot.Pos._Y * $scope.zoom - $scope.zoom/2;
+                    color = $scope.mickeyColor[0];
+                    dir = $scope.dir[0];
+                    ctx2.save();
+                    ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
+                    ctx2.rotate(dir * Math.PI/180);
+                    ctx2.drawImage(color, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
+                    ctx2.fill();
+                    ctx2.stroke();
+                    ctx2.restore();
+                }
 
             }
             else {
                 for (i = 0; i < $scope.robot.length; i++) {
                     ctx2.beginPath();
-                    ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI);
-                    ctx2.fillStyle = $scope.circleBorder;
-                    ctx2.fill();
+                    ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                    ctx2.fillStyle = "rgba(0, 0, 0, 0.0)";
+                    ctx2.lineWidth = 1;
+                    ctx2.strokeStyle = $scope.circleBorder;
                     ctx2.stroke();
+                    if($scope.robot[i].Scores._Collision=='True'){
+                        x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
+                        y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
+                        dir = $scope.dir[i];
+                        ctx2.save();
+                        ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
+                        ctx2.rotate(dir * Math.PI/180);
+                        ctx2.drawImage($scope.blackmouse, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
+                        ctx2.fill();
+                        ctx2.stroke();
+                        ctx2.restore();
+                    }
+                    else{
+                        x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
+                        y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
+                        color = $scope.mickeyColor[i];
+                        dir = $scope.dir[i];
+                        ctx2.save();
+                        ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
+                        ctx2.rotate(dir * Math.PI/180);
+                        ctx2.drawImage(color, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
+                        ctx2.fill();
+                        ctx2.stroke();
+                        ctx2.restore();
+                    }
 
-                    /*if($scope.robot[i].Scores._Collision=='True'){
-
-                     }
-                     else{
-                     var imageObj = new Image();
-
-                     //draw the image
-                     imageObj.onload = function() {
-                     ctx1.drawImage(imageObj, $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2, $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2, $scope.zoom,$scope.zoom);
-                     };
-                     imageObj.src = $scope.robotColor[i];
-                     ctx1.fill();
-                     ctx1.stroke();
-                     //drawImageRot($scope.robotColor[i],($scope.robot[i].Pos._X*$scope.zoom-$scope.zoom/2),($scope.robot[i].Pos._Y*$scope.zoom-$scope.zoom/2), $scope.zoom,$scope.zoom,$scope.dir[i]);
-                     }
-                     */
 
                 }
             }
@@ -253,8 +296,22 @@
             $scope.idx = 1;
             $scope.last_idx = 0;
 
+            $scope.blackmouse = new Image();
+            $scope.blackmouse.src = 'static/img/svg/mickey_black_smile.png';
+            var redmouse = new Image();
+            redmouse.src = 'static/img/svg/mickey_red_smile.png';
+            var bluemouse = new Image();
+            bluemouse.src = 'static/img/svg/mickey_blue_smile.png';
+            var yellowmouse = new Image();
+            yellowmouse.src = 'static/img/svg/mickey_yellow_smile.png';
+            var orangmouse = new Image();
+            orangmouse.src = 'static/img/svg/mickey_orange_smile.png';
+            var greenmouse = new Image();
+            greenmouse.src = 'static/img/svg/mickey_green_smile.png';
+
             /* Set Robots Colors */
-            $scope.mickeyColor = ['static/img/svg/mickey_red_smile.svg', 'static/img/svg/mickey_green_smile.svg', 'static/img/svg/mickey_blue_smile.svg', 'static/img/svg/mickey_yellow_smile.svg', 'static/img/svg/mickey_orange_smile.svg'];
+            $scope.mickeyColor = [redmouse, greenmouse, bluemouse, yellowmouse, orangmouse];
+            $scope.mickeys =['static/img/svg/mickey_red_smile.png','static/img/svg/mickey_green_smile.png','static/img/svg/mickey_blue_smile.png','static/img/svg/mickey_yellow_smile.png','static/img/svg/mickey_orange_smile.png'];
 
             /* Set Line Colors */
             $scope.lColor = ['#E04F5F', '#5FBF60', '#29BAF7', '#eaea3d', '#f28d14'];
@@ -306,7 +363,6 @@
                     }
                 }
             }
-
 
             $scope.drawMap();
             $scope.drawRobots();
