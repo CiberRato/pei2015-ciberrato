@@ -134,13 +134,18 @@ class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericView
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of competitions that agent is associated
-        B{URL:} ../api/v1/agents/agent_competitions/<agent_name>/
+        B{URL:} ../api/v1/agents/agent_competitions/<agent_name>/?team_name=<team_name>
 
         :type  agent_name: str
         :param agent_name: The agent name
         """
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        agent = get_object_or_404(Agent.objects.all(), username=kwargs.get('pk'))
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'), team=team)
         serializer = self.serializer_class([ac.competition for ac in agent.competitionagent_set], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -158,13 +163,17 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
         B{POST} validate code
         B{URL:} ../api/v1/agents/validate_code/
 
+        :type  team_name: str
+        :param team_name: The team name
         :type  agent_name: str
         :param agent_name: The agent name
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            agent = get_object_or_404(Agent.objects.all(), team=team,
+                                      agent_name=serializer.validated_data['agent_name'])
 
             if len(TeamMember.objects.filter(team=agent.team, account=request.user)) == 0:
                 return Response({'status': 'Permission denied',
@@ -202,6 +211,8 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         :type  agent_name: str
         :param agent_name: The agent name
 
+        :type  team_name: str
+        :param team_name: The team name
         :type  code_valid: bool
         :param code_valid: True or False
         :type  validation_result: str
@@ -210,7 +221,8 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'), team=team)
 
             agent.code_valid = serializer.validated_data['code_valid']
             agent.validation_result = serializer.validated_data['validation_result']

@@ -200,8 +200,9 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            agent = get_object_or_404(Agent.objects.all(), team_name=serializer.validated_data['team_name'],
-                agent_name=serializer.validated_data['agent_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            agent = get_object_or_404(Agent.objects.all(), team=team,
+                                      agent_name=serializer.validated_data['agent_name'])
 
             if agent.team not in request.user.teams.all():
                 return Response({'status': 'Bad Request',
@@ -209,7 +210,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
 
             grid = get_object_or_404(GridPositions.objects.all(),
-                identifier=serializer.validated_data['grid_identifier'])
+                                     identifier=serializer.validated_data['grid_identifier'])
 
             agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
 
@@ -333,14 +334,17 @@ class AgentRemoteGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         :type  grid_identifier: str
         :param grid_identifier: The grid identifier
+        :type  team_name: str
+        :param team_name: The team name
         :type  position: Integer
         :type  position: The agent position
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-
-            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            agent = get_object_or_404(Agent.objects.all(), team=team,
+                                      agent_name=serializer.validated_data['agent_name'])
 
             if agent.team not in request.user.teams.all():
                 return Response({'status': 'Bad Request',
@@ -348,7 +352,7 @@ class AgentRemoteGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
 
             grid = get_object_or_404(GridPositions.objects.all(),
-                identifier=serializer.validated_data['grid_identifier'])
+                                     identifier=serializer.validated_data['grid_identifier'])
 
             agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
 
