@@ -91,7 +91,7 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 	else if (tag == "Say") {
 	}
 	else if (tag == "Sync") {
-		sync = true;
+		action.sync = true;
 	}
     return TRUE;
 }
