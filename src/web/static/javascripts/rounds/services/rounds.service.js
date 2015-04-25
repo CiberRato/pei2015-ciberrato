@@ -41,43 +41,44 @@
             });
         }
 
-        function uploadParamList(roundName, value){
+        function uploadParamList(roundName, value, competitionName){
             var fd = new FormData();
             fd.append('file', value);
 
-            return $http.post('/api/v1/competitions/round/upload/param_list/?round=' + roundName, fd, {
+            return $http.post('/api/v1/competitions/round/upload/param_list/?round=' + roundName + '&competition_name=' + competitionName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             });
         }
 
-        function uploadGrid(roundName, value){
+        function uploadGrid(roundName, value, competitionName){
             var fd = new FormData();
             fd.append('file', value);
 
-            return $http.post('/api/v1/competitions/round/upload/grid/?round=' + roundName, fd, {
+            return $http.post('/api/v1/competitions/round/upload/grid/?round=' + roundName + '&competition_name=' + competitionName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             });
         }
 
-        function uploadLab(roundName, value){
+        function uploadLab(roundName, value, competitionName){
             var fd = new FormData();
             fd.append('file', value);
 
-            return $http.post('/api/v1/competitions/round/upload/lab/?round=' + roundName, fd, {
+            return $http.post('/api/v1/competitions/round/upload/lab/?round=' + roundName + '&competition_name=' + competitionName, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined}
             });
         }
 
-        function getTrials(roundName){
-            return $http.get("/api/v1/competitions/trials_by_round/" + roundName + "/");
+        function getTrials(roundName, competitionName){
+            return $http.get("/api/v1/competitions/trials_by_round/" + roundName + "/?competition_name=" + competitionName);
         }
 
-        function createTrial(roundName){
+        function createTrial(roundName, competitionName){
             return $http.post("/api/v1/competitions/trial/", {
-                round_name: roundName
+                round_name: roundName,
+                competition_name: competitionName
             });
         }
         function getGrids(competitionName){
@@ -113,12 +114,12 @@
             })
         }
 
-        function getRound(roundName){
-            return $http.get('/api/v1/competitions/round/' + roundName + '/');
+        function getRound(roundName, competitionName){
+            return $http.get('/api/v1/competitions/round/' + roundName + '/?competition_name=' + competitionName);
         }
 
-        function destroy(roundName){
-            return $http.delete("/api/v1/competitions/round/" + roundName + "/");
+        function destroy(roundName, competitionName){
+            return $http.delete("/api/v1/competitions/round/" + roundName + "/?competition_name=" + competitionName);
         }
 
         function removeTrial(identifier){
@@ -129,8 +130,8 @@
             return $http.get("/api/v1/competitions/trial/" + identifier + "/");
         }
 
-        function getFiles(roundName){
-            return $http.get("/api/v1/competitions/round_files/" + roundName + "/");
+        function getFiles(roundName, competitionName){
+            return $http.get("/api/v1/competitions/round_files/" + roundName + "/?competition_name=" + competitionName);
         }
 
         function saveScore(identifier, team, score, agents, time){
@@ -147,8 +148,8 @@
             return $http.get("/api/v1/competitions/ranking_trial/" + identifier + "/");
         }
 
-        function getScoresByRound(name){
-            return $http.get("/api/v1/competitions/ranking_round/" + name +"/")
+        function getScoresByRound(name, competitionName){
+            return $http.get("/api/v1/competitions/ranking_round/" + name +"/?competition_name=" + competitionName)
         }
 
         function updateScore(identifier, team, score, agents, time){

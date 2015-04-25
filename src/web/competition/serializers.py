@@ -136,11 +136,12 @@ class RoundAgentSerializer(serializers.ModelSerializer):
 
 class TrialSerializer(serializers.ModelSerializer):
     round_name = serializers.CharField(max_length=128)
+    competition_name = serializers.CharField(max_length=128)
     state = serializers.CharField(max_length=128, read_only=True)
 
     class Meta:
         model = Trial
-        fields = ('identifier', 'round_name', 'state', 'errors', 'created_at', 'updated_at',)
+        fields = ('identifier', 'round_name', 'competition_name', 'state', 'errors', 'created_at', 'updated_at',)
         read_only_fields = ('identifier', 'state', 'errors', 'created_at', 'updated_at',)
 
 
