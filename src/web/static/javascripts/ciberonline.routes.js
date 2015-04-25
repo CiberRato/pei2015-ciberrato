@@ -169,7 +169,7 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/livePastCompetitions.html',
             title: 'Past Competitions'
-        }).when('/admin/:name/roundDetail',{
+        }).when('/admin/:competitionName/:name/roundDetail',{
             controller:'DetailRoundController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/round/roundDetail.html',

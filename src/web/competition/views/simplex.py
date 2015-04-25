@@ -29,6 +29,7 @@ class CompetitionAgentSimplex:
 class TrialSimplex:
     def __init__(self, ss):
         self.round_name = ss.round.name
+        self.competition_name = ss.round.parent_competition.name
         self.identifier = ss.identifier
         self.errors = ss.errors
         self.created_at = ss.created_at

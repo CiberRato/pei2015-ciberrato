@@ -70,7 +70,7 @@ class TeamEnrolled(models.Model):
 
 
 class Round(models.Model):
-    name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word, MinLengthValidator(1)])
+    name = models.CharField(max_length=128, blank=False, validators=[validate_word, MinLengthValidator(1)])
 
     parent_competition = models.ForeignKey(Competition, blank=False)
 
@@ -82,6 +82,7 @@ class Round(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        unique_together = ('name', 'parent_competition',)
         ordering = ['created_at']
         get_latest_by = "created_at"
 
