@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('ciberonline.competitions.controllers')
+        .module('cibexxnline.competitions.controllers')
         .controller('PastCompetitionsController', PastCompetitionsController);
 
     PastCompetitionsController.$inject = ['$location', 'Competition'];

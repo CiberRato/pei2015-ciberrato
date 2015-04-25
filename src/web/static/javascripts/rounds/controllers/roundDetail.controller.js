@@ -29,6 +29,7 @@
         vm.destroy = destroy;
         vm.removeTrial = removeTrial;
         vm.uploadAll = uploadAll;
+        vm.change = change;
 
         vm.getTrialGrids = getTrialGrids;
         vm.Available = [];
@@ -826,6 +827,29 @@
                 $location.path('/panel/');
             }
 
+        }
+
+        function change() {
+            Competition.changeState(vm.competitionName, 'Competition').then(changeStateSuccessFn, changeStateErrorFn);
+
+            function changeStateSuccessFn() {
+                $.jGrowl("State of Competition \"" + vm.competitionName + "\" has been changed to Competition.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function () {
+                    vm.competition.state_of_competition = "Competition"
+                });
+            }
+
+            function changeStateErrorFn(data) {
+                console.error(data.data);
+                $.jGrowl(data.data.message, {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $location.path('/panel/');
+            }
         }
 
 

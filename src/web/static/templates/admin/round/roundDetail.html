@@ -159,7 +159,9 @@
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition != 'Competition'">Change State of Competition</td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Register'"><a href="#" ng-click="vm.change()">Change State of Competition</a></td>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Past'">Competition ended!</td>
+
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getTrialGrids(); vm.getScoresByTrial()" href="#addScores">Manage Scores</a>
                                     <div class="modal fade"  id="addScores">
                                         <div class="modal-header">
