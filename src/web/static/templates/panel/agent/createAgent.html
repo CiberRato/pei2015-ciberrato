@@ -43,16 +43,7 @@
                                             </div>
                                         </div>
                                         <div  class="control-group">
-                                            <label class="control-label" for="type">Type of the Agent, Is Local?</label>
-                                            <div class="controls">
-                                                <select id="type" name="option">
-                                                    <option value="false">No (can upload code)</option>
-                                                    <option value="true">Yes (can't upload code)</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div  class="control-group">
-                                            <label class="control-label" for="type">Language of the Agent</label>
+                                            <label class="control-label">Language of the Agent</label>
                                             <div class="controls">
                                                 <select id="selector_language">
                                                     <option ng-repeat="(key, value) in vm.languages" value="{{value.value}}">{{value.name}}</option>
