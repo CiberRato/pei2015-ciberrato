@@ -27,7 +27,7 @@
                                 <td><a href="panel/{{ value.name }}/editTeam">{{ value.name }}</a></td>
                                 <td>{{value.allmembers}}</td>
                                 <td>{{value.max_members}}</td>
-                                <td ng-if="value.allAgents == 0">This team doesn't have any agent</td>
+                                <td ng-if="value.allAgents == 0"><a href="panel/createAgent">Create First Agent Of this team</a></td>
                                 <td ng-if="value.allAgents != 0"><a href="panel/{{value.name}}/allAgents">Agents</a></td>
                                 <td><a ng-click="vm.destroy(value.name)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
