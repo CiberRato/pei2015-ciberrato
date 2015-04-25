@@ -116,6 +116,7 @@ cbSimulator::cbSimulator()
 	curCycle = 0;
     endCycle = 3000; // provisório
 	cycle = 50;
+	poolCycleTime = 50;
 
 	curState = nextState = INIT;
 
@@ -187,6 +188,8 @@ cbSimulator::cbSimulator()
 
     setRegistrations(true);
     setShowPositions(false);
+
+    poolChanges.setInterval(poolCycleTime);
 }
 
 cbSimulator::~cbSimulator()
@@ -529,6 +532,8 @@ bool cbSimulator::registerRobot(cbRobot *robot)
         lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
 
     emit robotRegistered((int) id);
+	UpdateState();
+
 	return true;
 }
 
@@ -571,6 +576,24 @@ void cbSimulator::readChanges()
 	// There's a PanelView to do that kind of actions.
 	//ViewCommands();
 	PanelCommands();
+
+	if (syncmode && curState != INIT) {
+		bool stepSim = true;
+		for (unsigned int i=0; i<robots.size(); i++)
+		{
+			cbRobot *robot = robots[i];
+			if (robot == 0) continue;
+	        if (!robot->getWaitingForSync()) {
+	        	stepSim = false;
+	        	break;
+	        }	        
+		}
+		if (stepSim) {
+	        printf("Sttped\n");
+	       	step();
+	    }
+	}
+	
 }
 
 void cbSimulator::step()
@@ -711,6 +734,7 @@ void cbSimulator::start()
         nextState = RUNNING;
         emit simRunning(true);
         emit simReset(false);
+        step();
     }
 }
 
@@ -1424,7 +1448,6 @@ void cbSimulator::processEditParameters(void)
 	cycle           = param->cycleTime;
 	endCycle        = param->simTime;
 	syncmode 		= param->sync;
-	poolCycleTime   = 50;
 
 	//Noise
 	cbMotor::noise         = param->motorsNoise;
@@ -1466,7 +1489,6 @@ void cbSimulator::processEditParameters(void)
 
     timer.setInterval(cycle);
     // Pools for changes every poolCycleTime
-    poolChanges.setInterval(poolCycleTime);
 
     emit toggleGPS(param->GPSOn);
 
