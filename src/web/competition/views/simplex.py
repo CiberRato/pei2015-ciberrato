@@ -42,6 +42,8 @@ class TrialSimplex:
             self.state = "STARTED"
         elif trial_waiting(ss):
             self.state = "WAITING"
+        elif trial_prepare(ss):
+            self.state = "PREPARE"
         else:
             self.state = "READY"
 

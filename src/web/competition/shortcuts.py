@@ -2,6 +2,10 @@ def trial_started(trial):
     return trial.started
 
 
+def trial_prepare(trial):
+    return trial.prepare
+
+
 def trial_waiting(trial):
     return trial.waiting
 
@@ -18,4 +22,4 @@ def trial_error(trial):
 
 
 def trial_not_started(trial):
-    return not trial_waiting(trial) and not trial_done(trial) and not trial_started(trial)
+    return not trial_waiting(trial) and not trial_done(trial) and not trial_started(trial) and not trial_prepare(trial)

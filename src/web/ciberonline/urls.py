@@ -13,14 +13,14 @@ from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, Compe
 from competition.views.round import AgentsRound, RoundTeams, RoundViewSet, RoundFile
 
 from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
-    TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet
+    TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet, PrepareTrial
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition
 
-from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors
+from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation
@@ -104,6 +104,9 @@ router_trials = routers.SimpleRouter()
 router_trials.register(r'trial_log', SaveLogs)
 router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
+router_trials.register(r'prepare', PrepareTrial)
+router_trials.register(r'message', TrialMessageCreate)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trial
+from .models import Trial, TrialMessage
 from competition.serializers import TypeOfCompetitionSerializer
 
 
@@ -19,6 +19,15 @@ class ErrorTrial(serializers.ModelSerializer):
     class Meta:
         model = Trial
         fields = ('trial_identifier', 'msg',)
+        read_only_fields = ()
+
+
+class TrialMessageSerializer(serializers.ModelSerializer):
+    trial_identifier = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = TrialMessage
+        fields = ('trial_identifier', 'message',)
         read_only_fields = ()
 
 
