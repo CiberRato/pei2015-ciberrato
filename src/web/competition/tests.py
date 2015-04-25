@@ -851,6 +851,9 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
+
+
+
         for r in Round.objects.all():
             r.lab_path.delete()
             r.param_list_path.delete()

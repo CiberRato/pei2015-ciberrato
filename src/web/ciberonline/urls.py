@@ -20,7 +20,7 @@ from competition.views.files import UploadParamListView, UploadGridView, UploadL
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition
 
-from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors
+from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation
@@ -105,6 +105,7 @@ router_trials.register(r'trial_log', SaveLogs)
 router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
 router_trials.register(r'prepare', PrepareTrial)
+router_trials.register(r'message', TrialMessageCreate)
 
 
 urlpatterns = patterns('',

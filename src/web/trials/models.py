@@ -1,1 +1,1 @@
-from competition.models import Trial
+from competition.models import Trial, TrialMessage

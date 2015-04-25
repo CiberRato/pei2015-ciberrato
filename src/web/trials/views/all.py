@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
+from django.db import IntegrityError
+from django.db import transaction
 
 import os
 
@@ -9,8 +11,8 @@ from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 
 from ..simplex import TrialX
-from ..serializers import TrialXSerializer, LogTrial, ErrorTrial
-from ..models import Trial
+from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
+from ..models import Trial, TrialMessage
 
 from competition.shortcuts import *
 
@@ -53,6 +55,46 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+class TrialMessageCreate(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = TrialMessage.objects.all()
+    serializer_class = TrialMessageSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Create} the trial error
+        B{URL:} ../api/v1/trials/message/
+
+        :type  message: str
+        :param message: The message
+        :type  trial_identifier: str
+        :param trial_identifier: The trial identifier
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
+
+            if trial_done(trial):
+                return Response({'status': 'Bad request',
+                                 'message': 'The trial message can\'t be saved, the Trial is in LOG state!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                with transaction.atomic():
+                    TrialMessage.objects.create(trial=trial, message=serializer.validated_data['message'])
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The trial message can\'t be saved!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'status': 'Created',
+                             'message': 'The message has been saved!'}, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
 class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Trial.objects.all()
     serializer_class = ErrorTrial
@@ -76,11 +118,12 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
             trial.save()
 
             return Response({'status': 'Created',
-                             'message': 'The msg error has been uploaded!'}, status=status.HTTP_201_CREATED)
+                             'message': 'The msg error has been saved!'}, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
+
 
 class GetTrialLog(views.APIView):
     @staticmethod
