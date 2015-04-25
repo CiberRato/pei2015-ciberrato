@@ -31,7 +31,16 @@ class UploadAgent(views.APIView):
         return permissions.IsAuthenticated(),
 
     @staticmethod
-    def post(request):
+    def post(request, *args, **kwargs):
+        """
+        B{Upload} an agent file
+        B{URL:} ../api/v1/agents/upload/agent/?<agent_name>&team_name=<team_name>
+
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        """
         if 'agent_name' not in request.GET:
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?agent_name=<agent_name>'},
@@ -181,6 +190,18 @@ class GetAllAgentFiles(views.APIView):
 
     @staticmethod
     def get(request, agent_name):
+        """
+        B{Retrieve} the agent files as zip
+        B{URL:} ../api/v1/agents/agent_files/<agent_name>/?team_name=<team_name>
+        Must be part of the team owner of the agent
+
+        Client only
+
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        """
         if 'team_name' not in request.GET:
             return Response({'status': 'Bad request',
                              'message': 'Please provide the ?team_name=<team_name>'},
@@ -218,6 +239,18 @@ class GetAllAgentFiles(views.APIView):
 class GetAgentFilesSERVER(views.APIView):
     @staticmethod
     def get(request, team_name, agent_name):
+        """
+        B{Retrieve} the agent files as tar
+        B{URL:} ../api/v1/agents/agent_file/(?P<team_name>.+)/(?P<agent_name>.+)/
+        Must be part of the team owner of the agent
+
+        Server to Server only
+
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        """
         team = get_object_or_404(Team.objects.all(), name=team_name)
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
@@ -241,8 +274,25 @@ class GetAgentFilesSERVER(views.APIView):
 
 
 class GetAgentFile(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     @staticmethod
     def get(request, team_name, agent_name, file_name):
+        """
+        B{Retrieve} the agent files as tar
+        B{URL:} ../api/v1/agents/file/(?P<team_name>.+)/(?P<agent_name>.+)/(?P<file_name>.+)/
+        Must be part of the team owner of the agent
+
+        Client only
+
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        :type  file_name: str
+        :param file_name: The file name
+        """
         team = get_object_or_404(Team.objects.all(), name=team_name)
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
