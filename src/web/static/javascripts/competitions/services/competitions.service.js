@@ -91,10 +91,11 @@
             return $http.get("/api/v1/competitions/oldest_round/"+competitionName+"/");
         }
 
-        function create(competitionName, type_of_competition){
+        function create(competitionName, type_of_competition, allowed){
             return $http.post("/api/v1/competitions/crud/", {
                 name: competitionName,
-                type_of_competition: type_of_competition
+                type_of_competition: type_of_competition,
+                allow_remote_agents: allowed
             });
         }
 

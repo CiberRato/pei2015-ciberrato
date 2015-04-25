@@ -47,6 +47,13 @@
                                                 <input id="firstroundname" type="text" placeholder="name of the first round" name="name" ng-model="vm.firstRound">
                                             </div>
                                         </div>
+                                        <div class="control-group">
+                                            <label class="control-label">Allow Remote Agents? &nbsp;&nbsp;&nbsp;&nbsp;<input ng-if="vm.allowed == false" type="checkbox" name="option1" ng-model="vm.allowed" ng-change="vm.allowed = true">
+                                                <input ng-if="vm.allowed == true" type="checkbox" name="option1" ng-model="vm.allowed" ng-change="vm.allowed = false"></label>
+
+
+
+                                        </div>
 
                                         <div class="form-actions">
                                             <button class="btn btn-alt btn-large btn-success" type="submit">Create Competition</button>
