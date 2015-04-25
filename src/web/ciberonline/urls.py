@@ -136,7 +136,8 @@ urlpatterns = patterns('',
                            GetTrialLog.as_view(),
                            name="Get trial log"),
                        # get round file
-                       url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
+                       url(r'^api/v1/competitions/round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
+                           GetRoundFile.as_view(),
                            name="Get round file"),
                        # get agent files
                        url(r'^api/v1/agents/agent_file/(?P<team_name>.+)/(?P<agent_name>.+)/$',

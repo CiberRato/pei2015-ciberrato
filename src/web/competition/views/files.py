@@ -8,7 +8,7 @@ from rest_framework import views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 
-from ..models import Round
+from ..models import Competition, Round
 from ..renderers import PlainTextRenderer
 from ..permissions import IsStaff
 
@@ -17,21 +17,29 @@ class GetRoundFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
 
     @staticmethod
-    def get(request, round_name):
-        if 'file' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?file=*file*'},
-                            status=status.HTTP_400_BAD_REQUEST)
+    def get(request, competition_name, round_name, param):
+        """
+        B{Retrieve} the round files
+        B{URL:} ../api/v1/competitions/round_file/<competition_name>/<round_name>/<param>/
 
-        param = request.QUERY_PARAMS.get('file', '')
+        Get Round Files
 
+        :type  competition_name: str
+        :param competition_name: The agent name
+        :type  round_name: str
+        :param round_name: The team name
+        :type  param: str
+        :param param: The file type: param_list, lab, grid
+        """
         if param != 'param_list' and param != 'lab' and param != 'grid':
             return Response({'status': 'Bad request',
                              'message': 'A valid *file*'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # see if round exists
-        r = get_object_or_404(Round.objects.all(), name=round_name)
+        competition = get_object_or_404(Competition.objects.all(), name=competition_name)
+        r = get_object_or_404(Round.objects.all(), name=round_name, parent_competition=competition)
+
         try:
             if bool(getattr(r, param + '_path', '')) and default_storage.exists(getattr(r, param + '_path', '')):
                 data = default_storage.open(getattr(r, param + '_path', '')).read()
