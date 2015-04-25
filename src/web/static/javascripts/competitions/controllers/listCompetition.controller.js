@@ -53,7 +53,7 @@
             }
 
             function getTrials(roundName, i){
-                Round.getTrials(roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
+                Round.getTrials(roundName, vm.competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
                 function getTrialsSuccessFn(data){
                     vm.rounds[i].trials = data.data;
@@ -145,8 +145,8 @@
 
         }
 
-        function getScoresByRound(name){
-            Round.getScoresByRound(name).then(getScoresByRoundSuccessFn, getScoresByRoundErrorFn);
+        function getScoresByRound(name, competitionName){
+            Round.getScoresByRound(name, competitionName).then(getScoresByRoundSuccessFn, getScoresByRoundErrorFn);
 
             function getScoresByRoundSuccessFn(data){
                 vm.scoresByRound = data.data;

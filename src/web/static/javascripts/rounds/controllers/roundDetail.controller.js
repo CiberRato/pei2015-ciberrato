@@ -18,7 +18,7 @@
             lists: {"Available": [], "Trial": []}
         };
 
-
+        vm.competitionName = $routeParams.competitionName;
         vm.createTrial = createTrial;
         vm.moved = moved;
         vm.identifier;
@@ -39,8 +39,8 @@
         activate();
 
         function activate() {
-            Round.getTrials(vm.roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
-            Round.getRound(vm.roundName).then(getRoundSuccessFn, getRoundErrorFn);
+            Round.getTrials(vm.roundName, vm.competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
+            Round.getRound(vm.roundName, vm.competitionName).then(getRoundSuccessFn, getRoundErrorFn);
             Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
 
@@ -172,7 +172,7 @@
 
 
         function createTrial(){
-            Round.createTrial(vm.roundName).then(createTrialSuccessFn, createTrialErrorFn);
+            Round.createTrial(vm.roundName, vm.competitionName).then(createTrialSuccessFn, createTrialErrorFn);
 
             function createTrialSuccessFn(){
                 $.jGrowl("Trial has been created successfully.", {
@@ -297,7 +297,7 @@
         function uploadParamList() {
             var selectedFile = document.getElementById('ParamListUpload').files[0];
 
-            Round.uploadParamList(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            Round.uploadParamList(vm.roundName, selectedFile, vm.competitionName).then(uploadSuccessFn, uploadErrorFn);
 
             function uploadSuccessFn(){
 
@@ -358,7 +358,7 @@
         function uploadGrid() {
             var selectedFile = document.getElementById('GridUpload').files[0];
 
-            Round.uploadGrid(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            Round.uploadGrid(vm.roundName, selectedFile, vm.competitionName).then(uploadSuccessFn, uploadErrorFn);
 
             function uploadSuccessFn(){
 
@@ -399,7 +399,7 @@
         function uploadLab() {
             var selectedFile = document.getElementById('LabUpload').files[0];
 
-            Round.uploadLab(vm.roundName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+            Round.uploadLab(vm.roundName, selectedFile, vm.competitionName).then(uploadSuccessFn, uploadErrorFn);
 
             function uploadSuccessFn(){
 
@@ -432,7 +432,7 @@
         }
 
         function destroy(){
-            Round.destroy(vm.roundName).then(destroySuccessFn, destroyErrorFn);
+            Round.destroy(vm.roundName, vm.competitionName).then(destroySuccessFn, destroyErrorFn);
 
             function destroySuccessFn(){
                 $.jGrowl("Round has been removed.", {
