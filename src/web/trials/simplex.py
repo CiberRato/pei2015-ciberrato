@@ -24,9 +24,9 @@ class TrialX():
         self.trial_id = trial.identifier
 
         # a competicao nao pode estar em register
-        self.grid = "/api/v1/competitions/round_file/" + trial.round.name + "/?file=grid"
-        self.param_list = "/api/v1/competitions/round_file/" + trial.round.name + "/?file=param_list"
-        self.lab = "/api/v1/competitions/round_file/" + trial.round.name + "/?file=lab"
+        self.grid = "/api/v1/competitions/round_file/" + trial.round.parent_competition.name + "/" + trial.round.name + "/grid/"
+        self.param_list = "/api/v1/competitions/round_file/" + trial.round.parent_competition.name + "/" + trial.round.name + "/param_list/"
+        self.lab = "/api/v1/competitions/round_file/" + trial.round.parent_competition.name + "/" + trial.round.name + "/lab/"
 
         # send type of competition information
         self.type_of_competition = trial.round.parent_competition.type_of_competition
