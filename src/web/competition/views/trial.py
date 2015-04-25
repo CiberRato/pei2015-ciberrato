@@ -169,7 +169,7 @@ class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class([TrialSimplex(sim) for sim in r.trial_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

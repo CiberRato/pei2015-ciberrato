@@ -133,15 +133,12 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
         serializer = self.serializer_class(competition_agents, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
 
 
 class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -162,7 +159,7 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_teams = [agent.agent.team for agent in competition_agents]
         serializer = self.serializer_class(competition_teams, many=True)

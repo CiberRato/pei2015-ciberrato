@@ -219,7 +219,7 @@ class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
 
         trials = []
         for trial in r.trial_set.all():
