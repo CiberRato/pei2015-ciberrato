@@ -23,6 +23,7 @@ class Competition(models.Model):
     enrolled_teams = models.ManyToManyField(Team, through='TeamEnrolled', related_name="competition")
 
     allow_remote_agents = models.BooleanField(default=False)
+
     type_of_competition = models.ForeignKey('TypeOfCompetition', blank=False)
     state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
 
