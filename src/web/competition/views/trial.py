@@ -343,6 +343,46 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         status=status.HTTP_200_OK)
 
 
+class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsStaff(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Prepare} the trial
+        B{URL:} ../api/v1/trials/prepare/
+
+        :type  trial_id: str
+        :param trial_id: The trial id
+        """
+        trial = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
+
+        if not trial_not_started(trial):
+            return Response({'status': 'Bad Request',
+                             'message': 'The trial must be in state READY!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        params = {'trial_identifier': trial.identifier}
+
+        try:
+            pass
+            #requests.post(settings.START_SIM_ENDPOINT, params)
+        except requests.ConnectionError:
+            return Response({'status': 'Bad Request',
+                             'message': 'The simulator appears to be down!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # trial.prepare = True
+        # trial.save()
+
+        return Response({'status': 'Trial started',
+                         'message': 'The trial is now in \"Prepare\" state!'},
+                        status=status.HTTP_200_OK)
+
+
 class StartTrial(views.APIView):
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsStaff(),
@@ -351,18 +391,20 @@ class StartTrial(views.APIView):
     def post(request):
         """
         B{Start} the trial
-        B{URL:} ../api/v1/competitions/start_trial/
+        B{URL:} ../api/v1/trials/start/
 
         :type  trial_id: str
         :param trial_id: The trial id
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
 
-        # verify if the round doen't started already
-        if not trial_not_started(trial):
+        # verify if the round doesn't started already
+        """
+        if not trial_prepare(trial):
             return Response({'status': 'Bad Request',
-                             'message': 'The trial is in state waiting, started or done!'},
+                             'message': 'The trial is in state PREPARE!'},
                             status=status.HTTP_400_BAD_REQUEST)
+        """
 
         # verify if round has files
         if not bool(trial.round.grid_path) or not bool(trial.round.param_list_path) \
@@ -434,6 +476,7 @@ class StartTrial(views.APIView):
 
         # sim now goes to "waiting"
         trial.waiting = True
+        trial.prepare = False
         trial.save()
 
         return Response({'status': 'Trial started',

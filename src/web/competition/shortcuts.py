@@ -1,5 +1,5 @@
 def trial_started(trial):
-    return not trial_prepare(trial) and not trial_waiting(trial) and not trial_done(trial)
+    return trial.started
 
 
 def trial_prepare(trial):

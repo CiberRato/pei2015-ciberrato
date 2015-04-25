@@ -180,6 +180,7 @@ class Trial(models.Model):
 
     prepare = models.BooleanField(default=False)
     waiting = models.BooleanField(default=False)
+    started = models.BooleanField(default=False)
 
     errors = models.CharField(max_length=150)
 
