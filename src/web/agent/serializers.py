@@ -21,17 +21,20 @@ class AgentSerializer(serializers.ModelSerializer):
 
 class SubmitCodeAgentSerializer(serializers.ModelSerializer):
     agent_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = Agent
-        fields = ('agent_name',)
+        fields = ('agent_name', 'team_name')
         read_only_fields = ()
 
 
 class AgentCodeValidationSerializer(serializers.ModelSerializer):
+    team_name = serializers.CharField(max_length=128)
+
     class Meta:
         model = Agent
-        fields = ('code_valid', 'validation_result',)
+        fields = ('team_name', 'code_valid', 'validation_result',)
         read_only_fields = ()
 
 

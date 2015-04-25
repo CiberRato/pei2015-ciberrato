@@ -17,6 +17,8 @@ from ..models import Competition, Round, Trial, CompetitionAgent, LogTrialAgent,
 from ..shortcuts import *
 from ..permissions import IsStaff
 
+from authentication.models import Team
+
 
 class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                         mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -120,12 +122,20 @@ class TrialByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the agent trials
-        B{URL:} ../api/v1/competitions/trials_by_agent/<agent_name>/
+        B{URL:} ../api/v1/competitions/trials_by_agent/<agent_name>/?team_name=<team_name>
 
         :type  agent_name: str
         :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
         """
-        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
         trials = []
 
         for competition_agent in agent.competitionagent_set.all():
