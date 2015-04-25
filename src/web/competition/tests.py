@@ -1013,7 +1013,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the agent files
-        url = "/api/v1/competitions/agent_file/KAMIKAZE/"
+        url = "/api/v1/agents/agent_file/XPTO3/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
