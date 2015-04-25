@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db import IntegrityError
+from django.db import transaction
 
 import requests
 
@@ -51,8 +53,14 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                 return Response({'status': 'Bad Request',
                                  'message': 'Is missing files to the Round take place!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+            try:
+                with transaction.atomic():
+                    s = Trial.objects.create(round=r)
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The trial can not be created!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-            s = Trial.objects.create(round=r)
             serializer = TrialSerializer(TrialSimplex(s))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -265,9 +273,14 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                 return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
-
-            TrialGrid.objects.create(grid_positions=grid_positions, trial=trial,
-                                          position=serializer.validated_data['position'])
+            try:
+                with transaction.atomic():
+                    TrialGrid.objects.create(grid_positions=grid_positions, trial=trial,
+                                             position=serializer.validated_data['position'])
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The team can\'t be associated!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 

@@ -304,8 +304,12 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
             # if the competition allow remote agents let's create a remote agent for the team
             if competition.allow_remote_agents:
                 if Agent.objects.filter(agent_name="Remote", is_remote=True).count() == 0:
-                    Agent.objects.create(agent_name="Remote", user=request.user, is_remote=True, team=team,
-                                         language="Unknown")
+                    try:
+                        with transaction.atomic():
+                            Agent.objects.create(agent_name="Remote", user=request.user, is_remote=True, team=team,
+                                                 language="Unknown")
+                    except IntegrityError:
+                        pass
 
             return Response({'status': 'Created',
                              'message': 'The team has enrolled.'},
