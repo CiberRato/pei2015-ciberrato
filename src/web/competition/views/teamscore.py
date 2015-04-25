@@ -42,16 +42,16 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         B{Create} a team score
         B{URL:} ../api/v1/competitions/team_score/
 
-        @type  trial_id: str
-        @param trial_id: The trial identifier
-        @type  team_name: str
-        @param team_name: The team name
-        @type  score: Integer
-        @param score: The score
-        @type  number_of_agents: Integer
-        @param number_of_agents: The number of agents
-        @type  time: Integer
-        @param time: The time
+        :type  trial_id: str
+        :param trial_id: The trial identifier
+        :type  team_name: str
+        :param team_name: The team name
+        :type  score: Integer
+        :param score: The score
+        :type  number_of_agents: Integer
+        :param number_of_agents: The number of agents
+        :type  time: Integer
+        :param time: The time
         """
         serializer = TeamScoreInSerializer(data=request.data)
 
@@ -100,16 +100,16 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         B{Update} a team score
         B{URL:} ../api/v1/competitions/team_score/<trial_id>/
 
-        @type  trial_id: str
-        @param trial_id: The trial identifier
-        @type  team_name: str
-        @param team_name: The team name
-        @type  score: Integer
-        @param score: The score
-        @type  number_of_agents: Integer
-        @param number_of_agents: The number of agents
-        @type  time: Integer
-        @param time: The time
+        :type  trial_id: str
+        :param trial_id: The trial identifier
+        :type  team_name: str
+        :param team_name: The team name
+        :type  score: Integer
+        :param score: The score
+        :type  number_of_agents: Integer
+        :param number_of_agents: The number of agents
+        :type  time: Integer
+        :param time: The time
         """
         serializer = TeamScoreInSerializer(data=request.data)
 
@@ -158,10 +158,10 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         B{Destroy} the team score
         B{URL:} ../api/v1/competitions/team_score/<trial_id>/?team_name=<team_name>
 
-        @type  trial_id: str
-        @param trial_id: The trial identifier
-        @type  team_name: str
-        @type  team_name: The team name
+        :type  trial_id: str
+        :param trial_id: The trial identifier
+        :type  team_name: str
+        :type  team_name: The team name
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
 
@@ -192,8 +192,8 @@ class RankingByTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the ranking for the trial
         B{URL:} ../api/v1/competitions/ranking_trial/<trial_id>/
 
-        @type  trial_id: str
-        @param trial_id: The trial id
+        :type  trial_id: str
+        :param trial_id: The trial id
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in trial.teamscore_set.all()],
@@ -213,8 +213,8 @@ class RankingByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the ranking for the round
         B{URL:} ../api/v1/competitions/ranking_round/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
@@ -238,8 +238,8 @@ class RankingByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the ranking for the competition
         B{URL:} ../api/v1/competitions/ranking_competition/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 

@@ -31,8 +31,8 @@ class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericView
         B{Retrieve} the list of a Teams enrolled and with valid inscription or not in the Competition
         B{URL:} ../api/v1/competitions/teams/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         serializer = self.serializer_class(competition.teamenrolled_set.all(), many=True)
@@ -52,8 +52,8 @@ class MyEnrolledTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
         B{Retrieve} the list of a Teams enrolled
         B{URL:} ../api/v1/competitions/my_enrolled_teams/<username>/
 
-        @type  username: str
-        @param username: The username
+        :type  username: str
+        :param username: The username
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
 
@@ -79,8 +79,8 @@ class CompetitionGetNotValidTeamsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         B{Retrieve} the list of a Teams enrolled with inscription not valid in the Competition
         B{URL:} ../api/v1/competitions/teams_not_valid/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         not_valid = TeamEnrolled.objects.filter(valid=False, competition=competition)
@@ -102,8 +102,8 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
         B{Get} the oldest round competition
         B{URL:} ../api/v1/competitions/first_round/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
@@ -129,8 +129,8 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         B{Get} the earliest round competition
         B{URL:} ../api/v1/competitions/earliest_round/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
@@ -156,10 +156,10 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
         B{Toggle} the Team Enrolled inscription
         B{URL:} ../api/v1/competitions/toggle_team_inscription/
 
-        @type  competition_name: str
-        @param competition_name: The Competition name
-        @type  team_name: str
-        @param team_name: The Team name
+        :type  competition_name: str
+        :param competition_name: The Competition name
+        :type  team_name: str
+        :param team_name: The Team name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -192,10 +192,10 @@ class MyEnrolledTeamsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         B{Retrieve} the list of a Teams enrolled by username and competition
         B{URL:} ../api/v1/competitions/my_enrolled_teams_competition/<username>/?competition_name=<competition_name>
 
-        @type  username: str
-        @param username: The username
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  username: str
+        :param username: The username
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
@@ -223,8 +223,8 @@ class GetEnrolledTeamCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         B{Retrieve} the list of competitions enrolled and with valid inscription by team
         B{URL:} ../api/v1/competitions/team_enrolled_competitions/<team_name>/
 
-        @type  team_name: str
-        @param team_name: The team name
+        :type  team_name: str
+        :param team_name: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         teams = TeamEnrolled.objects.filter(team=team, valid=True)
@@ -262,10 +262,10 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
         B{Get} the valid inscriptions in one competition for the team
         B{URL:} ../api/v1/competitions/enroll/<team_name>/
 
-        @type  competition_name: str
-        @param competition_name: The Competition name
-        @type  team_name: str
-        @param team_name: The Team name
+        :type  competition_name: str
+        :param competition_name: The Competition name
+        :type  team_name: str
+        :param team_name: The Team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         team_enrolled = get_list_or_404(TeamEnrolled.objects.all(), team=team, valid=True)
@@ -277,10 +277,10 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
         B{Create} a Team Enrolled to a competition
         B{URL:} ../api/v1/competitions/enroll/
 
-        @type  competition_name: str
-        @param competition_name: The Competition name
-        @type  team_name: str
-        @param team_name: The Team name
+        :type  competition_name: str
+        :param competition_name: The Competition name
+        :type  team_name: str
+        :param team_name: The Team name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -314,10 +314,10 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
         B{Remove} a team from the competition
         B{URL:} ../api/v1/competitions/enroll/<competition_name>/?team_name=<team_name>
 
-        @type  competition_name: str
-        @param competition_name: The competition name
-        @type  team_name: str
-        @param team_name: The team name
+        :type  competition_name: str
+        :param competition_name: The competition name
+        :type  team_name: str
+        :param team_name: The team name
         """
         if 'team_name' not in request.GET:
             return Response({'status': 'Bad request',

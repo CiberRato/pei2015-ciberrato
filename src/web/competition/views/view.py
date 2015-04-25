@@ -28,10 +28,10 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         B{Create} a competition
         B{URL:} ../api/v1/competitions/crud/
 
-        @type  name: str
-        @param name: The competition name
-        @type  type_of_competition: The name of the type of competition
-        @param type_of_competition: The competition type
+        :type  name: str
+        :param name: The competition name
+        :type  type_of_competition: The name of the type of competition
+        :param type_of_competition: The competition type
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -59,8 +59,8 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         B{Retrieve} the competition information
         B{URL:} ../api/v1/competitions/crud/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
@@ -73,8 +73,8 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         B{Destroy} the competition
         B{URL:} ../api/v1/competitions/crud/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
@@ -101,10 +101,10 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the competition state
         B{URL:} ../api/v1/competitions/state/<name>/
 
-        @type  state_of_competition: {'Past', 'Register', 'Competition'}
-        @param state_of_competition: dict
-        @type  name: str
-        @param name: the competition name
+        :type  state_of_competition: {'Past', 'Register', 'Competition'}
+        :param state_of_competition: dict
+        :type  name: str
+        :param name: the competition name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -132,8 +132,8 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         B{Retrieve} the competition information
         B{URL:} ../api/v1/competitions/get/<state>/
 
-        @type  type: {'Past', 'Register', 'Competition', 'All'}
-        @param type: dict
+        :type  type: {'Past', 'Register', 'Competition', 'All'}
+        :param type: dict
         """
         state = dict(Competition.STATE)
 
@@ -162,8 +162,8 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the competition rounds
         B{URL:} ../api/v1/competitions/rounds/<competition_name>/
 
-        @type  competition_name: string
-        @param competition_name: The competition name
+        :type  competition_name: string
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
         serializer = self.serializer_class([RoundSimplex(r) for r in competition.round_set.all()], many=True)
@@ -185,12 +185,12 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         B{Create} type of competition
         B{URL:} ../api/v1/competitions/type_of_competition/
 
-        @type  name: str
-        @param name: The type of competition name
-        @type  number_teams_for_trial: Integer
-        @type  number_teams_for_trial: The number of teams allowed by trial
-        @type  number_agents_by_grid: Integer
-        @param number_agents_by_grid: For each team the number of agents allowed by grid
+        :type  name: str
+        :param name: The type of competition name
+        :type  number_teams_for_trial: Integer
+        :type  number_teams_for_trial: The number of teams allowed by trial
+        :type  number_agents_by_grid: Integer
+        :param number_agents_by_grid: For each team the number of agents allowed by grid
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -214,8 +214,8 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         B{Retrieve} the type of competition
         B{URL:} ../api/v1/competitions/type_of_competition/<type_of_competition_name>/
 
-        @type  type_of_competition_name: str
-        @param type_of_competition_name: The type_of_competition name
+        :type  type_of_competition_name: str
+        :param type_of_competition_name: The type_of_competition name
         """
         queryset = TypeOfCompetition.objects.all()
         type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
@@ -228,8 +228,8 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         B{Destroy} the type of competition
         B{URL:} ../api/v1/competitions/type_of_competition/<type_of_competition_name>/
 
-        @type  type_of_competition_name: str
-        @param type_of_competition_name: The type_of_competition name
+        :type  type_of_competition_name: str
+        :param type_of_competition_name: The type_of_competition name
         """
         queryset = TypeOfCompetition.objects.all()
         type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))

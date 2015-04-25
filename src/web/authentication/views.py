@@ -36,22 +36,22 @@ class AccountViewSet(viewsets.ModelViewSet):
         B{Create} an user
         B{URL:} ../api/v1/accounts/
 
-        @type  id: number
-        @param id: user id
-        @type  email: str
-        @param email: email
-        @type  username: str
-        @param username: username
-        @type  teaching_institution: str
-        @param teaching_institution: teaching institution
-        @type  first_name: str
-        @param first_name: The first name of user
-        @type  last_name: str
-        @param last_name: The last name of user
-        @type  password: str
-        @param password: The password of user
-        @type  confirm_password: str
-        @param confirm_password: The password confirmation
+        :type  id: number
+        :param id: user id
+        :type  email: str
+        :param email: email
+        :type  username: str
+        :param username: username
+        :type  teaching_institution: str
+        :param teaching_institution: teaching institution
+        :type  first_name: str
+        :param first_name: The first name of user
+        :type  last_name: str
+        :param last_name: The last name of user
+        :type  password: str
+        :param password: The password of user
+        :type  confirm_password: str
+        :param confirm_password: The password confirmation
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -121,10 +121,10 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the password
         B{URL:} ..api/v1/change_password/<username>/
 
-        @type  password: str
-        @param password: The password
-        @type  confirm_password: str
-        @param confirm_password: The confirmation password
+        :type  password: str
+        :param password: The password
+        :type  confirm_password: str
+        :param confirm_password: The confirmation password
         """
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
@@ -164,8 +164,8 @@ class AccountByFirstName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} one account by First Name
         B{URL:} ../api/v1/account_by_first_name/<first_name>/
 
-        @type  first_name: str
-        @param first_name: The first name
+        :type  first_name: str
+        :param first_name: The first name
         """
         account = get_list_or_404(self.queryset, first_name=kwargs.get('pk'))
         serializer = self.serializer_class(account, many=True)
@@ -184,8 +184,8 @@ class AccountByLastName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} one account by Last Name
         B{URL:} ../api/v1/account_by_last_name/<last_name>/
 
-        @type  last_name: str
-        @param last_name: The last name
+        :type  last_name: str
+        :param last_name: The last name
         """
         account = get_list_or_404(self.queryset, last_name=kwargs.get('pk'))
         serializer = self.serializer_class(account, many=True)
@@ -272,8 +272,8 @@ class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the user
         B{URL:} ..api/v1/toggle_staff/<username>/
 
-        @type  username: str
-        @param username: The username
+        :type  username: str
+        :param username: The username
         """
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
@@ -298,8 +298,8 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the user
         B{URL:} ..api/v1/toggle_super_user/<username>/
 
-        @type  username: str
-        @param username: The username
+        :type  username: str
+        :param username: The username
         """
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
@@ -329,8 +329,8 @@ class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Login to other} user
         B{URL:} ..api/v1/login_to/<username>/
 
-        @type  username: str
-        @param username: The username
+        :type  username: str
+        :param username: The username
         """
         account = get_object_or_404(self.queryset, username=kwargs.get('username', ''))
         account.backend = 'django.contrib.auth.backends.ModelBackend'

@@ -10,13 +10,13 @@ class IsAdminOfTeam(permissions.BasePermission):
         """
         If the TeamMember is admin of Team.
 
-        @type  request: WSGIRequest
-        @param request: WSGIRequest (https://github.com/django/django/blob/master/django/core/handlers/wsgi.py)
+        :type  request: WSGIRequest
+        :param request: WSGIRequest (https://github.com/django/django/blob/master/django/core/handlers/wsgi.py)
         Django’s primary deployment platform is WSGI, the Python standard for web servers and applications
             https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 
-        @type  view: ViewSets
-        @param view: http://www.django-rest-framework.org/api-guide/viewsets/
+        :type  view: ViewSets
+        :param view: http://www.django-rest-framework.org/api-guide/viewsets/
 
         @rtype:   Boolean
         @return:  True if the user has permission else False
