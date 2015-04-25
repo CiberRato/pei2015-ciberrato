@@ -97,7 +97,9 @@ class UploadRoundXMLView(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''))
+            competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+            r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), competition=competition)
+
             setattr(r, self.file_to_save, file_obj)
             r.save()
 
@@ -140,4 +142,15 @@ class UploadGridView(UploadRoundXMLView):
 
 class UploadLabView(UploadRoundXMLView):
     def __init__(self):
+        """
+        B{Retrieve} the round files
+        B{URL:} ../api/v1/competitions/round/upload/lab/?round=<round_name>&competition_name=<competition_name>
+
+        Upload lab
+
+        :type  competition_name: str
+        :param competition_name: The agent name
+        :type  round_name: str
+        :param round_name: The team name
+        """
         UploadRoundXMLView.__init__(self, "lab_path", "lab")
