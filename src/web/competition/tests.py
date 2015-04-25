@@ -576,7 +576,8 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/trials/prepare/"
         data = {'trial_id': trial_identifier}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {"status":"Trial started","message":"The trial is now in \"Prepare\" state!"})
+        self.assertEqual(response.data,
+                         {"status": "Trial started", "message": "The trial is now in \"Prepare\" state!"})
 
         # start trial
         url = "/api/v1/trials/start/"
@@ -671,6 +672,19 @@ class AuthenticationTestCase(TestCase):
                                'type_of_competition': {'timeout': 5, 'single_position': False, 'name': u'Collaborative',
                                                        'number_agents_by_grid': 5, 'number_teams_for_trial': 1}})
 
+        # try to send a message
+        trial = Trial.objects.get(identifier=trial_identifier)
+        trial.started = True
+        trial.save()
+
+        # send a message
+        url = "/api/v1/trials/message/"
+        data = {'trial_identifier': trial_identifier, 'message': 'Julian Calor - Another Template'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {"status": "Created", "message": "The message has been saved!"})
+        self.assertEqual(len(TrialMessage.objects.all()), 1)
+
         # save trial logs (only server by server)
         f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
         url = "/api/v1/trials/trial_log/"
@@ -680,6 +694,9 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         trial = Trial.objects.get(identifier=trial_identifier)
         self.assertEqual(trial.log_json is None, False)
+
+        # the trial messages must be deleted
+        self.assertEqual(len(TrialMessage.objects.all()), 0)
 
         # get log sent
         url = "/api/v1/competitions/get_trial_log/" + trial_identifier + "/"
@@ -736,7 +753,19 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10),
+                                            ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
+                                                                                                 'number_of_agents', 5),
+                                                                                                 ('time', 10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'),
+                                    ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 3), ('time', 10)])])
 
         # ranking by round
         url = "/api/v1/competitions/ranking_round/R1/?competition_name=C1"
@@ -750,7 +779,19 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10),
+                                            ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
+                                                                                                 'number_of_agents', 5),
+                                                                                                 ('time', 10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'),
+                                    ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 3), ('time', 10)])])
 
         # ranking by competition
         url = "/api/v1/competitions/ranking_competition/C1/"
@@ -764,7 +805,19 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10),
+                                            ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
+                                                                                                 'number_of_agents', 5),
+                                                                                                 ('time', 10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'),
+                                    ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 10), ('number_of_agents', 3), ('time', 10)])])
 
         # update ranking
         url = "/api/v1/competitions/team_score/" + trial_identifier + "/"
@@ -785,8 +838,20 @@ class AuthenticationTestCase(TestCase):
         del rsp[2]['trial']["created_at"]
         del rsp[2]['trial']["updated_at"]
 
-        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), ('number_of_agents', 5), ('time', 10)]), OrderedDict([('trial', OrderedDict([('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])), ('score', 14), ('number_of_agents', 3), ('time', 10)])])
-        
+        self.assertEqual(rsp, [OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO1'), ('max_members', 10)])), ('score', 10),
+                                            ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
+            [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
+             ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
+                                                                                                 'number_of_agents', 5),
+                                                                                                 ('time', 10)]),
+                               OrderedDict([('trial', OrderedDict(
+                                   [('identifier', trial_identifier), ('round_name', u'R1'),
+                                    ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])),
+                                            ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
+                                            ('score', 14), ('number_of_agents', 3), ('time', 10)])])
+
         # delete the team score
         url = "/api/v1/competitions/team_score/" + trial_identifier + "/?team_name=XPTO3"
         response = client.delete(path=url)
@@ -850,9 +915,6 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/agents/agent_file/XPTO3/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-
-
-
 
         for r in Round.objects.all():
             r.lab_path.delete()

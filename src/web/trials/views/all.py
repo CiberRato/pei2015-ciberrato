@@ -47,6 +47,10 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             trial.log_json = serializer.validated_data['log_json']
             trial.save()
+
+            for trial_message in TrialMessage.objects.filter(trial=trial):
+                trial_message.delete()
+
             return Response({'status': 'Created',
                              'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
 
