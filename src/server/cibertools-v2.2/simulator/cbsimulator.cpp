@@ -576,24 +576,6 @@ void cbSimulator::readChanges()
 	// There's a PanelView to do that kind of actions.
 	//ViewCommands();
 	PanelCommands();
-
-	if (syncmode && curState != INIT) {
-		bool stepSim = true;
-		for (unsigned int i=0; i<robots.size(); i++)
-		{
-			cbRobot *robot = robots[i];
-			if (robot == 0) continue;
-	        if (!robot->getWaitingForSync()) {
-	        	stepSim = false;
-	        	break;
-	        }	        
-		}
-		if (stepSim) {
-	        printf("Sttped\n");
-	       	step();
-	    }
-	}
-	
 }
 
 void cbSimulator::step()
@@ -776,7 +758,23 @@ void cbSimulator::RobotActions()
 			}
 
 			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
-			if (action.sync) 		  	robot->setWaitingForSync(true);
+			if (action.sync) {
+				robot->setWaitingForSync(true);
+
+				if (syncmode && curState != INIT) {
+					bool stepSim = true;
+					for (unsigned int i=0; i<robots.size(); i++)
+					{
+						cbRobot *robot = robots[i];
+						if (robot == 0) continue;
+				        if (!robot->getWaitingForSync()) {
+				        	stepSim = false;
+				        	break;
+				        }	        
+					}
+					if (stepSim)	step();
+				}
+			}
 
 			action.sensorRequests.clear();
 		}
