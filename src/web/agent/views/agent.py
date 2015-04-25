@@ -56,6 +56,27 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} information of the agent
+        B{URL:} ../api/v1/agents/agent/<agent_name>/?team_name=<team_name>
+
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        """
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
+        serializer = AgentSerializer(AgentSimplex(agent))
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Destroy} an agent
         B{URL:} ../api/v1/agents/agent/<agent_name>/
 
         :type  agent_name: str
@@ -69,20 +90,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                             status=status.HTTP_400_BAD_REQUEST)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
-        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'), team=team)
-        serializer = AgentSerializer(AgentSimplex(agent))
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        B{Destroy} an agent
-        B{URL:} ../api/v1/agents/agent/<agent_name>/
-
-        :type  agent_name: str
-        :param agent_name: The agent name
-        """
-        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
         agent.delete()
 
         return Response({'status': 'Deleted',

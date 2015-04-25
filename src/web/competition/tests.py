@@ -249,6 +249,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, OrderedDict(
             [(u'agent_name', u'KAMIKAZE'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
+        # create a agent for team, without code first
+        url = "/api/v1/agents/agent/"
+        data = {'agent_name': 'KAMIKAZE', 'team_name': 'XPTO1', 'language': 'Python'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, OrderedDict(
+            [(u'agent_name', u'KAMIKAZE'), (u'language', 'Python'), (u'team_name', u'XPTO1')]))
+
         # get agents by team
         url = "/api/v1/agents/agents_by_team/XPTO3/"
         response = client.get(url)
@@ -275,14 +283,10 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
-             ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
-                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict([('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO1')]))
 
         # get the agent information about the agent
-        url = "/api/v1/agents/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
 
@@ -343,7 +347,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
 
-        url = "/api/v1/agents/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -367,7 +371,8 @@ class AuthenticationTestCase(TestCase):
                           {'name': 'Java', 'value': 'Java'}, {'name': 'C++', 'value': 'cplusplus'}])
 
         # make the code valid, this operation only can be made by the script (server validation)
-        agent = Agent.objects.get(agent_name='KAMIKAZE')
+        team = Team.objects.get(name="XPTO3")
+        agent = Agent.objects.get(agent_name='KAMIKAZE', team=team)
         agent.code_valid = True
         agent.save()
 
@@ -553,7 +558,7 @@ class AuthenticationTestCase(TestCase):
         """ END grid positions """
 
         # see the information about the agent
-        url = "/api/v1/agents/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         rsp = dict(response.data)
@@ -1053,12 +1058,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {u'detail': u'Not found.'})
 
         # destroy the agent
-        url = "/api/v1/agents/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent has been deleted"})
 
-        url = "/api/v1/agents/agent/KAMIKAZE/"
+        url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data, {u'detail': u'Not found.'})

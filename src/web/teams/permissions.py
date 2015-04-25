@@ -47,16 +47,6 @@ class IsAdminOfTeam(permissions.BasePermission):
                     team = Team.objects.filter(name=team_name)
                 except KeyError:
                     return False
-            elif view.__class__.__name__ == 'AgentViewSets' and request.method == 'DELETE':
-                try:
-                    agent_name = request.path.split("/")[-2:-1][0]
-                except ValueError:
-                    return False
-                try:
-                    agent = Agent.objects.get(agent_name=agent_name)
-                    team = agent.team
-                except AttributeError:
-                    return False
             elif 'team_name' in request.GET:
                 team = Team.objects.filter(name=request.GET.get('team_name', ''))
                 if len(team) == 0:

@@ -147,13 +147,19 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the agent files list
-        B{URL:} ../api/v1/agents/agent_files/<agent_name>/
+        B{URL:} ../api/v1/agents/agent_files/<agent_name>/?team_name=<team_name>
         Must be part of the team owner of the agent
 
         :type  agent_name: str
         :param agent_name: The agent name
         """
-        agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'), team=team)
 
         if len(TeamMember.objects.filter(team=agent.team, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
