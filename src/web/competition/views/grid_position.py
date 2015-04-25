@@ -351,6 +351,11 @@ class AgentRemoteGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You must be part of the agent team.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            if not agent.code_valid:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The agent code maust be valid!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             grid = get_object_or_404(GridPositions.objects.all(),
                                      identifier=serializer.validated_data['grid_identifier'])
 
