@@ -1,8 +1,11 @@
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.db import IntegrityError
+from django.db import transaction
+
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
 from rest_framework.response import Response
-from django.conf import settings
 
 import requests
 
@@ -47,9 +50,14 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'Remote is a reserved name for the Agent, that agents are \
                                  automatically created for competitions that allow remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
-            Agent.objects.create(agent_name=agent_name, user=user, team=team,
-                                 language=serializer.validated_data['language'])
+            try:
+                with transaction.atomic():
+                    Agent.objects.create(agent_name=agent_name, user=user, team=team,
+                                         language=serializer.validated_data['language'])
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'The team has already one agent with that name!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 

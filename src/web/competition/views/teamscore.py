@@ -84,12 +84,13 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                                                           number_of_agents=serializer.validated_data[
                                                               'number_of_agents'],
                                                           time=serializer.validated_data['time'])
-                    serializer = self.serializer_class(TeamScoreSimplex(team_score))
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'There is already a score for that team in the trial!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = self.serializer_class(TeamScoreSimplex(team_score))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
