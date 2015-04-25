@@ -42,6 +42,12 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             agent_name = serializer.validated_data['agent_name']
 
+            if agent_name == 'Remote':
+                return Response({'status': 'Bad Request',
+                                 'message': 'Remote is a reserved name for the Agent, that agents are \
+                                 automatically created for competitions that allow remote agents!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             Agent.objects.create(agent_name=agent_name, user=user, team=team,
                                  language=serializer.validated_data['language'])
 
