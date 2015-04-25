@@ -44,10 +44,9 @@
 
         function create(){
             var x = document.getElementById("select").value;
-            var y = document.getElementById("type").value;
             var language = document.getElementById("selector_language").value;
 
-            Agent.create(vm.name, x, y, language).then(createSuccessFn, createErrorFn);;
+            Agent.create(vm.name, x, language).then(createSuccessFn, createErrorFn);;
         }
 
         function createSuccessFn(){
