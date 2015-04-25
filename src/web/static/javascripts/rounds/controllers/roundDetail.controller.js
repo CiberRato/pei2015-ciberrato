@@ -755,7 +755,7 @@
         }
 
         function reloadTrials(){
-            Round.getTrials(vm.roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
+            Round.getTrials(vm.roundName, vm.competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
             function getTrialsSuccessFn(data) {
                 vm.trials = data.data;
@@ -789,7 +789,7 @@
         }
 
         function getFiles(){
-            Round.getFiles(vm.roundName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
+            Round.getFiles(vm.roundName, vm.competitionName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
             function getRoundFilesSuccessFn(data){
                 vm.files = data.data;
