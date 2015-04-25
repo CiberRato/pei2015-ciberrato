@@ -11,8 +11,11 @@
 
         $scope.load=false;
 
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
+        var c1 = document.getElementById("layer1");
+        var ctx1 = c1.getContext("2d");
+        var c2 = document.getElementById("layer2");
+        var ctx2 = c2.getContext("2d");
+
 
         
         var identifier = $routeParams.identifier;
@@ -28,6 +31,7 @@
             $scope.parameters_obj = log.data.Parameters;
             $scope.lab_obj = log.data.Lab;
             $scope.grid_obj = log.data.Grid;
+            console.log($scope.grid_obj);
 
             showViewer();
         }
@@ -54,31 +58,65 @@
         }
 
         $scope.drawMap=function(){
-            c.width=$scope.zoom * $scope.lab_obj._Width;
-            c.height=$scope.zoom * $scope.lab_obj._Height;
-            ctx.clearRect(0, 0, c.width, c.height);
-            ctx.rect(0,0, c.width, c.height);
-            ctx.fillStyle="black";
-            ctx.fill();
+
+            ctx1.clearRect(0, 0, c1.width, c1.height);
+            ctx1.rect(0,0, c1.width, c1.height);
+            ctx1.fillStyle=$scope.groundColor;
+            ctx1.fill();
             drawWalls();
             drawBeacon();
+            drawGrid();
+
+        }
+
+        function drawGrid(){
+            var i;
+            for(i=0;i<$scope.grid.Position.length;i++) {
+                ctx1.beginPath();
+                ctx1.arc($scope.grid.Position[i]._X*$scope.zoom, $scope.grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                ctx1.fillStyle = $scope.gridColor;
+                ctx1.fill();
+                ctx1.lineWidth = 2;
+                ctx1.strokeStyle = $scope.circleBorder;
+                ctx1.stroke();
+            }
 
         }
 
         function drawBeacon(){
+            var i;
             if($scope.nBeacon==1){
-                ctx.beginPath();
-                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom+$scope.zoom/15, 0, Math.PI * 2);
-                ctx.fillStyle=$scope.circleBorder;
-                ctx.fill();
-                ctx.stroke();
+                ctx1.beginPath();
+                ctx1.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom + $scope.zoom/15, 0, 2*Math.PI);
+                ctx1.fillStyle = $scope.circleBorder;
+                ctx1.fill();
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
+                    ctx1.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
                 };
                 imageObj.src = $scope.cheeseColor;
+                ctx1.fill();
+                ctx1.stroke();
 
             }
+            else{
+                for(i=0;i<$scope.lab_obj.Beacon.length;i++){
+                    ctx1.beginPath();
+                    ctx1.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom + $scope.zoom/15, 0, 2*Math.PI);
+                    ctx1.fillStyle = $scope.circleBorder;
+                    ctx1.fill();
+                    var imageObj = new Image();
+                    imageObj.onload = function() {
+                        ctx1.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
+                    };
+                    imageObj.src = $scope.cheeseColor;
+                    ctx1.fill();
+                    ctx1.stroke();
+
+                }
+
+            }
+
         }
 
         function drawWalls(){
@@ -86,21 +124,27 @@
             for (i = 0; i < $scope.lab_obj.Wall.length; i++) {
 
                 if($scope.lab_obj.Wall[i]._Height < $scope.beacon_height){
-                    ctx.fillStyle = $scope.smallWallColor;
+                    ctx1.fillStyle = $scope.smallWallColor;
                 }
                 else{
-                    ctx.fillStyle = $scope.greatWallColor;
+                    ctx1.fillStyle = $scope.greatWallColor;
                 }
-                ctx.beginPath();
+                ctx1.beginPath();
                 var b = 0;
                 for(; b < $scope.lab_obj.Wall[i].Corner.length; b++){
-                    ctx.lineTo($scope.lab_obj.Wall[i].Corner[b]._X * $scope.zoom ,$scope.lab_obj.Wall[i].Corner[b]._Y * $scope.zoom);
+                    ctx1.lineTo($scope.lab_obj.Wall[i].Corner[b]._X * $scope.zoom ,$scope.lab_obj.Wall[i].Corner[b]._Y * $scope.zoom);
                 }
-                ctx.closePath();
-                ctx.fill();
+                ctx1.closePath();
+                ctx1.fill();
             }
         }
         function doIt() {
+            c1.width=$scope.zoom * $scope.lab_obj._Width;
+            c1.height=$scope.zoom * $scope.lab_obj._Height;
+            c2.width=$scope.zoom * $scope.lab_obj._Width;
+            c2.height=$scope.zoom * $scope.lab_obj._Height;
+            ctx1.translate(0, $scope.zoom * $scope.lab_obj._Height);
+            ctx1.scale(1, -1);
 
             $scope.velButton = '1x';
 
@@ -113,9 +157,9 @@
             $scope.param = $scope.parameters_obj;
             /* Map Object */
             $scope.map = $scope.lab_obj;
-            console.log($scope.map);
             /* Grid Object */
             $scope.grid = $scope.grid_obj;
+            console.log($scope.grid);
             /* Log Object */
             $scope.log = $scope.logInfo_obj;
 
@@ -177,7 +221,7 @@
 
             /* Set Maze Colors */
             $scope.groundColor = 'black';
-            $scope.cheeseColor = 'static/img/svg/cheese.svg';
+            $scope.cheeseColor = 'static/img/svg/cheese.png';
             $scope.circleBorder = '#00ffff';
             $scope.greatWallColor = '#008000';
             $scope.smallWallColor = '#0000ff';
@@ -283,7 +327,6 @@
 
             /* Update Viewer Values */
             $scope.updateValues = function () {
-                $scope.drawMap();
                 $scope.robot = $scope.log[$scope.idx].LogInfo.Robot;
                 $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 

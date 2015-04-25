@@ -51,9 +51,14 @@
                 <section>
                     <div class="row" id="svgrow" onload="inform()">
                         <div class="span12 viewer" style="text-align: center; vertical-align: middle">
-                            <canvas id="myCanvas" style="border:1px solid #000000;">
-                                Your browser does not support the HTML5 canvas tag.
+
+                            <canvas id="layer1" style="border:1px solid #000000; left: 0; top: 0; z-index: 0;">
+                                not supported
                             </canvas>
+                            <canvas id="layer2" style="position: absolute;border:1px solid #000000; left: 24px; top: 24px; z-index: 1;">
+                                not supported
+                            </canvas>
+
 
                             <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}} "
                                  data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-top: -5px">
