@@ -23,8 +23,9 @@
 void cbRobotAction::reset(void)
 {
 	leftMotorChanged = rightMotorChanged 
-		= endLedChanged = returningLedChanged 
-                = visitingLedChanged=sayReceived=false;
+                = endLedChanged = returningLedChanged 
+                = visitingLedChanged = sayReceived 
+                = sync = false;
 	sensorRequests.clear();
         sayMessage="";
 }

@@ -90,6 +90,9 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 	}
 	else if (tag == "Say") {
 	}
+	else if (tag == "Sync") {
+		sync = true;
+	}
     return TRUE;
 }
 
@@ -98,7 +101,9 @@ bool cbActionHandler::endElement( const QString&, const QString&, const QString&
 	/* process end tag */
 	const QString &tag = qName;
 	if (tag != "Actions" 
-	    && tag != "SensorRequests" && tag!="Say")
+	    && tag != "SensorRequests" 
+	    && tag != "Say" 
+	    && tag != "Sync")
 	{
 		return false;
 	}
