@@ -75,10 +75,11 @@ class AuthenticationTestCase(TestCase):
 
         # create competition
         url = "/api/v1/competitions/crud/"
-        data = {'name': 'C2', 'type_of_competition': competitiva.name}
+        data = {'name': 'C2', 'type_of_competition': competitiva.name, 'allow_remote_agents': False}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', competitiva.name)]))
+        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', competitiva.name),
+                                                     ('allow_remote_agents', False)]))
 
         # get competition Register
         url = "/api/v1/competitions/get/Register/"
