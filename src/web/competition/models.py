@@ -178,8 +178,9 @@ class Trial(models.Model):
 
     round = models.ForeignKey(Round, blank=False)
 
-    started = models.BooleanField(default=False)
+    prepare = models.BooleanField(default=False)
     waiting = models.BooleanField(default=False)
+
     errors = models.CharField(max_length=150)
 
     log_json = models.FileField(upload_to="json_logs/%Y/%m/%d")
@@ -193,6 +194,14 @@ class Trial(models.Model):
 
     def __unicode__(self):
         return self.identifier
+
+
+class TrialMessage(models.Model):
+    message = models.CharField(max_length=150, blank=False)
+    trial = models.ForeignKey(Trial, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class TrialGrid(models.Model):

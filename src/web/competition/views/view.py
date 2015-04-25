@@ -37,7 +37,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
 
         if serializer.is_valid():
             type_of_competition = get_object_or_404(TypeOfCompetition.objects.all(),
-                name=serializer.validated_data['type_of_competition'])
+                                                    name=serializer.validated_data['type_of_competition'])
 
             try:
                 with transaction.atomic():
