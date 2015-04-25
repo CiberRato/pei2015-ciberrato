@@ -161,12 +161,15 @@ class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the round trials
-        B{URL:} ../api/v1/competitions/trials_by_round/<round_name>/
+        B{URL:} ../api/v1/competitions/trials_by_round/<round_name>/?competition_name=<competition_name>
 
         :type  round_name: str
         :param round_name: The round name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class([TrialSimplex(sim) for sim in r.trial_set.all()], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

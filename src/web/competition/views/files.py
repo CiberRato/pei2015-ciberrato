@@ -78,7 +78,7 @@ class UploadRoundXMLView(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), competition=competition)
+        r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), parent_competition=competition)
 
         return self.file_save_xml(request.data.get('file', ''), r, request)
 
@@ -98,7 +98,7 @@ class UploadRoundXMLView(views.APIView):
 
         with transaction.atomic():
             competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-            r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), competition=competition)
+            r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), parent_competition=competition)
 
             setattr(r, self.file_to_save, file_obj)
             r.save()
