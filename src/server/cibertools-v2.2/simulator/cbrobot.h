@@ -72,11 +72,14 @@ public:
     inline void setEndLed(bool l) { recEndLed=true; endLed = l; }
     void setReturningLed(bool l);
     void setVisitingLed(bool l);
+    inline void setWaitingForSync(bool sync) { waitingSync=sync; }
 
     void setSayMessage(QString message);
     QString getSayMessage(void);
 
     void resetReceivedFlags(void);
+
+    inline bool getWaitingForSync(void) { return waitingSync; }
     inline bool receivedLeftMotor(void) { return recLeftMotor; }
     inline bool receivedRightMotor(void) { return recRightMotor; }
     inline bool receivedEndLed(void) { return recEndLed; }
@@ -213,6 +216,7 @@ protected:  // class data members
     bool returningLed;
     bool visitingLed;
 	bool endLed;
+    bool waitingSync;
 
     QString sayMessage;
 

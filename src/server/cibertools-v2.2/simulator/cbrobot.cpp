@@ -111,6 +111,7 @@ cbRobot::cbRobot(const double irSensorAngle[]) : cbClient()
 	endLed = false;
     returningLed=false;
     visitingLed=false;
+    waitingSync=false;
 
 	resetReceivedFlags();
 
