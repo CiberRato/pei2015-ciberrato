@@ -96,6 +96,8 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
 
         :type  name: str
         :param name: The round name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         if 'competition_name' not in request.GET:
             return Response({'status': 'Bad request',
@@ -118,12 +120,20 @@ class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         B{Get} the round competition for the admin
-        B{URL:} ../api/v1/competitions/round_admin/<round_name>/
+        B{URL:} ../api/v1/competitions/round_admin/<round_name>/?competition_name=<competition_name>
 
         :type  round_name: str
         :param round_name: The round name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+        if 'competition_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?competition_name=<competition_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class(RoundSimplex(r))
         return Response(serializer.data, status=status.HTTP_200_OK)
 
