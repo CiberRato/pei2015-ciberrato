@@ -37,11 +37,15 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         :type  round_name: str
         :param round_name: The round name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            competition = get_object_or_404(Competition.objects.all(), name=serializer.validated_data['competition_name'])
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
+                                  parent_competition=competition)
 
             if not bool(r.grid_path) or not bool(r.param_list_path) or not bool(r.param_list_path):
                 return Response({'status': 'Bad Request',
