@@ -189,10 +189,10 @@ class GetAllAgentFiles(views.APIView):
         return permissions.IsAuthenticated(),
 
     @staticmethod
-    def get(request, agent_name):
+    def get(request, team_name, agent_name):
         """
         B{Retrieve} the agent files as zip
-        B{URL:} ../api/v1/agents/agent_files/<agent_name>/?team_name=<team_name>
+        B{URL:} ../api/v1/agents/agent_all_files/(?P<team_name>.+)/(?P<agent_name>.+)/
         Must be part of the team owner of the agent
 
         Client only
@@ -202,12 +202,7 @@ class GetAllAgentFiles(views.APIView):
         :type  team_name: str
         :param team_name: The team name
         """
-        if 'team_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?team_name=<team_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        team = get_object_or_404(Team.objects.all(), name=team_name)
         # agent_name
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 

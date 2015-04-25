@@ -149,7 +149,7 @@ urlpatterns = patterns('',
                            name="Get agent files SERVER"),
 
                        # get all agent files
-                       url(r'^api/v1/agents/agent_all_files/(?P<group_name>.+)/(?P<agent_name>.+)/$',
+                       url(r'^api/v1/agents/agent_all_files/(?P<team_name>.+)/(?P<agent_name>.+)/$',
                            GetAllAgentFiles.as_view(),
                            name="Get all agent files"),
 
