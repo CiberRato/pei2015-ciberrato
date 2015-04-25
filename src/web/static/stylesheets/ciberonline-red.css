@@ -13281,3 +13281,24 @@ div.jGrowl div.success a:hover {
   display: block !important;
   margin-bottom: 10px;
 }
+.canvas-container {
+    position: relative;
+    max-width: 1024px;
+    min-width: 320px;
+    margin: 0 auto;
+}
+#layer1 {
+    width: 100%;
+    height: auto;
+    background-color: pink;
+    z-index: 0;
+}
+
+#layer2 {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}

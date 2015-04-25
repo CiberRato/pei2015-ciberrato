@@ -24,7 +24,7 @@
             console.log("ACTIVATED");
             console.log("TENHO O FICHEIRO: LOG!");
 
-            //console.log(log);
+
             $scope.logInfo_obj = log.data.Log;
             $scope.parameters_obj = log.data.Parameters;
             $scope.lab_obj = log.data.Lab;
@@ -64,7 +64,6 @@
             drawWalls();
             drawBeacon();
             drawGrid();
-
         }
 
         function drawGrid(){
@@ -78,7 +77,6 @@
                 ctx1.strokeStyle = $scope.circleBorder;
                 ctx1.stroke();
             }
-
         }
 
         function drawBeacon(){
@@ -110,11 +108,8 @@
                     imageObj.src = $scope.cheeseColor;
                     ctx1.fill();
                     ctx1.stroke();
-
                 }
-
             }
-
         }
 
         function drawWalls(){
@@ -212,11 +207,8 @@
                         ctx2.stroke();
                         ctx2.restore();
                     }
-
-
                 }
             }
-
         }
 
         function doIt() {

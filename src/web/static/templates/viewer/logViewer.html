@@ -50,20 +50,21 @@
             <div class="data-container">
                 <section>
                     <div class="row" id="svgrow" onload="inform()">
-                        <div class="span12 viewer" style="text-align: center; vertical-align: middle">
-
-                            <canvas id="layer1" style="border:1px solid #000000; left: 0; top: 0; z-index: 0;">
-                                not supported
-                            </canvas>
-                            <canvas id="layer2" style="position: absolute;border:1px solid #000000; left: 24px; top: 24px; z-index: 1;">
-                                not supported
-                            </canvas>
-
-                            <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}} "
-                                 data-cur_min="0" style="width: {{map._Width*zoom}}px; margin-top: -5px">
-                                <div class="leftGrip"></div>
+                        <div class="span12" style="text-align: center; vertical-align: middle">
+                            <div class ="canvas-container">
+                                <canvas id="layer1">
+                                    not supported
+                                </canvas>
+                                <canvas id="layer2">
+                                    not supported
+                                </canvas>
                             </div>
-
+                            <div class ="timeline-container">
+                                <div class="nstSlider" data-range_min="0" data-range_max="{{param._SimTime}} "
+                                     data-cur_min="0" style="width: 100%; margin-top: -5px">
+                                    <div class="leftGrip"></div>
+                                </div>
+                            </div>
                             <div class="row" >
                                 <div class ="span6" style="text-align: left;margin-left: 20px; margin-top: 5px">
                                     <div class="btn-group" data-toggle="buttons-checkbox">
