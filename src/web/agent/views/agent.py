@@ -30,12 +30,12 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Create} an agent
         B{URL:} ../api/v1/agents/agent/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
-        @type  team_name: str
-        @param team_name: The team name
-        @type  is_remote: boolean
-        @param is_remote: True if is virtual or False if is not virtual
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        :type  is_remote: boolean
+        :param is_remote: True if is virtual or False if is not virtual
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -44,14 +44,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             agent_name = serializer.validated_data['agent_name']
 
-            if serializer.validated_data['is_remote']:
-                Agent.objects.create(agent_name=agent_name, user=user, team=team, code_valid=True,
-                                     language=serializer.validated_data['language'],
-                                     is_remote=serializer.validated_data['is_remote'])
-            else:
-                Agent.objects.create(agent_name=agent_name, user=user, team=team,
-                                     language=serializer.validated_data['language'],
-                                     is_remote=serializer.validated_data['is_remote'])
+            Agent.objects.create(agent_name=agent_name, user=user, team=team,
+                                 language=serializer.validated_data['language'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -64,8 +58,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Get} information of the agent
         B{URL:} ../api/v1/agents/agent/<agent_name>/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
         serializer = AgentSerializer(AgentSimplex(agent))
@@ -77,8 +71,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Destroy} an agent
         B{URL:} ../api/v1/agents/agent/<agent_name>/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
         agent.delete()
@@ -100,8 +94,8 @@ class AgentsByTeamViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the list of agents by team
         B{URL:} ../api/v1/agents/agents_by_team/<team_name>/
 
-        @type  team_name: str
-        @param team_name: The team name
+        :type  team_name: str
+        :param team_name: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class([AgentSimplex(agent) for agent in team.agent_set.all()], many=True)
@@ -121,8 +115,8 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the list of agents by username
         B{URL:} ../api/v1/agents/agents_by_user/<username>/
 
-        @type  username: str
-        @param username: The user name
+        :type  username: str
+        :param username: The user name
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
         serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
@@ -142,8 +136,8 @@ class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericView
         B{Retrieve} the list of competitions that agent is associated
         B{URL:} ../api/v1/agents/agent_competitions/<agent_name>/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
 
         agent = get_object_or_404(Agent.objects.all(), username=kwargs.get('pk'))
@@ -164,8 +158,8 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
         B{POST} validate code
         B{URL:} ../api/v1/agents/validate_code/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -205,13 +199,13 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the code validation attributes
         B{URL:} ../api/v1/agents/code_validation/<agent_name>/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
 
-        @type  code_valid: bool
-        @param code_valid: True or False
-        @type  validation_result: str
-        @param validation_result: The validation result
+        :type  code_valid: bool
+        :param code_valid: True or False
+        :type  validation_result: str
+        :param validation_result: The validation result
         """
         serializer = self.serializer_class(data=request.data)
 

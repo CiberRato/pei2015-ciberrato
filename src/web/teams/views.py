@@ -36,10 +36,10 @@ class TeamViewSet(viewsets.ModelViewSet):
         B{Create} a team and the TeamMember admin by the user that requested the team create method
         B{URL:} ../api/v1/teams/crud/
 
-        @type  name: str
-        @param name: The team name
-        @type  max_members: number
-        @param max_members: max team members
+        :type  name: str
+        :param name: The team name
+        :type  max_members: number
+        :param max_members: max team members
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -64,8 +64,8 @@ class TeamViewSet(viewsets.ModelViewSet):
         B{Retrieve} the team attributes by team name
         B{URL:} ../api/v1/teams/crud/<team_name>/
 
-        @type  pk: str
-        @param pk: The team name
+        :type  pk: str
+        :param pk: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class(team)
@@ -76,8 +76,8 @@ class TeamViewSet(viewsets.ModelViewSet):
         B{Destroy} the team by a team admin user and delete all the team members
         B{URL:} ../api/v1/teams/crud/<team_name>/
 
-        @type  pk: str
-        @param pk: The team name
+        :type  pk: str
+        :param pk: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         team.delete()
@@ -90,8 +90,8 @@ class TeamViewSet(viewsets.ModelViewSet):
         B{Update} the team
         B{URL:} ../api/v1/teams/crud/<team_name>/
 
-        @type  pk: str
-        @param pk: The team name
+        :type  pk: str
+        :param pk: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class(data=request.data)
@@ -205,10 +205,10 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Create} a TeamMember to a Team
         B{URL:} ../api/v1/teams/member/
 
-        @type  user_name: str
-        @param user_name: The user name
-        @type  team_name: str
-        @param team_name: The team name
+        :type  user_name: str
+        :param user_name: The user name
+        :type  team_name: str
+        :param team_name: The team name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -240,10 +240,10 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Destroy} a TeamMember from a Team
         B{URL:} ../api/v1/teams/member/<team_name>/?username=<user_name>
 
-        @type  user_name: str
-        @param user_name: The user name
-        @type  team_name: str
-        @param team_name: The team name
+        :type  user_name: str
+        :param user_name: The user name
+        :type  team_name: str
+        :param team_name: The team name
         """
         if 'username' not in request.GET:
             return Response({'status': 'Bad request',
@@ -274,10 +274,10 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Retrieve} the TeamMember of a Team
         B{URL:} ../api/v1/teams/member/<team_name>/?username=<user_name>
 
-        @type  user_name: str
-        @param user_name: The user name
-        @type  team_name: str
-        @param team_name: The team name
+        :type  user_name: str
+        :param user_name: The user name
+        :type  team_name: str
+        :param team_name: The team name
         """
         if 'username' not in request.GET:
             return Response({'status': 'Bad request',
@@ -318,10 +318,10 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
         B{Update}: make admin of the Team
         B{URL:} ../api/v1/teams/admin/<team_name>/?username=<user_name>
 
-        @type  username: str
-        @param username: The user name
-        @type  pk: str
-        @param pk: The team name
+        :type  username: str
+        :param username: The user name
+        :type  pk: str
+        :param pk: The team name
         """
         if 'username' not in request.GET:
             return Response({'status': 'Bad request',

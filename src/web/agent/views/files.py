@@ -97,10 +97,10 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         B{Destroy} an agent file
         B{URL:} ../api/v1/agents/delete_agent_file/<agent_name>/?file_name=<file_name>
 
-        @type  agent_name: str
-        @param agent_name: The agent name
-        @type  file_name: str
-        @param file_name: The file name
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  file_name: str
+        :param file_name: The file name
         """
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
 
@@ -136,8 +136,8 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/agents/agent_files/<agent_name>/
         Must be part of the team owner of the agent
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
 

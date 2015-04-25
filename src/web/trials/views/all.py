@@ -28,10 +28,10 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
         B{Create} the json log
         B{URL:} ../api/v1/trials/trial_log/
 
-        @type  log_json: str
-        @param log_json: The json log
-        @type  trial_identifier: str
-        @param trial_identifier: The trial identifier
+        :type  log_json: str
+        :param log_json: The json log
+        :type  trial_identifier: str
+        :param trial_identifier: The trial identifier
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -62,10 +62,10 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
         B{Create} the trial error
         B{URL:} ../api/v1/trials/trial_error/
 
-        @type  msg: str
-        @param msg: The error
-        @type  trial_identifier: str
-        @param trial_identifier: The trial identifier
+        :type  msg: str
+        :param msg: The error
+        :type  trial_identifier: str
+        :param trial_identifier: The trial identifier
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -89,8 +89,8 @@ class GetTrialLog(views.APIView):
         B{Get} trial json log
         B{URL:} ../api/v1/trials/get_trial_log/<trial_id>/
 
-        @type  trial_id: str
-        @param trial_id: The trial identifier
+        :type  trial_id: str
+        :param trial_id: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=trial_id)
 
@@ -123,8 +123,8 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Retrieve} the trial complete, machine-to-machine
         B{URL:} ../api/v1/trials/get_trial/<trial_id>/
 
-        @type  trial_id: str
-        @param trial_id: The trial id
+        :type  trial_id: str
+        :param trial_id: The trial id
         """
         trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
         serializer = self.serializer_class(TrialX(trial))

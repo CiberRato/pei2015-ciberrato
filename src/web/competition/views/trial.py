@@ -33,8 +33,8 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Create} one trial for one round
         B{URL:} ../api/v1/competitions/trial/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -59,8 +59,8 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Get} the trial information
         B{URL:} ../api/v1/competitions/trial/<identifier>/
 
-        @type  identifier: str
-        @param identifier: The trial identifier
+        :type  identifier: str
+        :param identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         serializer = self.serializer_class(TrialSimplex(trial))
@@ -72,8 +72,8 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Destroy} the trial information
         B{URL:} ../api/v1/competitions/trial/<identifier>/
 
-        @type  identifier: str
-        @param identifier: The trial identifier
+        :type  identifier: str
+        :param identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         trial.delete()
@@ -95,8 +95,8 @@ class GetTrialAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the trial competition agents
         B{URL:} ../api/v1/competitions/trial_agents/<identifier>/
 
-        @type  identifier: str
-        @param identifier: The trial identifier
+        :type  identifier: str
+        :param identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
         trials = []
@@ -122,8 +122,8 @@ class TrialByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the agent trials
         B{URL:} ../api/v1/competitions/trials_by_agent/<agent_name>/
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
         trials = []
@@ -149,8 +149,8 @@ class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the round trials
         B{URL:} ../api/v1/competitions/trials_by_round/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         serializer = self.serializer_class([TrialSimplex(sim) for sim in r.trial_set.all()], many=True)
@@ -170,8 +170,8 @@ class TrialByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the competition trials
         B{URL:} ../api/v1/competitions/trials_by_competition/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The competition name
+        :type  competition_name: str
+        :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
         trials = []
@@ -199,10 +199,10 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Associate} one grid to the trial
         B{URL:} ../api/v1/competitions/trial_grid/
 
-        @type  grid_identifier: str
-        @param grid_identifier: The grid identifier
-        @type  trial_identifier: str
-        @type  trial_identifier: The agent name
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
+        :type  trial_identifier: str
+        :type  trial_identifier: The agent name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -263,8 +263,8 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Get} grid positions by trial
         B{URL:} ../api/v1/competitions/trial_grid/<trial_identifier>/
 
-        @type  trial_identifier: str
-        @param trial_identifier: The trial identifier
+        :type  trial_identifier: str
+        :param trial_identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
         grid_sim_list = TrialGrid.objects.filter(trial=trial)
@@ -278,10 +278,10 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Dissociate} one grid to the trial
         B{URL:} ../api/v1/competitions/trial_grid/trial_identifier/?position=<position>
 
-        @type  position: str
-        @param position: The position
-        @type  trial_identifier: str
-        @type  trial_identifier: The agent name
+        :type  position: str
+        :param position: The position
+        :type  trial_identifier: str
+        :type  trial_identifier: The agent name
         """
         sim = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
         sim_grid = get_object_or_404(TrialGrid.objects.all(), trial=sim,
@@ -323,8 +323,8 @@ class StartTrial(views.APIView):
         B{Start} the trial
         B{URL:} ../api/v1/competitions/start_trial/
 
-        @type  trial_id: str
-        @param trial_id: The trial id
+        :type  trial_id: str
+        :param trial_id: The trial id
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
 

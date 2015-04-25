@@ -43,10 +43,10 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         B{Create} a Round
         B{URL:} ../api/v1/competitions/round/
 
-        @type  name: str
-        @param name: The round name
-        @type  parent_competition_name: str
-        @param parent_competition_name: The competition parent name
+        :type  name: str
+        :param name: The round name
+        :type  parent_competition_name: str
+        :param parent_competition_name: The competition parent name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -74,8 +74,8 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         B{Get} the round competition
         B{URL:} ../api/v1/competitions/round/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         serializer = self.serializer_class(RoundSimplex(r))
@@ -86,8 +86,8 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         B{Remove} a round from the competition
         B{URL:} ../api/v1/competitions/round/<name>/
 
-        @type  name: str
-        @param name: The round name
+        :type  name: str
+        :param name: The round name
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         r.delete()
@@ -106,8 +106,8 @@ class RoundViewAdminSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the round competition for the admin
         B{URL:} ../api/v1/competitions/round_admin/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
         serializer = self.serializer_class(RoundSimplex(r))
@@ -126,8 +126,8 @@ class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the agents available to compete in the round
         B{URL:} ../api/v1/competitions/round_agents/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r)
@@ -149,8 +149,8 @@ class RoundParticipants(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the participants available to compete in the round
         B{URL:} ../api/v1/competitions/round_participants/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r)
@@ -176,8 +176,8 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the teams available to compete in the round
         B{URL:} ../api/v1/competitions/round_teams/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
         competition_agents = CompetitionAgent.objects.filter(round=r)
@@ -199,8 +199,8 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{Get} the files uploaded to the round
         B{URL:} ../api/v1/competitions/round_files/<round_name>/
 
-        @type  round_name: str
-        @param round_name: The round name
+        :type  round_name: str
+        :param round_name: The round name
         """
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
