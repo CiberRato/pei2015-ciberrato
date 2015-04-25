@@ -77,7 +77,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent
-        B{URL:} ../api/v1/agents/agent/<agent_name>/
+        B{URL:} ../api/v1/agents/agent/<agent_name>/?team_name=<team_name>
 
         :type  agent_name: str
         :param agent_name: The agent name
@@ -154,6 +154,8 @@ class AgentCompetitionAssociated(mixins.RetrieveModelMixin, viewsets.GenericView
 
         :type  agent_name: str
         :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
         """
         if 'team_name' not in request.GET:
             return Response({'status': 'Bad request',
@@ -227,6 +229,7 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         :type  agent_name: str
         :param agent_name: The agent name
 
+        data:
         :type  team_name: str
         :param team_name: The team name
         :type  code_valid: bool
