@@ -104,7 +104,7 @@
             }
 
             function getTrials(roundName, i){
-                Round.getTrials(roundName).then(getTrialsSuccessFn, getTrialsErrorFn);
+                Round.getTrials(roundName, competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
 
                 function getTrialsSuccessFn(data){
                     vm.rounds[i].trials = data.data;
