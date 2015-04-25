@@ -14,7 +14,7 @@ class AgentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'is_local', 'rounds', 'code_valid', 'validation_result', 'language', 'competitions', 'user', 'team_name', 'created_at',
+        fields = ('agent_name', 'is_remote', 'rounds', 'code_valid', 'validation_result', 'language', 'competitions', 'user', 'team_name', 'created_at',
                   'updated_at')
         read_only_fields = ('user', 'rounds', 'code_valid', 'validation_result', 'competitions', 'created_at', 'updated_at',)
 

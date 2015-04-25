@@ -29,7 +29,7 @@
             return $http.post('/api/v1/agents/agent/',{
                 agent_name: name,
                 team_name: teamName,
-                is_local: type,
+                is_remote: type,
                 language: language
             })
         }

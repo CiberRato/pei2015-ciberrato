@@ -34,8 +34,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         @param agent_name: The agent name
         @type  team_name: str
         @param team_name: The team name
-        @type  is_local: boolean
-        @param is_local: True if is virtual or False if is not virtual
+        @type  is_remote: boolean
+        @param is_remote: True if is virtual or False if is not virtual
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -44,14 +44,14 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             agent_name = serializer.validated_data['agent_name']
 
-            if serializer.validated_data['is_local']:
+            if serializer.validated_data['is_remote']:
                 Agent.objects.create(agent_name=agent_name, user=user, team=team, code_valid=True,
                                      language=serializer.validated_data['language'],
-                                     is_local=serializer.validated_data['is_local'])
+                                     is_remote=serializer.validated_data['is_remote'])
             else:
                 Agent.objects.create(agent_name=agent_name, user=user, team=team,
                                      language=serializer.validated_data['language'],
-                                     is_local=serializer.validated_data['is_local'])
+                                     is_remote=serializer.validated_data['is_remote'])
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 

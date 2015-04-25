@@ -29,8 +29,8 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition', 'state_of_competition')
-        read_only_fields = ('name', 'type_of_competition', 'state_of_competition')
+        fields = ('name', 'type_of_competition', 'state_of_competition', 'allow_remote_agents')
+        read_only_fields = ('name', 'type_of_competition', 'state_of_competition', 'allow_remote_agents')
 
 
 class CompetitionInputSerializer(serializers.ModelSerializer):
@@ -38,7 +38,7 @@ class CompetitionInputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition', 'state_of_competition')
+        fields = ('name', 'type_of_competition', 'allow_remote_agents', 'state_of_competition')
         read_only_fields = ('state_of_competition',)
 
 

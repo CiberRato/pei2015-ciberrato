@@ -27,12 +27,12 @@
                                 <td><a href="panel/{{value.agent_name}}/agentDetail">{{ value.agent_name }}</a></td>
                                 <td><a href="panel/{{value.team_name}}/teamMembers">{{value.team_name}}</a></td>
                                 <td>{{value.language}}</td>
-                                <td ng-if="value.is_local == false">
+                                <td ng-if="value.is_remote == false">
                                     <a  href="/panel/{{value.agent_name}}/agentDetail">Upload</a>
 
 
                                 </td>
-                                <td ng-if="value.is_local == true">Can't Upload Code</td>
+                                <td ng-if="value.is_remote == true">Can't Upload Code</td>
                                 <td><a ng-click="vm.deleteAgent(value.agent_name)" class="btn btn-primary btn-flat">X</a></td>
 
                             </tr>

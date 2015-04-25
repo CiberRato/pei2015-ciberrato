@@ -39,7 +39,7 @@ class UploadAgent(views.APIView):
 
         agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
 
-        if agent.is_local:
+        if agent.is_remote:
             return Response({'status': 'Bad request',
                              'message': 'You can\'t upload code to a virtual agent!'},
                             status=status.HTTP_400_BAD_REQUEST)

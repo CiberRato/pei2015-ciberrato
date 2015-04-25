@@ -236,11 +236,11 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team, without code first
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'is_local': False, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE'), (u'is_local', False), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE'), (u'is_remote', False), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # get agents by team
         url = "/api/v1/agents/agents_by_team/XPTO3/"
@@ -253,7 +253,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False),
+            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
              ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                  ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
@@ -269,7 +269,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False),
+            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
              ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                  ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
@@ -286,7 +286,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
                           'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -346,7 +346,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
                           'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -549,7 +549,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
                           'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -1326,54 +1326,54 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_remote': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE1'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE1'), (u'is_remote', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
         self.assertEqual(a1.code_valid, True)
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_remote': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE2'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE2'), (u'is_remote', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE3', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE3', 'team_name': 'XPTO3', 'is_remote': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE3'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE3'), (u'is_remote', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE4', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE4', 'team_name': 'XPTO3', 'is_remote': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE4'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE4'), (u'is_remote', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE5', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE5', 'team_name': 'XPTO3', 'is_remote': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE5'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE5'), (u'is_remote', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE6', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE6', 'team_name': 'XPTO3', 'is_remote': True, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE6'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE6'), (u'is_remote', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # only admin
         url = "/api/v1/competitions/toggle_team_inscription/"
@@ -1471,12 +1471,12 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_local': False, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data,
                          OrderedDict([('agent_name', u'KAMIKAZE1'), (u'language', 'Python'),
-                                      ('is_local', False), ('team_name', u'XPTO3')]))
+                                      ('is_remote', False), ('team_name', u'XPTO3')]))
 
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
         a1.is_presential = True
@@ -1484,12 +1484,12 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_local': False, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data,
                          OrderedDict([('agent_name', u'KAMIKAZE2'), (u'language', 'Python'),
-                                      ('is_local', False), ('team_name', u'XPTO3')]))
+                                      ('is_remote', False), ('team_name', u'XPTO3')]))
 
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_presential = True

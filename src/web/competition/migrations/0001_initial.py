@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('language', models.CharField(default=b'Python', max_length=100, choices=[(b'Python', b'Python'), (b'C', b'C'), (b'C++', b'cplusplus'), (b'Java', b'Java')])),
                 ('code_valid', models.BooleanField(default=False)),
                 ('validation_result', models.CharField(max_length=512)),
-                ('is_local', models.BooleanField(default=False)),
+                ('is_remote', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('team', models.ForeignKey(to='authentication.Team')),
