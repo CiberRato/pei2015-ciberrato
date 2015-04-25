@@ -34,8 +34,6 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         :param agent_name: The agent name
         :type  team_name: str
         :param team_name: The team name
-        :type  is_remote: boolean
-        :param is_remote: True if is virtual or False if is not virtual
         """
         serializer = self.serializer_class(data=request.data)
 
