@@ -126,7 +126,7 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/agent/myAgents.html',
             title: 'My Agents'
-        }).when('/panel/:name/agentDetail',{
+        }).when('/panel/:teamName/:name/agentDetail',{
             controller:'AgentDetailController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/agent/agentDetail.html',

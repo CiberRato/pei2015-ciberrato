@@ -14,15 +14,18 @@
         vm.deleteUpload = deleteUpload;
         vm.validateCode = validateCode;
         var agentName = $routeParams.name;
+        console.log($routeParams);
+        var teamName = $routeParams.teamName;
 
         activate();
 
         function activate() {
-            Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
-            Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
+            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+            Agent.getFiles(agentName, teamName).then(getFilesSuccessFn, getFilesErrorFn);
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
+                console.log(vm.agent);
 
             }
 
@@ -45,7 +48,7 @@
         }
 
         function validateCode(){
-            Agent.validateAgent(agentName).then(validateSuccessFn, validateErrorFn);
+            Agent.validateAgent(agentName, teamName).then(validateSuccessFn, validateErrorFn);
 
                 function validateSuccessFn() {
                     $.jGrowl("The code has been submitted for validation!", {
@@ -54,7 +57,7 @@
                     });
                     setTimeout(function () {
                         $timeout(function(){
-                            Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
                         });
                     }, 1000);
 
@@ -66,7 +69,7 @@
                         $route.reload();
                     }else{
                         setTimeout(function () {
-                            Agent.getAgent(agentName).then(getAgentSuccessFn, getAgentErrorFn);
+                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
                         }, 1000);
                     }
                 }
@@ -99,7 +102,7 @@
 
 
             function uploadCode(selectedFile){
-                Agent.upload(agentName, selectedFile).then(uploadSuccessFn, uploadErrorFn);
+                Agent.upload(agentName, selectedFile, teamName).then(uploadSuccessFn, uploadErrorFn);
 
                 function uploadSuccessFn() {
 
@@ -125,7 +128,7 @@
         }
 
         function deleteUpload(fileName) {
-            Agent.deleteUpload(agentName, fileName).then(deleteUploadSuccessFn, deleteUploadErrorFn);
+            Agent.deleteUpload(agentName, fileName, teamName).then(deleteUploadSuccessFn, deleteUploadErrorFn);
 
             function deleteUploadSuccessFn() {
                 $.jGrowl("File \'" + fileName + "\' has been deleted.", {
@@ -149,7 +152,7 @@
         }
 
         function getFiles(){
-            Agent.getFiles(agentName).then(getFilesSuccessFn, getFilesErrorFn);
+            Agent.getFiles(agentName, teamName).then(getFilesSuccessFn, getFilesErrorFn);
 
             function getFilesSuccessFn(data) {
                 vm.files = data.data;

@@ -100,7 +100,6 @@
             for (var i = 0; i < data.data.length; ++i) {
                 vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position, type: 'Grid'});
             }
-            console.log(vm.modeles)
         }
 
         function getAssociatedErrorFn(data){
@@ -109,11 +108,11 @@
 
         }
 
-        function associate(agent_name){
+        function associate(agent_name, teamName){
             console.log(vm.models.lists);
 
             var pos = vm.models.lists.GridPosition.length;
-            Grid.associateAgent(agent_name, vm.identifier, pos).then(associateSuccessFn, associateErrorFn);
+            Grid.associateAgent(agent_name, vm.identifier, pos, teamName).then(associateSuccessFn, associateErrorFn);
 
             function associateSuccessFn(){
                 $.jGrowl("Agent has been associated successfully.", {
@@ -131,8 +130,8 @@
 
         }
 
-        function disassociate(pos){
-            Grid.disassociateAgent(vm.identifier, pos).then(disassociateSuccessFn, disassociateErrorFn);
+        function disassociate(pos, teamName){
+            Grid.disassociateAgent(vm.identifier, pos, teamName).then(disassociateSuccessFn, disassociateErrorFn);
             console.log(vm.models.lists.GridPosition);
             function disassociateSuccessFn(){
                 $.jGrowl("Agent has been disassociated successfully.", {
@@ -182,7 +181,7 @@
                     console.log(vm.models.lists.GridPosition);
 
                     for(var k= 0; k<vm.models.lists.GridPosition.length; k++){
-                        gridAssociate(vm.models.lists.GridPosition[k].label, k+1);
+                        gridAssociate(vm.models.lists.GridPosition[k].label, k+1, teamName);
                     }
                     console.log(vm.models.lists.GridPosition);
                     Grid.getAgents(vm.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
@@ -213,8 +212,8 @@
             }
         }
 
-        function gridAssociate(agent_name, pos){
-            Grid.associateAgent(agent_name, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);
+        function gridAssociate(agent_name, pos, teamName){
+            Grid.associateAgent(agent_name, vm.identifier, pos, teamName).then(associateAgentSuccessFn, associateAgentErrorFn);
 
             function associateAgentSuccessFn(){
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
