@@ -45,6 +45,7 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
 class CompetitionInputSerializer(serializers.ModelSerializer):
     type_of_competition = serializers.CharField(max_length=128)
+    allow_remote_agents = serializers.BooleanField(required=True)
 
     class Meta:
         model = Competition
