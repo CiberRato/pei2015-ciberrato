@@ -92,12 +92,18 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
     def destroy(self, request, *args, **kwargs):
         """
         B{Remove} a round from the competition
-        B{URL:} ../api/v1/competitions/round/<name>/
+        B{URL:} ../api/v1/competitions/round/<name>/?competition_name=<competition_name>
 
         :type  name: str
         :param name: The round name
         """
-        r = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+        if 'competition_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?competition_name=<competition_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+        r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         r.delete()
         return Response(status=status.HTTP_200_OK)
 
