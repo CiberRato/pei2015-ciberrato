@@ -82,6 +82,7 @@ class Round(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        unique_together = ('name', 'parent_competition',)
         ordering = ['created_at']
         get_latest_by = "created_at"
 
