@@ -91,6 +91,7 @@
         }
 
         function create(competitionName, type_of_competition, allowed){
+            console.log(allowed);
             return $http.post("/api/v1/competitions/crud/", {
                 name: competitionName,
                 type_of_competition: type_of_competition,

@@ -45,13 +45,9 @@
                                         </div>
 
                                         <div  class="control-group">
-                                            <label class="control-label" for="select">Single Position?</label>
-                                            <div class="controls">
-                                                <select id="select" name="option">
-                                                    <option value="true">True</option>
-                                                    <option value="false">False</option>
-                                                </select>
-                                            </div>
+                                            <label class="control-label" >Single Position? &nbsp;&nbsp;&nbsp;&nbsp;<input ng-if="vm.single == false" type="checkbox" name="option1" ng-model="vm.single" ng-change="vm.single = true">
+                                                <input ng-if="vm.single == true" type="checkbox" name="option1" ng-model="vm.single" ng-change="vm.single = false">
+                                            </label>
                                         </div>
 
                                         <div class="control-group">

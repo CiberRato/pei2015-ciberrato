@@ -83,7 +83,11 @@
         function getByTeamSuccessFn(data){
             vm.models.lists.Available = [];
             for (var i = 0; i < data.data.length; ++i) {
-                vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                if(data.data[i].agent_name === "Remote" && vm.competition.allow_remote_agents === true){
+                    vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                }else if(data.data[i].agent_name !== "Remote"){
+                    vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                }
             }
 
         }

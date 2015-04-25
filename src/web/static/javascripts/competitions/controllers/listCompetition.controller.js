@@ -27,6 +27,7 @@
 
             function getCompetitionSuccessFn(data){
                 vm.competition = data.data;
+                console.log(vm.competition);
                 Competition.getTeams(vm.competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
 
                 function getTeamsSuccessFn(data) {

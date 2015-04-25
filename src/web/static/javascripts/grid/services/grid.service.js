@@ -11,6 +11,7 @@
         var Grid = {
             create: create,
             getMyGrids: getMyGrids,
+            getGrid: getGrid,
             destroy: destroy,
             getAgents: getAgents,
             associateAgent: associateAgent,
@@ -30,6 +31,9 @@
             return $http.get('/api/v1/competitions/grid_position/');
         }
 
+        function getGrid(teamName, competitionName){
+            return $http.get("/api/v1/competitions/grid_position/" + competitionName + "/?team_name=" + teamName);
+        }
         function destroy(teamName, competitionName){
             return $http.delete('/api/v1/competitions/grid_position/' + competitionName + '/?team_name=' + teamName)
         }

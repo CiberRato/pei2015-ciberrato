@@ -38,7 +38,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
-                                <td><a href="/api/v1/agents/file/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
+                                <td><a href="/api/v1/agents/file/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
                                 <td>{{value.size}}</td>
                                 <td>{{value.last_modification}}</td>
                                 <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
@@ -47,7 +47,7 @@
 
                         </table>
                         <div align="right">
-                            <a ng-if="vm.files.length != 0" href="/api/v1/agents/agent_all_files/(?P{{vm.agent.team_name}}.+)/(?P{{vm.agent.agent_name}}.+)" target="_blank">Download All</a>
+                            <a ng-if="vm.files.length != 0" href="/api/v1/agents/agent_all_files/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/" target="_blank">Download All</a>
                         </div>
                         <strong style="font-size: large">Files: </strong>
                         <br/>
