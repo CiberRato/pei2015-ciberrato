@@ -11,8 +11,8 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('authentication', '0001_initial'),
     ]
 
     operations = [
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('language', models.CharField(default=b'Python', max_length=100, choices=[(b'Python', b'Python'), (b'C', b'C'), (b'C++', b'cplusplus'), (b'Java', b'Java')])),
                 ('code_valid', models.BooleanField(default=False)),
                 ('validation_result', models.CharField(max_length=512)),
-                ('is_local', models.BooleanField(default=False)),
+                ('is_remote', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('team', models.ForeignKey(to='authentication.Team')),
@@ -66,6 +66,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=128, validators=[django.core.validators.RegexValidator(re.compile(b'^[-a-zA-Z0-9_ ]+$'), b'Enter a valid word consisting of letters, numbers, underscores, spaces or hyphens.', b'invalid'), django.core.validators.MinLengthValidator(1)])),
+                ('allow_remote_agents', models.BooleanField(default=False)),
                 ('state_of_competition', models.CharField(default=b'Register', max_length=100, choices=[(b'Register', b'Register'), (b'Competition', b'Competition'), (b'Past', b'Past')])),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
@@ -204,6 +205,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(unique=True, max_length=128, validators=[django.core.validators.RegexValidator(re.compile(b'^[-a-zA-Z0-9_ ]+$'), b'Enter a valid word consisting of letters, numbers, underscores, spaces or hyphens.', b'invalid'), django.core.validators.MinLengthValidator(1)])),
                 ('number_teams_for_trial', models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
                 ('number_agents_by_grid', models.IntegerField(default=1, validators=[django.core.validators.MinValueValidator(1)])),
+                ('single_position', models.BooleanField(default=False)),
+                ('timeout', models.IntegerField(default=5, validators=[django.core.validators.MinValueValidator(0)])),
             ],
             options={
             },

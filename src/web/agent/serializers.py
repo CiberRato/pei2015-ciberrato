@@ -14,24 +14,27 @@ class AgentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agent
-        fields = ('agent_name', 'is_local', 'rounds', 'code_valid', 'validation_result', 'language', 'competitions', 'user', 'team_name', 'created_at',
+        fields = ('agent_name', 'is_remote', 'rounds', 'code_valid', 'validation_result', 'language', 'competitions', 'user', 'team_name', 'created_at',
                   'updated_at')
-        read_only_fields = ('user', 'rounds', 'code_valid', 'validation_result', 'competitions', 'created_at', 'updated_at',)
+        read_only_fields = ('user', 'rounds', 'code_valid', 'is_remote', 'validation_result', 'competitions', 'created_at', 'updated_at',)
 
 
 class SubmitCodeAgentSerializer(serializers.ModelSerializer):
     agent_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = Agent
-        fields = ('agent_name',)
+        fields = ('agent_name', 'team_name')
         read_only_fields = ()
 
 
 class AgentCodeValidationSerializer(serializers.ModelSerializer):
+    team_name = serializers.CharField(max_length=128)
+
     class Meta:
         model = Agent
-        fields = ('code_valid', 'validation_result',)
+        fields = ('team_name', 'code_valid', 'validation_result',)
         read_only_fields = ()
 
 

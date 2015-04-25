@@ -10,7 +10,7 @@ from authentication.models import Team, TeamMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent
-from ..serializers import GridPositionsSerializer, AgentGridSerializer
+from ..serializers import GridPositionsSerializer, AgentGridSerializer, AgentRemoteGridSerializer
 from ..permissions import IsStaff
 
 
@@ -41,10 +41,10 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{Create} a grid positions
         B{URL:} ../api/v1/competitions/grid_positions/
 
-        @type  competition_name: str
-        @param competition_name: The type of competition name
-        @type  team_name: str
-        @type  team_name: The team name
+        :type  competition_name: str
+        :param competition_name: The type of competition name
+        :type  team_name: str
+        :type  team_name: The team name
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -96,10 +96,10 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{Retrieve} the grid positions details
         B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?team_name=<team_name>
 
-        @type  competition_name: str
-        @param competition_name: The type of competition name
-        @type  team_name: str
-        @type  team_name: The team name
+        :type  competition_name: str
+        :param competition_name: The type of competition name
+        :type  team_name: str
+        :type  team_name: The team name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
 
@@ -137,10 +137,10 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{Destroy} the grid positions
         B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?team_name=<team_name>
 
-        @type  competition_name: str
-        @param competition_name: The type of competition name
-        @type  team_name: str
-        @type  team_name: The team name
+        :type  competition_name: str
+        :param competition_name: The type of competition name
+        :type  team_name: str
+        :type  team_name: The team name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
 
@@ -188,17 +188,21 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Associate} agent to the grid position
         B{URL:} ../api/v1/competitions/agent_grid/
 
-        @type  grid_identifier: str
-        @param grid_identifier: The grid identifier
-        @type  agent_name: str
-        @type  agent_name: The agent name
-        @type  position: Integer
-        @type  position: The agent position
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        :type  position: Integer
+        :param  position: The agent position
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            agent = get_object_or_404(Agent.objects.all(), team=team,
+                                      agent_name=serializer.validated_data['agent_name'])
 
             if agent.team not in request.user.teams.all():
                 return Response({'status': 'Bad Request',
@@ -206,7 +210,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
 
             grid = get_object_or_404(GridPositions.objects.all(),
-                identifier=serializer.validated_data['grid_identifier'])
+                                     identifier=serializer.validated_data['grid_identifier'])
 
             agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
 
@@ -218,6 +222,11 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             if grid.competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
                                  'message': 'The competition is in \'Past\' state.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if not grid.competition.allow_remote_agents and agent.is_remote:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The competition is not accepting remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             team_enrolled = TeamEnrolled.objects.filter(team=agent.team, competition=grid.competition)
@@ -255,8 +264,8 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Get} agents by grid
         B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/
 
-        @type  grid_identifier: str
-        @param grid_identifier: The grid identifier
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
         """
         grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
         agents_grid = AgentGrid.objects.filter(grid_position=grid)
@@ -270,10 +279,154 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Delete} the agent in the grid
         B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/?position=<position>
 
-        @type  grid_identifier: str
-        @param grid_identifier: The grid identifier
-        @type  position: str
-        @type  position: The position
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
+        :type  position: str
+        :type  position: The position
+        """
+        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
+        agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
+            position=request.GET.get('position', ''))
+
+        agent = agent_grid.agent
+
+        if agent.team not in request.user.teams.all():
+            return Response({'status': 'Bad Request',
+                             'message': 'You must be part of the agent team.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if grid.competition.state_of_competition == 'Past':
+            return Response({'status': 'Bad Request',
+                             'message': 'The competition is in \'Past\' state.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team_enrolled = TeamEnrolled.objects.filter(team=agent.team, competition=grid.competition)
+
+        if len(team_enrolled) != 1:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your team must be enrolled in the competition.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        if not team_enrolled[0].valid:
+            return Response({'status': 'Permission denied',
+                             'message': 'Your team must be enrolled in the competition with valid inscription.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        agent_grid.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The agent has been dissociated!'},
+                        status=status.HTTP_200_OK)
+
+
+class AgentRemoteGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                             mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = AgentGrid.objects.all()
+    serializer_class = AgentRemoteGridSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Associate} agent to the grid position
+        B{URL:} ../api/v1/competitions/agent_remote_grid/
+
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
+        :type  team_name: str
+        :param team_name: The team name
+        :type  position: Integer
+        :type  position: The agent position
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            agent = get_object_or_404(Agent.objects.all(), team=team,
+                                      agent_name=serializer.validated_data['agent_name'])
+
+            if agent.team not in request.user.teams.all():
+                return Response({'status': 'Bad Request',
+                                 'message': 'You must be part of the agent team.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            grid = get_object_or_404(GridPositions.objects.all(),
+                                     identifier=serializer.validated_data['grid_identifier'])
+
+            agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
+
+            if agents_in_grid >= grid.competition.type_of_competition.number_agents_by_grid:
+                return Response({'status': 'Bad Request',
+                                 'message': 'You can not add more agents to the grid.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if grid.competition.state_of_competition == 'Past':
+                return Response({'status': 'Bad Request',
+                                 'message': 'The competition is in \'Past\' state.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if not grid.competition.allow_remote_agents and agent.is_remote:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The competition is not accepting remote agents!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            team_enrolled = TeamEnrolled.objects.filter(team=agent.team, competition=grid.competition)
+
+            if len(team_enrolled) != 1:
+                return Response({'status': 'Permission denied',
+                                 'message': 'Your team must be enrolled in the competition.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if not team_enrolled[0].valid:
+                return Response({'status': 'Permission denied',
+                                 'message': 'Your team must be enrolled in the competition with valid inscription.'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            if serializer.validated_data['position'] > grid.competition.type_of_competition.number_agents_by_grid:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The position can\'t be higher than the number agents allowed by grid.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if len(AgentGrid.objects.filter(grid_position=grid, position=serializer.validated_data['position'])) != 0:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The position has already been taken.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            AgentGrid.objects.create(agent=agent, grid_position=grid, position=serializer.validated_data['position'])
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} agents by grid
+        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/
+
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
+        """
+        grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
+        agents_grid = AgentGrid.objects.filter(grid_position=grid)
+
+        serializer = self.serializer_class([AgentGridSimplex(agent_grid) for agent_grid in agents_grid], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Delete} the agent in the grid
+        B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/?position=<position>
+
+        :type  grid_identifier: str
+        :param grid_identifier: The grid identifier
+        :type  position: str
+        :type  position: The position
         """
         grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
         agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
@@ -322,8 +475,8 @@ class GridPositionsByCompetition(mixins.RetrieveModelMixin, viewsets.GenericView
         B{Retrieve} the grid positions by competition
         B{URL:} ../api/v1/competitions/grid_positions_competition/<competition_name>/
 
-        @type  competition_name: str
-        @param competition_name: The type of competition name
+        :type  competition_name: str
+        :param competition_name: The type of competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
         grids = GridPositions.objects.filter(competition=competition)

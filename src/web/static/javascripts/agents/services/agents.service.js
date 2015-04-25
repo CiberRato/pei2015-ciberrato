@@ -25,11 +25,10 @@
 
         return Agent;
 
-        function create(name, teamName, type, language){
+        function create(name, teamName, language){
             return $http.post('/api/v1/agents/agent/',{
                 agent_name: name,
                 team_name: teamName,
-                is_local: type,
                 language: language
             })
         }

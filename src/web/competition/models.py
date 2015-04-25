@@ -22,6 +22,8 @@ class Competition(models.Model):
 
     enrolled_teams = models.ManyToManyField(Team, through='TeamEnrolled', related_name="competition")
 
+    allow_remote_agents = models.BooleanField(default=False)
+
     type_of_competition = models.ForeignKey('TypeOfCompetition', blank=False)
     state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
 
@@ -88,8 +90,7 @@ class Round(models.Model):
 
 
 class Agent(models.Model):
-    agent_name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word,
-                                                                                        MinLengthValidator(1)])
+    agent_name = models.CharField(max_length=128, blank=False, validators=[validate_word, MinLengthValidator(1)])
     user = models.ForeignKey(Account, blank=False)
     team = models.ForeignKey(Team, blank=False)
 
@@ -98,13 +99,14 @@ class Agent(models.Model):
     code_valid = models.BooleanField(default=False)
     validation_result = models.CharField(max_length=512)
 
-    is_local = models.BooleanField(default=False)
+    is_remote = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['created_at']
+        unique_together = ('team', 'agent_name',)
 
     def __unicode__(self):
         return self.agent_name

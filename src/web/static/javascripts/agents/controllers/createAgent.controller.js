@@ -12,16 +12,16 @@
 
         vm.create = create;
 
-        var username;
+        vm.username;
 
         activate();
 
         function activate(){
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             console.log(authenticatedAccount);
-            username = authenticatedAccount.username;
+            vm.username = authenticatedAccount.username;
 
-            Team.getUserAdmin(username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
+            Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
             Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
 
             function getUserAdminSuccessFn(data){
@@ -43,11 +43,15 @@
         }
 
         function create(){
-            var x = document.getElementById("select").value;
-            var y = document.getElementById("type").value;
+            var x;
+            if(vm.teams.length > 0) {
+                x = document.getElementById("select").value;
+            }else {
+                x = undefined;
+            }
             var language = document.getElementById("selector_language").value;
 
-            Agent.create(vm.name, x, y, language).then(createSuccessFn, createErrorFn);;
+            Agent.create(vm.name, x, language).then(createSuccessFn, createErrorFn);;
         }
 
         function createSuccessFn(){
@@ -55,7 +59,7 @@
                 life: 2500,
                 theme: 'success'
             });
-            $location.path('/panel/'+ username + '/myAgents/');
+            $location.path('/panel/'+ vm.username + '/myAgents/');
 
         }
 

@@ -3,19 +3,20 @@ from competition.models import LogTrialAgent
 
 class AgentX():
     def __init__(self, log_trial_agent, trial_id):
-        if log_trial_agent.competition_agent.agent.is_local:
+        if log_trial_agent.competition_agent.agent.is_remote:
             self.agent_type = "virtual"
         else:
             self.agent_type = "local"
 
         self.agent_name = log_trial_agent.competition_agent.agent.agent_name
+        self.team_name = log_trial_agent.competition_agent.agent.team.name
         self.pos = log_trial_agent.pos
         self.language = log_trial_agent.competition_agent.agent.language
 
-        if not log_trial_agent.competition_agent.agent.is_local:
+        if not log_trial_agent.competition_agent.agent.is_remote:
             # o agent tem de estar na simulacao
             # autenticacao para receber estes dados
-            self.files = "/api/v1/agents/agent_file/" + log_trial_agent.competition_agent.agent.agent_name + "/"
+            self.files = "/api/v1/agents/agent_file/" + log_trial_agent.competition_agent.agent.team.name + "/" + log_trial_agent.competition_agent.agent.agent_name + "/"
 
 
 class TrialX():

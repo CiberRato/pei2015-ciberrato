@@ -17,10 +17,20 @@ class TypeOfCompetitionSerializer(serializers.ModelSerializer):
 class AgentGridSerializer(serializers.ModelSerializer):
     grid_identifier = serializers.CharField()
     agent_name = serializers.CharField()
+    team_name = serializers.CharField()
 
     class Meta:
         model = AgentGrid
-        fields = ('grid_identifier', 'agent_name', 'position')
+        fields = ('grid_identifier', 'agent_name', 'team_name', 'position')
+        read_only_fields = ()
+
+
+class AgentRemoteGridSerializer(serializers.ModelSerializer):
+    grid_identifier = serializers.CharField()
+
+    class Meta:
+        model = AgentGrid
+        fields = ('grid_identifier', 'position')
         read_only_fields = ()
 
 
@@ -29,8 +39,8 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition', 'state_of_competition')
-        read_only_fields = ('name', 'type_of_competition', 'state_of_competition')
+        fields = ('name', 'type_of_competition', 'state_of_competition', 'allow_remote_agents')
+        read_only_fields = ('name', 'type_of_competition', 'state_of_competition', 'allow_remote_agents')
 
 
 class CompetitionInputSerializer(serializers.ModelSerializer):
@@ -38,7 +48,7 @@ class CompetitionInputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition', 'state_of_competition')
+        fields = ('name', 'type_of_competition', 'allow_remote_agents', 'state_of_competition')
         read_only_fields = ('state_of_competition',)
 
 
@@ -104,20 +114,22 @@ class TeamEnrolledOutputSerializer(serializers.ModelSerializer):
 class CompetitionAgentSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128)
     agent_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = CompetitionAgent
-        fields = ('competition_name', 'agent_name', 'created_at', 'updated_at')
+        fields = ('competition_name', 'agent_name', 'team_name', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at',)
 
 
 class RoundAgentSerializer(serializers.ModelSerializer):
     round_name = serializers.CharField(max_length=128)
     agent_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = CompetitionAgent
-        fields = ('round_name', 'agent_name', 'created_at', 'updated_at')
+        fields = ('round_name', 'agent_name', 'team_name', 'created_at', 'updated_at')
         read_only_fields = ('created_at', 'updated_at',)
 
 
@@ -153,11 +165,12 @@ class TrialGridInputSerializer(serializers.ModelSerializer):
 class TrialAgentSerializer(serializers.ModelSerializer):
     trial_identifier = serializers.CharField(max_length=100)
     agent_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
     round_name = serializers.CharField(max_length=128)
 
     class Meta:
         model = LogTrialAgent
-        fields = ('trial_identifier', 'agent_name', 'round_name', 'pos',)
+        fields = ('trial_identifier', 'agent_name', 'team_name', 'round_name', 'pos',)
         read_only_fields = ()
 
 

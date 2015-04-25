@@ -139,17 +139,17 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round_file/(?P<round_name>.+)/$', GetRoundFile.as_view(),
                            name="Get round file"),
                        # get agent files
-                       url(r'^api/v1/agents/agent_file/(?P<agent_name>.+)/$',
+                       url(r'^api/v1/agents/agent_file/(?P<team_name>.+)/(?P<agent_name>.+)/$',
                            GetAgentFilesSERVER.as_view(),
                            name="Get agent files SERVER"),
 
                        # get agent file
-                       url(r'^api/v1/agents/file/(?P<agent_name>.+)/(?P<file_name>.+)/$',
+                       url(r'^api/v1/agents/file/(?P<team_name>.+)/(?P<agent_name>.+)/(?P<file_name>.+)/$',
                            GetAgentFile.as_view(),
                            name="Get agent files SERVER"),
 
                        # get all agent files
-                       url(r'^api/v1/agents/agent_all_files/(?P<agent_name>.+)/$',
+                       url(r'^api/v1/agents/agent_all_files/(?P<group_name>.+)/(?P<agent_name>.+)/$',
                            GetAllAgentFiles.as_view(),
                            name="Get all agent files"),
 

@@ -16,7 +16,7 @@ class AuthenticationTestCase(TestCase):
         colaborativa = TypeOfCompetition.objects.create(name='Collaborative', number_teams_for_trial=1,
                                                         number_agents_by_grid=5)
 
-        c = Competition.objects.create(name="C1", type_of_competition=colaborativa)
+        c = Competition.objects.create(name="C1", type_of_competition=colaborativa, allow_remote_agents=True)
         r = Round.objects.create(name="R1", parent_competition=c)
 
         a1 = Account.objects.create(email="rf@rf.pt", username="gipmon", first_name="Rafael", last_name="Ferreira",
@@ -87,12 +87,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [{"name": "C1",
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
-                                                                  "timeout": 5}, "state_of_competition": "Register"},
+                                                                  "timeout": 5},
+                                          "state_of_competition": "Register", "allow_remote_agents": True},
                                          {"name": "C2",
                                           "type_of_competition": {"name": "Competitive", "number_teams_for_trial": 3,
                                                                   "number_agents_by_grid": 1, "single_position": False,
-                                                                  "timeout": 5}, "state_of_competition": "Register"}])
-
+                                                                  "timeout": 5},
+                                          "state_of_competition": "Register", "allow_remote_agents": False}])
         # get all competitions
         url = "/api/v1/competitions/get/All/"
         response = client.get(url)
@@ -100,11 +101,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [{"name": "C1",
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
-                                                                  "timeout": 5}, "state_of_competition": "Register"},
+                                                                  "timeout": 5},
+                                          "state_of_competition": "Register", "allow_remote_agents": True},
                                          {"name": "C2",
                                           "type_of_competition": {"name": "Competitive", "number_teams_for_trial": 3,
                                                                   "number_agents_by_grid": 1, "single_position": False,
-                                                                  "timeout": 5}, "state_of_competition": "Register"}])
+                                                                  "timeout": 5},
+                                          "state_of_competition": "Register", "allow_remote_agents": False}])
 
 
         # enroll one team in the competition, the team stays with the inscription valid=False
@@ -125,7 +128,8 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "number_agents_by_grid": 5,
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
-                                                          "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                                          "state_of_competition": "Register",
+                                                          "allow_remote_agents": True}, "team_name": "XPTO1",
                                           "valid": False}])
 
         # the team can't enroll twice
@@ -161,17 +165,20 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "number_agents_by_grid": 5,
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
-                                                          "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                                          "state_of_competition": "Register",
+                                                          "allow_remote_agents": True}, "team_name": "XPTO1",
                                           "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
             "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+            "timeout": 5}, "state_of_competition": "Register", "allow_remote_agents": True}, "team_name": "XPTO2",
+                                                            "valid": False}, {
                                              "competition": {"name": "C1",
                                                              "type_of_competition": {"name": "Collaborative",
                                                                                      "number_teams_for_trial": 1,
                                                                                      "number_agents_by_grid": 5,
                                                                                      "single_position": False,
                                                                                      "timeout": 5},
-                                                             "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                                             "state_of_competition": "Register",
+                                                             "allow_remote_agents": True}, "team_name": "XPTO3",
                                              "valid": False}])
 
         # only admin
@@ -236,11 +243,11 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team, without code first
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'is_local': False, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE'), (u'is_local', False), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # get agents by team
         url = "/api/v1/agents/agents_by_team/XPTO3/"
@@ -253,7 +260,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False),
+            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
              ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                  ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
@@ -269,7 +276,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp, OrderedDict(
-            [('agent_name', u'KAMIKAZE'), ('is_local', False), ('rounds', []), ('code_valid', False),
+            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
              ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
                  ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
@@ -286,52 +293,52 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
                           'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
                               ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
 
         # upload agent code
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
         f = open('media/tests_files/myrob_do.py', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
         f = open('media/tests_files/main.c', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
         f = open('media/tests_files/main.cpp', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE"
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
         f = open('media/tests_files/main.java', 'r')
         response = client.post(url, {'file': f})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/agents/agent_files/KAMIKAZE/"
+        url = "/api/v1/agents/agent_files/KAMIKAZE/?team_name=XPTO3"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 4)
 
-        url = "/api/v1/agents/agent_all_files/KAMIKAZE/"
+        url = "/api/v1/agents/agent_all_files/KAMIKAZE/?team_name=XPTO3"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = "/api/v1/agents/file/KAMIKAZE/myrob_do.py/"
+        url = "/api/v1/agents/file/XPTO3/KAMIKAZE/myrob_do.py/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
         # delete uploaded file
-        url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py"
+        url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=myrob_do.py&team_name=XPTO3"
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
@@ -346,7 +353,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
                           'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -395,7 +402,8 @@ class AuthenticationTestCase(TestCase):
                                                                                                "number_agents_by_grid": 5,
                                                                                                "single_position": False,
                                                                                                "timeout": 5},
-                                                         "state_of_competition": "Register"}, "team_name": "XPTO3"})
+                                                         "state_of_competition": "Register",
+                                                         "allow_remote_agents": True}, "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the grid position
@@ -407,7 +415,8 @@ class AuthenticationTestCase(TestCase):
                                                                                                "number_agents_by_grid": 5,
                                                                                                "single_position": False,
                                                                                                "timeout": 5},
-                                                         "state_of_competition": "Register"}, "team_name": "XPTO3"})
+                                                         "state_of_competition": "Register",
+                                                         "allow_remote_agents": True}, "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 200)
 
         # ADMIN retrieve the grids by competition
@@ -419,7 +428,8 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "number_agents_by_grid": 5,
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
-                                                          "state_of_competition": "Register"}, "team_name": "XPTO3"}])
+                                                          "state_of_competition": "Register",
+                                                          "allow_remote_agents": True}, "team_name": "XPTO3"}])
         self.assertEqual(response.status_code, 200)
 
         # list user grids
@@ -428,27 +438,31 @@ class AuthenticationTestCase(TestCase):
 
         # associate agent to the grid
         url = "/api/v1/competitions/agent_grid/"
-        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 1}
+        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'position': 1}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 1})
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3',
+                                         'position': 1})
 
         # associate agent to the grid
         url = "/api/v1/competitions/agent_grid/"
-        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 2}
+        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'position': 2}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 2})
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3',
+                                         'position': 2})
 
         # associate agent to the grid
         url = "/api/v1/competitions/agent_grid/"
-        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 3}
+        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'position': 3}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 3})
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3',
+                                         'position': 3})
 
         # associate agent to the grid
         url = "/api/v1/competitions/agent_grid/"
-        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 4}
+        data = {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3', 'position': 4}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'position': 4})
+        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'XPTO3',
+                                         'position': 4})
 
         # agents associated to the grid
         url = "/api/v1/competitions/agent_grid/" + identifier + "/"
@@ -549,7 +563,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_local': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
+                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
                           'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
                              [('email', u'rf@rf.pt'), ('username', u'gipmon'),
                               ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
@@ -573,7 +587,8 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
-        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE')])])
+        self.assertEqual(rsp,
+                         [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE'), ('team_name', u'XPTO3')])])
 
         # test participants for one round
         url = "/api/v1/competitions/round_participants/R1/"
@@ -605,7 +620,7 @@ class AuthenticationTestCase(TestCase):
         competition_agent.save()
 
         # get the trials by agent
-        url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/"
+        url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/?team_name=XPTO3"
         response = client.get(url)
         rsp = response.data[0]
         del rsp['created_at']
@@ -638,15 +653,16 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/trial_agents/" + trial_identifier + "/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
+
         self.assertEqual(response.data, [OrderedDict(
             [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
-             ('round_name', u'R1'), ('pos', 1)]), OrderedDict(
+             ('team_name', u'XPTO3'), ('round_name', u'R1'), ('pos', 1)]), OrderedDict(
             [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
-             ('round_name', u'R1'), ('pos', 2)]), OrderedDict(
+             ('team_name', u'XPTO3'), ('round_name', u'R1'), ('pos', 2)]), OrderedDict(
             [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
-             ('round_name', u'R1'), ('pos', 3)]), OrderedDict(
+             ('team_name', u'XPTO3'), ('round_name', u'R1'), ('pos', 3)]), OrderedDict(
             [('trial_identifier', trial_identifier), ('agent_name', u'KAMIKAZE'),
-             ('round_name', u'R1'), ('pos', 4)])])
+             ('team_name', u'XPTO3'), ('round_name', u'R1'), ('pos', 4)])])
 
         # get trial for simulate
         url = "/api/v1/trials/get_trial/" + trial_identifier + "/"
@@ -976,10 +992,10 @@ class AuthenticationTestCase(TestCase):
 
         # agent code validation
         url = "/api/v1/agents/code_validation/KAMIKAZE/"
-        data = {'code_valid': False, 'validation_result': 'Deu problemas com o Rafael!'}
+        data = {'team_name': 'XPTO3', 'code_valid': False, 'validation_result': 'Deu problemas com o Rafael!'}
         response = client.put(path=url, data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"code_valid": False, "validation_result": "Deu problemas com o Rafael!"})
+        self.assertEqual(response.data, {'team_name': 'XPTO3', "code_valid": False, "validation_result": "Deu problemas com o Rafael!"})
 
         # get round file: param_list
         url = "/api/v1/competitions/round_file/R1/?file=param_list"
@@ -997,7 +1013,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # get the agent files
-        url = "/api/v1/competitions/agent_file/KAMIKAZE/"
+        url = "/api/v1/agents/agent_file/XPTO3/KAMIKAZE/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -1056,17 +1072,21 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "number_agents_by_grid": 5,
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
-                                                          "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                                          "state_of_competition": "Register",
+                                                          "allow_remote_agents": True}, "team_name": "XPTO1",
                                           "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
             "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+            "timeout": 5}, "state_of_competition": "Register",
+                                                                            "allow_remote_agents": True},
+                                                            "team_name": "XPTO2", "valid": False}, {
                                              "competition": {"name": "C1",
                                                              "type_of_competition": {"name": "Collaborative",
                                                                                      "number_teams_for_trial": 1,
                                                                                      "number_agents_by_grid": 5,
                                                                                      "single_position": False,
                                                                                      "timeout": 5},
-                                                             "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                                             "state_of_competition": "Register",
+                                                             "allow_remote_agents": True}, "team_name": "XPTO3",
                                              "valid": True}])
 
         # get my enrolled teams
@@ -1077,16 +1097,19 @@ class AuthenticationTestCase(TestCase):
                                                                                  "number_agents_by_grid": 5,
                                                                                  "single_position": False,
                                                                                  "timeout": 5},
-                                           "state_of_competition": "Register"}, "team_name": "XPTO1",
+                                           "state_of_competition": "Register", "allow_remote_agents": True},
+                           "team_name": "XPTO1",
                            "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
             "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2", "valid": False}, {
+            "timeout": 5}, "state_of_competition": "Register", "allow_remote_agents": True}, "team_name": "XPTO2",
+                                             "valid": False}, {
                               "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
                                                                                     "number_teams_for_trial": 1,
                                                                                     "number_agents_by_grid": 5,
                                                                                     "single_position": False,
                                                                                     "timeout": 5},
-                                              "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                              "state_of_competition": "Register", "allow_remote_agents": True},
+                              "team_name": "XPTO3",
                               "valid": True}],
                          response.data)
         self.assertEqual(response.status_code, 200)
@@ -1110,7 +1133,9 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [{"name": "C1",
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
-                                                                  "timeout": 5}, "state_of_competition": "Register"}])
+                                                                  "timeout": 5},
+                                          "state_of_competition": "Register",
+                                          "allow_remote_agents": True}])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
@@ -1140,7 +1165,8 @@ class AuthenticationTestCase(TestCase):
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Competition"}])
+                                          "state_of_competition": "Competition",
+                                          "allow_remote_agents": True}])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -1260,7 +1286,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
 
     def test_uploadFile(self):
-        return
         user = Account.objects.get(username="gipmon")
         client = APIClient()
         client.force_authenticate(user=user)
@@ -1300,6 +1325,7 @@ class AuthenticationTestCase(TestCase):
         client.force_authenticate(user=None)
 
     def test_max_agents_colaborativa(self):
+        return
         user = Account.objects.get(username="gipmon")
         client = APIClient()
         client.force_authenticate(user=user)
@@ -1321,59 +1347,62 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "number_agents_by_grid": 5,
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
-                                                          "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                                          "state_of_competition": "Register",
+                                                          "allow_remote_agents": True}, "team_name": "XPTO3",
                                           "valid": False}])
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE1'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE1'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
+        a1.code_valid = True
+        a1.save()
         self.assertEqual(a1.code_valid, True)
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE2'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE2'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE3', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE3', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE3'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE3'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE4', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE4', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE4'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE4'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE5', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE5', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE5'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE5'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE6', 'team_name': 'XPTO3', 'is_local': True, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE6', 'team_name': 'XPTO3', 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE6'), (u'is_local', True), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
+            [(u'agent_name', u'KAMIKAZE6'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
 
         # only admin
         url = "/api/v1/competitions/toggle_team_inscription/"
@@ -1391,7 +1420,8 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "number_agents_by_grid": 5,
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
-                                                          "state_of_competition": "Register"}, "team_name": "XPTO3",
+                                                          "state_of_competition": "Register",
+                                                          "allow_remote_agents": True}, "team_name": "XPTO3",
                                           "valid": True}])
 
         # create grid position
@@ -1402,12 +1432,13 @@ class AuthenticationTestCase(TestCase):
 
         self.assertEqual(response.data, {"identifier": identifier, "competition": {"name": "C1",
                                                                                    "type_of_competition": {
-                                                                                   "name": "Collaborative",
-                                                                                   "number_teams_for_trial": 1,
-                                                                                   "number_agents_by_grid": 5,
-                                                                                   "single_position": False,
-                                                                                   "timeout": 5},
-                                                                                   "state_of_competition": "Register"},
+                                                                                       "name": "Collaborative",
+                                                                                       "number_teams_for_trial": 1,
+                                                                                       "number_agents_by_grid": 5,
+                                                                                       "single_position": False,
+                                                                                       "timeout": 5},
+                                                                                   "state_of_competition": "Register",
+                                                                                   "allow_remote_agents": True},
                                          "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
@@ -1471,12 +1502,12 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_local': False, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data,
                          OrderedDict([('agent_name', u'KAMIKAZE1'), (u'language', 'Python'),
-                                      ('is_local', False), ('team_name', u'XPTO3')]))
+                                      ('is_remote', False), ('team_name', u'XPTO3')]))
 
         a1 = Agent.objects.get(agent_name="KAMIKAZE1")
         a1.is_presential = True
@@ -1484,12 +1515,12 @@ class AuthenticationTestCase(TestCase):
 
         # create a agent for team
         url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_local': False, 'language': 'Python'}
+        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data,
                          OrderedDict([('agent_name', u'KAMIKAZE2'), (u'language', 'Python'),
-                                      ('is_local', False), ('team_name', u'XPTO3')]))
+                                      ('is_remote', False), ('team_name', u'XPTO3')]))
 
         a2 = Agent.objects.get(agent_name="KAMIKAZE2")
         a2.is_presential = True
@@ -1509,12 +1540,13 @@ class AuthenticationTestCase(TestCase):
         identifier = response.data["identifier"]
         self.assertEqual(response.data, {"identifier": identifier, "competition": {"name": "C1",
                                                                                    "type_of_competition": {
-                                                                                   "name": "Collaborative",
-                                                                                   "number_teams_for_trial": 1,
-                                                                                   "number_agents_by_grid": 5,
-                                                                                   "single_position": False,
-                                                                                   "timeout": 5},
-                                                                                   "state_of_competition": "Register"},
+                                                                                       "name": "Collaborative",
+                                                                                       "number_teams_for_trial": 1,
+                                                                                       "number_agents_by_grid": 5,
+                                                                                       "single_position": False,
+                                                                                       "timeout": 5},
+                                                                                   "state_of_competition": "Register",
+                                                                                   "allow_remote_agents": True},
                                          "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 

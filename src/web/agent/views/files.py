@@ -14,7 +14,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-from authentication.models import TeamMember
+from authentication.models import TeamMember, Team
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent, AgentFile
 from ..simplex import AgentFileSimplex
@@ -34,12 +34,18 @@ class UploadAgent(views.APIView):
     def post(request):
         if 'agent_name' not in request.GET:
             return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?agent_name=*agent_name*'},
+                             'message': 'Please provide the ?agent_name=<agent_name>'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        agent = get_object_or_404(Agent.objects.all(), agent_name=request.GET.get('agent_name', ''))
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the &team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        if agent.is_local:
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=request.GET.get('agent_name', ''))
+
+        if agent.is_remote:
             return Response({'status': 'Bad request',
                              'message': 'You can\'t upload code to a virtual agent!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -95,14 +101,22 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} an agent file
-        B{URL:} ../api/v1/agents/delete_agent_file/<agent_name>/?file_name=<file_name>
+        B{URL:} ../api/v1/agents/delete_agent_file/<agent_name>/?file_name=<file_name>&team_name=<team_name>
 
-        @type  agent_name: str
-        @param agent_name: The agent name
-        @type  file_name: str
-        @param file_name: The file name
+        :type  agent_name: str
+        :param agent_name: The agent name
+        :type  team_name: str
+        :param team_name: The team name
+        :type  file_name: str
+        :param file_name: The file name
         """
-        agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'))
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the &team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk', ''))
 
         if len(TeamMember.objects.filter(team=agent.team, account=request.user)) == 0:
             return Response({'status': 'Permission denied',
@@ -115,7 +129,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
                             status=status.HTTP_400_BAD_REQUEST)
 
         file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent,
-            original_name=request.GET.get('file_name', ''))
+                                     original_name=request.GET.get('file_name', ''))
         file_obj.delete()
 
         return Response({'status': 'Deleted',
@@ -136,8 +150,8 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/agents/agent_files/<agent_name>/
         Must be part of the team owner of the agent
 
-        @type  agent_name: str
-        @param agent_name: The agent name
+        :type  agent_name: str
+        :param agent_name: The agent name
         """
         agent = get_object_or_404(self.queryset, agent_name=kwargs.get('pk'))
 
@@ -161,8 +175,14 @@ class GetAllAgentFiles(views.APIView):
 
     @staticmethod
     def get(request, agent_name):
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?team_name=<team_name>'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         # agent_name
-        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         # see if user owns the agent
         if len(TeamMember.objects.filter(team=agent.team, account=request.user)) != 1:
@@ -191,9 +211,9 @@ class GetAllAgentFiles(views.APIView):
 
 class GetAgentFilesSERVER(views.APIView):
     @staticmethod
-    def get(request, agent_name):
-        # agent_name
-        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+    def get(request, team_name, agent_name):
+        team = get_object_or_404(Team.objects.all(), name=team_name)
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         if len(AgentFile.objects.filter(agent=agent)) == 0:
             return Response({'status': 'Bad request',
@@ -216,9 +236,9 @@ class GetAgentFilesSERVER(views.APIView):
 
 class GetAgentFile(views.APIView):
     @staticmethod
-    def get(request, agent_name, file_name):
-        # agent_name
-        agent = get_object_or_404(Agent.objects.all(), agent_name=agent_name)
+    def get(request, team_name, agent_name, file_name):
+        team = get_object_or_404(Team.objects.all(), name=team_name)
+        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         if len(AgentFile.objects.filter(agent=agent)) == 0:
             return Response({'status': 'Bad request',

@@ -21,6 +21,7 @@ class CompetitionAgentSimplex:
     def __init__(self, cas):
         self.round_name = cas.round.name
         self.agent_name = cas.agent.agent_name
+        self.team_name = cas.agent.team.name
         self.created_at = cas.created_at
         self.updated_at = cas.updated_at
 
@@ -48,6 +49,7 @@ class TrialAgentSimplex:
     def __init__(self, sas):
         self.trial_identifier = sas.trial.identifier
         self.agent_name = sas.competition_agent.agent.agent_name
+        self.team_name = sas.competition_agent.agent.team.name
         self.round_name = sas.trial.round.name
         self.pos = sas.pos
 
@@ -69,6 +71,7 @@ class AgentGridSimplex:
     def __init__(self, sgs):
         self.grid_identifier = sgs.grid_position.identifier
         self.agent_name = sgs.agent.agent_name
+        self.team_name = sgs.agent.team.name
         self.position = sgs.position
 
 
