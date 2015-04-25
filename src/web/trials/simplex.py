@@ -9,6 +9,7 @@ class AgentX():
             self.agent_type = "local"
 
         self.agent_name = log_trial_agent.competition_agent.agent.agent_name
+        self.team_name = log_trial_agent.competition_agent.agent.team.name
         self.pos = log_trial_agent.pos
         self.language = log_trial_agent.competition_agent.agent.language
 

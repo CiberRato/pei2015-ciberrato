@@ -17,10 +17,11 @@ class TypeOfCompetitionSerializer(serializers.ModelSerializer):
 class AgentGridSerializer(serializers.ModelSerializer):
     grid_identifier = serializers.CharField()
     agent_name = serializers.CharField()
+    team_name = serializers.CharField()
 
     class Meta:
         model = AgentGrid
-        fields = ('grid_identifier', 'agent_name', 'position')
+        fields = ('grid_identifier', 'agent_name', 'team_name', 'position')
         read_only_fields = ()
 
 
@@ -164,6 +165,7 @@ class TrialGridInputSerializer(serializers.ModelSerializer):
 class TrialAgentSerializer(serializers.ModelSerializer):
     trial_identifier = serializers.CharField(max_length=100)
     agent_name = serializers.CharField(max_length=128)
+    team_name = serializers.CharField(max_length=128)
     round_name = serializers.CharField(max_length=128)
 
     class Meta:
