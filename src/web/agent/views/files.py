@@ -59,7 +59,7 @@ class UploadAgent(views.APIView):
                              'message': 'You can\'t upload code to a virtual agent!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        team_member = TeamMember.objects.filter(team=agent.team, account=request.user)
+        team_member = TeamMember.objects.filter(team=team, account=request.user)
 
         if len(team_member) == 0:
             return Response({'status': 'Permission denied',
@@ -127,7 +127,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk', ''))
 
-        if len(TeamMember.objects.filter(team=agent.team, account=request.user)) == 0:
+        if len(TeamMember.objects.filter(team=team, account=request.user)) == 0:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the team.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -170,7 +170,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'), team=team)
 
-        if len(TeamMember.objects.filter(team=agent.team, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the team.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -192,7 +192,7 @@ class GetAllAgentFiles(views.APIView):
     def get(request, team_name, agent_name):
         """
         B{Retrieve} the agent files as zip
-        B{URL:} ../api/v1/agents/agent_all_files/(?P<team_name>.+)/(?P<agent_name>.+)/
+        B{URL:} ../api/v1/agents/agent_all_files/<team_name>/<agent_name>/
         Must be part of the team owner of the agent
 
         Client only
@@ -207,7 +207,7 @@ class GetAllAgentFiles(views.APIView):
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         # see if user owns the agent
-        if len(TeamMember.objects.filter(team=agent.team, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the team.'},
                             status=status.HTTP_403_FORBIDDEN)
@@ -236,7 +236,7 @@ class GetAgentFilesSERVER(views.APIView):
     def get(request, team_name, agent_name):
         """
         B{Retrieve} the agent files as tar
-        B{URL:} ../api/v1/agents/agent_file/(?P<team_name>.+)/(?P<agent_name>.+)/
+        B{URL:} ../api/v1/agents/agent_file/<team_name>/<agent_name>/
         Must be part of the team owner of the agent
 
         Server to Server only
@@ -276,7 +276,7 @@ class GetAgentFile(views.APIView):
     def get(request, team_name, agent_name, file_name):
         """
         B{Retrieve} the agent files as tar
-        B{URL:} ../api/v1/agents/file/(?P<team_name>.+)/(?P<agent_name>.+)/(?P<file_name>.+)/
+        B{URL:} ../api/v1/agents/file/<team_name>/<agent_name>/<file_name>/
         Must be part of the team owner of the agent
 
         Client only
@@ -297,7 +297,7 @@ class GetAgentFile(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         # see if user owns the agent
-        if len(TeamMember.objects.filter(team=agent.team, account=request.user)) != 1:
+        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
             return Response({'status': 'Permission denied',
                              'message': 'You must be part of the team.'},
                             status=status.HTTP_403_FORBIDDEN)

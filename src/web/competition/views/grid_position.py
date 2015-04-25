@@ -204,7 +204,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             agent = get_object_or_404(Agent.objects.all(), team=team,
                                       agent_name=serializer.validated_data['agent_name'])
 
-            if agent.team not in request.user.teams.all():
+            if team not in request.user.teams.all():
                 return Response({'status': 'Bad Request',
                                  'message': 'You must be part of the agent team.'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -229,7 +229,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is not accepting remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            team_enrolled = TeamEnrolled.objects.filter(team=agent.team, competition=grid.competition)
+            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=grid.competition)
 
             if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -346,7 +346,7 @@ class AgentRemoteGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             agent = get_object_or_404(Agent.objects.all(), team=team,
                                       agent_name=serializer.validated_data['agent_name'])
 
-            if agent.team not in request.user.teams.all():
+            if team not in request.user.teams.all():
                 return Response({'status': 'Bad Request',
                                  'message': 'You must be part of the agent team.'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -371,7 +371,7 @@ class AgentRemoteGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is not accepting remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            team_enrolled = TeamEnrolled.objects.filter(team=agent.team, competition=grid.competition)
+            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=grid.competition)
 
             if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',

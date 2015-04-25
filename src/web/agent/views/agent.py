@@ -191,7 +191,7 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
             agent = get_object_or_404(Agent.objects.all(), team=team,
                                       agent_name=serializer.validated_data['agent_name'])
 
-            if len(TeamMember.objects.filter(team=agent.team, account=request.user)) == 0:
+            if len(TeamMember.objects.filter(team=team, account=request.user)) == 0:
                 return Response({'status': 'Permission denied',
                                  'message': 'You must be part of the team.'},
                                 status=status.HTTP_403_FORBIDDEN)
