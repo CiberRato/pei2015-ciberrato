@@ -43,7 +43,8 @@ INSTALLED_APPS = (
     'teams',
     'agent',
     'competition',
-    'trials'
+    'trials',
+    'notifications',
 )
 
 MIDDLEWARE_CLASSES = (
