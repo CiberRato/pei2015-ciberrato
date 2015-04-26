@@ -164,6 +164,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/editType.html',
             title: 'Edit Type of Competition'
+        }).when('/admin/:name/Scores',{
+            controller:'ScoresController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/competitionScores.html',
+            title: 'Competition Score'
         }).when('/admin/:name/',{
             controller:'ListCompetitionController',
             controllerAs: 'vm',

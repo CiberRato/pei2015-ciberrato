@@ -1,0 +1,40 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>Scores of Competition "{{vm.competition.name}}"</h2>
+                        <p >Here is shown in table the list of all types of competition.</p>
+                        <p >There are no scores of competition.</p>
+                        <table  class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th ng-repeat="(key, value) in vm.rounds">{{value.name}}</th>
+                                <th>Total Score</th>
+
+                            </tr>
+                            </thead>
+                            <tbody ng-repeat="(key, value) in vm.teams">
+
+                                <td>{{value.team.name}}</td>
+
+
+                            </tbody>
+                        </table>
+                        <a ng-if="" class="btn btn-alt btn-large btn-success" href="/admin/createTypeOfCompetition">Create a Type Of Competition</a>
+
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>
