@@ -169,6 +169,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/livePastCompetitions.html',
             title: 'Past Competitions'
+        }).when('/admin/:name/Scores',{
+            controller:'ScoresController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/competitionScores.html',
+            title: 'Competition Score'
         }).when('/admin/:competitionName/:name/roundDetail',{
             controller:'DetailRoundController',
             controllerAs: 'vm',
