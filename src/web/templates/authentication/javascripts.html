@@ -1,5 +1,6 @@
 {% load compress %}
 {% load staticfiles %}
+{% load swampdragon_tags %}
 
 {% compress js %}
 <script type="text/javascript" src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
@@ -69,6 +70,12 @@
 <script type="text/javascript" src="{% static 'javascripts/rounds/controllers/createRound.controller.js' %}"></script>
 <script type="text/javascript" src="{% static 'bower_components/angular-drag-and-drop-lists.min.js' %}"></script>
 
+<!-- Swamp dragon -->
+{% swampdragon_settings %}
+<script type="text/javascript" src="{% static 'js/swampdragon/js/dist/swampdragon.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/swampdragon/js/dist/datamapper.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/swampdragon/js/angular/services.js' %}"></script>
+
 <!-- log viewer -->
 <script type='text/javascript' src="{% static 'bower_components/xml2json.js' %}"></script>
 <script type='text/javascript' src="{% static 'js/jquery.nstSlider.js' %}"></script>
@@ -81,6 +88,7 @@
 <script type="text/javascript" src="{% static 'javascripts/streamviewer/streamviewer.module.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/streamviewer/services/streamviewer.service.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascripts/streamviewer/controllers/stream.controller.js' %}"></script>
+
 
 <script type="text/javascript">
     $(document).ready(function(){

@@ -15,7 +15,8 @@
             'dndLists',
             'ciberonline.logviewer',
             'ciberonline.streamviewer',
-            'ciberonline.grid'
+            'ciberonline.grid',
+            'SwampDragonServices'
         ])
         .run(run);
 
