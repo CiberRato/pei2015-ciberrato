@@ -15,21 +15,15 @@
         var ctx1 = c1.getContext("2d");
         var c2 = document.getElementById("layer2");
         var ctx2 = c2.getContext("2d");
-        
-        var identifier = $routeParams.identifier;
 
-        LogViewer.getLog(identifier).then(getLogSuccess, getLogError);
+        LogViewer.getLog($routeParams.identifier).then(getLogSuccess, getLogError);
 
         function getLogSuccess(log){
-            console.log("ACTIVATED");
-            console.log("TENHO O FICHEIRO: LOG!");
-
 
             $scope.logInfo_obj = log.data.Log;
             $scope.parameters_obj = log.data.Parameters;
             $scope.lab_obj = log.data.Lab;
             $scope.grid_obj = log.data.Grid;
-            console.log($scope.logInfo_obj);
 
             showViewer();
         }
@@ -45,9 +39,8 @@
             $("#row4").show("slow");
             $("#row5").show("slow");
 
-            $scope.zoom = 31.5;
+            $scope.zoom = 50;
 
-            console.log("OK");
             doIt();
         }
 
@@ -212,6 +205,7 @@
         }
 
         function doIt() {
+
             c1.width=$scope.zoom * $scope.lab_obj._Width;
             c1.height=$scope.zoom * $scope.lab_obj._Height;
             c2.width=$scope.zoom * $scope.lab_obj._Width;
@@ -234,7 +228,6 @@
             $scope.map = $scope.lab_obj;
             /* Grid Object */
             $scope.grid = $scope.grid_obj;
-            console.log($scope.grid);
             /* Log Object */
             $scope.log = $scope.logInfo_obj;
 
@@ -256,7 +249,6 @@
                 $scope.beacon_height = $scope.lab_obj.Beacon[0]._Height;
 
             /* Number of Robots */
-            //console.log($scope.log);
             if (isArray($scope.log[0].LogInfo.Robot)) {
                 $scope.numRobots = $scope.log[0].LogInfo.Robot.length;
             }
@@ -416,7 +408,7 @@
 
             /* Update Viewer Values */
             $scope.updateValues = function () {
-                $scope.drawRobots();
+
                 $scope.robot = $scope.log[$scope.idx].LogInfo.Robot;
                 $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 
@@ -461,6 +453,7 @@
                     }
                 }
                 $scope.last_idx = $scope.idx;
+                $scope.drawRobots();
 
             };
 
