@@ -1,9 +1,12 @@
 import socket
 from threading import Thread
 from multiprocessing import Queue
+from multiprocessing import Process
 from starter import *
 from testReceiver import *
 from serverEndpoints import *
+
+
 
 
 class Manager:
@@ -105,6 +108,7 @@ class Tests:
 
 if __name__ == "__main__":
 	manager = Manager()
-	manager_thread = Thread(target=manager.main)
+	manager_thread = Process(target=manager.main)
+	manager_thread.deamon = True
 	manager_thread.start()
 	manager_thread.join()
