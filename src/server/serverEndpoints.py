@@ -28,8 +28,9 @@ class Root(object):
 			raise cherrypy.HTTPError(400, "Parameter agent_name was expected.")
 
 		agent_name = kwargs["agent_name"]
+		team_name = kwargs["team_name"]
 
-		self.starter_tcp.send("agent_name="+str(agent_name))
+		self.starter_tcp.send("team_name=" + str(team_name) + "&" + "agent_name="+str(agent_name))
 		return "Received test request for agent " + str(agent_name)
 
 class EndPoint():
