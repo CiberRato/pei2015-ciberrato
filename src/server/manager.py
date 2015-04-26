@@ -3,6 +3,8 @@ from threading import Thread
 from multiprocessing import Queue
 from starter import *
 from testReceiver import *
+from serverEndpoints import *
+
 
 class Manager:
 	def main(self):
@@ -13,11 +15,17 @@ class Manager:
 		GET_SIM_HOST = settings["settings"]["starter_end_point_host"]
 		GET_SIM_PORT = settings["settings"]["starter_end_point_port"]
 
+		# Create thread to launch end point
+		endPoint = EndPoint()
+		endPoint = Thread(target=endPoint.start)
+
 		print "[MANAGER] Manager is in deamon mode"
 		end_point_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		end_point_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		end_point_tcp.bind((GET_SIM_HOST, GET_SIM_PORT))
 		end_point_tcp.listen(1)
+
+		endPoint.start()
 		end_point_c, end_point_add = end_point_tcp.accept()
 
 
@@ -93,3 +101,7 @@ class Tests:
 			test_thread = Thread(target=test.run, args=(team_name, agent_name,))
 			test_thread.start()
 			test_thread.join()
+
+
+if __name__ == "__main__":
+	main()
