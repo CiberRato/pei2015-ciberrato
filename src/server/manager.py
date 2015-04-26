@@ -104,4 +104,6 @@ class Tests:
 
 
 if __name__ == "__main__":
-	main()
+	manager = Manager()
+	manager_thread = Thread(target=manager.main)
+	manager_thread.start()
