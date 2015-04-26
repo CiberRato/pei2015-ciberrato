@@ -77,6 +77,10 @@
                                             <p ng-if = "vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"><strong>You can't associate more agents, limit reached.</strong></p>
 
                                         </div>
+                                        <div ng-if="value.competition.allow_remote_agents == true" class="modal-footer">
+                                            <a  class="btn btn-alt btn-large btn-success"  ng-click="vm.associateAllRemote()">All Remote</a>
+
+                                        </div>
 
                                     </div>
                                 </td>
