@@ -102,12 +102,20 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 			else if (tag == "Sync") {
 				type = SYNC;
 				action.sync = true;
+			} else {
+				return false;
 			}
-		}
+		case SENSORREQUESTS:
+		case SAY:
+		case SYNC:
+			break;	
+		default:
+			return false;
+	}
     return TRUE;
 }
 
-bool cbActionHandler::endElement( const QString&, const QString&, const QString& qName)
+bool cbActionHandler::endElement( const QString&, const QString&, const QString&)
 {
 	/* process end tag */
 	switch (type) {
