@@ -31,6 +31,8 @@ class QString;
 class cbActionHandler : public QXmlDefaultHandler
 {
 public:
+    enum Type {UNKNOWN, ACTIONS, SENSORREQUESTS, SAY, SYNC};
+
     bool startDocument();
     bool endDocument();
     bool startElement( const QString&, const QString&, const QString& , const QXmlAttributes& );
@@ -45,8 +47,9 @@ public:
 	cbRobotAction &parsedAction();
 
 private:
+    Type type;
 	cbRobotAction action;  /// this action is configured according to the contents of the parsed message
-        QString activeTag;
+    QString activeTag;
 };     
 
 #endif
