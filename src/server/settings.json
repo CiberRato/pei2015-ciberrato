@@ -41,7 +41,7 @@
 		"get_simulation": "/api/v1/trials/get_trial/",
 
 		///url to get agents from a specific simulation
-		/// USAGE: http://HOST:PORT/api/v1/competitions/agent_file/<agent_name>/
+		/// USAGE: http://HOST:PORT/api/v1/competitions/agent_file/<team_name>/<agent_name>/
 		"get_agent": "/api/v1/agents/agent_file/",
 
 		///url to post the log file after a simulation
@@ -53,12 +53,17 @@
 		"post_sim_id": "/api/v1/trial_id/",
 
 		///url to post a test to be executed
-		///PARAMS: params={'agent_name': <agent_name> }
+		///PARAMS: params={'agent_name': <agent_name>, team_name: <team_name>}
 		"test_agent": "/api/v1/test_agent/",
 
 		///url to post error msg from stater
 		///PARAMS: params={'msg': <msg> }
-		"error_msg": "/api/v1/trials/trial_error/"
+		"error_msg": "/api/v1/trials/trial_error/",
+
+		///url to post the result of the tests
+		///USAGE: /api/v1/agents/code_validation/<agent_name>
+		///PARAMS:{'team_name': <team_name>, code_valid': <return_code>, 'validation_result': <message>}
+		"code_validation": "/api/v1/agents/code_validation/"
 	}
 }
 
