@@ -63,7 +63,12 @@
 		///url to post the result of the tests
 		///USAGE: /api/v1/agents/code_validation/<agent_name>
 		///PARAMS:{'team_name': <team_name>, code_valid': <return_code>, 'validation_result': <message>}
-		"code_validation": "/api/v1/agents/code_validation/"
+		"code_validation": "/api/v1/agents/code_validation/",
+
+		///url to post the robots that are registered
+		///PARAMS:{'message': <message>, 'trial_identifier': <trial_identifier>}
+		"register_robots": "/api/v1/trials/message/"
+
 	}
 }
 
