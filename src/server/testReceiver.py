@@ -14,7 +14,7 @@ import zipfile
 from xml.dom import minidom
 
 class Test:
-	def run(self, agent_name):
+	def run(self, team_name, agent_name):
 		# Find docker ip
 		DOCKERIP = None
 		for interface in netifaces.interfaces():
@@ -30,7 +30,12 @@ class Test:
 
 		GET_AGENT_URL = settings["urls"]["get_agent"]
 
-		AGENT_ENDPOINT = "http://" + DOCKERIP + ":8000" + GET_AGENT_URL + agent_name +"/"
+		CODE_VALIDATION_URL = settings["urls"]["code_validation"]
+
+		DJANGO_HOST = settings["settings"]["django_host"]
+		DJANGO_PORT = settings["settings"]["django_port"]
+
+		AGENT_ENDPOINT = "http://" + DOCKERIP + ":8000" + GET_AGENT_URL + team_name + "/" + agent_name +"/"
 
 		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
 									  "bash -c 'curl -s " \
@@ -45,9 +50,11 @@ class Test:
 		else:
 			message = "Passed tests with success"
 
-		url = "http://localhost:8000/api/v1/agents/code_validation/"+agent_name+"/"
-		data = {'code_valid': docker.returncode == 0, 'validation_result': message}
+		url = "http://" + DJANGO_HOST + ":" + str(DJANGO_PORT) + CODE_VALIDATION_URL + agent_name + "/"
+		data = {'team_name': team_name ,'code_valid': docker.returncode == 0, 'validation_result': message}
 		requests.put(url, data=data)
+
+		print "[TESTS] Test finished sucessfully"
 
 if __name__ == "__main__":
 	main()
