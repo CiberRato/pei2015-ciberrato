@@ -164,16 +164,16 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/editType.html',
             title: 'Edit Type of Competition'
-        }).when('/admin/:name/',{
-            controller:'ListCompetitionController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/admin/competition/livePastCompetitions.html',
-            title: 'Past Competitions'
         }).when('/admin/:name/Scores',{
             controller:'ScoresController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/competitionScores.html',
             title: 'Competition Score'
+        }).when('/admin/:name/',{
+            controller:'ListCompetitionController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/livePastCompetitions.html',
+            title: 'Past Competitions'
         }).when('/admin/:competitionName/:name/roundDetail',{
             controller:'DetailRoundController',
             controllerAs: 'vm',
