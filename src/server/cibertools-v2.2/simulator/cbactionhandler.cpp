@@ -22,18 +22,18 @@
  */
 
 #include <iostream>
- 
+
 #include "cbactionhandler.h"
 #include "cbrobotaction.h"
 
 #include <qstring.h>
 
 using std::cerr;
- 
+
 bool cbActionHandler::startDocument()
 {
-    action.reset();
-    return TRUE;
+	action.reset();
+	return TRUE;
 }
 
 bool cbActionHandler::endDocument()
@@ -45,12 +45,12 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 {
 	/* process begin tag */
 	const QString &tag = qName;
-        activeTag=tag;
+	activeTag = tag;
 
-    switch (type) {
-    	case UNKNOWN:
-    		if (tag == "Actions") {
-    			type = ACTIONS;
+	switch (type) {
+		case UNKNOWN:
+			if (tag == "Actions") {
+				type = ACTIONS;
 				/* process attributes */
 				const QString &leftmotor = attr.value(QString("LeftMotor"));
 				if (!leftmotor.isNull())
@@ -65,33 +65,33 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 					action.rightMotor = rightmotor.toDouble();
 				}
 				const QString &endled = attr.value(QString("EndLed"));
-				if(!endled.isNull()) {
-				   	action.endLedChanged = true;
-				        if (endled == "On") action.endLed = true;
+				if (!endled.isNull()) {
+					action.endLedChanged = true;
+					if (endled == "On") action.endLed = true;
 					else action.endLed = false;
-			        }
+				}
 				const QString &returningled = attr.value(QString("ReturningLed"));
-				if(!returningled.isNull()) {
+				if (!returningled.isNull()) {
 					action.returningLedChanged = true;
-				        if (returningled == "On") action.returningLed = true;
+					if (returningled == "On") action.returningLed = true;
 					else action.returningLed = false;
 				}
 				const QString &visitingled = attr.value(QString("VisitingLed"));
-				if(!visitingled.isNull()) {
+				if (!visitingled.isNull()) {
 					action.visitingLedChanged = true;
-				        if (visitingled == "On") action.visitingLed = true;
+					if (visitingled == "On") action.visitingLed = true;
 					else action.visitingLed = false;
 				}
-    		} else {
-    			return false;
-    		}
-    		break;
-    	case ACTIONS:
-    		if (tag == "SensorRequests") {
-    			type = SENSORREQUESTS;
-				for(int a=0; a < attr.length(); a++) {
-					const QString &val = attr.value(a); 
-					if(!val.isNull() && (val == "Yes")) {
+			} else {
+				return false;
+			}
+			break;
+		case ACTIONS:
+			if (tag == "SensorRequests") {
+				type = SENSORREQUESTS;
+				for (int a = 0; a < attr.length(); a++) {
+					const QString &val = attr.value(a);
+					if (!val.isNull() && (val == "Yes")) {
 						action.sensorRequests.push_back(attr.qName(a));
 					}
 				}
@@ -108,11 +108,11 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 		case SENSORREQUESTS:
 		case SAY:
 		case SYNC:
-			break;	
+			break;
 		default:
 			return false;
 	}
-    return TRUE;
+	return TRUE;
 }
 
 bool cbActionHandler::endElement( const QString&, const QString&, const QString&)
@@ -130,39 +130,37 @@ bool cbActionHandler::endElement( const QString&, const QString&, const QString&
 			type = ACTIONS;
 			break;
 	}
-    return true;
+	return true;
 }
 
 bool cbActionHandler::startCDATA()
 {
-    //fprintf(stderr,"startCDATA\n");
-    return TRUE;
+	//fprintf(stderr,"startCDATA\n");
+	return TRUE;
 }
 
 bool cbActionHandler::endCDATA()
 {
-    //fprintf(stderr,"endCDATA\n");
-    return TRUE;
+	//fprintf(stderr,"endCDATA\n");
+	return TRUE;
 }
 
 bool cbActionHandler::characters(const QString& data)
 {
-        if(activeTag=="Say")
-        {
-             action.sayMessage+=data;
-             action.sayReceived=true;
-        }
-       //fprintf(stderr,"characters tag=%s\n",activeTag.latin1());
-        return TRUE;
+	if (activeTag == "Say")
+	{
+		action.sayMessage += data;
+		action.sayReceived = true;
+	}
+	//fprintf(stderr,"characters tag=%s\n",activeTag.latin1());
+	return TRUE;
 }
 
 void cbActionHandler::setDocumentLocator(QXmlLocator *)
 {
 }
 
-
 /* extra functions */
-
 cbRobotAction &cbActionHandler::parsedAction()
 {
 	return action;
