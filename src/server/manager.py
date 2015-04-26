@@ -107,3 +107,4 @@ if __name__ == "__main__":
 	manager = Manager()
 	manager_thread = Thread(target=manager.main)
 	manager_thread.start()
+	manager_thread.join()
