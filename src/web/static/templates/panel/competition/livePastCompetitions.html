@@ -128,7 +128,8 @@
 
                                                 </div>
                                             </td>
-                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}"><a ng-if="value1.state == 'WAITING'">Didn't Start</a>
+                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">
+                                                <p ng-if="value1.state == 'WAITING' || value1.state == 'ERROR' || value1.state == 'READY'">Didn't Start</p>
                                                 <a href="/panel/{{value1.identifier}}/liveStream" ng-if="value1.state == 'STARTED'">Watch Live</a>
                                                 <a href="/panel/{{value1.identifier}}/watchTrial" ng-if="value1.state == 'LOG'">Watch</a>
                                             </td>
