@@ -33,6 +33,20 @@ class Root(object):
 		self.starter_tcp.send("team_name=" + str(team_name) + "&" + "agent_name="+str(agent_name))
 		return "Received test request for agent " + str(agent_name)
 
+
+class Services(object):
+	def __init__(self):
+		pass
+
+	@cherrypy.expose
+	def start_trial(self, **kwargs):
+		pass
+
+	@cherrypy.expose
+	def prepare_trial(self, **kwargs):
+		pass
+
+
 class EndPoint():
 	def start(self):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
@@ -48,5 +62,9 @@ class EndPoint():
 		    }
 		}
 
-		cherrypy.quickstart(Root(), "/api/v1/", config)
+		cherrypy.tree.mount(Root(), "/api/v1/", config)
+		cherrypy.tree.mount(Services(), "/api/v1/", config)
+
+		cherrypy.engine.start()
+		cherrypy.engine.block()
 
