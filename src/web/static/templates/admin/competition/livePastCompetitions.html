@@ -100,6 +100,7 @@
                                         <th>State</th>
                                         <th>Teams</th>
                                         <th>Score By Trial</th>
+                                        <th>Watch Trial</th>
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.trials">
@@ -137,6 +138,11 @@
                                                 </div>
 
                                             </div>
+                                        </td>
+                                        <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">
+                                            <p ng-if="value1.state == 'WAITING' || value1.state == 'ERROR' || value1.state == 'READY'">Didn't Start</p>
+                                            <a href="/panel/{{value1.identifier}}/liveStream" ng-if="value1.state == 'STARTED'">Watch Live</a>
+                                            <a href="/panel/{{value1.identifier}}/watchTrial" ng-if="value1.state == 'LOG'">Watch</a>
                                         </td>
                                     </tr>
                                     <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">

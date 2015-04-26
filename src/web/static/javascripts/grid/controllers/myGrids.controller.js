@@ -21,6 +21,7 @@
         vm.disassociate = disassociate;
         vm.getCompetition = getCompetition;
         vm.number = [];
+        vm.associateAllRemote = associateAllRemote;
 
         activate();
 
@@ -147,10 +148,14 @@
                 function getByTeamSuccessFn(data){
                     vm.models.lists.Available = [];
                     for (var i = 0; i < data.data.length; ++i) {
-                        vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                        if(data.data[i].agent_name === "Remote" && vm.competition.allow_remote_agents === true){
+                            vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                        }else if(data.data[i].agent_name !== "Remote"){
+                            vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                        }
                     }
                     console.log(vm.models.lists.Available);
-                    Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
+                    Grid.getAgents(vm.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
 
 
                 }
@@ -177,21 +182,27 @@
                     vm.models.lists.GridPosition.push({label: data.data[i].agent_name, pos: data.data[i].position});
                 }
                 console.log(vm.models.lists.GridPosition);
-
                 if(vm.models.lists.GridPosition !== []){
                     for(var j = 0; j<vm.models.lists.GridPosition.length; j++){
-                        Grid.disassociateAgent(vm.identifier, vm.models.lists.GridPosition[j].pos);
+                        gridDisassociate(vm.models.lists.GridPosition[j].pos);
                     }
-                    console.log(vm.models.lists.GridPosition);
-
-                    for(var k= 0; k<vm.models.lists.GridPosition.length; k++){
-                        gridAssociate(vm.models.lists.GridPosition[k].label, k+1, teamName);
-                    }
-                    console.log(vm.models.lists.GridPosition);
-                    Grid.getAgents(vm.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
+                    vm.tmp = vm.models.lists.GridPosition;
+                    Grid.getAgents(vm.identifier).then(getAssociatedNSuccessFn, getAssociatedNErrorFn);
 
                 }
 
+                function getAssociatedNSuccessFn(){
+                    console.log(vm.models.lists.GridPosition);
+                    for(var k= 0; k<vm.tmp.length; k++){
+                        gridAssociate(vm.tmp[k].label, k+1, teamName);
+                    }
+                    console.log(vm.models.lists.GridPosition);
+                    Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
+                }
+
+                function getAssociatedNErrorFn(data){
+                    console.error(data.data);
+                }
 
             }
 
@@ -216,18 +227,60 @@
             }
         }
 
+        function gridDisassociate(pos){
+            Grid.disassociateAgent(vm.identifier, pos).then(disassociateSuccessFn, disassociateErrorFn);
+
+            function disassociateSuccessFn(){
+                console.log("desassociei" + pos);
+            }
+
+            function disassociateErrorFn(data){
+                console.error(data.data);
+            }
+        }
+
         function gridAssociate(agent_name, pos, teamName){
             Grid.associateAgent(agent_name, vm.identifier, pos, teamName).then(associateAgentSuccessFn, associateAgentErrorFn);
 
             function associateAgentSuccessFn(){
+                console.log("associei" + agent_name + pos);
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
                 Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+
             }
 
             function associateAgentErrorFn(data){
                 console.error(data.data);
             }
         }
+
+        function associateAllRemote(){
+            console.log(vm.models.lists.GridPosition.length);
+            for(var i = vm.models.lists.GridPosition.length; i<vm.competition.type_of_competition.number_agents_by_grid; i++){
+                associateRemote(i+1);
+            }
+        }
+
+        function associateRemote(i){
+            Grid.associateAgent("Remote", vm.identifier, i, vm.team).then(associateAgentSuccessFn, associateAgentErrorFn);
+
+            function associateAgentSuccessFn(){
+                $.jGrowl("Agent has been associated successfully.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
+                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+
+            }
+
+            function associateAgentErrorFn(data){
+                console.error(data.data);
+            }
+
+        }
+
+
 
     }
 })();
