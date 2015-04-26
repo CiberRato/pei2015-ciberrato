@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'swampdragon',
     'swampdragon_auth',
     'rest_framework',
+    'rest_framework.authtoken',
     'authentication',
     'teams',
     'agent',
@@ -140,4 +141,4 @@ REST_FRAMEWORK = {
 # SwampDragon settings
 # SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 DRAGON_URL = 'http://localhost:9999/'
-SWAMP_DRAGON_CONNECTION = ('swampdragon_auth.socketconnection.HttpDataConnection', '/data')
+SWAMP_DRAGON_CONNECTION = ('notifications.socketconnection.HttpDataConnection', '/data')

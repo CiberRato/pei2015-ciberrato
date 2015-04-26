@@ -65,7 +65,7 @@ class TrialMessageCreate(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} the trial error
+        B{Create} the trial message
         B{URL:} ../api/v1/trials/message/
 
         :type  message: str

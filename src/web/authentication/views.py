@@ -5,9 +5,11 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
 from authentication.models import Account, TeamMember
-from authentication.serializers import AccountSerializer, AccountSerializerUpdate, PasswordSerializer
+from authentication.serializers import AccountSerializer, AccountSerializerUpdate, PasswordSerializer, \
+    AccountSerializerLogin
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.authtoken.models import Token
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -56,8 +58,8 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            Account.objects.create_user(**serializer.validated_data)
-
+            instance = Account.objects.create_user(**serializer.validated_data)
+            Token.objects.create(user=instance)
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
@@ -211,7 +213,19 @@ class LoginView(views.APIView):
 
                 login(request, account)
 
-                serialized = AccountSerializer(account)
+                # token for stream
+                if Token.objects.filter(user=account).count() == 1:
+                    t = Token.objects.get(user=account)
+                    t.delete()
+
+                token = Token.objects.create(user=account)
+
+                class Session:
+                    def __init__(self, tk, ac):
+                        self.token = tk.key
+                        self.user = ac
+
+                serialized = AccountSerializerLogin(Session(token, account))
 
                 return Response(serialized.data)
 
@@ -308,8 +322,6 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             instance.is_staff = True
         else:
             instance.is_superuser = False
-
-        instance.save()
 
         return Response({'status': 'Updated',
                          'message': 'Account updated, is super user? ' + str(instance.is_superuser)
