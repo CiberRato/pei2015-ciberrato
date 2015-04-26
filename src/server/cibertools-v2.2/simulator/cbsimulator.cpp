@@ -777,7 +777,15 @@ void cbSimulator::RobotActions()
 				        	break;
 				        }	        
 					}
-					if (stepSim)	step();
+					if (stepSim) {
+						for (unsigned int i=0; i < robots.size(); i++)
+						{
+							cbRobot *robot = robots[i];
+							if (robot == 0) continue;
+							robot->setWaitingForSync(false);
+						}
+						step();
+					}
 				}
 			}
 
