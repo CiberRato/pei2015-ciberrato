@@ -6,9 +6,6 @@ from starter import *
 from testReceiver import *
 from serverEndpoints import *
 
-
-
-
 class Manager:
 	def main(self):
 		# Loading settings
