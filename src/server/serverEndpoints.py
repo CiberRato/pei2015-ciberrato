@@ -39,11 +39,11 @@ class Services(object):
 		pass
 
 	@cherrypy.expose
-	def start_trial(self, **kwargs):
-		pass
+	def start(self, **kwargs):
+		return "trial:" + kwargs["trial_identifier"]
 
 	@cherrypy.expose
-	def prepare_trial(self, **kwargs):
+	def prepare(self, **kwargs):
 		pass
 
 
@@ -63,8 +63,8 @@ class EndPoint():
 		}
 
 		cherrypy.tree.mount(Root(), "/api/v1/", config)
-		cherrypy.tree.mount(Services(), "/api/v1/", config)
-
+		cherrypy.tree.mount(Services(), "/api/v1/trials", config)
+		cherrypy.config.update(config)
 		cherrypy.engine.start()
 		cherrypy.engine.block()
 

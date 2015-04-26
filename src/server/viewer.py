@@ -111,7 +111,7 @@ def main():
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 				if len(checkedRobots) != prevlen:
-					data = {'trial_identifier': sim_id,'message': "The robot " + }
+					data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
 					response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
 				prevlen = len(checkedRobots)
 				print "[VIEWER] Robots Registered: " + str(checkedRobots)
