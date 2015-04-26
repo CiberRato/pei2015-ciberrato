@@ -1,3 +1,95 @@
+/***********************
+ * Swamp Dragon setup
+ ***********************/
+swampdragon.ready(function () {
+    subscribe();
+});
+
+
+function subscribe () {
+    swampdragon.subscribe('notifications', 'notifications', null, function (context, data) {
+        // any thing that happens after successfully subscribing
+        console.log("// any thing that happens after successfully subscribing");
+    }, function (context, data) {
+        // any thing that happens if subscribing failed
+        console.log("// any thing that happens if subscribing failed");
+    });
+}
+
+
+swampdragon.onChannelMessage(function (chanel, data) {
+    console.log(data.data.message);
+});
+
+/*
+var swampDragon = null;
+
+function onSubscribe(data) {
+    console.log('subscribed to ' + data.channel_data.local_channel);
+}
+
+function onOpen(data) {
+    console.log('open');
+    swampDragon.subscribe('notifications', {}, 'onSubscribe', 'notifications');
+}
+
+function onChannelMessage(channel, message) {
+    console.log(message.data);
+}
+
+function onClose(data) {
+    console.log('closed');
+}
+
+function onMessage(message) {
+    if ('client_callback_name' in message.data.context) {
+        if (message.data.context.client_callback_name == 'onSubscribe') {
+            onSubscribe(message.data);
+        }
+    }
+}
+
+$(function() {
+
+    swampDragon = SwampDragon({
+        onchannelmessage: onChannelMessage,
+        onmessage: onMessage,
+        onopen: onOpen
+    });
+    swampDragon.connect('http://' + window.location.hostname + ':9999', 'data');
+});
+
+/*
+
+function enableInputs() {
+    console.log("SUBSCRIBED!");
+}
+
+function disableInputs() {
+    console.log("UNSUBSCRIBED!");
+}
+
+disableInputs();
+
+swampdragon.open(function () {
+    swampdragon.subscribe('notifications', 'notifications', function () {
+        enabledInputs();
+    });
+});
+
+swampdragon.close(function () {
+    disableInputs();
+});
+
+swampdragon.onChannelMessage(function (channels, message) {
+  for(var i in channels) {
+      console.log(channels[i]);
+      console.log(message.data);
+      console.log("-----------");
+  }
+});
+
+/*
 // Ask the browser for permission to show notifications
 // Taken from https://developer.mozilla.org/en-US/docs/Web/API/Notification/Using_Web_Notifications
 window.addEventListener('load', function () {
@@ -49,3 +141,4 @@ function addNotification(notification) {
         notificationsList.getElementsByTagName("li")[5].remove();
     }
 }
+*/

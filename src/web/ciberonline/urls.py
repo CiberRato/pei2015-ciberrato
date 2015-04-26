@@ -32,7 +32,6 @@ from notifications.views import Notifications
 
 from rest_framework import routers
 
-admin.autodiscover()
 
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
@@ -166,7 +165,6 @@ urlpatterns = patterns('',
                        url(r'^api/v1/auth/logout/$', LogoutView.as_view(), name='logout'),
                        url(r'^api-auth/', include('rest_framework.urls',
                                                   namespace='rest_framework')),
-                       url('^admin/.*$', include(admin.site.urls)),
                        url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
                        url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')
