@@ -116,7 +116,7 @@ cbSimulator::cbSimulator()
 	curCycle = 0;
     endCycle = 3000; // provisório
 	cycle = 50;
-	poolCycleTime = 50;
+	poolCycleTime = 1;
 
 	curState = nextState = INIT;
 
@@ -532,7 +532,6 @@ bool cbSimulator::registerRobot(cbRobot *robot)
         lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
 
     emit robotRegistered((int) id);
-	UpdateState();
 
 	return true;
 }
@@ -646,6 +645,7 @@ void cbSimulator::CheckIn()
                 }
                 cout << "Viewer has been registered\n";
                 gui->appendMessage( "Viewer has been registered\n" );
+				UpdateViews();
 				break;
 			case cbClientForm::PANEL:
 				//cout << "Panel form is going to be processed\n";
@@ -675,6 +675,7 @@ void cbSimulator::CheckIn()
                 }
 				cout << "PanelView has been registered\n";
                 gui->appendMessage( "PanelView has been registered\n" );
+				UpdateViews();
                 break;
 			case cbClientForm::ROBOT:
 			case cbClientForm::ROBOTBEACON:
@@ -686,6 +687,8 @@ void cbSimulator::CheckIn()
 					robot->Reply(form.addr, form.port, param);
                     cout << robot->Name() << " has been registered\n";
                     gui->appendMessage( QString(robot->Name())+" has been registered" );
+                    UpdateState();
+                    UpdateViews();
 				}
 				else // robot was refused
 				{
