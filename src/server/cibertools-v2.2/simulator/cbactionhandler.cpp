@@ -32,6 +32,7 @@ using std::cerr;
 
 bool cbActionHandler::startDocument()
 {
+	type = UNKNOWN;
 	action.reset();
 	return TRUE;
 }
@@ -87,6 +88,7 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 			}
 			break;
 		case ACTIONS:
+
 			if (tag == "SensorRequests") {
 				type = SENSORREQUESTS;
 				for (int a = 0; a < attr.length(); a++) {
@@ -103,6 +105,7 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 				type = SYNC;
 				action.sync = true;
 			} else {
+				std::cout << "what2" << std::endl;
 				return false;
 			}
 		case SENSORREQUESTS:
@@ -110,6 +113,7 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 		case SYNC:
 			break;
 		default:
+			std::cout << "what3" << std::endl;
 			return false;
 	}
 	return TRUE;
@@ -120,6 +124,7 @@ bool cbActionHandler::endElement( const QString&, const QString&, const QString&
 	/* process end tag */
 	switch (type) {
 		case UNKNOWN:
+			std::cout << "what" << std::endl;
 			return false;
 		case ACTIONS:
 			type = UNKNOWN;
