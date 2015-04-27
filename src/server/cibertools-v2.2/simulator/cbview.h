@@ -30,11 +30,16 @@
 /**
  * This is the representation of each viewer from the point of view of the simulator
  */
-class cbView : public cbClient
+class cbView : public cbClient, public cbViewInterface
 {
 public:
 	cbView();
 	~cbView();
 };
 
+class cbViewInterface 
+{
+    virtual cbView();
+    virtual ~cbView();
+};
 #endif

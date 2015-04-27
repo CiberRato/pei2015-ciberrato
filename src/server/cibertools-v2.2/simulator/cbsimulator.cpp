@@ -658,6 +658,7 @@ void cbSimulator::CheckIn()
                 gui->appendMessage( "Panel has been registered\n" );
 				break;
 			case cbClientForm::PANELVIEW:
+				//form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
 				cnt = panels.size();
 				panels.resize(cnt+1);
 				panels[cnt] = form.client.panelview;

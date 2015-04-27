@@ -23,7 +23,7 @@
 
 using namespace std;
 
-cbPanelView::cbPanelView() : cbPanel(), cbView()
+cbPanelView::cbPanelView() : cbClient(), cbPanel(), cbView()
 {
 }
 
