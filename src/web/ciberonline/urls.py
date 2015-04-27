@@ -28,8 +28,6 @@ from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserVi
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
-from notifications.views import Notifications
-
 from rest_framework import routers
 
 

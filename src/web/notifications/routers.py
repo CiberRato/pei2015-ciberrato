@@ -1,7 +1,7 @@
 from swampdragon import route_handler
 from swampdragon.route_handler import ModelPubRouter
-from .models import Notification
-from .serializers import NotificationSerializer
+from .models import NotificationUser
+from .serializers import NotificationUserSerializer
 from swampdragon.permissions import RoutePermission
 
 
@@ -24,8 +24,8 @@ class NotificationRouter(ModelPubRouter):
 
     valid_verbs = ['subscribe']
     route_name = 'notifications'
-    model = Notification
-    serializer_class = NotificationSerializer
+    model = NotificationUser
+    serializer_class = NotificationUserSerializer
 
     def get_subscription_contexts(self, **kwargs):
         user_obj = self.connection.get_user(kwargs['user']['u_stream'])

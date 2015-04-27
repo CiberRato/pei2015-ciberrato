@@ -1,7 +1,7 @@
 from swampdragon.serializers.model_serializer import ModelSerializer
 
 
-class NotificationSerializer(ModelSerializer):
+class NotificationUserSerializer(ModelSerializer):
     class Meta:
-        model = 'notifications.Notification'
+        model = 'notifications.NotificationUser'
         publish_fields = ['message']
