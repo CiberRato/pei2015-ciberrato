@@ -51,6 +51,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/teams/editTeamProfile.html',
             title: 'Edit Team Profile'
+        }).when('/panel/:name/Scores',{
+            controller:'ScoresController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/competition/competitionScores.html',
+            title: 'Competition Score'
         }).when('/panel/:name/teamMembers',{
             controller: 'AllTeamsMembersController',
             controllerAs: 'vm',
@@ -139,6 +144,11 @@
         }).when('/admin/',{
             templateUrl: '/static/templates/admin/index.html',
             title: 'Welcome!'
+        }).when('/admin/:name/Scores',{
+            controller:'ScoresController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/competition/competitionScores.html',
+            title: 'Competition Score'
         }).when('/admin/createCompetition',{
             controller:'CreateCompetitionController',
             controllerAs: 'vm',
@@ -164,11 +174,6 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/editType.html',
             title: 'Edit Type of Competition'
-        }).when('/admin/:name/Scores',{
-            controller:'ScoresController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/admin/competition/competitionScores.html',
-            title: 'Competition Score'
         }).when('/admin/:name/',{
             controller:'ListCompetitionController',
             controllerAs: 'vm',
