@@ -20,6 +20,7 @@
             disassociateAgent: disassociateAgent,
             getTrialGrids: getTrialGrids,
             create: create,
+            prepareTrial: prepareTrial,
             startTrial: startTrial,
             getRound: getRound,
             destroy: destroy,
@@ -105,13 +106,19 @@
             return $http.post("/api/v1/competitions/round/" , {
                 name: roundName,
                 parent_competition_name: competitionName
-            })
+            });
+        }
+
+        function prepareTrial(identifier){
+            return $http.post("/api/v1/trials/prepare/", {
+                trial_id: identifier
+            });
         }
 
         function startTrial(identifier){
             return $http.post("/api/v1/trials/start/", {
                 trial_id: identifier
-            })
+            });
         }
 
         function getRound(roundName, competitionName){
