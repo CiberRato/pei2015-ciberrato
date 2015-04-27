@@ -33,8 +33,6 @@ class AccountSerializerLogin(serializers.BaseSerializer):
         }
 
 
-
-
 class AccountSerializerUpdate(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True, required=False)
 
