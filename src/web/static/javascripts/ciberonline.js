@@ -47,6 +47,13 @@
                     // any thing that happens if subscribing failed
                     console.log("// any thing that happens if subscribing failed");
                 });
+                $dragon.subscribe('team', 'notifications', {'user': Authentication.getAuthenticatedAccount(), 'team': 'OK2'}, function (context, data) {
+                    // any thing that happens after successfully subscribing
+                    console.log("// any thing that happens after successfully subscribing");
+                }, function (context, data) {
+                    // any thing that happens if subscribing failed
+                    console.log("// any thing that happens if subscribing failed");
+                });
             });
 
             $dragon.onChannelMessage(function(channels, data) {
