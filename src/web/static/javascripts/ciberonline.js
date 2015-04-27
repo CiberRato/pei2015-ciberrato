@@ -57,12 +57,12 @@
                     });
                     $dragon.onChannelMessage(function(channels, data) {
                         if (data.data.message.status == 200){
-                            $.jGrowl(data.data.message.message, {
+                            $.jGrowl(data.data.message.content, {
                                 life: 3500,
                                 theme: 'success'
                             });
                         }else if(data.data.message.status == 400){
-                            $.jGrowl(data.data.message.message, {
+                            $.jGrowl(data.data.message.content, {
                                 life: 3500,
                                 theme: 'btn-danger'
                             });
