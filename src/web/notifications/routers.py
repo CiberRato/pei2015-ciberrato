@@ -20,6 +20,8 @@ class NotificationUserRouter(ModelPubRouter):
         if user_obj is None:
             return self.send_login_required()
 
+        NotificationUser.objects.all().delete()
+
         return {'user_id': user_obj.pk}
 
 
@@ -41,6 +43,7 @@ class NotificationTeamRouter(ModelPubRouter):
             team_obj = Team.objects.get(name=kwargs['team'])
 
             if TeamMember.objects.filter(team=team_obj, account=user_obj).count() == 1:
+                NotificationTeam.objects.all().delete()
                 return {'team_id': team_obj.pk}
 
         return self.send_login_required()
