@@ -40,24 +40,38 @@
             /* SUBSCRIBE */
             /// Subscribe to the chat router
             $dragon.onReady(function() {
-                $dragon.subscribe('user', 'notifications', {'user': Authentication.getAuthenticatedAccount()}, function (context, data) {
-                    // any thing that happens after successfully subscribing
-                    console.log("// any thing that happens after successfully subscribing");
-                }, function (context, data) {
-                    // any thing that happens if subscribing failed
-                    console.log("// any thing that happens if subscribing failed");
+                swampdragon.open(function () {
+                    $dragon.subscribe('user', 'notifications', {'user': Authentication.getAuthenticatedAccount()}, function (context, data) {
+                        // any thing that happens after successfully subscribing
+                        console.log("// any thing that happens after successfully subscribing");
+                    }, function (context, data) {
+                        // any thing that happens if subscribing failed
+                        console.log("// any thing that happens if subscribing failed");
+                    });
+                    $dragon.subscribe('team', 'notifications', {'user': Authentication.getAuthenticatedAccount(), 'team': 'OK2'}, function (context, data) {
+                        // any thing that happens after successfully subscribing
+                        console.log("// any thing that happens after successfully subscribing");
+                    }, function (context, data) {
+                        // any thing that happens if subscribing failed
+                        console.log("// any thing that happens if subscribing failed");
+                    });
+                    $dragon.onChannelMessage(function(channels, data) {
+                        if (data.data.message.status == 200){
+                            $.jGrowl(data.data.message.message, {
+                                life: 3500,
+                                theme: 'success'
+                            });
+                        }else if(data.data.message.status == 400){
+                            $.jGrowl(data.data.message.message, {
+                                life: 3500,
+                                theme: 'btn-danger'
+                            });
+                        }
+                        // console.log(channels);
+                        console.log(data.data._type);
+                        console.log(data.data.message);
+                    });
                 });
-                $dragon.subscribe('team', 'notifications', {'user': Authentication.getAuthenticatedAccount(), 'team': 'OK2'}, function (context, data) {
-                    // any thing that happens after successfully subscribing
-                    console.log("// any thing that happens after successfully subscribing");
-                }, function (context, data) {
-                    // any thing that happens if subscribing failed
-                    console.log("// any thing that happens if subscribing failed");
-                });
-            });
-
-            $dragon.onChannelMessage(function(channels, data) {
-                console.log(data.data.message);
             });
         }
     }
