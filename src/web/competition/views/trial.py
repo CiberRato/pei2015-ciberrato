@@ -365,6 +365,20 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                              'message': 'The trial must be in state READY!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        trial_grids = TrialGrid.objects.filter(trial=trial)
+
+        # verify if round has files
+        if not bool(trial.round.grid_path) or not bool(trial.round.param_list_path) \
+                or not bool(trial.round.param_list_path):
+            return Response({'status': 'Bad Request',
+                             'message': 'Is missing files to the Round take place!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if len(trial_grids) == 0:
+            return Response({'status': 'Bad Request',
+                             'message': 'Please select teams to go to the Trial!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         params = {'trial_identifier': trial.identifier}
 
         try:
@@ -374,8 +388,8 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                              'message': 'The simulator appears to be down!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # trial.prepare = True
-        # trial.save()
+        trial.prepare = True
+        trial.save()
 
         return Response({'status': 'Trial started',
                          'message': 'The trial is now in \"Prepare\" state!'},
@@ -398,12 +412,11 @@ class StartTrial(views.APIView):
         trial = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if the round doesn't started already
-        """
         if not trial_prepare(trial):
             return Response({'status': 'Bad Request',
                              'message': 'The trial is in state PREPARE!'},
                             status=status.HTTP_400_BAD_REQUEST)
-        """
+
         # verify if round has files
         if not bool(trial.round.grid_path) or not bool(trial.round.param_list_path) \
                 or not bool(trial.round.param_list_path):
