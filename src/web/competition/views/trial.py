@@ -368,8 +368,7 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
         params = {'trial_identifier': trial.identifier}
 
         try:
-            pass
-            #requests.post(settings.START_SIM_ENDPOINT, params)
+            requests.post(settings.PREPARE_SIM_ENDPOINT, params)
         except requests.ConnectionError:
             return Response({'status': 'Bad Request',
                              'message': 'The simulator appears to be down!'},
@@ -399,12 +398,10 @@ class StartTrial(views.APIView):
         trial = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if the round doesn't started already
-        """
         if not trial_prepare(trial):
             return Response({'status': 'Bad Request',
                              'message': 'The trial is in state PREPARE!'},
                             status=status.HTTP_400_BAD_REQUEST)
-        """
 
         # verify if round has files
         if not bool(trial.round.grid_path) or not bool(trial.round.param_list_path) \

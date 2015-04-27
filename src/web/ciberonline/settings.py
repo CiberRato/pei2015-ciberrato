@@ -102,7 +102,9 @@ ALLOWED_UPLOAD_LANGUAGES = (
 )
 ALLOWED_UPLOAD_SIZE = 5000000  # bytes
 
-START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trial_id/"
+START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trials/start/"
+PREPARE_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trials/prepare/"
+
 TEST_CODE_ENDPOINT = "http://127.0.0.1:9000/api/v1/test_agent/?agent_name=<agent_name>&team_name=<team_name>"
 
 STATICFILES_DIRS = (
