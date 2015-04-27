@@ -23,16 +23,6 @@
                     for(var i = 0; i<vm.rounds.length; i++){
                         getScore(vm.rounds[i].name, i);
                     }
-                    Competition.getTeams(vm.competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
-
-                    function getTeamsSuccessFn(data){
-                        vm.teams = data.data;
-                    }
-
-
-                    function getTeamsErrorFn(data){
-                        console.error(data.data);
-                    }
                 }
 
                 function getAllRoundsErrorFn(data){
@@ -53,14 +43,45 @@
 
             function getScoresSuccessFn(data){
                 vm.rounds[i].scores = data.data;
+                if(i == vm.rounds.length-1){
+                    updateScores();
+                }
+                console.log(vm.rounds[i].scores);
             }
 
             function getScoresErrorFn(data){
                 console.error(data.data);
             }
+        }
 
+        function updateScores(){
+            for(var i = 0; i<vm.rounds.length; i++){
+                if(i == 0){
+                    vm.rounds[i].first_round = true;
+                    vm.rounds[i].last_round = false;
+                }else if(i == vm.rounds.length-1){
+                    vm.rounds[i].first_round = false;
+                    vm.rounds[i].last_round = true;
+                }else{
+                    vm.rounds[i].first_round = false;
+                    vm.rounds[i].last_round = false;
+                }
+                console.log(vm.rounds[i].scores);
+                if(vm.rounds[i].first_round === false && vm.rounds[i].last_round === false){
+                    for(var k = 0; k<vm.rounds[i].scores.length; k++){
+                        for(var j = 0; j<vm.rounds[i-1].scores.length; j++){
+                            if(vm.rounds[i].scores[k].team.name === vm.rounds[i-1].scores[j].team.name) {
+                                vm.rounds[i].scores[k].score += vm.rounds[i-1].scores[j].score;
+                                vm.rounds[i].scores[k].number_of_agents += vm.rounds[i-1].scores[j].number_of_agents;
+                                vm.rounds[i].scores[k].time += vm.rounds[i-1].scores[j].time;
+                            }
+                        }
 
+                    }
 
+                }
+
+            }
         }
 
     }
