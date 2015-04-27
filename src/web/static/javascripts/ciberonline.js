@@ -72,6 +72,10 @@
                         console.log(data.data.message);
                     });
                 });
+                swampdragon.close(function () {
+                    // Disable inputs depending on SwampDragon
+                    console.log("foi-se a baixo!");
+                });
             });
         }
     }

@@ -10,6 +10,7 @@ from authentication.serializers import AccountSerializer, AccountSerializerUpdat
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 from tokens.models import UserToken
+from notifications.models import NotificationTeam
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -219,6 +220,10 @@ class LoginView(views.APIView):
                         self.user = ac
 
                 serialized = AccountSerializerLogin(Session(UserToken.get_or_set(account), account))
+
+                # send notification login!
+                for team in account.teams.all():
+                    NotificationTeam.add(team=team, status="ok", message=account.username + " has logged in!")
 
                 return Response(serialized.data)
 
