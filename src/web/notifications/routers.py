@@ -10,10 +10,10 @@ class LoginRequired(RoutePermission):
         self.test_against_verbs = verbs
 
     def test_permission(self, handler, verb, **kwargs):
-        if 'user' not in kwargs and 'stream' not in kwargs['user']:
+        if 'user' not in kwargs and 'u_stream' not in kwargs['user']:
             return False
 
-        return handler.connection.authenticate(kwargs['user']['stream'])
+        return handler.connection.authenticate(kwargs['user']['u_stream'])
 
     def permission_failed(self, handler):
         handler.send_login_required()
@@ -28,7 +28,7 @@ class NotificationRouter(ModelPubRouter):
     serializer_class = NotificationSerializer
 
     def get_subscription_contexts(self, **kwargs):
-        user_obj = self.connection.get_user(kwargs['user']['stream'])
+        user_obj = self.connection.get_user(kwargs['user']['u_stream'])
 
         if user_obj is None:
             return self.send_login_required()

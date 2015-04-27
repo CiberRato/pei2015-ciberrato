@@ -40,13 +40,13 @@ INSTALLED_APPS = (
     'swampdragon',
     'swampdragon_auth',
     'rest_framework',
-    'rest_framework.authtoken',
     'authentication',
     'teams',
     'agent',
     'competition',
     'trials',
     'notifications',
+    'tokens',
 )
 
 MIDDLEWARE_CLASSES = (

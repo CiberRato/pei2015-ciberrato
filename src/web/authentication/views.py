@@ -9,7 +9,7 @@ from authentication.serializers import AccountSerializer, AccountSerializerUpdat
     AccountSerializerLogin
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
-from rest_framework.authtoken.models import Token
+from tokens.models import UserToken
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -59,7 +59,7 @@ class AccountViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             instance = Account.objects.create_user(**serializer.validated_data)
-            Token.objects.create(user=instance)
+            UserToken.get_or_set(account=instance)
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
@@ -213,19 +213,12 @@ class LoginView(views.APIView):
 
                 login(request, account)
 
-                # token for stream
-                if Token.objects.filter(user=account).count() == 1:
-                    t = Token.objects.get(user=account)
-                    t.delete()
-
-                token = Token.objects.create(user=account)
-
                 class Session:
                     def __init__(self, tk, ac):
                         self.token = tk.key
                         self.user = ac
 
-                serialized = AccountSerializerLogin(Session(token, account))
+                serialized = AccountSerializerLogin(Session(UserToken.get_or_set(account), account))
 
                 return Response(serialized.data)
 
@@ -323,6 +316,7 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         else:
             instance.is_superuser = False
 
+        instance.save()
         return Response({'status': 'Updated',
                          'message': 'Account updated, is super user? ' + str(instance.is_superuser)
                          }, status=status.HTTP_200_OK)

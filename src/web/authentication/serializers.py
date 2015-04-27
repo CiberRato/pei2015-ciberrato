@@ -29,7 +29,7 @@ class AccountSerializerLogin(serializers.BaseSerializer):
             'teaching_institution': instance.user.teaching_institution,
             'first_name': instance.user.first_name,
             'last_name': instance.user.first_name,
-            'stream': instance.token
+            'u_stream': instance.token
         }
 
 

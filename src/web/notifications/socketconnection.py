@@ -1,4 +1,5 @@
 from swampdragon.connections.sockjs_connection import DjangoSubscriberConnection
+from tokens.models import UserToken
 
 
 class _RequestWrapper(object):
@@ -12,21 +13,20 @@ class HttpDataConnection(DjangoSubscriberConnection):
         self._user = None
         super(HttpDataConnection, self).__init__(session)
 
-    def get_user(self, token):
-        from rest_framework.authtoken.models import Token
-
+    @staticmethod
+    def get_user(token):
         try:
-            exists = Token.objects.filter(key=token).count()
+            exists = UserToken.objects.filter(key=token).count()
             if exists:
-                return Token.objects.get(key=token).user
+                return UserToken.objects.get(key=token).user
             return None
-        except Token.DoesNotExist:
+        except UserToken.DoesNotExist:
             return None
 
-    def authenticate(self, token):
-        from rest_framework.authtoken.models import Token
+    @staticmethod
+    def authenticate(token):
         try:
-            exists = Token.objects.filter(key=token).count()
+            exists = UserToken.objects.filter(key=token).count()
             return exists == 1
-        except Token.DoesNotExist:
+        except UserToken.DoesNotExist:
             return False
