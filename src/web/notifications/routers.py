@@ -19,11 +19,11 @@ class LoginRequired(RoutePermission):
         handler.send_login_required()
 
 
-class NotificationRouter(ModelPubRouter):
+class NotificationUserRouter(ModelPubRouter):
     permission_classes = [LoginRequired()]
 
     valid_verbs = ['subscribe']
-    route_name = 'notifications'
+    route_name = 'user'
     model = NotificationUser
     serializer_class = NotificationUserSerializer
 
@@ -35,4 +35,4 @@ class NotificationRouter(ModelPubRouter):
 
         return {'user_id': user_obj.pk}
 
-route_handler.register(NotificationRouter)
+route_handler.register(NotificationUserRouter)

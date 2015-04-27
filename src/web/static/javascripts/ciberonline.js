@@ -40,7 +40,7 @@
             /* SUBSCRIBE */
             /// Subscribe to the chat router
             $dragon.onReady(function() {
-                $dragon.subscribe('notifications', 'notifications', {'user': Authentication.getAuthenticatedAccount()}, function (context, data) {
+                $dragon.subscribe('user', 'notifications', {'user': Authentication.getAuthenticatedAccount()}, function (context, data) {
                     // any thing that happens after successfully subscribing
                     console.log("// any thing that happens after successfully subscribing");
                 }, function (context, data) {
