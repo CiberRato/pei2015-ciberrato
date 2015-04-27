@@ -155,7 +155,9 @@
                                 <td ng-repeat="(key2, value2) in value.gridsTotal" ng-if="$first"><a href="/panel/{{value2.label}}/teamMembers">{{value2.label}}</a>
                                 </td>
 
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'READY'" ng-click = "vm.startTrial(value.identifier)">Start</a>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition'"><a href="#" ng-if="value.state == 'READY'" ng-click = "vm.prepareTrial(value.identifier)">Prepare the trial</a>
+
+                                    <a href="#" ng-if="value.state == 'PREPARE'" ng-click = "vm.startTrial(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'WAITING'">Waiting to Start</p>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
@@ -164,7 +166,7 @@
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Past'">Competition ended!</td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">
                                     <p ng-if="value.state == 'WAITING' || value.state == 'ERROR' || value.state == 'READY'">Didn't Start</p>
-                                    <a href="/panel/{{value.identifier}}/liveStream" ng-if="value.state == 'STARTED'">Watch Live</a>
+                                    <a href="/panel/{{value.identifier}}/liveStream" ng-if="value.state == 'STARTED' || value.state == 'PREPARE'">Watch Live</a>
                                     <a href="/panel/{{value.identifier}}/watchTrial" ng-if="value.state == 'LOG'">Watch</a>
                                 </td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getTrialGrids(); vm.getScoresByTrial()" href="#addScores">Manage Scores</a>

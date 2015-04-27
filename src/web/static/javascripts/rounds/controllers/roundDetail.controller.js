@@ -30,7 +30,7 @@
         vm.removeTrial = removeTrial;
         vm.uploadAll = uploadAll;
         vm.change = change;
-
+        vm.prepareTrial = prepareTrial;
         vm.getTrialGrids = getTrialGrids;
         vm.Available = [];
         vm.disassociateGrid = disassociateGrid;
@@ -505,6 +505,47 @@
         function getTrialGridsErrorFn(data){
             console.error(data.data);
             $location.path('/panel/');
+        }
+
+        function prepareTrial(identifier){
+            Round.prepareTrial(identifier).then(prepareTrialSuccessFn, prepareTrialErrorFn);
+
+            function prepareTrialSuccessFn(){
+                $.jGrowl("Trial state changed to Prepare Mode.", {
+                    life: 2500,
+                    theme: 'success'
+                });
+                $timeout(function(){
+                    reloadTrial(identifier);
+                });
+            }
+
+            function prepareTrialErrorFn(data){
+                console.log(data.data);
+                console.log(data.data);
+                var errors = "";
+                if(typeof data.data.detail != "undefined"){
+                    errors += data.data.detail;
+                }
+                else{
+                    if (typeof data.data.message == 'object'){
+                        for (var value in data.data.message) {
+                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
+                            for (var error in data.data.message[value]){
+                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                            }
+                        }
+                    }
+                    else{
+                        errors+= data.data.message + '<br/>'
+                    }
+                }
+                $.jGrowl(errors, {
+                    life: 5000,
+                    theme: 'btn-danger'
+                });
+            }
+
         }
 
         function startTrial(identifier){
