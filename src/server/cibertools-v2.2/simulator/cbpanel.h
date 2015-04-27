@@ -25,11 +25,7 @@
 #include "cbpanelcommand.h"
 
 class cbPanelInterface {
-public:
-    cbPanelInterface();
-    virtual ~cbPanelInterface();
-
-    virtual bool readCommand(cbPanelCommand *command);
+    virtual bool readCommand(cbPanelCommand *command) = 0;
 };
 
 class cbPanel : public cbClient, public cbPanelInterface

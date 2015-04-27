@@ -29,6 +29,8 @@ class cbPanelView : public cbClient, public cbPanelInterface, public cbViewInter
 public:
 	cbPanelView();
 	~cbPanelView();
+
+    virtual bool readCommand(cbPanelCommand *command);
 };
 
 #endif
