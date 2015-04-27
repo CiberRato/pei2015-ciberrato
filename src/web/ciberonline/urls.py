@@ -118,7 +118,6 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
-                       url(r'^api/v1/notifications/', Notifications.as_view(), name='home'),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
