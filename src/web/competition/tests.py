@@ -573,12 +573,13 @@ class AuthenticationTestCase(TestCase):
                               ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
         # prepare trial
+        """
         url = "/api/v1/trials/prepare/"
         data = {'trial_id': trial_identifier}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data,
                          {"status": "Trial started", "message": "The trial is now in \"Prepare\" state!"})
-
+        """
         # start trial
         url = "/api/v1/trials/start/"
         data = {'trial_id': trial_identifier}
@@ -818,6 +819,12 @@ class AuthenticationTestCase(TestCase):
                                     ('competition_name', u'C1'), ('state', u'ERROR'), ('errors', u'cenas')])),
                                             ('team', OrderedDict([('name', u'XPTO2'), ('max_members', 10)])),
                                             ('score', 10), ('number_of_agents', 3), ('time', 10)])])
+
+
+        # ranking by team in competition
+        url = "/api/v1/competitions/ranking_team_competition/XPTO1/?competition_name=C1"
+        response = client.get(path=url)
+        self.assertEqual(len(response.data), 1)
 
         # update ranking
         url = "/api/v1/competitions/team_score/" + trial_identifier + "/"

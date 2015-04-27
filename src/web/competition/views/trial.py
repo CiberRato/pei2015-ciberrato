@@ -398,11 +398,12 @@ class StartTrial(views.APIView):
         trial = get_object_or_404(Trial.objects.all(), identifier=request.data.get('trial_id', ''))
 
         # verify if the round doesn't started already
+        """
         if not trial_prepare(trial):
             return Response({'status': 'Bad Request',
                              'message': 'The trial is in state PREPARE!'},
                             status=status.HTTP_400_BAD_REQUEST)
-
+        """
         # verify if round has files
         if not bool(trial.round.grid_path) or not bool(trial.round.param_list_path) \
                 or not bool(trial.round.param_list_path):
