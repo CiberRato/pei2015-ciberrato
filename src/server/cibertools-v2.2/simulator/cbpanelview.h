@@ -24,7 +24,7 @@
 #include "cbpanel.h"
 #include "cbview.h"
 
-class cbPanelView : public cbClient, public cbPanel, public cbView
+class cbPanelView : public cbClient, public cbPanelInterface, public cbViewInterface
 {
 public:
 	cbPanelView();
