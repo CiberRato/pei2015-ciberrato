@@ -46,6 +46,9 @@ class cbGrid;
 class cbRobot;
 class cbView;
 class cbPanel;
+class cbClient;
+class cbViewInterface;
+class cbPanelInterface;
 class cbPanelView;
 class cbReceptionist;
 
@@ -201,8 +204,8 @@ protected: // data members
 
 	cbSimulatorGUI *gui;
 
-    vector<cbView *> views;
-    vector<cbPanel *> panels;
+    vector<cbClient *> views;
+    vector<cbClient *> panels;
     vector<cbRobot *> robots;
 
 	State curState, nextState;	// current and next states

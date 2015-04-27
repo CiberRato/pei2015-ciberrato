@@ -981,7 +981,7 @@ void cbSimulator::UpdateViews()
 		const char* xmlCharA = xmlString.c_str();
 
 		for (unsigned int j = 0; j < views.size(); j++) {
-			cbView *view = views[j];
+			cbView *view = (cbView *) views[j];
 			view->send(xmlCharA, xmlString.length()+1);
 		}
 	}
@@ -1043,7 +1043,7 @@ void cbSimulator::PanelCommands(){
 	cbPanelCommand command;
 	for (unsigned int i=0; i < panels.size(); i++)
 	{
-		while (panels[i]->readCommand(&command))
+		while (((cbPanel *) panels[i])->readCommand(&command))
 		{
 			switch (command.type)
 			{
