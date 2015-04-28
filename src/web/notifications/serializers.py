@@ -34,6 +34,8 @@ class NotificationMessage(BaseSerializer):
     def to_representation(self, instance):
         if instance.status == "error":
             status = 400
+        elif instance.status == "info":
+                status = 100
         else:
             status = 200
 

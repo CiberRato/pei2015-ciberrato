@@ -61,6 +61,10 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The team has already one agent with that name!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            # when the agent is created sends notification to the team
+            NotificationTeam.add(team=team, status="info",
+                                 message="Looks like you have a new agent in your team " + team.name + "!")
+
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
@@ -111,6 +115,9 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                              'message': 'You can not remove a Remove agent!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # when the agent is deleted sends notification to the team
+        NotificationTeam.add(team=team, status="info",
+                             message="Looks like the agent " + agent.agent_name + " has been removed!")
         agent.delete()
 
         return Response({'status': 'Deleted',
