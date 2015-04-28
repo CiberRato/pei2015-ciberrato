@@ -160,7 +160,7 @@
                 $timeout(function(){
                     getFiles();
                     vm.agent.validation_result = [];
-                    
+
                 });
 
             }
