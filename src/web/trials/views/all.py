@@ -81,7 +81,12 @@ class TrialMessageCreate(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
+            try:
+                trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
+            except Trial.DoesNotExist:
+                return Response({'status': 'Bad request',
+                                'message': 'The trial message can\'t be saved!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             if trial_done(trial):
                 return Response({'status': 'Bad request',
