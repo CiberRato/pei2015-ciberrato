@@ -30,6 +30,11 @@ def main():
 	WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 	WEBSOCKET_PORT = settings["settings"]["websocket_port"]
 
+	DJANGO_HOST = settings["settings"]["starter_viewer_host"]
+	DJANGO_PORT = settings["settings"]["starter_viewer_port"]
+
+	REGISTER_ROBOTS_URL = settings["urls"]["register_robots"]
+
 	LOG_FILE = settings["settings"]["log_info_file"]
 	# End of loading settings
 
@@ -94,8 +99,10 @@ def main():
 	print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
 
 	checkedRobots = []
+	prevlen = 0
 	while len(checkedRobots) != int(robotsAmount):
 		data, (host, port) = simulator_s.recvfrom(4096)
+		print data
 		robotsXML = minidom.parseString(data.replace("\x00", ""))
 		robots = robotsXML.getElementsByTagName('Robot')
 		if len(robots):
@@ -103,6 +110,10 @@ def main():
 				robotID = r.attributes['Id'].value
 				checkedRobots += [robotID]
 				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
+				if len(checkedRobots) != prevlen:
+					data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
+					response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
+				prevlen = len(checkedRobots)
 				print "[VIEWER] Robots Registered: " + str(checkedRobots)
 
 	starter_s.send("<RobotsRegistered/>")

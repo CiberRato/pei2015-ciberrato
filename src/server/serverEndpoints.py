@@ -3,6 +3,7 @@ from multiprocessing import Process
 
 class Root(object):
 	def __init__(self):
+		self.trials = Services()
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 		self.HOST = settings["settings"]["starter_end_point_host"]
@@ -33,6 +34,32 @@ class Root(object):
 		self.starter_tcp.send("team_name=" + str(team_name) + "&" + "agent_name="+str(agent_name))
 		return "Received test request for agent " + str(agent_name)
 
+
+class Services(object):
+	def __init__(self):
+		pass
+
+	@cherrypy.expose
+	def start(self, **kwargs):
+		if "trial_identifier" not in kwargs:
+			raise cherrypy.HTTPError(400, "Parameter trial_identifier was expected.")
+
+		trial_id = kwargs["trial_identifier"]
+
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+		HOST = settings["settings"]["services_end_point_host"]
+		PORT = settings["settings"]["services_end_point_port"]
+
+		starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		starter_tcp.connect((HOST, PORT))
+
+		starter_tcp.send("start="+trial_id)
+
+		return "trial=" + trial_id
+
+
 class EndPoint():
 	def start(self):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
@@ -48,5 +75,6 @@ class EndPoint():
 		    }
 		}
 
-		cherrypy.quickstart(Root(), "/api/v1/", config)
+		cherrypy.quickstart(Root(), "/api/vi/", config)
+
 

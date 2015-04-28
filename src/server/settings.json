@@ -23,6 +23,10 @@
 		"end_point_host": "127.0.0.1",
 		"end_point_port": 9000,
 
+		///host and port for services (like start) end-point connection
+		"services_end_point_host": "127.0.0.1",
+		"services_end_point_port": 7501,
+
 		///simulator host and port for viewer to send required commands
 		"simulator_host": "127.0.0.1",
 		"simulator_port": 6000,
@@ -63,7 +67,12 @@
 		///url to post the result of the tests
 		///USAGE: /api/v1/agents/code_validation/<agent_name>
 		///PARAMS:{'team_name': <team_name>, code_valid': <return_code>, 'validation_result': <message>}
-		"code_validation": "/api/v1/agents/code_validation/"
+		"code_validation": "/api/v1/agents/code_validation/",
+
+		///url to post the robots that are registered
+		///PARAMS:{'message': <message>, 'trial_identifier': <trial_identifier>}
+		"register_robots": "/api/v1/trials/message/"
+
 	}
 }
 

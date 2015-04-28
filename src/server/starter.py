@@ -58,6 +58,9 @@ class Starter:
 		VIEWER_HOST = settings["settings"]["starter_viewer_host"]
 		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
 
+		SERVICES_HOST = settings["settings"]["services_end_point_host"]
+		SERVICES_PORT = settings["settings"]["services_end_point_port"]
+
 		LOG_FILE = settings["settings"]["log_info_file"]
 		#end loading settings
 
@@ -201,6 +204,67 @@ class Starter:
 
 		viewer_c.settimeout(None)
 
+		services_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		services_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+		services_tcp.bind((SERVICES_HOST, SERVICES_PORT))
+		services_tcp.listen(1)
+		services_c, services_c_addr = services_tcp.accept()
+
+		print "[STARTER] Waiting for start.."
+		data = None
+		while data[0] != "start":
+			data = services_c.recv(1024)
+			data = data.split("=")
+
+		if data[1] != sim_id:
+			print "[STARTER] Start received not the same as the current trial"
+			# Canceling everything regarding this simulation
+			# Shuting down connections to viewer
+			print "[STARTER] Killing Sockets"
+			viewer_c.shutdown(socket.SHUT_RDWR)
+			viewer_c.close()
+			viewer_tcp.shutdown(socket.SHUT_RDWR)
+			viewer_tcp.close()
+
+			services_c.shutdown(socket.SHUT_RDWR)
+			services_c.close()
+			services_tcp.shutdown(socket.SHUT_RDWR)
+			services_tcp.close()
+
+			# Waiting for viewer to die
+			print "[STARTER] Killing Viewer"
+			viewer.terminate()
+			viewer.wait()
+
+			# Kill simulator
+			print "[STARTER] Killing Simulator"
+			simulator.terminate()
+			simulator.wait()
+
+			# Killing Websockets
+			print "[STARTER] Killing Websocket"
+			websocket.terminate()
+			websocket.wait()
+
+			# Kill docker container
+			print "[STARTER] Killing Docker Containers"
+			for dock in docker_containers:
+				proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
+				proc.wait()
+				proc = subprocess.Popen(["docker", "rm", dock])
+				proc.wait()
+
+			# Remove log file from system
+			print "[STARTER] Removing log file"
+			os.remove(LOG_FILE)
+
+			# Close all tmp files
+			print "[STARTER] Closing tmp files"
+			for key in tempFilesList:
+				tempFilesList[key].close()
+			raise Exception("[STARTER] ERROR: Agents weren't all registered")
+
 		print "[STARTER] Sending message to Viewer (everything is ready to start)"
 		viewer_c.send("<StartedAgents/>")
 
@@ -217,6 +281,11 @@ class Starter:
 		viewer_c.close()
 		viewer_tcp.shutdown(socket.SHUT_RDWR)
 		viewer_tcp.close()
+
+		services_c.shutdown(socket.SHUT_RDWR)
+		services_c.close()
+		services_tcp.shutdown(socket.SHUT_RDWR)
+		services_tcp.close()
 
 		# Waiting for viewer to die
 		viewer.wait()
