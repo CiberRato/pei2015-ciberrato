@@ -1616,10 +1616,29 @@ void cbSimulator::setDefaultParameters(void)
 	//cout << " done.\n";
 }
 
+void cbSimulator::xx(void) {
+	std::cout << "Hello" << std::endl;	
+}
+
 void cbSimulator::startTimer(void)
 {
     poolChanges.start(poolCycleTime);
     QObject::connect(&poolChanges, SIGNAL(timeout()), this, SLOT(readChanges()));
+
+    /* Start the thread associated with the Panel Commands messages */
+    moveToThread(&threadPanelCommands);
+    QObject::connect(&threadPanelCommands, SIGNAL(started()), this, SLOT(xx()));
+    threadPanelCommands.start();
+
+    /* Start the thread associated with the Robot Actions messages */
+    moveToThread(&threadRobotActions);
+    QObject::connect(&threadRobotActions, SIGNAL(started()), this, SLOT(xx()));
+    threadRobotActions.start();
+
+    /* Start the thread associated with the Reception Handler messages */
+    moveToThread(&threadReceptionHandler);
+    QObject::connect(&threadReceptionHandler, SIGNAL(started()), this, SLOT(xx()));
+    threadReceptionHandler.start();
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)

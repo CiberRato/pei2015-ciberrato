@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QVector>
 #include <QTimer>
+#include <QThread>
 #include <iostream>
 #include <vector>
 
@@ -162,6 +163,7 @@ public slots:
     void setShowActions(bool);
     void setShowMeasures(bool);
     void setShowPositions(bool);
+    void xx();
 
 signals:
     void toggleGPS(bool);
@@ -223,6 +225,10 @@ protected: // data members
 
     bool allowRegistrations;
     bool showPositions;
+
+    QThread threadPanelCommands;
+    QThread threadRobotActions;
+    QThread threadReceptionHandler;
 
 protected: // member functions
 	void CheckIn();
