@@ -17,6 +17,8 @@ from authentication.models import Team, Account, TeamMember
 from teams.permissions import IsAdminOfTeam
 from competition.serializers import CompetitionSerializer
 
+from notifications.models import NotificationTeam
+
 
 class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                     mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -260,6 +262,11 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             agent.code_valid = serializer.validated_data['code_valid']
             agent.validation_result = serializer.validated_data['validation_result']
             agent.save()
+
+            if agent.validation_result:
+                NotificationTeam.add(team=team, status="ok", message=agent.validation_result, trigger="code_valid")
+            else:
+                NotificationTeam.add(team=team, status="error", message=agent.validation_result, trigger="code_valid")
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
