@@ -15,164 +15,168 @@ def getText(nodelist):
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
     return ''.join(rc)
+class Viewer:
+	def main(self, sim_id):
+		# Load settings
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
 
-def main():
-	# Load settings
-	settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-	settings = json.loads(settings_str)
+		SIMULATOR_HOST = settings["settings"]["simulator_host"]
+		SIMULATOR_PORT = settings["settings"]["simulator_port"]
 
-	SIMULATOR_HOST = settings["settings"]["simulator_host"]
-	SIMULATOR_PORT = settings["settings"]["simulator_port"]
+		STARTER_HOST = settings["settings"]["starter_viewer_host"]
+		STARTER_PORT = settings["settings"]["starter_viewer_port"]
 
-	STARTER_HOST = settings["settings"]["starter_viewer_host"]
-	STARTER_PORT = settings["settings"]["starter_viewer_port"]
+		WEBSOCKET_HOST = settings["settings"]["websocket_host"]
+		WEBSOCKET_PORT = settings["settings"]["websocket_port"]
 
-	WEBSOCKET_HOST = settings["settings"]["websocket_host"]
-	WEBSOCKET_PORT = settings["settings"]["websocket_port"]
+		DJANGO_HOST = settings["settings"]["django_host"]
+		DJANGO_PORT = settings["settings"]["django_port"]
 
-	DJANGO_HOST = settings["settings"]["starter_viewer_host"]
-	DJANGO_PORT = settings["settings"]["starter_viewer_port"]
+		REGISTER_ROBOTS_URL = settings["urls"]["register_robots"]
 
-	REGISTER_ROBOTS_URL = settings["urls"]["register_robots"]
+		LOG_FILE = settings["settings"]["log_info_file"]
+		# End of loading settings
 
-	LOG_FILE = settings["settings"]["log_info_file"]
-	# End of loading settings
+		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-	simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		# Register as PanelViewer in the simulator
+		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
 
-	# Register as PanelViewer in the simulator
-	simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
+		# Get sim time, and ports
+		# params, grid e lab comes in this packet as well
+		data, (hostSim, portSim) = simulator_s.recvfrom(4096)
+		parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
+		itemlist = parametersXML.getElementsByTagName('Parameters')
+		simTime = itemlist[0].attributes['SimTime'].value
 
-	# Get sim time, and ports
-	# params, grid e lab comes in this packet as well
-	data, (hostSim, portSim) = simulator_s.recvfrom(4096)
-	parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
-	itemlist = parametersXML.getElementsByTagName('Parameters')
-	simTime = itemlist[0].attributes['SimTime'].value
+		# Log file to be written
+		log_file = open(LOG_FILE, "w")
 
-	# Log file to be written
-	log_file = open(LOG_FILE, "w")
+		parameters = itemlist[0].toxml()
+		lab = parametersXML.getElementsByTagName('Lab')[0].toxml()
+		grid = parametersXML.getElementsByTagName('Grid')[0].toxml()
 
-	parameters = itemlist[0].toxml()
-	lab = parametersXML.getElementsByTagName('Lab')[0].toxml()
-	grid = parametersXML.getElementsByTagName('Grid')[0].toxml()
-
-	# Write parameters
-	json_obj = xmltodict.parse(parameters)
-	json_data = json.dumps(json_obj)
-
-	json_data = json_data.replace("@", "_")
-	json_data = json_data.replace('"#text": "\\""', "")
-
-	log_file.write("{"+json_data[1:-1]+",")
-
-	# Write lab
-	json_obj = xmltodict.parse(lab)
-	json_data = json.dumps(json_obj)
-
-	json_data = json_data.replace("@", "_")
-	json_data = json_data.replace('"#text": "\\""', "")
-
-	log_file.write(json_data[1:-1]+",")
-
-	# Write grid
-	json_obj = xmltodict.parse(grid)
-	json_data = json.dumps(json_obj)
-
-	json_data = json_data.replace("@", "_")
-	json_data = json_data.replace('"#text": "\\""', "")
-
-	log_file.write(json_data[1:-1]+",")
-
-
-	starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	starter_s.connect((STARTER_HOST, STARTER_PORT))
-
-	# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
-	data = starter_s.recv(4096)
-	robotsXML = minidom.parseString(data)
-	robots = robotsXML.getElementsByTagName('Robots')
-	robotsAmount = robots[0].attributes['Amount'].value
-
-	print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
-
-	checkedRobots = []
-	prevlen = 0
-	while len(checkedRobots) != int(robotsAmount):
-		data, (host, port) = simulator_s.recvfrom(4096)
-		print data
-		robotsXML = minidom.parseString(data.replace("\x00", ""))
-		robots = robotsXML.getElementsByTagName('Robot')
-		if len(robots):
-			for r in robots:
-				robotID = r.attributes['Id'].value
-				checkedRobots += [robotID]
-				checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
-				if len(checkedRobots) != prevlen:
-					data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
-					response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
-				prevlen = len(checkedRobots)
-				print "[VIEWER] Robots Registered: " + str(checkedRobots)
-
-	starter_s.send("<RobotsRegistered/>")
-
-	print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
-
-	data = starter_s.recv(4096)
-	while data != "<StartedAgents/>":
-		data = starter_s.recv(4096)
-
-	# Sending simulator msg to start the simulation
-	simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
-
-	# Connect to websockets
-	websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
-
-	robotTime = 0
-	firstTime = True
-	log_file.write('"Log":[')
-	while simTime != robotTime:
-		if not firstTime:
-			log_file.write(",")
-		else:
-			firstTime = False
-
-		# Update Robot time
-		data = simulator_s.recv(4096)
-		data = data.replace("\x00", "")
-		robotXML = minidom.parseString(data)
-		itemlist = robotXML.getElementsByTagName('LogInfo')
-		robotTime = itemlist[0].attributes['Time'].value
-
-		# Convert to json and write to log file
-		json_obj = xmltodict.parse(data)
+		# Write parameters
+		json_obj = xmltodict.parse(parameters)
 		json_data = json.dumps(json_obj)
+
 		json_data = json_data.replace("@", "_")
-		log_file.write(json_data)
+		json_data = json_data.replace('"#text": "\\""', "")
 
-		# Send data to the websockets
-		websocket_tcp.send(json_data)
+		log_file.write("{"+json_data[1:-1]+",")
 
-	log_file.write("]}")
+		# Write lab
+		json_obj = xmltodict.parse(lab)
+		json_data = json.dumps(json_obj)
 
-	# Wait 0.1 seconds to assure the END msg goes on a separate packet
-	time.sleep(0.1)
-	# Send websocket msg telling it's over
-	websocket_tcp.send("END")
+		json_data = json_data.replace("@", "_")
+		json_data = json_data.replace('"#text": "\\""', "")
 
-	starter_s.send('<EndedSimulation/>')
+		log_file.write(json_data[1:-1]+",")
 
-	# Close all connections
-	websocket_tcp.close()
-	starter_s.close()
-	simulator_s.close()
+		# Write grid
+		json_obj = xmltodict.parse(grid)
+		json_data = json.dumps(json_obj)
 
-	# Close all open files
-	log_file.close()
+		json_data = json_data.replace("@", "_")
+		json_data = json_data.replace('"#text": "\\""', "")
 
-if __name__ == "__main__":
-	main()
+		log_file.write(json_data[1:-1]+",")
+
+
+		starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		starter_s.connect((STARTER_HOST, STARTER_PORT))
+
+		# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
+		data = starter_s.recv(4096)
+		robotsXML = minidom.parseString(data)
+		robots = robotsXML.getElementsByTagName('Robots')
+		robotsAmount = robots[0].attributes['Amount'].value
+
+		print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
+
+		checkedRobots = []
+		prevlen = 0
+		while len(checkedRobots) != int(robotsAmount):
+			print "CICLE"
+			data, (host, port) = simulator_s.recvfrom(4096)
+			robotsXML = minidom.parseString(data.replace("\x00", ""))
+			robots = robotsXML.getElementsByTagName('Robot')
+			if len(robots):
+				for r in robots:
+					robotID = r.attributes['Id'].value
+					checkedRobots += [robotID]
+					checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
+					if len(checkedRobots) != prevlen:
+						#data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
+						data = {}
+						print "ENTERED"
+						response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
+						print "AFTER"
+						print response.text
+					prevlen = len(checkedRobots)
+					print "[VIEWER] Robots Registered: " + str(checkedRobots)
+
+		starter_s.send("<RobotsRegistered/>")
+
+		print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
+
+		data = starter_s.recv(4096)
+		while data != "<StartedAgents/>":
+			data = starter_s.recv(4096)
+
+		# Sending simulator msg to start the simulation
+		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
+
+		# Connect to websockets
+		websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
+
+		robotTime = 0
+		firstTime = True
+		log_file.write('"Log":[')
+		while simTime != robotTime:
+			if not firstTime:
+				log_file.write(",")
+			else:
+				firstTime = False
+
+			# Update Robot time
+			data = simulator_s.recv(4096)
+			data = data.replace("\x00", "")
+			robotXML = minidom.parseString(data)
+			itemlist = robotXML.getElementsByTagName('LogInfo')
+			robotTime = itemlist[0].attributes['Time'].value
+
+			# Convert to json and write to log file
+			json_obj = xmltodict.parse(data)
+			json_data = json.dumps(json_obj)
+			json_data = json_data.replace("@", "_")
+			log_file.write(json_data)
+
+			# Send data to the websockets
+			websocket_tcp.send(json_data)
+
+		log_file.write("]}")
+
+		# Wait 0.1 seconds to assure the END msg goes on a separate packet
+		time.sleep(0.1)
+		# Send websocket msg telling it's over
+		websocket_tcp.send("END")
+
+		starter_s.send('<EndedSimulation/>')
+
+		# Close all connections
+		websocket_tcp.close()
+		starter_s.close()
+		simulator_s.close()
+
+		# Close all open files
+		log_file.close()
+
+# if __name__ == "__main__":
+# 	main()
