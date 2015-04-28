@@ -60,6 +60,7 @@
                     console.log(vm.rounds[i].trials);
                     for(var k = 0; k<vm.rounds[i].trials.length; k++){
                         getGrids(vm.rounds[i].trials[k].identifier, k, i);
+
                     }
                 }
 
