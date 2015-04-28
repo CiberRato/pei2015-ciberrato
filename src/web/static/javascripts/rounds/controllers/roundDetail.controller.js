@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$scope', '$routeParams', 'Round', 'Competition'];
+    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition'];
 
-    function DetailRoundController($location, $route, $timeout, $scope, $routeParams, Round, Competition){
+    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition){
         var vm = this;
 
         vm.saveScores = saveScores;
@@ -529,6 +529,34 @@
                                 }
                             }
                         }
+                        $dragon.onReady(function() {
+                            swampdragon.open(function () {
+                                $dragon.onChannelMessage(function(channels, data) {
+                                    /*
+                                     if (data.data.message.status == 200){
+                                     $.jGrowl(data.data.message.content, {
+                                     life: 3500,
+                                     theme: 'success'
+                                     });
+                                     }else if(data.data.message.status == 400){
+                                     $.jGrowl(data.data.message.content, {
+                                     life: 3500,
+                                     theme: 'btn-danger'
+                                     });
+                                     }
+                                     */
+                                    if (data.data.message.trigger == 'trial_prepare'){
+                                        $timeout(function(){
+                                            console.log("entrei");
+                                            reloadTrial(identifier);
+                                        });
+                                    }
+                                    console.log(channels);
+                                    console.log(data.data._type);
+                                    console.log(data.data.message);
+                                });
+                            });
+                        });
                     }
 
                     function getTrialErrorFn(data){
@@ -575,33 +603,27 @@
                     life: 2500,
                     theme: 'success'
                 });
-
-                $dragon.onReady(function() {
-                    swampdragon.open(function () {
-                        $dragon.onChannelMessage(function(channels, data) {
-                            /*
-                             if (data.data.message.status == 200){
-                             $.jGrowl(data.data.message.content, {
-                             life: 3500,
-                             theme: 'success'
-                             });
-                             }else if(data.data.message.status == 400){
-                             $.jGrowl(data.data.message.content, {
-                             life: 3500,
-                             theme: 'btn-danger'
-                             });
-                             }
-                             */
-                            if (data.data.message.trigger == 'trial_started'){
-                                $timeout(function(){
-                                    reloadTrial(identifier);
-                                });
+                $timeout(function() {
+                    Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                    function getTrialSuccessFn(data) {
+                        console.log(data.data.state);
+                        if (!(data.data.state === 'PREPARE')) {
+                            vm.trial = data.data;
+                            for (var i = 0; i < vm.trials.length; i++) {
+                                if (vm.trial.identifier === vm.trials[i].identifier) {
+                                    if (vm.trial.state !== vm.trials[i].state) {
+                                        vm.trials[i].state = vm.trial.state;
+                                        console.log(vm.trials[i].state);
+                                    }
+                                }
                             }
-                            console.log(channels);
-                            console.log(data.data._type);
-                            console.log(data.data.message);
-                        });
-                    });
+                        }
+
+                    }
+
+                    function getTrialErrorFn(data){
+                        console.error(data.data);
+                    }
                 });
 
             }
@@ -643,7 +665,7 @@
             function getTrialSuccessFn(data){
                 if (!(data.data.state === 'READY')) {
                     vm.trial = data.data;
-                    updateState(identifier);
+                    updateState();
                 }
             }
 
@@ -653,7 +675,7 @@
 
         }
 
-        function updateState(identifier){
+        function updateState(){
             for(var i =0; i<vm.trials.length; i++){
                 if(vm.trial.identifier === vm.trials[i].identifier){
                     if(vm.trial.state !== vm.trials[i].state){
@@ -663,36 +685,8 @@
                 }
             }
 
-            function getTrialErrorFn(data){
-                console.error(data.data);
-            }
         }
 
-        function updateState2(identifier) {
-            for (var i = 0; i < vm.trials.length; i++) {
-                if (vm.trial.identifier === vm.trials[i].identifier) {
-                    if (vm.trial.state !== vm.trials[i].state) {
-                        vm.trials[i].state = vm.trial.state;
-                        console.log(vm.trials[i].state);
-                    }
-                }
-            }
-
-            setTimeout(function () {
-                Round.getTrial(identifier).then(getTrialNSuccessFn, getTrialErrorFn);
-            }, 5000);
-
-            function getTrialNSuccessFn(data) {
-                if (!(data.data.state === 'READY' || data.data.state === 'LOG' || data.data.state === 'ERROR')) {
-                    vm.trial = data.data;
-                    updateState2(identifier);
-                }
-            }
-
-            function getTrialErrorFn(data) {
-                console.error(data.data);
-            }
-        }
 
         function gridAssociate(grid, pos){
             Round.associateGrid(grid, vm.identifier, pos).then(associateAgentSuccessFn, associateAgentErrorFn);

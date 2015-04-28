@@ -74,6 +74,14 @@
                                 if (data.data.message.trigger == 'code_valid'){
                                     $timeout(function(){
                                         Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                                        function getAgentSuccessFn(data) {
+                                            vm.agent = data.data;
+                                        }
+
+                                        function getAgentErrorFn(data) {
+                                            console.error(data.data);
+                                        }
                                     });
                                 }
                                 console.log(channels);
@@ -85,20 +93,7 @@
 
                 }
 
-                function getAgentSuccessFn(data) {
-                    if (!(data.data.code_valid==false && data.data.validation_result == "submitted")){
-                        vm.agent = data.data;
-                        $route.reload();
-                    }else{
-                        setTimeout(function () {
-                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
-                        }, 1000);
-                    }
-                }
 
-                function getAgentErrorFn(data) {
-                    console.error(data.data);
-                }
 
                 function validateErrorFn(data) {
                     console.log(data.data);
