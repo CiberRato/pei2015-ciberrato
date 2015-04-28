@@ -142,7 +142,7 @@
                         $("#row1").show("slow");
                         $("#row2").show("slow");
                         $("#row5").show("slow");
-
+                        ctx = c1.getContext("2d");
                         doIt();
 
                         $scope.play();
