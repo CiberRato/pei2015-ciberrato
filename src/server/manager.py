@@ -90,7 +90,7 @@ class Sims:
 
 class Tests:
 	def __init__(self, t):
-		print "[HANDLE SIMS] Thread started"
+		print "[HANDLE TESTS] Thread started"
 		self.tests = t
 
 	def handle_tests(self):
