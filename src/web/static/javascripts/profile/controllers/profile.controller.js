@@ -46,7 +46,7 @@
             function profileUpdateSuccessFn(){
                 $.jGrowl("Profile has been updated.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 window.location.assign("/panel/");
             }
@@ -72,7 +72,7 @@
             function profilePassSuccessFn(){
                 $.jGrowl("Password has been updated.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 window.location.assign("/");
             }
@@ -109,7 +109,7 @@
             function destroyProfileSuccessFn(){
                 $.jGrowl("Profile has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 window.location.assign("/");
             }

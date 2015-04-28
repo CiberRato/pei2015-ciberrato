@@ -48,7 +48,7 @@
             function destroySuccessFn(){
                 $.jGrowl("Grid Position has been removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function() {
                     Grid.getMyGrids().then(getSuccessFn, getErrorFn);
@@ -122,7 +122,7 @@
             function associateSuccessFn(){
                 $.jGrowl("Agent has been associated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
                 Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
@@ -141,7 +141,7 @@
             function disassociateSuccessFn(){
                 $.jGrowl("Agent has been disassociated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
@@ -267,7 +267,7 @@
             function associateAgentSuccessFn(){
                 $.jGrowl("Agent has been associated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
                 Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);

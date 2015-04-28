@@ -45,7 +45,7 @@
             function destroyAgentSuccessFn(){
                 $.jGrowl("Agent has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
 
                 $location.url('/panel/' + vm.teamName + '/allAgents');

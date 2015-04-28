@@ -57,7 +57,7 @@
         function createSuccessFn(){
             $.jGrowl("Agent has been created successfully.", {
                 life: 2500,
-                theme: 'success'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
             });
             
             $location.path('/panel/'+ vm.username + '/myAgents/');

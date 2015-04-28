@@ -53,7 +53,7 @@
                 function validateSuccessFn() {
                     $.jGrowl("The code has been submitted for validation!", {
                         life: 2500,
-                        theme: 'success'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
                     $dragon.onReady(function() {
                         swampdragon.open(function () {
@@ -62,7 +62,7 @@
                                  if (data.data.message.status == 200){
                                  $.jGrowl(data.data.message.content, {
                                  life: 3500,
-                                 theme: 'success'
+                                 theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                                  });
                                  }else if(data.data.message.status == 400){
                                  $.jGrowl(data.data.message.content, {
@@ -125,7 +125,7 @@
 
                     $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                         life: 2500,
-                        theme: 'success'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
                     $timeout(function(){
                         getFiles();
@@ -150,7 +150,7 @@
             function deleteUploadSuccessFn() {
                 $.jGrowl("File \'" + fileName + "\' has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getFiles();

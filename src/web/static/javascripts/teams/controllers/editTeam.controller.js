@@ -38,7 +38,7 @@
             function updateTeamSuccessFn(){
                 $.jGrowl("Team has been updated.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path("/panel/" + username + "/myTeams");
             }
@@ -64,7 +64,7 @@
             function destroyTeamSuccessFn(){
                 $.jGrowl("Team has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path("/panel/" + username + "/myTeams");
             }

@@ -37,7 +37,7 @@
         function createSuccessFn(){
             $.jGrowl("Team successfully created.", {
                 life: 2500,
-                theme: 'success'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
             });
             $location.path('/panel/'+ username + '/myTeams/');
 

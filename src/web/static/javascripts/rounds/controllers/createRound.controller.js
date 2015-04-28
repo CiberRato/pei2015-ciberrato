@@ -25,7 +25,7 @@
             function createSuccessFn(){
                 $.jGrowl("Round has been created successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path('/admin/' + vm.competitionName + "/");
             }

@@ -36,7 +36,7 @@
             function removeSuccessFn(){
                 $.jGrowl("Type Of Competition has been removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
 
                 $timeout(function(){

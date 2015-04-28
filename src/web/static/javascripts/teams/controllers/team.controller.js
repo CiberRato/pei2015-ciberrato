@@ -94,7 +94,7 @@
         function addMemberSuccessFn(){
             $.jGrowl("Member has been added successfully to the Team.", {
                 life: 2500,
-                theme: 'success'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
             });
             $timeout(function(){
                 getMembers();
@@ -130,7 +130,7 @@
             function removeAdminSuccessFn(){
                 $.jGrowl("Admin removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getAdmin(i);
@@ -171,7 +171,7 @@
             function addAdminSuccessFn(){
                 $.jGrowl("Admin has been added successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getAdmin(i);
@@ -200,7 +200,7 @@
         function removeMemberSuccessFn(){
             $.jGrowl("Member has been removed successfully of the Team.", {
                 life: 2500,
-                theme: 'success'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
             });
             $timeout(function(){
                 getMembers();
@@ -220,7 +220,7 @@
             function destroySuccessFn(){
                 $.jGrowl("Team has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path("/panel/" + username + "/myTeams");
             }

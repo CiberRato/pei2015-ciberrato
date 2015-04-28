@@ -131,7 +131,7 @@
             function enrollSuccessFn(){
                 $.jGrowl("Team has been joined to the competition.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getTeams();
@@ -156,7 +156,7 @@
             function deleteEnrollSuccessFn(){
                 $.jGrowl("Team has been removed from the competition.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getTeams();
