@@ -9,7 +9,7 @@ from authentication.models import Team, TeamMember, Account
 from authentication.serializers import AccountSerializer
 
 from teams.permissions import IsAdminOfTeam
-from teams.serializers import TeamSerializer, Member2TeamSerializer, MemberSerializer
+from teams.serializers import TeamSerializer, EditTeamSerializer, Member2TeamSerializer, MemberSerializer
 
 
 class TeamViewSet(viewsets.ModelViewSet):
@@ -94,7 +94,7 @@ class TeamViewSet(viewsets.ModelViewSet):
         :param pk: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
-        serializer = self.serializer_class(data=request.data)
+        serializer = EditTeamSerializer(data=request.data)
 
         if serializer.is_valid():
             team.max_members = serializer.validated_data['max_members']
