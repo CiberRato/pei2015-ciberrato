@@ -1,6 +1,6 @@
 from django.db import models
 from swampdragon.models import SelfPublishModel
-from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationMessage
+from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationMessage, NotificationBroadcastSerializer
 from authentication.models import Account, Team
 
 
@@ -13,6 +13,19 @@ def handling_message(status, content, trigger):
 
     serializer = NotificationMessage(Message(status, content, trigger))
     return serializer.data
+
+
+class NotificationBroadcast(SelfPublishModel, models.Model):
+    serializer_class = NotificationBroadcastSerializer
+    message = models.TextField()
+    broadcast = models.IntegerField()
+
+    @staticmethod
+    def add(channel, status, message, trigger=""):
+        if channel == "admin":
+            NotificationBroadcast.objects.create(broadcast=1, message=handling_message(status, message, trigger))
+        else:
+            NotificationBroadcast.objects.create(broadcast=0, message=handling_message(status, message, trigger))
 
 
 class NotificationUser(SelfPublishModel, models.Model):
