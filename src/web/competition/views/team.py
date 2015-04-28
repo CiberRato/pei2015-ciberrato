@@ -18,6 +18,8 @@ from ..serializers import RoundSerializer, TeamEnrolledSerializer, TeamEnrolledO
 from authentication.models import Team
 from authentication.models import Account
 
+from notifications.models import NotificationBroadcast, NotificationTeam
+
 
 class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
@@ -165,11 +167,20 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                name=serializer.validated_data['competition_name'])
+                                            name=serializer.validated_data['competition_name'])
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             team_enrolled = get_object_or_404(TeamEnrolled.objects.all(), competition=competition, team=team)
             team_enrolled.valid = not team_enrolled.valid
             team_enrolled.save()
+
+            if team_enrolled.valid:
+                NotificationTeam.add(team=team, status="ok",
+                                     message="Your inscription is the competition " + competition.name
+                                             + " is now valid!")
+            else:
+                NotificationTeam.add(team=team, status="error",
+                                     message="Your inscription is the competition " + competition.name
+                                             + " is now not valid!")
 
             return Response({'status': 'Inscription toggled!',
                              'message': 'Inscription is now: ' + str(team_enrolled.valid)},
@@ -238,8 +249,8 @@ class GetEnrolledTeamCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
-                  mixins.ListModelMixin, viewsets.GenericViewSet):
+class EnrollTeam(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                 mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TeamEnrolled.objects.all()
     serializer_class = TeamEnrolledSerializer
 
@@ -303,13 +314,18 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
 
             # if the competition allow remote agents let's create a remote agent for the team
             if competition.allow_remote_agents:
-                if Agent.objects.filter(agent_name="Remote", is_remote=True).count() == 0:
+                if Agent.objects.filter(agent_name="Remote", is_remote=True, team=team).count() == 0:
                     try:
                         with transaction.atomic():
                             Agent.objects.create(agent_name="Remote", user=request.user, is_remote=True, team=team,
-                                                 language="Unknown")
+                                                 code_valid=True, language="Unknown")
                     except IntegrityError:
                         pass
+
+            # send notification to admin
+            NotificationBroadcast.add(channel="admin", status="ok",
+                                      message="The team " + team.name + " has enrolled in the competition " +
+                                              competition.name + "!")
 
             return Response({'status': 'Created',
                              'message': 'The team has enrolled.'},
@@ -319,10 +335,20 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
+
+class AdminEnrollTeam(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = TeamEnrolled.objects.all()
+    serializer_class = TeamEnrolledSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsStaff(),
+
     def destroy(self, request, *args, **kwargs):
         """
         B{Remove} a team from the competition
-        B{URL:} ../api/v1/competitions/enroll/<competition_name>/?team_name=<team_name>
+        B{URL:} ../api/v1/competitions/remove_enroll_team/<competition_name>/?team_name=<team_name>
 
         :type  competition_name: str
         :param competition_name: The competition name

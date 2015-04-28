@@ -64,7 +64,7 @@
         }
 
         function deleteEnroll(teamName, competitionName){
-            return $http.delete('/api/v1/competitions/enroll/'+ competitionName + '/?team_name=' + teamName);
+            return $http.delete('/api/v1/competitions/remove_enroll_team/'+ competitionName + '/?team_name=' + teamName);
         }
 
         function getMyCompetitions(username){

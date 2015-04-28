@@ -94,7 +94,7 @@
         function addMemberSuccessFn(){
             $.jGrowl("Member has been added successfully to the Team.", {
                 life: 2500,
-                theme: 'success'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
             });
             $timeout(function(){
                 getMembers();
@@ -120,7 +120,7 @@
             }
             $.jGrowl(errors, {
                 life: 5000,
-                theme: 'btn-danger'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
             });
         }
 
@@ -130,7 +130,7 @@
             function removeAdminSuccessFn(){
                 $.jGrowl("Admin removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getAdmin(i);
@@ -157,7 +157,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
 
             }
@@ -171,7 +171,7 @@
             function addAdminSuccessFn(){
                 $.jGrowl("Admin has been added successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getAdmin(i);
@@ -186,7 +186,7 @@
 
                 $.jGrowl(errors, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -200,7 +200,7 @@
         function removeMemberSuccessFn(){
             $.jGrowl("Member has been removed successfully of the Team.", {
                 life: 2500,
-                theme: 'success'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
             });
             $timeout(function(){
                 getMembers();
@@ -210,7 +210,7 @@
             console.error(data.data);
             $.jGrowl("Member can't be removed from Team.", {
                 life: 2500,
-                theme: 'btn-danger'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
             });
         }
 
@@ -220,7 +220,7 @@
             function destroySuccessFn(){
                 $.jGrowl("Team has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path("/panel/" + username + "/myTeams");
             }
@@ -229,7 +229,7 @@
                 console.error(data.data);
                 $.jGrowl("Team could not be deleted.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }

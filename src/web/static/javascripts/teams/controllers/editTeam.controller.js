@@ -38,7 +38,7 @@
             function updateTeamSuccessFn(){
                 $.jGrowl("Team has been updated.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path("/panel/" + username + "/myTeams");
             }
@@ -53,7 +53,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
@@ -64,7 +64,7 @@
             function destroyTeamSuccessFn(){
                 $.jGrowl("Team has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path("/panel/" + username + "/myTeams");
             }
@@ -72,7 +72,7 @@
             function destroyTeamErrorFn(data){
                 $.jGrowl("Team can't be deleted.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }

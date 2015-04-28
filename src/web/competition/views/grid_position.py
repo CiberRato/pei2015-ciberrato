@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from authentication.models import Team, TeamMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
-from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent
+from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid
 from ..serializers import GridPositionsSerializer, AgentGridSerializer, AgentRemoteGridSerializer
 from ..permissions import IsStaff
 
@@ -209,6 +209,11 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You must be part of the agent team.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            if not agent.code_valid:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The agent must have the code valid!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             grid = get_object_or_404(GridPositions.objects.all(),
                                      identifier=serializer.validated_data['grid_identifier'])
 
@@ -291,7 +296,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         grid = get_object_or_404(GridPositions.objects.all(), identifier=kwargs.get('pk', ''))
         agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
-            position=request.GET.get('position', ''))
+                                       position=request.GET.get('position', ''))
 
         agent = agent_grid.agent
 
@@ -316,6 +321,10 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             return Response({'status': 'Permission denied',
                              'message': 'Your team must be enrolled in the competition with valid inscription.'},
                             status=status.HTTP_403_FORBIDDEN)
+
+        # if has no robots and there is a TrialGrid it must be deleted
+        if grid.agentgrid_set.count() == 0:
+            TrialGrid.objects.filter(grid_positions=grid).delete()
 
         agent_grid.delete()
 
@@ -342,11 +351,12 @@ class GridPositionsByCompetition(mixins.RetrieveModelMixin, viewsets.GenericView
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
         grids = GridPositions.objects.filter(competition=competition)
 
-        """
-        for grid in grids:
-            for agent in grid.agentgrid_set.all():
-        """
+        grid_available = []
 
-        serializer = self.serializer_class([GridPositionsSimplex(grid) for grid in grids], many=True)
+        for grid in grids:
+            if AgentGrid.objects.filter(grid_position=grid).count() > 0:
+                grid_available += [grid]
+
+        serializer = self.serializer_class([GridPositionsSimplex(grid) for grid in grid_available], many=True)
 
         return Response(serializer.data)

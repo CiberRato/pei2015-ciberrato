@@ -61,6 +61,10 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The team has already one agent with that name!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            # when the agent is created sends notification to the team
+            NotificationTeam.add(team=team, status="info",
+                                 message="You have a new agent in your team " + team.name + "!")
+
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
@@ -105,6 +109,15 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
+
+        if agent.is_remote:
+            return Response({'status': 'Bad request',
+                             'message': 'You can not remove a Remove agent!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # when the agent is deleted sends notification to the team
+        NotificationTeam.add(team=team, status="info",
+                             message="The agent " + agent.agent_name + " has been removed!")
         agent.delete()
 
         return Response({'status': 'Deleted',
@@ -133,6 +146,28 @@ class AgentsByTeamViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class AgentsByTeamValidViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of agents by team with the code valid
+        B{URL:} ../api/v1/agents/agents_valid_by_team/<team_name>/
+
+        :type  team_name: str
+        :param team_name: The team name
+        """
+        team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in team.agent_set.all()
+                                            if agent.code_valid], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
@@ -149,7 +184,8 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param username: The user name
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
-        serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
+        agents = Agent.objects.filter(team=user.teams.all())
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

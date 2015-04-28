@@ -53,7 +53,7 @@
                 function validateSuccessFn() {
                     $.jGrowl("The code has been submitted for validation!", {
                         life: 2500,
-                        theme: 'success'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
                     $dragon.onReady(function() {
                         swampdragon.open(function () {
@@ -62,18 +62,26 @@
                                  if (data.data.message.status == 200){
                                  $.jGrowl(data.data.message.content, {
                                  life: 3500,
-                                 theme: 'success'
+                                 theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                                  });
                                  }else if(data.data.message.status == 400){
                                  $.jGrowl(data.data.message.content, {
                                  life: 3500,
-                                 theme: 'btn-danger'
+                                 theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                                  });
                                  }
                                  */
                                 if (data.data.message.trigger == 'code_valid'){
                                     $timeout(function(){
                                         Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                                        function getAgentSuccessFn(data) {
+                                            vm.agent = data.data;
+                                        }
+
+                                        function getAgentErrorFn(data) {
+                                            console.error(data.data);
+                                        }
                                     });
                                 }
                                 console.log(channels);
@@ -85,26 +93,13 @@
 
                 }
 
-                function getAgentSuccessFn(data) {
-                    if (!(data.data.code_valid==false && data.data.validation_result == "submitted")){
-                        vm.agent = data.data;
-                        $route.reload();
-                    }else{
-                        setTimeout(function () {
-                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
-                        }, 1000);
-                    }
-                }
 
-                function getAgentErrorFn(data) {
-                    console.error(data.data);
-                }
 
                 function validateErrorFn(data) {
                     console.log(data.data);
                     $.jGrowl(data.data.message, {
                         life: 2500,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
         }
@@ -114,7 +109,7 @@
             if(selectedFile.length == 0){
                 $.jGrowl("You didn't select any file", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }else{
                 for(var i = 0; i< selectedFile.length; i++) {
@@ -130,7 +125,7 @@
 
                     $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                         life: 2500,
-                        theme: 'success'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
                     $timeout(function(){
                         getFiles();
@@ -141,7 +136,7 @@
                     console.log(data.data);
                     $.jGrowl(data.data.message, {
                         life: 2500,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
             }
@@ -155,7 +150,7 @@
             function deleteUploadSuccessFn() {
                 $.jGrowl("File \'" + fileName + "\' has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getFiles();
@@ -168,7 +163,7 @@
             function deleteUploadErrorFn(data) {
                 $.jGrowl("File \'" + fileName + "\' can't be deleted.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
