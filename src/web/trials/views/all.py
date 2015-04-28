@@ -177,11 +177,13 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
         serializer = self.serializer_class(TrialX(trial))
 
-        trial.started = True
+        trial.waiting = False
+        trial.prepare = True
+        trial.started = False
         trial.save()
 
         NotificationBroadcast.add(channel="user", status="ok",
-                                  message="Stream of " + trial.round.name + " has started!",
-                                  trigger="trial_started")
+                                  message="The trial of " + trial.round.name + " can now be started!",
+                                  trigger="trial_prepare")
 
         return Response(serializer.data, status=status.HTTP_200_OK)

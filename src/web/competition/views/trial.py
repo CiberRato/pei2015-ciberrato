@@ -20,6 +20,7 @@ from ..shortcuts import *
 from ..permissions import IsStaff
 
 from authentication.models import Team
+from notifications.models import NotificationTeam
 
 
 class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -385,8 +386,6 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
             grid_positions = trial_grid.grid_positions
             agents_grid = AgentGrid.objects.filter(grid_position=grid_positions)
 
-            # print trial_grid.position
-
             for agent_grid in agents_grid:
                 # print agent_grid.position
 
@@ -433,7 +432,9 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                              'message': 'The simulator appears to be down!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        trial.prepare = True
+        trial.waiting = True
+        trial.prepare = False
+        trial.started = False
         trial.save()
 
         return Response({'status': 'Trial started',
@@ -485,9 +486,10 @@ class StartTrial(views.APIView):
                              'message': 'The simulator appears to be down!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # sim now goes to "waiting"
-        trial.waiting = True
+        # sim now goes to "started"
+        trial.waiting = False
         trial.prepare = False
+        trial.started = True
         trial.save()
 
         return Response({'status': 'Trial started',

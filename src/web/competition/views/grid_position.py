@@ -341,6 +341,12 @@ class GridPositionsByCompetition(mixins.RetrieveModelMixin, viewsets.GenericView
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
         grids = GridPositions.objects.filter(competition=competition)
+
+        """
+        for grid in grids:
+            for agent in grid.agentgrid_set.all():
+        """
+
         serializer = self.serializer_class([GridPositionsSimplex(grid) for grid in grids], many=True)
 
         return Response(serializer.data)
