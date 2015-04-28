@@ -42,22 +42,16 @@
         function getLabSuccessFn(data){
             console.log("TENHO O FICHEIRO: lab!");
             lab = x2js.xml_str2json(data.data);
-
-            $scope.lab_obj = angular.fromJson(lab);
             StreamViewer.getParametersViewer(simulation.round_name).then(getParametersSuccessFn, getErrorFn);
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
             parameters = x2js.xml_str2json(data.data);
-
-            $scope.parameters_obj = angular.fromJson(parameters);
             StreamViewer.getGridViewer(simulation.round_name).then(getGridSuccessFn, getErrorFn);
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
             grid = x2js.xml_str2json(data.data);
-
-            $scope.grid_obj = angular.fromJson(grid);
             PrepareParameters();
             $scope.drawMap();
             CiberWebSocket();
@@ -67,6 +61,9 @@
         }
 
         function PrepareParameters(){
+            $scope.lab_obj = angular.fromJson(lab);
+            $scope.parameters_obj = angular.fromJson(parameters);
+            $scope.grid_obj = angular.fromJson(grid);
 
             c3.width=$scope.zoom * $scope.lab_obj.Lab._Width;
             c3.height=$scope.zoom * $scope.lab_obj.Lab._Height;
