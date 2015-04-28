@@ -11,6 +11,7 @@
         var Agent = {
             create: create,
             getByTeam: getByTeam,
+            getValidByTeam: getValidByTeam,
             getByUser: getByUser,
             getAgent: getAgent,
             upload: upload,
@@ -34,6 +35,10 @@
         }
         function getByTeam(teamName){
             return $http.get('/api/v1/agents/agents_by_team/' + teamName + '/');
+        }
+
+        function getValidByTeam(teamName){
+            return $http.get('/api/v1/agents/agents_valid_by_team/' + teamName + '/');
         }
 
         function getByUser(username){
