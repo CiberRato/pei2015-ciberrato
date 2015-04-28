@@ -5,9 +5,9 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', '$dragon', 'StreamViewer', '$timeout'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'StreamViewer', '$timeout'];
 
-    function StreamViewer($location, $scope, $routeParams, Round, $dragon, StreamViewer, $timeout){
+    function StreamViewer($location, $scope, $routeParams, Round, Authentication, Profile, StreamViewer, $timeout){
         var username;
         var x2js = new X2JS();
         var parameters;
@@ -137,7 +137,6 @@
                     var received_msg = evt.data;
 
                     $scope.logBuff_obj.push(JSON.parse(received_msg));
-                    console.log(received_msg);
 
                     if($scope.logBuff_obj.length==20){
                         $("#waitawhile").hide("fast");
@@ -446,7 +445,7 @@
             /* Update timeline */
             var tick = function() {
 
-                if($scope.logBuff_obj[$scope.logBuff_obj.length-1].LogInfo._Time == $scope.logBuff_obj[$scope.idx].LogInfo._Time){
+                if($scope.parameters_obj.Parameters._SimTime == $scope.logBuff_obj[$scope.idx].LogInfo._Time){
                     $scope.playvar=-1;
                     console.log('parou tudo');
                     if($scope.numRobots != 1) {
@@ -457,13 +456,13 @@
                             for (var i = 0; i < $scope.finalResults.length - 1; i++) {
                                 if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
                                     var temp = $scope.finalResults[i];
-                                    var temp2 = $scope.mickeyColor[i];
+                                    var temp2 = $scope.mickeys[i];
 
                                     $scope.finalResults[i] = $scope.finalResults[i + 1];
-                                    $scope.mickeyColor[i] = $scope.mickeyColor[i + 1];
+                                    $scope.mickeys[i] = $scope.mickeys[i + 1];
 
                                     $scope.finalResults[i + 1] = temp;
-                                    $scope.mickeyColor[i + 1] = temp2;
+                                    $scope.mickeys[i + 1] = temp2;
                                     swapped = true;
                                 }
                             }
@@ -494,7 +493,7 @@
 
                 if($scope.playvar == -1){
 
-                    $("#row1").hide("slow");
+                    //$("#row1").hide("slow");
                     $("#row2").hide("slow");
                     $("#finalResults").show("slow");
 
