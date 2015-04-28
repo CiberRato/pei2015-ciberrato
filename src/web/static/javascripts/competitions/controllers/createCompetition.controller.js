@@ -97,7 +97,7 @@
                     }
                     $.jGrowl(errors, {
                         life: 5000,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
 
@@ -113,7 +113,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 

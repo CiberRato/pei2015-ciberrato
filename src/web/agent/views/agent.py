@@ -63,7 +63,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
             # when the agent is created sends notification to the team
             NotificationTeam.add(team=team, status="info",
-                                 message="Looks like you have a new agent in your team " + team.name + "!")
+                                 message="You have a new agent in your team " + team.name + "!")
 
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
@@ -117,7 +117,7 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         # when the agent is deleted sends notification to the team
         NotificationTeam.add(team=team, status="info",
-                             message="Looks like the agent " + agent.agent_name + " has been removed!")
+                             message="The agent " + agent.agent_name + " has been removed!")
         agent.delete()
 
         return Response({'status': 'Deleted',

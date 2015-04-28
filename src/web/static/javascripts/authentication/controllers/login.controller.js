@@ -30,7 +30,7 @@
                 vm.error = data.data.error;
                 $.jGrowl("Username and/or password is wrong. ", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }

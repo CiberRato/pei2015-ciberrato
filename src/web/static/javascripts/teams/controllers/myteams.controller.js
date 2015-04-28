@@ -46,7 +46,7 @@
             function destroyTeamErrorFn(data){
                 $.jGrowl("Team can't be deleted.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }

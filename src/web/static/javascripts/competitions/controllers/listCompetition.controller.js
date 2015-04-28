@@ -197,7 +197,7 @@
             function deleteEnrollErrorFn(data){
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 

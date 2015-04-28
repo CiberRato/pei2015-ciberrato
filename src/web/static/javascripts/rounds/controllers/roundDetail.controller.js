@@ -189,7 +189,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 $timeout(function(){
                     reloadTrials();
@@ -222,7 +222,7 @@
                     console.error(data.data);
                     $.jGrowl(data.data.message, {
                         life: 2500,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
             }
@@ -290,7 +290,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
@@ -350,7 +350,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -390,7 +390,7 @@
             function uploadErrorFn(data){
                 $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
@@ -425,7 +425,7 @@
             function uploadErrorFn(data){
                 $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
@@ -446,7 +446,7 @@
             function destroyErrorFn(data){
                 $.jGrowl("Round can't be removed.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
                 $route.reload();
@@ -471,7 +471,7 @@
             function removeTrialErrorFn(data){
                 $.jGrowl("Trial can't be removed.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
@@ -541,7 +541,7 @@
                                      }else if(data.data.message.status == 400){
                                      $.jGrowl(data.data.message.content, {
                                      life: 3500,
-                                     theme: 'btn-danger'
+                                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                                      });
                                      }
                                      */
@@ -589,7 +589,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -650,7 +650,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -747,7 +747,7 @@
                 }else{
                     $.jGrowl("Scores can't be created successfully. Please fill all fields", {
                         life: 2500,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
             }

@@ -120,7 +120,7 @@
             }
             $.jGrowl(errors, {
                 life: 5000,
-                theme: 'btn-danger'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
             });
         }
 
@@ -157,7 +157,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
 
             }
@@ -186,7 +186,7 @@
 
                 $.jGrowl(errors, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -210,7 +210,7 @@
             console.error(data.data);
             $.jGrowl("Member can't be removed from Team.", {
                 life: 2500,
-                theme: 'btn-danger'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
             });
         }
 
@@ -229,7 +229,7 @@
                 console.error(data.data);
                 $.jGrowl("Team could not be deleted.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }

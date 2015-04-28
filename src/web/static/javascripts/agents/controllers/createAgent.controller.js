@@ -68,7 +68,7 @@
             console.error(data.data.message);
             $.jGrowl("Error: Invalid name or an agent with that name already exists.", {
                 life: 2500,
-                theme: 'btn-danger'
+                theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
             });
             $timeout(function(){
                 activate();
