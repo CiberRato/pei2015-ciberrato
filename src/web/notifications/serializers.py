@@ -14,6 +14,12 @@ class NotificationTeamSerializer(ModelSerializer):
         publish_fields = ['message']
 
 
+class NotificationBroadcastSerializer(ModelSerializer):
+    class Meta:
+        model = 'notifications.NotificationBroadcast'
+        publish_fields = ['message']
+
+
 class NotificationMessage(BaseSerializer):
 
     def create(self, validated_data):
