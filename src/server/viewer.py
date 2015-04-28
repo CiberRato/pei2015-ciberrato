@@ -101,7 +101,6 @@ class Viewer:
 		checkedRobots = []
 		prevlen = 0
 		while len(checkedRobots) != int(robotsAmount):
-			print "CICLE"
 			data, (host, port) = simulator_s.recvfrom(4096)
 			robotsXML = minidom.parseString(data.replace("\x00", ""))
 			robots = robotsXML.getElementsByTagName('Robot')
@@ -111,11 +110,8 @@ class Viewer:
 					checkedRobots += [robotID]
 					checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 					if len(checkedRobots) != prevlen:
-						#data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
-						data = {}
-						print "ENTERED"
+						data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
 						response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
-						print "AFTER"
 						print response.text
 					prevlen = len(checkedRobots)
 					print "[VIEWER] Robots Registered: " + str(checkedRobots)
@@ -140,11 +136,6 @@ class Viewer:
 		firstTime = True
 		log_file.write('"Log":[')
 		while simTime != robotTime:
-			if not firstTime:
-				log_file.write(",")
-			else:
-				firstTime = False
-
 			# Update Robot time
 			data = simulator_s.recv(4096)
 			data = data.replace("\x00", "")
@@ -156,7 +147,14 @@ class Viewer:
 			json_obj = xmltodict.parse(data)
 			json_data = json.dumps(json_obj)
 			json_data = json_data.replace("@", "_")
-			log_file.write(json_data)
+
+			if not firstTime:
+				log_file.write(",")
+				if robotTime != 0:
+					log_file.write(json_data)
+			else:
+				firstTime = False
+				log_file.write(json_data)
 
 			# Send data to the websockets
 			websocket_tcp.send(json_data)
