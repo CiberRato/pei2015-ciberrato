@@ -13290,7 +13290,7 @@ div.jGrowl div.success a:hover {
 #layer1 {
     width: 100%;
     height: auto;
-    background-color: pink;
+    background-color: black;
     z-index: 0;
 }
 
@@ -13305,6 +13305,6 @@ div.jGrowl div.success a:hover {
 #layer3 {
     width: 100%;
     height: auto;
-    background-color: pink;
+    background-color: black;
     z-index: 0;
 }
