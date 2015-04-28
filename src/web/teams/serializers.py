@@ -16,6 +16,16 @@ class TeamSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at')
 
 
+class EditTeamSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=128)
+
+    class Meta:
+        model = Team
+
+        fields = ('name', 'max_members')
+        read_only_fields = ('created_at', 'updated_at')
+
+
 class Member2TeamSerializer(serializers.ModelSerializer):
     """
     This serializer allow to make calls to a specific Team Member. One team member is characterized
