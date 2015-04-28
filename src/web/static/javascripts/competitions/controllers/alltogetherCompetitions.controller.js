@@ -44,7 +44,7 @@
             function deleteCompetitionErrorFn(){
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'btn-danger'
                 });
                 $location.path('/admin/allCompetitions/');
             }
@@ -84,7 +84,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'btn-danger'
                 });
                 $location.path('/panel/');
             }

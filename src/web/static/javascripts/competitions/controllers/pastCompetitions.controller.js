@@ -36,7 +36,7 @@
                     vm.competitions[i].allTeams = vm.teams.length;
                 }
 
-                function getTeamsErrorFn(datag) {
+                function getTeamsErrorFn(data) {
                     console.error(data.data);
                     $location.path('/panel/')
                 }
