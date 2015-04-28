@@ -65,33 +65,7 @@
             PrepareParameters();
             $scope.drawMap();
             ctx = c1.getContext("2d");
-            $dragon.onReady(function() {
-                swampdragon.open(function () {
-                    $dragon.onChannelMessage(function(channels, data) {
-                        /*
-                         if (data.data.message.status == 200){
-                         $.jGrowl(data.data.message.content, {
-                         life: 3500,
-                         theme: 'success'
-                         });
-                         }else if(data.data.message.status == 400){
-                         $.jGrowl(data.data.message.content, {
-                         life: 3500,
-                         theme: 'btn-danger'
-                         });
-                         }
-                         */
-                        if (data.data.message.trigger == 'trial_start'){
-                            $timeout(function(){
-                                CiberWebSocket();
-                            });
-                        }
-                        console.log(channels);
-                        console.log(data.data._type);
-                        console.log(data.data.message);
-                    });
-                });
-            });
+            CiberWebSocket();
         }
         function getErrorFn(data){
             console.log("ERRO!");
@@ -163,8 +137,9 @@
                     var received_msg = evt.data;
 
                     $scope.logBuff_obj.push(JSON.parse(received_msg));
+                    console.log(received_msg);
 
-                    if($scope.logBuff_obj.length==2){
+                    if($scope.logBuff_obj.length==20){
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
