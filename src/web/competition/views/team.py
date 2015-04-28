@@ -246,7 +246,7 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), IsAdminOfTeam(),
+        return permissions.IsAuthenticated(), (IsAdminOfTeam() or IsStaff()),
 
     def list(self, request, **kwargs):
         """
