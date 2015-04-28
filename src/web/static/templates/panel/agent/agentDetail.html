@@ -15,7 +15,7 @@
                             <button class="btn btn-alt btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
                         </div>
                         <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length > 0 && vm.agent.validation_result == 'submitted'" class="alert alert-info">
-                            <strong>Submitted for validation!</strong> Please wait a while...
+                            <strong>Submitted for validation!</strong> Please wait for a while...
                         </div>
                         <div ng-if="vm.agent.code_valid == true" class="alert alert-success">
                             <strong>Code valid!</strong> {{vm.agent.validation_result}}
