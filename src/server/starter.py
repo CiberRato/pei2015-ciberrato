@@ -11,7 +11,10 @@ import sys
 import tarfile
 import re
 import zipfile
+from threading import Thread
 from xml.dom import minidom
+from viewer import *
+
 
 class Starter:
 	def main(self,sim_id):
@@ -122,8 +125,10 @@ class Starter:
 		time.sleep(1)
 
 		print "[STARTER] Creating process for viewer"
-		viewer = subprocess.Popen(["python", "viewer.py"])
-		print "[STARTER] Successfully opened process with process id: ", viewer.pid
+		viewer = Viewer()
+		viewer_thread = Thread(target=viewer.main, args=(sim_id,))
+		viewer_thread.start()
+		print "[STARTER] Successfully opened viewer"
 
 		# Establish connection with viewer
 		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -202,6 +207,7 @@ class Starter:
 				tempFilesList[key].close()
 			raise Exception("[STARTER] ERROR: Agents weren't all registered")
 
+		print "ROBOTS WERE REGISTERD"
 		viewer_c.settimeout(None)
 
 		services_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -209,10 +215,12 @@ class Starter:
 
 		services_tcp.bind((SERVICES_HOST, SERVICES_PORT))
 		services_tcp.listen(1)
+		print "[STARTER] Waiting for start.."
 		services_c, services_c_addr = services_tcp.accept()
 
-		print "[STARTER] Waiting for start.."
 		data = None
+		data = services_c.recv(1024)
+		data = data.split("=")
 		while data[0] != "start":
 			data = services_c.recv(1024)
 			data = data.split("=")
@@ -288,7 +296,7 @@ class Starter:
 		services_tcp.close()
 
 		# Waiting for viewer to die
-		viewer.wait()
+		viewer_thread.join()
 
 		# Killing Websockets
 		websocket.terminate()

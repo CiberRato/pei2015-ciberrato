@@ -64,6 +64,7 @@
             grid = x2js.xml_str2json(data.data);
             PrepareParameters();
             $scope.drawMap();
+            ctx = c1.getContext("2d");
             CiberWebSocket();
         }
         function getErrorFn(data){
@@ -137,12 +138,12 @@
 
                     $scope.logBuff_obj.push(JSON.parse(received_msg));
 
-                    if($scope.logBuff_obj.length>20){
+                    if($scope.logBuff_obj.length==2){
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
                         $("#row5").show("slow");
-                        ctx = c1.getContext("2d");
+
                         doIt();
 
                         $scope.play();

@@ -6,9 +6,9 @@
         .module('ciberonline.agents.controllers')
         .controller('AgentDetailController', AgentDetailController);
 
-    AgentDetailController.$inject = ['$location', '$timeout', '$routeParams', '$route', 'Agent'];
+    AgentDetailController.$inject = ['$location', '$timeout', '$dragon', '$routeParams', '$route', 'Agent'];
 
-    function AgentDetailController($location, $timeout, $routeParams, $route,  Agent) {
+    function AgentDetailController($location, $timeout, $dragon, $routeParams, $route,  Agent) {
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
@@ -159,6 +159,8 @@
                 });
                 $timeout(function(){
                     getFiles();
+                    vm.agent.validation_result = [];
+                    
                 });
 
             }
