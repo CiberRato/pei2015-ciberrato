@@ -30,6 +30,7 @@ class Root(object):
 
 		agent_name = kwargs["agent_name"]
 		team_name = kwargs["team_name"]
+		team_name = team_name.replace("/", "")
 
 		self.starter_tcp.send("team_name=" + str(team_name) + "&" + "agent_name="+str(agent_name))
 		return "Received test request for agent " + str(agent_name)

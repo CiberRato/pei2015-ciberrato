@@ -1,9 +1,31 @@
 from swampdragon import route_handler
-from swampdragon.route_handler import ModelPubRouter
-from .models import NotificationUser, NotificationTeam
-from .serializers import NotificationUserSerializer, NotificationTeamSerializer
+from swampdragon.route_handler import ModelPubRouter, ModelRouter
+from .models import NotificationUser, NotificationTeam, NotificationBroadcast
+from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationBroadcastSerializer
 from authentication.models import Team, TeamMember
 from .permissions import LoginRequired, IsTeamMember
+
+
+class NotificationBroadcastRouter(ModelPubRouter):
+    permission_classes = [LoginRequired()]
+
+    valid_verbs = ['subscribe']
+    route_name = 'broadcast'
+    model = NotificationBroadcast
+    serializer_class = NotificationBroadcastSerializer
+
+    def get_subscription_contexts(self, **kwargs):
+        user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+
+        if user_obj is None:
+            return self.send_login_required()
+
+        NotificationBroadcast.objects.all().delete()
+
+        if user_obj.is_staff == 1:
+            return {'broadcast': 1}
+        else:
+            return {'broadcast': 0}
 
 
 class NotificationUserRouter(ModelPubRouter):
@@ -51,3 +73,4 @@ class NotificationTeamRouter(ModelPubRouter):
 
 route_handler.register(NotificationUserRouter)
 route_handler.register(NotificationTeamRouter)
+route_handler.register(NotificationBroadcastRouter)

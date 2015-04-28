@@ -175,7 +175,10 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
         serializer = self.serializer_class(TrialX(trial))
+
         trial.started = True
         trial.save()
+
+        # NotificationUser.add(team=team, status="ok", message=account.username + " has logged in!")
 
         return Response(serializer.data, status=status.HTTP_200_OK)
