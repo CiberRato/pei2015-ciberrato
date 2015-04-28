@@ -324,7 +324,7 @@ class Starter:
 		print "[STARTER] Log successfully posted, starter closing now.."
 
 		# Remove log file from system
-		#os.remove(LOG_FILE)
+		os.remove(LOG_FILE)
 
 		# Close all tmp files
 		for key in tempFilesList:
