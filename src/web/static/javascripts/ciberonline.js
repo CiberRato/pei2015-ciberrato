@@ -39,23 +39,24 @@
             console.log("AQUI");
             /* SUBSCRIBE */
             /// Subscribe to the chat router
+            var user = Authentication.getAuthenticatedAccount();
             $dragon.onReady(function() {
                 swampdragon.open(function () {
-                    $dragon.subscribe('user', 'notifications', {'user': Authentication.getAuthenticatedAccount()}, function (context, data) {
+                    $dragon.subscribe('user', 'notifications', {'user': user}, function (context, data) {
                         // any thing that happens after successfully subscribing
                         console.log("// any thing that happens after successfully subscribing");
                     }, function (context, data) {
                         // any thing that happens if subscribing failed
                         console.log("// any thing that happens if subscribing failed");
                     });
-                    var user = Authentication.getAuthenticatedAccount();
+
                     var teams =[];
                     Team.getByUser(user.username).then(getTeamsSuccess, getTeamsError);
 
                     function getTeamsSuccess(data){
                         teams = data.data;
                         for(var i = 0; i<teams.length; i++){
-                            $dragon.subscribe('team', 'notifications', {'user': Authentication.getAuthenticatedAccount(), 'team': teams[i].name}, function (context, data) {
+                            $dragon.subscribe('team', 'notifications', {'user': user, 'team': teams[i].name}, function (context, data) {
                                 // any thing that happens after successfully subscribing
                                 console.log("// any thing that happens after successfully subscribing");
                             }, function (context, data) {
@@ -69,7 +70,7 @@
                         console.error(data.data);
                     }
 
-                    $dragon.subscribe('broadcast', 'notifications', {'user': Authentication.getAuthenticatedAccount()}, function (context, data) {
+                    $dragon.subscribe('broadcast', 'notifications', {'user': user}, function (context, data) {
                         // any thing that happens after successfully subscribing
                         console.log("// any thing that happens after successfully subscribing");
                     }, function (context, data) {
