@@ -17,8 +17,10 @@
 			Team.getAll().then(getAllSuccessFn, getAllErrorFn);
 
         	function getAllSuccessFn(data){
-        		vm.team = data.data;
+        		vm.team = data.data.results;
+
                 for(var i=0; i<vm.team.length; i++){
+                    console.log(vm.team[i]);
                     getNumberOfMembers(vm.team[i].name, i);
                 }
 
