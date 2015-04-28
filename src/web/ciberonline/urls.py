@@ -24,7 +24,7 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
 from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
-    SubmitCodeForValidation
+    SubmitCodeForValidation, AgentsByTeamValidViewSet
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
