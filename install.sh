@@ -39,7 +39,7 @@ gpasswd -a $user docker
 
 if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ];
 then
-	service docker restart
+	service docker.io restart
 	sleep 2
 	(cd src/server/;
 	docker.io build -t ubuntu/ciberonline .)
