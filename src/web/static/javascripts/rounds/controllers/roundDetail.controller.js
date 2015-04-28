@@ -545,12 +545,12 @@
                                      });
                                      }
                                      */
-                                    if (data.data.message.trigger == 'trial_prepare'){
+                                    if (data.data.message.trigger == 'trial_prepare' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log'){
                                         $timeout(function(){
-                                            console.log("entrei");
                                             reloadTrial(identifier);
                                         });
                                     }
+
                                     console.log(channels);
                                     console.log(data.data._type);
                                     console.log(data.data.message);
