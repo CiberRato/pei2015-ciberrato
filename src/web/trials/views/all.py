@@ -15,6 +15,7 @@ from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSe
 from ..models import Trial, TrialMessage
 
 from competition.shortcuts import *
+from notifications.models import NotificationBroadcast
 
 
 class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -179,6 +180,8 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trial.started = True
         trial.save()
 
-        # NotificationUser.add(team=team, status="ok", message=account.username + " has logged in!")
+        NotificationBroadcast.add(channel="user", status="ok",
+                                  message="Stream of " + trial.round.name + " has started!",
+                                  trigger="trial_started")
 
         return Response(serializer.data, status=status.HTTP_200_OK)

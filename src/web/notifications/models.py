@@ -26,6 +26,7 @@ class NotificationBroadcast(SelfPublishModel, models.Model):
             NotificationBroadcast.objects.create(broadcast=1, message=handling_message(status, message, trigger))
         else:
             NotificationBroadcast.objects.create(broadcast=0, message=handling_message(status, message, trigger))
+            NotificationBroadcast.objects.create(broadcast=1, message=handling_message(status, message, trigger))
 
 
 class NotificationUser(SelfPublishModel, models.Model):
