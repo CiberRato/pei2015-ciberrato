@@ -3,6 +3,7 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
+set -e -o
 user=$(who am i | awk '{print $1}')
 echo "	>> Installing general dependencies"
 apt-get update && apt-get install -y	python \
