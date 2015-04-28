@@ -59,6 +59,7 @@
                 life: 2500,
                 theme: 'success'
             });
+            
             $location.path('/panel/'+ vm.username + '/myAgents/');
 
         }

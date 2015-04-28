@@ -4,13 +4,14 @@ from .serializers import NotificationUserSerializer, NotificationTeamSerializer,
 from authentication.models import Account, Team
 
 
-def handling_message(status, content):
+def handling_message(status, content, trigger):
     class Message:
-        def __init__(self, s, c):
+        def __init__(self, s, c, t):
             self.status = s
             self.content = c
+            self.trigger = t
 
-    serializer = NotificationMessage(Message(status, content))
+    serializer = NotificationMessage(Message(status, content, trigger))
     return serializer.data
 
 
@@ -20,8 +21,8 @@ class NotificationUser(SelfPublishModel, models.Model):
     user = models.ForeignKey(Account)
 
     @staticmethod
-    def add(user, status, message):
-        NotificationUser.objects.create(user=user, message=handling_message(status, message))
+    def add(user, status, message, trigger=""):
+        NotificationUser.objects.create(user=user, message=handling_message(status, message, trigger))
 
 
 class NotificationTeam(SelfPublishModel, models.Model):
@@ -30,5 +31,5 @@ class NotificationTeam(SelfPublishModel, models.Model):
     team = models.ForeignKey(Team)
 
     @staticmethod
-    def add(team, status, message):
-        NotificationTeam.objects.create(team=team, message=handling_message(status, message))
+    def add(team, status, message, trigger=""):
+        NotificationTeam.objects.create(team=team, message=handling_message(status, message, trigger))

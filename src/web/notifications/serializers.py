@@ -33,5 +33,6 @@ class NotificationMessage(BaseSerializer):
 
         return {
             'status': status,
-            'content': instance.content
+            'content': instance.content,
+            'trigger': instance.trigger
         }
