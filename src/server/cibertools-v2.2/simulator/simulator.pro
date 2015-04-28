@@ -1,10 +1,11 @@
 TEMPLATE    = app
 CONFIG      += qt warn_on release thread
-#CONFIG      += qt warn_on debug thread
+#CONFIG     += qt warn_on debug thread
+QMAKE_CXXFLAGS     += -std=c++11
 
 win32 {
         DEFINES += MicWindows
-        LIBS    += -lws2_32
+        LIBS    += -lws2_32 
 }
 
 HEADERS = \

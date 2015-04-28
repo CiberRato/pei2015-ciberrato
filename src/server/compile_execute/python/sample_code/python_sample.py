@@ -75,6 +75,7 @@ class MyRob(CRobLink):
                 else:
                     (lPow,rPow) = self.determineAction("return")
                     self.driveMotors(lPow,rPow)
+            self.syncRobot()
 
     def determineAction(self,state):
 
@@ -152,7 +153,7 @@ def dist(p,q):
     (qx,qy) = q
     return sqrt((px-qx)**2 + (py-qy)**2)
 
-robname = "AA"
+robname = "BB"
 host = "localhost"
 pos = 3
 for i in range(0, len(sys.argv)):
