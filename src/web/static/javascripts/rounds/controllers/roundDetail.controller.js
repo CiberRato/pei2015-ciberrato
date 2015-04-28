@@ -575,9 +575,35 @@
                     life: 2500,
                     theme: 'success'
                 });
-                $timeout(function(){
-                    reloadTrial(identifier);
+
+                $dragon.onReady(function() {
+                    swampdragon.open(function () {
+                        $dragon.onChannelMessage(function(channels, data) {
+                            /*
+                             if (data.data.message.status == 200){
+                             $.jGrowl(data.data.message.content, {
+                             life: 3500,
+                             theme: 'success'
+                             });
+                             }else if(data.data.message.status == 400){
+                             $.jGrowl(data.data.message.content, {
+                             life: 3500,
+                             theme: 'btn-danger'
+                             });
+                             }
+                             */
+                            if (data.data.message.trigger == 'trial_started'){
+                                $timeout(function(){
+                                    reloadTrial(identifier);
+                                });
+                            }
+                            console.log(channels);
+                            console.log(data.data._type);
+                            console.log(data.data.message);
+                        });
+                    });
                 });
+
             }
 
             function startTrialErrorFn(data){
@@ -609,11 +635,9 @@
         }
 
         function reloadTrial(identifier){
-            setTimeout(function () {
-                $timeout(function(){
-                    Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
-                });
-            }, 1000);
+
+            Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
+
 
 
             function getTrialSuccessFn(data){
@@ -635,22 +659,6 @@
                     if(vm.trial.state !== vm.trials[i].state){
                         vm.trials[i].state = vm.trial.state;
                         console.log(vm.trials[i].state);
-                    }
-                }
-            }
-
-            setTimeout(function () {
-                Round.getTrial(identifier).then(getTrialNSuccessFn, getTrialErrorFn);
-            }, 1000);
-
-            function getTrialNSuccessFn(data){
-                if (!(data.data.state === 'READY')) {
-                    vm.trial = data.data;
-                    if(vm.trial.state === 'LOG' || vm.trial.state === 'ERROR'){
-                        updateState2(identifier);
-                    }else{
-                        updateState(identifier);
-
                     }
                 }
             }
