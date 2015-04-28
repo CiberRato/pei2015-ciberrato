@@ -55,11 +55,33 @@
                         life: 2500,
                         theme: 'success'
                     });
-                    setTimeout(function () {
-                        $timeout(function(){
-                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                    $dragon.onReady(function() {
+                        swampdragon.open(function () {
+                            $dragon.onChannelMessage(function(channels, data) {
+                                /*
+                                 if (data.data.message.status == 200){
+                                 $.jGrowl(data.data.message.content, {
+                                 life: 3500,
+                                 theme: 'success'
+                                 });
+                                 }else if(data.data.message.status == 400){
+                                 $.jGrowl(data.data.message.content, {
+                                 life: 3500,
+                                 theme: 'btn-danger'
+                                 });
+                                 }
+                                 */
+                                if (data.data.message.trigger == 'code_valid'){
+                                    $timeout(function(){
+                                        Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                                    });
+                                }
+                                console.log(channels);
+                                console.log(data.data._type);
+                                console.log(data.data.message);
+                            });
                         });
-                    }, 1000);
+                    });
 
                 }
 

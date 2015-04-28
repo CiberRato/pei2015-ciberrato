@@ -16,16 +16,16 @@
 
         return streamViewer;
 
-        function getLabViewer(RoundName){
-            return $http.get('/api/v1/competitions/round_file/' + RoundName + '/?file=lab');
+        function getLabViewer(RoundName, CompetitionName){
+            return $http.get('/api/v1/competitions/round_file/' + CompetitionName + '/' + RoundName + '/lab/');
         }
 
-        function getParametersViewer(RoundName){
-            return $http.get('/api/v1/competitions/round_file/' + RoundName + '/?file=param_list');
+        function getParametersViewer(RoundName, CompetitionName){
+            return $http.get('/api/v1/competitions/round_file/' + CompetitionName + '/' + RoundName + '/param_list/');
         }
 
-        function getGridViewer(RoundName){
-            return $http.get('/api/v1/competitions/round_file/' + RoundName + '/?file=grid');
+        function getGridViewer(RoundName, CompetitionName){
+            return $http.get('/api/v1/competitions/round_file/' + CompetitionName + '/' + RoundName + '/grid/');
         }
 
     }
