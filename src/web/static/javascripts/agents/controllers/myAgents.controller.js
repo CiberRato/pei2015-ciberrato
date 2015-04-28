@@ -33,8 +33,8 @@
 
         }
 
-        function deleteAgent(agentName){
-            Agent.deleteAgent(agentName).then(deleteAgentSuccessFn, deleteAgentErrorFn);
+        function deleteAgent(agentName, teamName){
+            Agent.deleteAgent(agentName, teamName).then(deleteAgentSuccessFn, deleteAgentErrorFn);
 
             function deleteAgentSuccessFn(){
                 $.jGrowl("Agent has been removed successfully.", {
