@@ -5,9 +5,9 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'StreamViewer', '$timeout'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', '$dragon', 'StreamViewer', '$timeout'];
 
-    function StreamViewer($location, $scope, $routeParams, Round, Authentication, Profile, StreamViewer, $timeout){
+    function StreamViewer($location, $scope, $routeParams, Round, $dragon, StreamViewer, $timeout){
         var username;
         var x2js = new X2JS();
         var parameters;
@@ -65,7 +65,33 @@
             PrepareParameters();
             $scope.drawMap();
             ctx = c1.getContext("2d");
-            CiberWebSocket();
+            $dragon.onReady(function() {
+                swampdragon.open(function () {
+                    $dragon.onChannelMessage(function(channels, data) {
+                        /*
+                         if (data.data.message.status == 200){
+                         $.jGrowl(data.data.message.content, {
+                         life: 3500,
+                         theme: 'success'
+                         });
+                         }else if(data.data.message.status == 400){
+                         $.jGrowl(data.data.message.content, {
+                         life: 3500,
+                         theme: 'btn-danger'
+                         });
+                         }
+                         */
+                        if (data.data.message.trigger == 'trial_start'){
+                            $timeout(function(){
+                                CiberWebSocket();
+                            });
+                        }
+                        console.log(channels);
+                        console.log(data.data._type);
+                        console.log(data.data.message);
+                    });
+                });
+            });
         }
         function getErrorFn(data){
             console.log("ERRO!");

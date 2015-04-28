@@ -20,7 +20,7 @@ from ..shortcuts import *
 from ..permissions import IsStaff
 
 from authentication.models import Team
-from notifications.models import NotificationTeam
+from notifications.models import NotificationBroadcast
 
 
 class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
@@ -491,6 +491,10 @@ class StartTrial(views.APIView):
         trial.prepare = False
         trial.started = True
         trial.save()
+
+        NotificationBroadcast.add(channel="user", status="ok",
+                                  message="The trial of " + trial.round.name + " has started!",
+                                  trigger="trial_start")
 
         return Response({'status': 'Trial started',
                          'message': 'Please wait that the trial starts at the simulator!'},
