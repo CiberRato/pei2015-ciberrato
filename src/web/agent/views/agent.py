@@ -105,6 +105,12 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
+
+        if agent.is_remote:
+            return Response({'status': 'Bad request',
+                             'message': 'You can not remove a Remove agent!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         agent.delete()
 
         return Response({'status': 'Deleted',
