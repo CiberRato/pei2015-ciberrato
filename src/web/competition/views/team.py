@@ -246,7 +246,7 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
-        return permissions.IsAuthenticated(), (IsAdminOfTeam() or IsStaff()),
+        return permissions.IsAuthenticated(), IsAdminOfTeam(),
 
     def list(self, request, **kwargs):
         """
@@ -323,6 +323,50 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
         """
         B{Remove} a team from the competition
         B{URL:} ../api/v1/competitions/enroll/<competition_name>/?team_name=<team_name>
+
+        :type  competition_name: str
+        :param competition_name: The competition name
+        :type  team_name: str
+        :param team_name: The team name
+        """
+        if 'team_name' not in request.GET:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide the ?team_name=*team_name*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+
+        team_not_enrolled = (len(TeamEnrolled.objects.filter(competition=competition, team=team)) == 0)
+
+        if team_not_enrolled:
+            return Response({'status': 'Bad request',
+                             'message': 'The team is not enrolled in the competition.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # validations update values
+        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+
+        team_enrolled = TeamEnrolled.objects.get(competition=competition, team=team)
+        team_enrolled.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class AdminEnrollTeam(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = TeamEnrolled.objects.all()
+    serializer_class = TeamEnrolledSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsStaff(),
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Remove} a team from the competition
+        B{URL:} ../api/v1/competitions/remove_enroll_team/<competition_name>/?team_name=<team_name>
 
         :type  competition_name: str
         :param competition_name: The competition name
