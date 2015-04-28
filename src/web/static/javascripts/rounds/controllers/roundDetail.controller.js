@@ -516,7 +516,14 @@
                     theme: 'success'
                 });
                 $timeout(function(){
-                    reloadTrial(identifier);
+                    for(var i =0; i<vm.trials.length; i++){
+                        if(vm.trial.identifier === vm.trials[i].identifier){
+                            if(vm.trial.state !== vm.trials[i].state){
+                                vm.trials[i].state = vm.trial.state;
+                                console.log(vm.trials[i].state);
+                            }
+                        }
+                    }
                 });
             }
 
