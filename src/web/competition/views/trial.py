@@ -379,6 +379,51 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                              'message': 'Please select teams to go to the Trial!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        pos = 1
+
+        for trial_grid in trial_grids:
+            grid_positions = trial_grid.grid_positions
+            agents_grid = AgentGrid.objects.filter(grid_position=grid_positions)
+
+            # print trial_grid.position
+
+            for agent_grid in agents_grid:
+                # print agent_grid.position
+
+                if agent_grid.agent.code_valid:
+                    team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
+                                                           competition=trial.round.parent_competition)
+                    if team_enroll.valid:
+                        # competition agent
+                        competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
+                            competition=trial.round.parent_competition,
+                            agent=agent_grid.agent,
+                            round=trial.round)) == 0)
+
+                        if competition_agent_not_exists:
+                            competition_agent = CompetitionAgent.objects.create(
+                                competition=trial.round.parent_competition,
+                                agent=agent_grid.agent,
+                                round=trial.round)
+                        else:
+                            competition_agent = CompetitionAgent.objects.get(
+                                competition=trial.round.parent_competition,
+                                agent=agent_grid.agent,
+                                round=trial.round)
+
+                        log_sim_agent_not_exists = (len(LogTrialAgent.objects.filter(
+                            competition_agent=competition_agent,
+                            trial=trial,
+                            pos=pos)) == 0)
+
+                        # log trial agent
+                        if log_sim_agent_not_exists:
+                            LogTrialAgent.objects.create(competition_agent=competition_agent,
+                                                         trial=trial,
+                                                         pos=pos)
+
+                        pos += 1
+
         params = {'trial_identifier': trial.identifier}
 
         try:
@@ -430,51 +475,6 @@ class StartTrial(views.APIView):
             return Response({'status': 'Bad Request',
                              'message': 'Please select teams to go to the Trial!'},
                             status=status.HTTP_400_BAD_REQUEST)
-
-        pos = 1
-
-        for trial_grid in trial_grids:
-            grid_positions = trial_grid.grid_positions
-            agents_grid = AgentGrid.objects.filter(grid_position=grid_positions)
-
-            # print trial_grid.position
-
-            for agent_grid in agents_grid:
-                # print agent_grid.position
-
-                if agent_grid.agent.code_valid:
-                    team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
-                                                             competition=trial.round.parent_competition)
-                    if team_enroll.valid:
-                        # competition agent
-                        competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
-                            competition=trial.round.parent_competition,
-                            agent=agent_grid.agent,
-                            round=trial.round)) == 0)
-
-                        if competition_agent_not_exists:
-                            competition_agent = CompetitionAgent.objects.create(
-                                competition=trial.round.parent_competition,
-                                agent=agent_grid.agent,
-                                round=trial.round)
-                        else:
-                            competition_agent = CompetitionAgent.objects.get(
-                                competition=trial.round.parent_competition,
-                                agent=agent_grid.agent,
-                                round=trial.round)
-
-                        log_sim_agent_not_exists = (len(LogTrialAgent.objects.filter(
-                            competition_agent=competition_agent,
-                            trial=trial,
-                            pos=pos)) == 0)
-
-                        # log trial agent
-                        if log_sim_agent_not_exists:
-                            LogTrialAgent.objects.create(competition_agent=competition_agent,
-                                                              trial=trial,
-                                                              pos=pos)
-
-                        pos += 1
 
         params = {'trial_identifier': trial.identifier}
 

@@ -28,10 +28,11 @@
         Round.getTrial(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
         function getSimulationSuccessFn(data){
             simulation = data.data;
+            console.log(simulation);
             //console.log("simulation" + simulation);
             console.log("ACTIVATED");
 
-            StreamViewer.getLabViewer(simulation.round_name).then(getLabSuccessFn, getErrorFn);
+            StreamViewer.getLabViewer(simulation.round_name, simulation.competition_name).then(getLabSuccessFn, getErrorFn);
         }
 
         function getSimulationErrorFn(data){
@@ -40,14 +41,23 @@
         }
 
         function getLabSuccessFn(data){
+            console.log(data.data);
             console.log("TENHO O FICHEIRO: lab!");
             lab = x2js.xml_str2json(data.data);
-            StreamViewer.getParametersViewer(simulation.round_name).then(getParametersSuccessFn, getErrorFn);
+
+
+            $scope.lab_obj = angular.fromJson(lab);
+            StreamViewer.getParametersViewer(simulation.round_name, simulation.competition_name).then(getParametersSuccessFn, getErrorFn);
+
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
             parameters = x2js.xml_str2json(data.data);
-            StreamViewer.getGridViewer(simulation.round_name).then(getGridSuccessFn, getErrorFn);
+
+
+            $scope.parameters_obj = angular.fromJson(parameters);
+            StreamViewer.getGridViewer(simulation.round_name, simulation.competition_name).then(getGridSuccessFn, getErrorFn);
+
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
