@@ -149,8 +149,8 @@ class Viewer:
 			json_data = json_data.replace("@", "_")
 
 			if not firstTime:
-				log_file.write(",")
 				if int(robotTime) != 0:
+					log_file.write(",")
 					log_file.write(json_data)
 					# Send data to the websockets
 					websocket_tcp.send(json_data)
