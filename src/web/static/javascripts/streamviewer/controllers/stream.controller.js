@@ -388,6 +388,7 @@
             /* Set Robots Colors */
             $scope.mickeyColor = [redmouse, greenmouse, bluemouse, yellowmouse, orangmouse];
             $scope.mickeys =['static/img/svg/mickey_red_smile.png','static/img/svg/mickey_green_smile.png','static/img/svg/mickey_blue_smile.png','static/img/svg/mickey_yellow_smile.png','static/img/svg/mickey_orange_smile.png'];
+            $scope.mickeysFINAL =['static/img/svg/mickey_red_smile.png','static/img/svg/mickey_green_smile.png','static/img/svg/mickey_blue_smile.png','static/img/svg/mickey_yellow_smile.png','static/img/svg/mickey_orange_smile.png'];
 
             /* Set Line Colors */
             $scope.lColor = ['#E04F5F', '#5FBF60', '#29BAF7', '#eaea3d', '#f28d14'];
@@ -456,13 +457,13 @@
                             for (var i = 0; i < $scope.finalResults.length - 1; i++) {
                                 if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
                                     var temp = $scope.finalResults[i];
-                                    var temp2 = $scope.mickeys[i];
+                                    var temp2 = $scope.mickeysFINAL[i];
 
                                     $scope.finalResults[i] = $scope.finalResults[i + 1];
-                                    $scope.mickeys[i] = $scope.mickeys[i + 1];
+                                    $scope.mickeysFINAL[i] = $scope.mickeysFINAL[i + 1];
 
                                     $scope.finalResults[i + 1] = temp;
-                                    $scope.mickeys[i + 1] = temp2;
+                                    $scope.mickeysFINAL[i + 1] = temp2;
                                     swapped = true;
                                 }
                             }
