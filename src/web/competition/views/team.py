@@ -307,7 +307,7 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
                     try:
                         with transaction.atomic():
                             Agent.objects.create(agent_name="Remote", user=request.user, is_remote=True, team=team,
-                                                 language="Unknown")
+                                                 code_valid=True, language="Unknown")
                     except IntegrityError:
                         pass
 
