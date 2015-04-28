@@ -3,7 +3,7 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
-set -e -o
+#set -e -o
 user=$(who am i | awk '{print $1}')
 echo "	>> Installing general dependencies"
 apt-get update && apt-get install -y	python \
@@ -39,7 +39,7 @@ gpasswd -a $user docker
 
 if [ $(lsb_release -a | grep "Ubuntu 14.04" | wc -l) != "0" ];
 then
-	service docker.io restart
+	service docker restart
 	sleep 2
 	(cd src/server/;
 	docker.io build -t ubuntu/ciberonline .)
