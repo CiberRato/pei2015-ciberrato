@@ -152,12 +152,15 @@ class Viewer:
 				log_file.write(",")
 				if robotTime != 0:
 					log_file.write(json_data)
+					# Send data to the websockets
+					websocket_tcp.send(json_data)
 			else:
 				firstTime = False
 				log_file.write(json_data)
+				# Send data to the websockets
+				websocket_tcp.send(json_data)
 
-			# Send data to the websockets
-			websocket_tcp.send(json_data)
+
 
 		log_file.write("]}")
 
