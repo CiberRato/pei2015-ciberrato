@@ -146,6 +146,28 @@ class AgentsByTeamViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class AgentsByTeamValidViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the list of agents by team with the code valid
+        B{URL:} ../api/v1/agents/agents_valid_by_team/<team_name>/
+
+        :type  team_name: str
+        :param team_name: The team name
+        """
+        team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in team.agent_set.all()
+                                            if agent.code_valid], many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Agent.objects.all()
     serializer_class = AgentSerializer
