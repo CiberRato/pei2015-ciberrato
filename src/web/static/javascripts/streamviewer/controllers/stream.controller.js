@@ -22,7 +22,7 @@
         var c2 = document.getElementById("layer2");
         var ctx2 = c2.getContext("2d");
 
-        Round.getSimulation(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
+        Round.getTrial(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
         function getSimulationSuccessFn(data){
             simulation = data.data;
             //console.log("simulation" + simulation);
@@ -39,34 +39,36 @@
         function getLabSuccessFn(data){
             console.log("TENHO O FICHEIRO: lab!");
             lab = x2js.xml_str2json(data.data);
-            //console.log("lab" + lab);
+
+            $scope.lab_obj = angular.fromJson(lab);
             StreamViewer.getParametersViewer(simulation.round_name).then(getParametersSuccessFn, getErrorFn);
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
             parameters = x2js.xml_str2json(data.data);
-            //console.log("parameters" + parameters);
+
+            $scope.parameters_obj = angular.fromJson(parameters);
             StreamViewer.getGridViewer(simulation.round_name).then(getGridSuccessFn, getErrorFn);
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
             grid = x2js.xml_str2json(data.data);
-            //console.log("grid" + grid);
+
+            $scope.grid_obj = angular.fromJson(grid);
             CiberWebSocket();
         }
         function getErrorFn(data){
-            console.log("FODEU tudo!");
+            console.error
+            console.log("ERRO!");
         }
 
         function CiberWebSocket(){
             if ("WebSocket" in window) {
                 console.log('entrei na funçao');
-                // alert("WebSocket is supported by your Browser!");
-                // Let us open a web socket
+
                 var opened = false;
 
                 var ws = new WebSocket("ws://127.0.0.1:7777/ws");
-                var div = document.getElementById('show');
 
                 ws.onopen = function () {
 
@@ -76,35 +78,22 @@
                 ws.onmessage = function (evt) {
 
                     var received_msg = evt.data;
-                    //div.innerHTML = div.innerHTML + received_msg;
-                    //console.log(received_msg);
-                    $scope.logBuff_obj.push(JSON.parse(received_msg));
-                    //console.log("BUF" + $scope.logBuff_obj.length);
 
-                    if($scope.logBuff_obj.length==20){
+                    $scope.logBuff_obj.push(JSON.parse(received_msg));
+
+                    if($scope.logBuff_obj.length>20){
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
                         $("#row5").show("slow");
 
-                        /* JSON to Object */
-                        $scope.lab_obj = angular.fromJson(lab);
-                        //console.log("$scope.lab_obj" + $scope.lab_obj);
-                        $scope.grid_obj = angular.fromJson(grid);
-                        //console.log("$scope.grid_obj" + $scope.grid_obj);
-                        $scope.parameters_obj = angular.fromJson(parameters);
-                        //console.log("$scope.parameters_obj" + $scope.parameters_obj);
-
                         /* Zoom variable (50->Standard) */
                         $scope.zoom = 50;
                         doIt();
 
-
-
                         $scope.play();
                         console.log('play');
                     }
-                    //console.log("PLAYVAR " + $scope.playvar);
                 };
                 ws.onclose = function () {
                     console.log('on close');
