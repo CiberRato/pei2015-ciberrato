@@ -149,7 +149,8 @@ class AgentsByUserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param username: The user name
         """
         user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
-        serializer = self.serializer_class([AgentSimplex(agent) for agent in user.agent_set.all()], many=True)
+        agents = Agent.objects.filter(team=user.teams.all())
+        serializer = self.serializer_class([AgentSimplex(agent) for agent in agents], many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
