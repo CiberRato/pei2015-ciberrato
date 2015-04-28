@@ -75,6 +75,6 @@ class EndPoint():
 		    }
 		}
 
-		cherrypy.quickstart(Root(), "/api/vi/", config)
+		cherrypy.quickstart(Root(), "/api/v1/", config)
 
 
