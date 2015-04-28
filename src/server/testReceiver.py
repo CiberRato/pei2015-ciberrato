@@ -35,7 +35,7 @@ class Test:
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
 
-		AGENT_ENDPOINT = "http://" + DOCKERIP + ":8000" + GET_AGENT_URL + team_name + agent_name + "/"
+		AGENT_ENDPOINT = "http://" + DOCKERIP + ":8000" + GET_AGENT_URL + team_name + "/" + agent_name + "/"
 
 		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
 									  "bash -c 'curl -s " \
@@ -54,7 +54,10 @@ class Test:
 
 		url = "http://" + DJANGO_HOST + ":" + str(DJANGO_PORT) + CODE_VALIDATION_URL + agent_name + "/"
 		data = {'team_name': team_name ,'code_valid': docker.returncode == 0, 'validation_result': message}
-		requests.put(url, data=data)
+		r = requests.put(url, data=data)
+
+		print "[TESTS]" + str(r.status_code)
+		print "[TESTS]" + r.text
 
 		print "[TESTS] Test finished sucessfully"
 
