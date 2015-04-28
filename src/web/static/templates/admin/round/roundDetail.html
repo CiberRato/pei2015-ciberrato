@@ -101,7 +101,17 @@
                             <tbody ng-repeat="(key, value) in vm.trials" >
                             <tr>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" id="identifier">{{$index+1}} - {{value.identifier}}</td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">{{value.state}}</td>
+                                <td ng-if="value.state != 'ERROR'" style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}">{{value.state}}</td>
+                                <td ng-if="value.state == 'ERROR'" style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" href="#error">{{value.state}}</a>
+                                    <div class="modal fade"  id="error">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+
+                                            <p align="center">{{value.errors}}</p>
+                                        </div>
+
+                                    </div>
+                                </td>
                                 <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}"><a data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.getTrialGrids();" href="#addAgents{{key}}">Manage</a>
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
