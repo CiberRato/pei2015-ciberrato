@@ -516,14 +516,26 @@
                     theme: 'success'
                 });
                 $timeout(function(){
-                    for(var i =0; i<vm.trials.length; i++){
-                        if(vm.trial.identifier === vm.trials[i].identifier){
-                            if(vm.trial.state !== vm.trials[i].state){
-                                vm.trials[i].state = vm.trial.state;
-                                console.log(vm.trials[i].state);
+                    Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
+                    function getTrialSuccessFn(data){
+                        if (!(data.data.state === 'READY')) {
+                            vm.trial = data.data;
+                            for(var i =0; i<vm.trials.length; i++){
+                                if(vm.trial.identifier === vm.trials[i].identifier){
+                                    if(vm.trial.state !== vm.trials[i].state){
+                                        vm.trials[i].state = vm.trial.state;
+                                        console.log(vm.trials[i].state);
+                                    }
+                                }
                             }
                         }
                     }
+
+                    function getTrialErrorFn(data){
+                        console.error(data.data);
+                    }
+
+
                 });
             }
 
