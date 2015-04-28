@@ -144,9 +144,6 @@ public:
 	unsigned int labCanvasWidth,labCanvasHeight;
 
 	void startTimer(void);
-    void RobotActions();
-    void PanelCommands();
-    void CheckIn();
 
 public slots:
     void readChanges();
@@ -228,6 +225,9 @@ protected: // data members
     bool showPositions;
 
 protected: // member functions
+	void CheckIn();
+	void PanelCommands();
+	void RobotActions();
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
 	void CheckCollisions();
