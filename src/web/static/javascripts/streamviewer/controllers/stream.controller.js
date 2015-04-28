@@ -138,7 +138,7 @@
 
                     $scope.logBuff_obj.push(JSON.parse(received_msg));
 
-                    if($scope.logBuff_obj.length==20){
+                    if($scope.logBuff_obj.length==5){
                         $("#waitawhile").hide("fast");
                         $("#row1").show("slow");
                         $("#row2").show("slow");
