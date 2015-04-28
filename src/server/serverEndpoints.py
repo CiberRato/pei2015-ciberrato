@@ -3,6 +3,7 @@ from multiprocessing import Process
 
 class Root(object):
 	def __init__(self):
+		self.trials = Services()
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 		self.HOST = settings["settings"]["starter_end_point_host"]
@@ -40,11 +41,23 @@ class Services(object):
 
 	@cherrypy.expose
 	def start(self, **kwargs):
-		return "trial:" + kwargs["trial_identifier"]
+		if "trial_identifier" not in kwargs:
+			raise cherrypy.HTTPError(400, "Parameter trial_identifier was expected.")
 
-	@cherrypy.expose
-	def prepare(self, **kwargs):
-		pass
+		trial_id = kwargs["trial_identifier"]
+
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+		HOST = settings["settings"]["services_end_point_host"]
+		PORT = settings["settings"]["services_end_point_port"]
+
+		starter_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		starter_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		starter_tcp.connect((HOST, PORT))
+
+		starter_tcp.send("start="+trial_id)
+
+		return "trial=" + trial_id
 
 
 class EndPoint():
@@ -62,9 +75,6 @@ class EndPoint():
 		    }
 		}
 
-		cherrypy.tree.mount(Root(), "/api/v1/", config)
-		cherrypy.tree.mount(Services(), "/api/v1/trials", config)
-		cherrypy.config.update(config)
-		cherrypy.engine.start()
-		cherrypy.engine.block()
+		cherrypy.quickstart(Root(), "/api/vi/", config)
+
 

@@ -23,6 +23,10 @@
 		"end_point_host": "127.0.0.1",
 		"end_point_port": 9000,
 
+		///host and port for services (like start) end-point connection
+		"services_end_point_host": "127.0.0.1",
+		"services_end_point_port": 7501,
+
 		///simulator host and port for viewer to send required commands
 		"simulator_host": "127.0.0.1",
 		"simulator_port": 6000,
