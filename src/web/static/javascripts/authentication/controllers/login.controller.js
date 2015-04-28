@@ -5,9 +5,9 @@
         .module('ciberonline.authentication.controllers')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['$location', 'Authentication'];
+    LoginController.$inject = ['$location', '$dragon', 'Authentication'];
 
-    function LoginController($location, Authentication){
+    function LoginController($location, $dragon, Authentication){
         var vm = this;
 
         vm.login = login;

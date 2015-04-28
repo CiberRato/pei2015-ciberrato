@@ -13,3 +13,5 @@ cherrypy
 ws4py
 requests
 hurry.filesize
+swampdragon
+swampdragon-auth

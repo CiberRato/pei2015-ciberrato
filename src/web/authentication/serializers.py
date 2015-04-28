@@ -20,6 +20,19 @@ class AccountSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at')
 
 
+class AccountSerializerLogin(serializers.BaseSerializer):
+
+    def to_representation(self, instance):
+        return {
+            'email': instance.user.email,
+            'username': instance.user.username,
+            'teaching_institution': instance.user.teaching_institution,
+            'first_name': instance.user.first_name,
+            'last_name': instance.user.first_name,
+            'u_stream': instance.token
+        }
+
+
 class AccountSerializerUpdate(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True, required=False)
 

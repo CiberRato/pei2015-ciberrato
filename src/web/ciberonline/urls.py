@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
+from django.contrib import admin
 
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
     AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails
@@ -29,6 +30,7 @@ from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFile
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
 from rest_framework import routers
+
 
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
@@ -162,7 +164,6 @@ urlpatterns = patterns('',
                        url(r'^api/v1/auth/logout/$', LogoutView.as_view(), name='logout'),
                        url(r'^api-auth/', include('rest_framework.urls',
                                                   namespace='rest_framework')),
-                       url('^admin/.*$', TemplateView.as_view(template_name='admin.html'), name='admin'),
                        url('^panel/.*$', TemplateView.as_view(template_name='panel.html'), name='panel'),
                        url('^idp/.*$', TemplateView.as_view(template_name='authentication.html'), name='idp'),
                        url('^.*$', TemplateView.as_view(template_name='index.html'), name='index')

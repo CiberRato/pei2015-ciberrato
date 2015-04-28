@@ -37,12 +37,16 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'compressor',
+    'swampdragon',
+    'swampdragon_auth',
     'rest_framework',
     'authentication',
     'teams',
     'agent',
     'competition',
-    'trials'
+    'trials',
+    'notifications',
+    'tokens',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -135,3 +139,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
 }
+
+# SwampDragon settings
+# SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
+DRAGON_URL = 'http://localhost:9999/'
+SWAMP_DRAGON_CONNECTION = ('notifications.socketconnection.HttpDataConnection', '/data')

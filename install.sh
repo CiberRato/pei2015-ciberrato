@@ -12,7 +12,8 @@ apt-get update && apt-get install -y	python \
 			python-pip \
 			python-dev \
 			python-virtualenv \
-			docker.io
+			docker.io \
+			redis-server
 (cd src/web;
 echo "	>> Installing python dependencies"
 pip install cherrypy \
