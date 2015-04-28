@@ -169,7 +169,7 @@
 
                                     <a href="#" ng-if="value.state == 'PREPARE'" ng-click = "vm.startTrial(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'WAITING'">Waiting to Start</p>
-                                    <p ng-if="value.state == ERROR">Error</p>
+                                    <p ng-if="value.state == 'ERROR'">Error</p>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>

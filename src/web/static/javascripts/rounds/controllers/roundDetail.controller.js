@@ -660,8 +660,6 @@
 
             Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
 
-
-
             function getTrialSuccessFn(data){
                 if (!(data.data.state === 'READY')) {
                     vm.trial = data.data;
@@ -680,6 +678,7 @@
                 if(vm.trial.identifier === vm.trials[i].identifier){
                     if(vm.trial.state !== vm.trials[i].state){
                         vm.trials[i].state = vm.trial.state;
+                        vm.trials[i].errors = vm.trial.error;
                         console.log(vm.trials[i].state);
                     }
                 }
