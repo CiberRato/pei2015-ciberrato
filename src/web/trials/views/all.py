@@ -52,6 +52,10 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
             for trial_message in TrialMessage.objects.filter(trial=trial):
                 trial_message.delete()
 
+            NotificationBroadcast.add(channel="user", status="ok",
+                                      message="The trial of " + trial.round.name + " has finished!",
+                                      trigger="trial_log")
+
             return Response({'status': 'Created',
                              'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
 
@@ -121,6 +125,10 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             trial.errors = serializer.validated_data['msg']
             trial.save()
+
+            NotificationBroadcast.add(channel="user", status="error",
+                                      message="The trial of " + trial.round.name + " has encountered an error!",
+                                      trigger="trial_error")
 
             return Response({'status': 'Created',
                              'message': 'The msg error has been saved!'}, status=status.HTTP_201_CREATED)
