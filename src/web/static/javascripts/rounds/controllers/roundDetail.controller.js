@@ -679,7 +679,7 @@
                 if(vm.trial.identifier === vm.trials[i].identifier){
                     if(vm.trial.state !== vm.trials[i].state){
                         vm.trials[i].state = vm.trial.state;
-                        vm.trials[i].errors = vm.trial.error;
+                        vm.trials[i].errors = vm.trial.errors;
                         console.log(vm.trials[i].state);
                     }
                 }
