@@ -223,7 +223,7 @@ class LoginView(views.APIView):
 
                 # send notification login!
                 for team in account.teams.all():
-                    NotificationTeam.add(team=team, status="ok", message=account.username + " has logged in!")
+                    NotificationTeam.add(team=team, status="info", message=account.username + " has logged in!")
 
                 return Response(serialized.data)
 

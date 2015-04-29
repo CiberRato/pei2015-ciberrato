@@ -46,7 +46,7 @@
             function profileUpdateSuccessFn(){
                 $.jGrowl("Profile has been updated.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 window.location.assign("/panel/");
             }
@@ -61,7 +61,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
@@ -72,7 +72,7 @@
             function profilePassSuccessFn(){
                 $.jGrowl("Password has been updated.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 window.location.assign("/");
             }
@@ -98,7 +98,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
@@ -109,7 +109,7 @@
             function destroyProfileSuccessFn(){
                 $.jGrowl("Profile has been deleted.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 window.location.assign("/");
             }
@@ -117,7 +117,7 @@
             function destroyProfileErrorFn(data){
                 $.jGrowl("Profile could not be deleted.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }

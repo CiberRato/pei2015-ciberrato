@@ -36,7 +36,7 @@
             function deleteCompetitionSuccessFn(){
                 $.jGrowl("Competition has been removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path('/admin/allCompetitions/');
             }
@@ -44,7 +44,7 @@
             function deleteCompetitionErrorFn(){
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 $location.path('/admin/allCompetitions/');
             }
@@ -65,7 +65,7 @@
             function changeStateSuccessFn(){
                 $.jGrowl("State of Competition \""+ name +"\" has been changed to " + next + ".", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     Competition.getCompetition(name).then(getCompetitionSuccessFn, getCompetitionErrorFn);
@@ -84,7 +84,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 $location.path('/panel/');
             }

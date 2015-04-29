@@ -111,6 +111,7 @@
             function getRoundFilesSuccessFn(data){
                 vm.files = data.data;
                 vm.grid = vm.files.grid;
+                console.log(vm.grid);
                 vm.lab = vm.files.lab;
                 vm.param_list = vm.files.param_list;
             }
@@ -178,7 +179,7 @@
             function createTrialSuccessFn(){
                 $.jGrowl("Trial has been created successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     reloadTrials();
@@ -189,7 +190,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 $timeout(function(){
                     reloadTrials();
@@ -209,7 +210,7 @@
                 function associateAgentSuccessFn() {
                     $.jGrowl("Grid has been associated successfully.", {
                         life: 2500,
-                        theme: 'success'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
 
                     $timeout(function(){
@@ -222,7 +223,7 @@
                     console.error(data.data);
                     $.jGrowl(data.data.message, {
                         life: 2500,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
             }
@@ -241,7 +242,7 @@
 
                 $.jGrowl("Grid has been disassociated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
 
                 Round.getTrialGrids(vm.identifier).then(getTrialGridsNSuccessFn, getTrialGridsNErrorFn);
@@ -290,7 +291,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
@@ -304,7 +305,7 @@
 
                 $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
 
                 if(vm.all === true){
@@ -350,7 +351,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -365,7 +366,7 @@
 
                 $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
 
                 if(vm.all === true){
@@ -390,7 +391,7 @@
             function uploadErrorFn(data){
                 $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
@@ -406,7 +407,7 @@
 
                 $.jGrowl("File \'" + selectedFile.name + "\' has been uploaded.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 if(vm.all === true){
                     $timeout(function(){
@@ -425,7 +426,7 @@
             function uploadErrorFn(data){
                 $.jGrowl("File \'" + selectedFile.name + "\' can't be uploaded.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
@@ -438,7 +439,7 @@
             function destroySuccessFn(){
                 $.jGrowl("Round has been removed.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path('/admin/' + vm.round.parent_competition_name);
             }
@@ -446,7 +447,7 @@
             function destroyErrorFn(data){
                 $.jGrowl("Round can't be removed.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
                 $route.reload();
@@ -459,7 +460,7 @@
             function removeTrialSuccessFn(){
                 $.jGrowl("Trial has been removed.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
 
                 $timeout(function(){
@@ -471,7 +472,7 @@
             function removeTrialErrorFn(data){
                 $.jGrowl("Trial can't be removed.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
                 console.error(data.data);
             }
@@ -513,7 +514,7 @@
             function prepareTrialSuccessFn(){
                 $.jGrowl("Trial state changed to Prepare Mode.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
@@ -536,12 +537,12 @@
                                      if (data.data.message.status == 200){
                                      $.jGrowl(data.data.message.content, {
                                      life: 3500,
-                                     theme: 'success'
+                                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                                      });
                                      }else if(data.data.message.status == 400){
                                      $.jGrowl(data.data.message.content, {
                                      life: 3500,
-                                     theme: 'btn-danger'
+                                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                                      });
                                      }
                                      */
@@ -589,7 +590,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -601,7 +602,7 @@
             function startTrialSuccessFn(){
                 $.jGrowl("Trial has been started successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function() {
                     Round.getTrial(identifier).then(getTrialSuccessFn, getTrialErrorFn);
@@ -650,7 +651,7 @@
                 }
                 $.jGrowl(errors, {
                     life: 5000,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -747,7 +748,7 @@
                 }else{
                     $.jGrowl("Scores can't be created successfully. Please fill all fields", {
                         life: 2500,
-                        theme: 'btn-danger'
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                     });
                 }
             }
@@ -759,7 +760,7 @@
             function saveScoreSuccessFn(){
                 $.jGrowl("Scores has been created successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getScoresByTrial();
@@ -789,7 +790,7 @@
             function updateScoreSuccessFn(){
                 $.jGrowl("Scores has been updated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     getScoresByTrial();
@@ -896,7 +897,7 @@
             function changeStateSuccessFn() {
                 $.jGrowl("State of Competition \"" + vm.competitionName + "\" has been changed to Competition.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function () {
                     vm.competition.state_of_competition = "Competition"
@@ -907,7 +908,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $location.path('/panel/');
             }

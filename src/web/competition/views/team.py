@@ -18,6 +18,8 @@ from ..serializers import RoundSerializer, TeamEnrolledSerializer, TeamEnrolledO
 from authentication.models import Team
 from authentication.models import Account
 
+from notifications.models import NotificationBroadcast, NotificationTeam
+
 
 class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
@@ -165,11 +167,22 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                name=serializer.validated_data['competition_name'])
+                                            name=serializer.validated_data['competition_name'])
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             team_enrolled = get_object_or_404(TeamEnrolled.objects.all(), competition=competition, team=team)
             team_enrolled.valid = not team_enrolled.valid
             team_enrolled.save()
+
+            if team_enrolled.valid:
+                NotificationTeam.add(team=team, status="ok",
+                                     message="Your inscription is the competition " + competition.name
+                                             + " is now valid!")
+                NotificationTeam.add(team=team, status="info",
+                                     message="Do not forget to create one grid position for this competition!")
+            else:
+                NotificationTeam.add(team=team, status="error",
+                                     message="Your inscription is the competition " + competition.name
+                                             + " is now not valid!")
 
             return Response({'status': 'Inscription toggled!',
                              'message': 'Inscription is now: ' + str(team_enrolled.valid)},
@@ -238,8 +251,8 @@ class GetEnrolledTeamCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
-                  mixins.ListModelMixin, viewsets.GenericViewSet):
+class EnrollTeam(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                 mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TeamEnrolled.objects.all()
     serializer_class = TeamEnrolledSerializer
 
@@ -310,6 +323,11 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Retri
                                                  code_valid=True, language="Unknown")
                     except IntegrityError:
                         pass
+
+            # send notification to admin
+            NotificationBroadcast.add(channel="admin", status="ok",
+                                      message="The team " + team.name + " has enrolled in the competition " +
+                                              competition.name + "!")
 
             return Response({'status': 'Created',
                              'message': 'The team has enrolled.'},

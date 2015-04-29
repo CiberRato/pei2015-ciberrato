@@ -24,7 +24,7 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
 from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
-    SubmitCodeForValidation
+    SubmitCodeForValidation, AgentsByTeamValidViewSet
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
@@ -97,6 +97,7 @@ router_competitions.register(r'trial_grid', TrialGridViewSet)
 router_agents = routers.SimpleRouter()
 router_agents.register(r'agent', AgentViewSets)
 router_agents.register(r'agents_by_team', AgentsByTeamViewSet)
+router_agents.register(r'agents_valid_by_team', AgentsByTeamValidViewSet)
 router_agents.register(r'agents_by_user', AgentsByUserViewSet)
 router_agents.register(r'delete_agent_file', DeleteUploadedFileAgent)
 router_agents.register(r'agent_files', ListAgentsFiles)
@@ -109,7 +110,6 @@ router_trials.register(r'trial_log', SaveLogs)
 router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
 router_trials.register(r'prepare', PrepareTrial)
-router_trials.register(r'message', TrialMessageCreate)
 
 
 urlpatterns = patterns('',
@@ -118,6 +118,8 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
+                       url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),
+                           name="Trial message Upload"),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),

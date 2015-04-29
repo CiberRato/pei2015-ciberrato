@@ -48,7 +48,7 @@
             function destroySuccessFn(){
                 $.jGrowl("Grid Position has been removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function() {
                     Grid.getMyGrids().then(getSuccessFn, getErrorFn);
@@ -69,13 +69,13 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
 
         function getAgents(){
-            Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+            Agent.getValidByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
             Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
 
 
@@ -122,10 +122,10 @@
             function associateSuccessFn(){
                 $.jGrowl("Agent has been associated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
-                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+                Agent.getValidByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             }
 
@@ -141,9 +141,9 @@
             function disassociateSuccessFn(){
                 $.jGrowl("Agent has been disassociated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
-                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+                Agent.getValidByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
                 function getByTeamSuccessFn(data){
                     vm.models.lists.Available = [];
@@ -172,7 +172,7 @@
                 console.error(data.data);
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 
@@ -245,7 +245,7 @@
             function associateAgentSuccessFn(){
                 console.log("associei" + agent_name + pos);
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
-                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+                Agent.getValidByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             }
 
@@ -267,10 +267,10 @@
             function associateAgentSuccessFn(){
                 $.jGrowl("Agent has been associated successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 Grid.getAgents(vm.identifier).then(getAssociatedSuccessFn, getAssociatedErrorFn);
-                Agent.getByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
+                Agent.getValidByTeam(vm.team).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             }
 

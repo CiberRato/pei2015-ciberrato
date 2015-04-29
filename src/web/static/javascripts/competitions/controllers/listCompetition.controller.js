@@ -177,7 +177,7 @@
             function deleteEnrollSuccessFn(){
                 $.jGrowl("Team has been removed from the competition.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                     Competition.getTeams(vm.competitionName).then(getTeamsSuccessFn, getTeamsErrorFn);
@@ -197,7 +197,7 @@
             function deleteEnrollErrorFn(data){
                 $.jGrowl(data.data.message, {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
 

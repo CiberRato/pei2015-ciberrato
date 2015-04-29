@@ -39,7 +39,7 @@
             function deleteAgentSuccessFn(){
                 $.jGrowl("Agent has been removed successfully.", {
                     life: 2500,
-                    theme: 'success'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                 $timeout(function(){
                    getAgents();
@@ -50,7 +50,7 @@
                 console.error(data.data);
                 $.jGrowl("Agent could not be removed.", {
                     life: 2500,
-                    theme: 'btn-danger'
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
         }
