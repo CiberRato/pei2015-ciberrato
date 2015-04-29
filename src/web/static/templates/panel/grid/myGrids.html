@@ -34,10 +34,10 @@
                                     <div class="modal fade"  id="addAgents{{key}}">
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
-
-                                            <h2 align="center">Drag the agents for this grid position (Max: {{value.competition.type_of_competition.number_agents_by_grid}})</h2>
+                                            <p ng-if="vm.models.lists.Available.length == 0" align="center">You don't have any agent with valid code</p>
+                                            <h2 ng-if="vm.models.lists.Available.length != 0" align="center">Drag the agents for this grid position (Max: {{value.competition.type_of_competition.number_agents_by_grid}})</h2>
                                         </div>
-                                        <div class="modal-body" style="text-align: center">
+                                        <div ng-if="vm.models.lists.Available.length != 0" class="modal-body" style="text-align: center">
                                             <div class="row" style="padding-left: 40px">
                                                 <div ng-repeat="(listName, list) in vm.models.lists" class="span3 associateAgents">
                                                     <!-- The dnd-list directive allows to drop elements into it.
@@ -77,7 +77,7 @@
                                             <p ng-if = "vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"><strong>You can't associate more agents, limit reached.</strong></p>
 
                                         </div>
-                                        <div ng-if="value.competition.allow_remote_agents == true" class="modal-footer">
+                                        <div ng-if="value.competition.allow_remote_agents == true && vm.models.lists.Available.length != 0" class="modal-footer">
                                             <a  class="btn btn-alt btn-large btn-success"  ng-click="vm.associateAllRemote()">All Remote</a>
 
                                         </div>
