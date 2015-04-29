@@ -76,12 +76,12 @@
             var i;
             if($scope.nBeacon==1){
                 ctx1.beginPath();
-                ctx1.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius/2 + $scope.zoom/15, 0, 2*Math.PI);
+                ctx1.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
                 ctx1.fillStyle = $scope.circleBorder;
                 ctx1.fill();
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx1.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.beacon._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.zoom*$scope.lab_obj.Target._Radius,$scope.zoom*$scope.lab_obj.Target._Radius );
+                    ctx1.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.beacon._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.zoom*$scope.lab_obj.Target._Radius*2,$scope.zoom*$scope.lab_obj.Target._Radius*2 );
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx1.fill();
@@ -91,12 +91,12 @@
             else{
                 for(i=0;i<$scope.lab_obj.Beacon.length;i++){
                     ctx1.beginPath();
-                    ctx1.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius/2 + $scope.zoom/15, 0, 2*Math.PI);
+                    ctx1.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
                     ctx1.fillStyle = $scope.circleBorder;
                     ctx1.fill();
                     var imageObj = new Image();
                     imageObj.onload = function() {
-                        ctx1.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.zoom*$scope.lab_obj.Target._Radius,$scope.zoom*$scope.lab_obj.Target._Radius );
+                        ctx1.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.zoom*$scope.lab_obj.Target._Radius*2,$scope.zoom*$scope.lab_obj.Target._Radius*2 );
                     };
                     imageObj.src = $scope.cheeseColor;
                     ctx1.fill();
