@@ -394,7 +394,7 @@
                 try {
                     $scope.updateValues();
 
-                    $(".leftGrip").css("left", ($scope.idx * ($scope.map._Width*$scope.zoom)) / $scope.param._SimTime);
+                    $(".leftGrip").css("left", ($scope.idx * $("#tmline").width()) / $scope.param._SimTime);
                     if ($scope.playvar) {
                         $scope.idx++;
                     }
