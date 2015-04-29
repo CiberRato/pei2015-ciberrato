@@ -95,7 +95,7 @@ class Server():
         # 0.0.0.0 => available to all interfaces
         cherrypy.config.update({'server.socket_host': socket_host,
                                 'server.socket_port': 7777,
-                                'server.thread_pool': 10,
+                                'server.thread_pool': 30,
                                 'engine.autoreload.on': False})
 
     @staticmethod
