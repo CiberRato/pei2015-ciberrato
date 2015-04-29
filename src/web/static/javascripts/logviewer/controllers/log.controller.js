@@ -76,12 +76,12 @@
             var i;
             if($scope.nBeacon==1){
                 ctx1.beginPath();
-                ctx1.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom + $scope.zoom/15, 0, 2*Math.PI);
+                ctx1.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*2 + $scope.zoom/15, 0, 2*Math.PI);
                 ctx1.fillStyle = $scope.circleBorder;
                 ctx1.fill();
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx1.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
+                    ctx1.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*4,$scope.zoom*2 );
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx1.fill();
