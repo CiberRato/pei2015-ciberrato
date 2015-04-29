@@ -67,26 +67,24 @@
                             }, 1000);
                         }
 
-                        window.onload = function () {
-                            comp = angular.element('[ng-controller=StreamViewer').scope().competition;
-                            sim = angular.element('[ng-controller=StreamViewer').scope().simulation;
+                        comp = angular.element('[ng-controller=StreamViewer').scope().competition;
+                        sim = angular.element('[ng-controller=StreamViewer').scope().simulation;
 
-                            date = new Date(sim.updated_at);
-                            now = Date.now();
+                        date = new Date(sim.updated_at);
+                        now = Date.now();
 
-                            time = (now - date)/1000;
-                            console.log(time);
+                        time = (now - date)/1000;
+                        console.log(time);
 
-                            timeout = comp.type_of_competition.timeout * 60;
-                            console.log(timeout);
+                        timeout = comp.type_of_competition.timeout * 60;
+                        console.log(timeout);
 
-                            count = timeout-time;
-                            console.log(count);
+                        count = timeout-time;
+                        console.log(count);
 
-                            var fiveMinutes = count,
-                                    display = document.querySelector('#time');
-                            startTimer(fiveMinutes, display);
-                        };
+                        var fiveMinutes = count,
+                                display = document.querySelector('#time');
+                        startTimer(fiveMinutes, display);
                     </script>
                 </section>
             </div>
