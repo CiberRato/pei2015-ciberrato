@@ -89,7 +89,7 @@ class TrialMessageCreate(views.APIView):
                                  'message': 'The trial message can\'t be saved, the Trial is in LOG state!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            NotificationBroadcast.add(channel="user", status="ok",
+            NotificationBroadcast.add(channel="user", status="info",
                                       message=serializer.validated_data['message'])
 
             return Response({'status': 'Created',
