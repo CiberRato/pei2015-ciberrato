@@ -67,7 +67,7 @@
                             }, 1000);
                         }
 
-                        angular.element(document).ready(function () {
+                        window.onready = function () {
                             comp = angular.element('[ng-controller=StreamViewer').scope().competition;
                             sim = angular.element('[ng-controller=StreamViewer').scope().simulation;
 
@@ -86,7 +86,7 @@
                             var fiveMinutes = count,
                                     display = document.querySelector('#time');
                             startTimer(fiveMinutes, display);
-                        });
+                        };
                     </script>
                 </section>
             </div>
