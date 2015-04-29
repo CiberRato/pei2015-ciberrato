@@ -607,9 +607,7 @@ void cbSimulator::step()
 	//cout.form("Sending sensors to robots(%u)\n", curCycle);
 	SendSensors();
 	//cout.form("Updating views (%u)\n", curCycle);
-	cout << "..." << std::endl;
 	UpdateViews();
-	cout << ".2..2" << std::endl;
 	//cout.form("Updating state (%u)\n", curCycle);
 	UpdateState();
 
@@ -1665,7 +1663,6 @@ void cbSimulator::processRobotActions()
 				if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
 				if (action.sync) {
 					robot->setWaitingForSync(true);
-					cout << "Sync Request" << curState << ", " << syncmode << std::endl;
 
 					if (syncmode){ //&& curState == RUNNING) {
 						bool stepSim = true;
@@ -1674,7 +1671,6 @@ void cbSimulator::processRobotActions()
 							cbRobot *robot = robots[i];
 							if (robot == 0) continue;
 					        if (!robot->getWaitingForSync()) {
-					        	cout << "what" << std::endl;
 					        	stepSim = false;
 					        	break;
 					        }	        
@@ -1686,9 +1682,7 @@ void cbSimulator::processRobotActions()
 								if (robot == 0) continue;
 								robot->setWaitingForSync(false);
 							}
-							cout << "Got here.. " << std::endl;
 							step();
-							cout << "222Got here.. " << std::endl;
 						}
 					}
 				}

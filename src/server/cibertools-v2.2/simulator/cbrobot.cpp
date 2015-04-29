@@ -287,8 +287,6 @@ bool cbRobot::readAction(cbRobotAction *action)
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
 
-
-    cout << "whaat" << xmlBuff << std::endl;
 	// REMEMBER TO CHECK THIS....
     //if (showActions)
     //    simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
@@ -306,7 +304,6 @@ bool cbRobot::readAction(cbRobotAction *action)
 	}
 	
 	*action = handler.parsedAction();
-	cout << "passed.." << std::endl;
 	return true;
 }
 
