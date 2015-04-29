@@ -5,13 +5,14 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Authentication', 'Profile', 'StreamViewer', '$timeout'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout'];
 
-    function StreamViewer($location, $scope, $routeParams, Round, Authentication, Profile, StreamViewer, $timeout){
+    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout){
+
         var username;
         var x2js = new X2JS();
         var parameters;
-        var simulation;
+        $scope.simulation;
         var grid;
         var lab;
         var identifier = $routeParams.identifier;
@@ -24,15 +25,31 @@
         var ctx2 = c2.getContext("2d");
         /* Zoom variable (50->Standard) */
         $scope.zoom = 50;
-
-        Round.getTrial(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
+        activate();
+        function activate(){
+            Round.getTrial(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
+        }
         function getSimulationSuccessFn(data){
-            simulation = data.data;
-            console.log(simulation);
+            $scope.simulation = data.data;
+            console.log($scope.simulation);
             //console.log("simulation" + simulation);
             console.log("ACTIVATED");
+            Competition.getCompetition($scope.simulation.competition_name).then(getCompetitionSucess, getCompetitionError);
 
-            StreamViewer.getLabViewer(simulation.round_name, simulation.competition_name).then(getLabSuccessFn, getErrorFn);
+
+        }
+
+        function getCompetitionSucess(data){
+            $scope.competition = data.data;
+            console.log($scope.competition);
+            StreamViewer.getLabViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getLabSuccessFn, getErrorFn);
+
+        }
+
+        function getCompetitionError(data){
+            console.error(data.data);
+            $location.path('/panel/');
+
         }
 
         function getSimulationErrorFn(data){
@@ -47,7 +64,7 @@
 
 
             $scope.lab_obj = angular.fromJson(lab);
-            StreamViewer.getParametersViewer(simulation.round_name, simulation.competition_name).then(getParametersSuccessFn, getErrorFn);
+            StreamViewer.getParametersViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getParametersSuccessFn, getErrorFn);
 
         }
         function getParametersSuccessFn(data){
@@ -56,7 +73,7 @@
 
 
             $scope.parameters_obj = angular.fromJson(parameters);
-            StreamViewer.getGridViewer(simulation.round_name, simulation.competition_name).then(getGridSuccessFn, getErrorFn);
+            StreamViewer.getGridViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getGridSuccessFn, getErrorFn);
 
         }
         function getGridSuccessFn(data){

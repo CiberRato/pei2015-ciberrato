@@ -38,6 +38,56 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="span12" style="text-align: center">
+                            <h2>Time to prepare!
+                            </h2>
+                            <h1><span id="time"></span></h1>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        function startTimer(duration, display) {
+                            var timer = duration, minutes, seconds;
+                            setInterval(function () {
+                                minutes = parseInt(timer / 60, 10);
+                                seconds = parseInt(timer % 60, 10);
+
+                                minutes = minutes < 10 ? "0" + minutes : minutes;
+                                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                                if(timer >= 0){
+                                    display.textContent = minutes + ":" + seconds;
+
+                                }
+
+                                if (--timer < 0 || duration < 0) {
+                                    timer = 0;
+                                }
+
+                            }, 1000);
+                        }
+
+                        window.onload = function () {
+                            comp = angular.element('[ng-controller=StreamViewer').scope().competition;
+                            sim = angular.element('[ng-controller=StreamViewer').scope().simulation;
+
+                            date = new Date(sim.updated_at);
+                            now = Date.now();
+
+                            time = (now - date)/1000;
+                            console.log(time);
+
+                            timeout = comp.type_of_competition.timeout * 60;
+                            console.log(timeout);
+
+                            count = timeout-time;
+                            console.log(count);
+
+                            var fiveMinutes = count,
+                                    display = document.querySelector('#time');
+                            startTimer(fiveMinutes, display);
+                        };
+                    </script>
                 </section>
             </div>
         </article>
@@ -61,8 +111,6 @@
                             </div>
                         </div>
                     </div>
-
-
                 </section>
             </div>
         </article>
