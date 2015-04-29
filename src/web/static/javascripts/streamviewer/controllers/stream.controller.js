@@ -195,12 +195,12 @@
             var i;
             if($scope.nBeacon==1){
                 ctx.beginPath();
-                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*2 + $scope.zoom/15, 0, 2*Math.PI);
+                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius/2 + $scope.zoom/15, 0, 2*Math.PI);
                 ctx.fillStyle = $scope.circleBorder;
                 ctx.fill();
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*2, $scope.beacon._Y * $scope.zoom - $scope.zoom*2, $scope.zoom*4,$scope.zoom*4 );
+                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.beacon._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.zoom*$scope.lab_obj.Target._Radius,$scope.zoom*4 );
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx.fill();
@@ -210,12 +210,12 @@
             else{
                 for(i=0;i<$scope.lab_obj.Lab.Beacon.length;i++){
                     ctx.beginPath();
-                    ctx.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom + $scope.zoom/15, 0, 2*Math.PI);
+                    ctx.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius/2 + $scope.zoom/15, 0, 2*Math.PI);
                     ctx.fillStyle = $scope.circleBorder;
                     ctx.fill();
                     var imageObj = new Image();
                     imageObj.onload = function() {
-                        ctx.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*2, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*2, $scope.zoom*4,$scope.zoom*4 );
+                        ctx.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius/2, $scope.zoom*$scope.lab_obj.Target._Radius,$scope.zoom*4 );
                     };
                     imageObj.src = $scope.cheeseColor;
                     ctx.fill();
@@ -445,33 +445,39 @@
 
             /* Update timeline */
             var tick = function() {
+                try {
 
-                if($scope.parameters_obj.Parameters._SimTime == $scope.logBuff_obj[$scope.idx].LogInfo._Time){
-                    $scope.playvar=-1;
-                    console.log('parou tudo');
-                    if($scope.numRobots != 1) {
-                        $scope.finalResults = $scope.logBuff_obj[$scope.idx].LogInfo.Robot
-                        var swapped;
-                        do {
-                            swapped = false;
-                            for (var i = 0; i < $scope.finalResults.length - 1; i++) {
-                                if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
-                                    var temp = $scope.finalResults[i];
-                                    var temp2 = $scope.mickeysFINAL[i];
+                    if ($scope.parameters_obj.Parameters._SimTime == $scope.logBuff_obj[$scope.idx].LogInfo._Time) {
+                        $scope.playvar = -1;
+                        console.log('parou tudo');
+                        if ($scope.numRobots != 1) {
+                            $scope.finalResults = $scope.logBuff_obj[$scope.idx].LogInfo.Robot
+                            var swapped;
+                            do {
+                                swapped = false;
+                                for (var i = 0; i < $scope.finalResults.length - 1; i++) {
+                                    if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
+                                        var temp = $scope.finalResults[i];
+                                        var temp2 = $scope.mickeysFINAL[i];
 
-                                    $scope.finalResults[i] = $scope.finalResults[i + 1];
-                                    $scope.mickeysFINAL[i] = $scope.mickeysFINAL[i + 1];
+                                        $scope.finalResults[i] = $scope.finalResults[i + 1];
+                                        $scope.mickeysFINAL[i] = $scope.mickeysFINAL[i + 1];
 
-                                    $scope.finalResults[i + 1] = temp;
-                                    $scope.mickeysFINAL[i + 1] = temp2;
-                                    swapped = true;
+                                        $scope.finalResults[i + 1] = temp;
+                                        $scope.mickeysFINAL[i + 1] = temp2;
+                                        swapped = true;
+                                    }
                                 }
-                            }
-                        } while (swapped);
-                        ;
+                            } while (swapped);
+                            ;
+                        }
+
                     }
+                }catch(TypeError){
 
                 }
+
+
                 try{
                     $scope.updateValues();
 
