@@ -200,7 +200,7 @@
                 ctx.fill();
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*4,$scope.zoom*2 );
+                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*2, $scope.beacon._Y * $scope.zoom - $scope.zoom*2, $scope.zoom*4,$scope.zoom*4 );
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx.fill();
@@ -215,7 +215,7 @@
                     ctx.fill();
                     var imageObj = new Image();
                     imageObj.onload = function() {
-                        ctx.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
+                        ctx.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*2, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*2, $scope.zoom*4,$scope.zoom*4 );
                     };
                     imageObj.src = $scope.cheeseColor;
                     ctx.fill();
