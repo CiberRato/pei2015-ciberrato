@@ -177,6 +177,8 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 NotificationTeam.add(team=team, status="ok",
                                      message="Your inscription is the competition " + competition.name
                                              + " is now valid!")
+                NotificationTeam.add(team=team, status="info",
+                                     message="Do not forget to create one grid position for this competition!")
             else:
                 NotificationTeam.add(team=team, status="error",
                                      message="Your inscription is the competition " + competition.name
