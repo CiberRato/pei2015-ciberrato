@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Trial, TrialMessage
+from .models import Trial
 from competition.serializers import TypeOfCompetitionSerializer
+from rest_framework.validators import ValidationError
 
 
 class LogTrial(serializers.ModelSerializer):
@@ -22,13 +23,27 @@ class ErrorTrial(serializers.ModelSerializer):
         read_only_fields = ()
 
 
-class TrialMessageSerializer(serializers.ModelSerializer):
-    trial_identifier = serializers.CharField(max_length=100)
+class TrialMessageSerializer(serializers.BaseSerializer):
+    def to_internal_value(self, data):
+        trial_identifier = data.get('trial_identifier')
+        message = data.get('message')
 
-    class Meta:
-        model = TrialMessage
-        fields = ('trial_identifier', 'message',)
-        read_only_fields = ()
+        # Perform the data validation.
+        if not message:
+            raise ValidationError({
+                'message': 'This field is required.'
+            })
+        if not trial_identifier:
+            raise ValidationError({
+                'trial_identifier': 'This field is required.'
+            })
+
+        # Return the validated values. This will be available as
+        # the `.validated_data` property.
+        return {
+            'message': message,
+            'trial_identifier': trial_identifier
+        }
 
 
 class AgentXSerializer(serializers.BaseSerializer):

@@ -197,14 +197,6 @@ class Trial(models.Model):
         return self.identifier
 
 
-class TrialMessage(models.Model):
-    message = models.CharField(max_length=150, blank=False)
-    trial = models.ForeignKey(Trial, blank=False)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class TrialGrid(models.Model):
     grid_positions = models.ForeignKey(GridPositions, blank=False)
     trial = models.ForeignKey(Trial, blank=False)
