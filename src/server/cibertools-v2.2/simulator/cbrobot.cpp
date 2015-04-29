@@ -287,8 +287,11 @@ bool cbRobot::readAction(cbRobotAction *action)
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
 
-    if (showActions)
-        simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
+
+    cout << "whaat" << xmlBuff << std::endl;
+	// REMEMBER TO CHECK THIS....
+    //if (showActions)
+    //    simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
 
 	/* parse xml message */
     parser.setContentHandler(&handler);
@@ -296,13 +299,14 @@ bool cbRobot::readAction(cbRobotAction *action)
 	if (!parser.parse(source))
 	{
         cerr << "cbRobot::Fail parsing xml action message: \"" << xmlBuff << "\"\n";
-        simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
-        simulator->GUI()->appendMessage( QString(" \"")+xmlBuff+"\"" , true);
+        //simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
+        //simulator->GUI()->appendMessage( QString(" \"")+xmlBuff+"\"" , true);
 
 		return false;
 	}
 	
 	*action = handler.parsedAction();
+	cout << "passed.." << std::endl;
 	return true;
 }
 
@@ -897,8 +901,9 @@ void cbRobot::sendSensors()
 	cerr << "Measures sent to robot " << id << "\n" << xml;
 #endif
 
-    if (showMeasures)
-        simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
+	// CHECK THIS...
+    //if (showMeasures)
+    //    simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
 
 }
 

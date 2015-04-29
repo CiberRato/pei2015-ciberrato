@@ -565,8 +565,8 @@ const char *cbSimulator::curStateAsString()
 void cbSimulator::readChanges() 
 {
 	//cout.form("Reading robot actions (%u)\n", curCycle);
-	RobotActions();
 	
+		//RobotActions();
 	//cout.form("Checking new registrations (%u)\n", curCycle);
 	CheckIn();
 	//cout.form("Reading view commands (%u)\n", curCycle);
@@ -604,11 +604,12 @@ void cbSimulator::step()
 		//cout.form("Updating sensors (%u)\n", curCycle);
 		UpdateSensors();
 	}
-
 	//cout.form("Sending sensors to robots(%u)\n", curCycle);
 	SendSensors();
 	//cout.form("Updating views (%u)\n", curCycle);
+	cout << "..." << std::endl;
 	UpdateViews();
+	cout << ".2..2" << std::endl;
 	//cout.form("Updating state (%u)\n", curCycle);
 	UpdateState();
 
@@ -1616,29 +1617,97 @@ void cbSimulator::setDefaultParameters(void)
 	//cout << " done.\n";
 }
 
-void cbSimulator::xx(void) {
-	std::cout << "Hello" << std::endl;	
-}
-
 void cbSimulator::startTimer(void)
 {
     poolChanges.start(poolCycleTime);
     QObject::connect(&poolChanges, SIGNAL(timeout()), this, SLOT(readChanges()));
 
     /* Start the thread associated with the Panel Commands messages */
-    moveToThread(&threadPanelCommands);
-    QObject::connect(&threadPanelCommands, SIGNAL(started()), this, SLOT(xx()));
+    QObject::connect(&threadPanelCommands, SIGNAL(started()), this, SLOT(processPanelCommands()), Qt::DirectConnection);
     threadPanelCommands.start();
 
     /* Start the thread associated with the Robot Actions messages */
-    moveToThread(&threadRobotActions);
-    QObject::connect(&threadRobotActions, SIGNAL(started()), this, SLOT(xx()));
+    //moveToThread(&threadRobotActions);
+    QObject::connect(&threadRobotActions, SIGNAL(started()), this, SLOT(processRobotActions()), Qt::DirectConnection);
     threadRobotActions.start();
 
     /* Start the thread associated with the Reception Handler messages */
-    moveToThread(&threadReceptionHandler);
-    QObject::connect(&threadReceptionHandler, SIGNAL(started()), this, SLOT(xx()));
+    //moveToThread(&threadReceptionHandler);
+    QObject::connect(&threadReceptionHandler, SIGNAL(started()), this, SLOT(processReceptionMessages()), Qt::DirectConnection);
     threadReceptionHandler.start();
+}
+
+void cbSimulator::processRobotActions() 
+{
+	std::cout << "Processing RobotActions" << std::endl;	
+	while (true) {
+		cbRobotAction action;
+		for (unsigned int i=0; i<robots.size(); i++)
+		{
+			cbRobot *robot = robots[i];
+	        if (robot==0) continue;
+	        robot->resetReceivedFlags();
+	        robot->resetRequestedSensors();
+			while (robot->readAction(&action))
+			{
+				//cerr << "Robot action received l=" << action.leftMotor
+				//     << " r=" << action.rightMotor << "\n";
+				if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
+				if (action.rightMotorChanged)    robot->setRightMotor(   action.rightMotor);
+				if (action.endLedChanged)        robot->setEndLed(       action.endLed);
+				if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
+				if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
+
+				for (unsigned int r=0; r< action.sensorRequests.size(); r++) {
+					robot->requestSensor(action.sensorRequests[r]);
+				}
+
+				if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
+				if (action.sync) {
+					robot->setWaitingForSync(true);
+					cout << "Sync Request" << curState << ", " << syncmode << std::endl;
+
+					if (syncmode){ //&& curState == RUNNING) {
+						bool stepSim = true;
+						for (unsigned int i=0; i < robots.size(); i++)
+						{
+							cbRobot *robot = robots[i];
+							if (robot == 0) continue;
+					        if (!robot->getWaitingForSync()) {
+					        	cout << "what" << std::endl;
+					        	stepSim = false;
+					        	break;
+					        }	        
+						}
+						if (stepSim) {
+							for (unsigned int i=0; i < robots.size(); i++)
+							{
+								cbRobot *robot = robots[i];
+								if (robot == 0) continue;
+								robot->setWaitingForSync(false);
+							}
+							cout << "Got here.. " << std::endl;
+							step();
+							cout << "222Got here.. " << std::endl;
+						}
+					}
+				}
+
+				action.sensorRequests.clear();
+			}
+		}
+	}
+}
+void cbSimulator::processPanelCommands() 
+{
+	std::cout << "Processing PanelCommands" << std::endl;
+	/*while (true) {
+		CheckIn();
+	}*/
+}
+void cbSimulator::processReceptionMessages() 
+{
+	std::cout << "Processing Reception requests" << std::endl;	
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)

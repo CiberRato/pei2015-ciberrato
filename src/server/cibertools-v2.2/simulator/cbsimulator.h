@@ -163,7 +163,10 @@ public slots:
     void setShowActions(bool);
     void setShowMeasures(bool);
     void setShowPositions(bool);
-    void xx();
+
+    void processRobotActions();
+    void processPanelCommands();
+    void processReceptionMessages();
 
 signals:
     void toggleGPS(bool);
