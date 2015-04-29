@@ -586,6 +586,13 @@ class AuthenticationTestCase(TestCase):
             pass
 
 
+        # send a message
+        url = "/api/v1/trials/message/"
+        data = {'trial_identifier': trial_identifier, 'message': 'Julian Calor - Another Template'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {"status": "Created", "message": "The message has been saved!"})
+
         return
 
 

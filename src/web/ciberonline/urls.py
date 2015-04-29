@@ -118,7 +118,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
-                       url(r'^api/v1/trials/messaget/$', TrialMessageCreate.as_view(),
+                       url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),
                            name="Trial message Upload"),
 
                        # upload files to round
