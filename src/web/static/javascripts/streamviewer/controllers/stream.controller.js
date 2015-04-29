@@ -195,12 +195,12 @@
             var i;
             if($scope.nBeacon==1){
                 ctx.beginPath();
-                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom + $scope.zoom/15, 0, 2*Math.PI);
+                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*2 + $scope.zoom/15, 0, 2*Math.PI);
                 ctx.fillStyle = $scope.circleBorder;
                 ctx.fill();
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*2,$scope.zoom*2 );
+                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom, $scope.beacon._Y * $scope.zoom - $scope.zoom, $scope.zoom*4,$scope.zoom*2 );
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx.fill();
