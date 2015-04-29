@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from ..simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
-from ..models import Trial, TrialMessage
+from ..models import Trial
 
 from competition.shortcuts import *
 from notifications.models import NotificationBroadcast
@@ -49,9 +49,6 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
             trial.log_json = serializer.validated_data['log_json']
             trial.save()
 
-            for trial_message in TrialMessage.objects.filter(trial=trial):
-                trial_message.delete()
-
             NotificationBroadcast.add(channel="user", status="ok",
                                       message="The trial of " + trial.round.name + " has finished!",
                                       trigger="trial_log")
@@ -64,11 +61,10 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class TrialMessageCreate(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = TrialMessage.objects.all()
+class TrialMessageCreate(views.APIView):
     serializer_class = TrialMessageSerializer
 
-    def create(self, request, *args, **kwargs):
+    def post(self, request):
         """
         B{Create} the trial message
         B{URL:} ../api/v1/trials/message/
@@ -93,13 +89,8 @@ class TrialMessageCreate(mixins.CreateModelMixin, viewsets.GenericViewSet):
                                  'message': 'The trial message can\'t be saved, the Trial is in LOG state!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            try:
-                with transaction.atomic():
-                    TrialMessage.objects.create(trial=trial, message=serializer.validated_data['message'])
-            except IntegrityError:
-                return Response({'status': 'Bad request',
-                                 'message': 'The trial message can\'t be saved!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            NotificationBroadcast.add(channel="user", status="ok",
+                                      message=serializer.validated_data['message'])
 
             return Response({'status': 'Created',
                              'message': 'The message has been saved!'}, status=status.HTTP_201_CREATED)

@@ -110,7 +110,6 @@ router_trials.register(r'trial_log', SaveLogs)
 router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
 router_trials.register(r'prepare', PrepareTrial)
-router_trials.register(r'message', TrialMessageCreate)
 
 
 urlpatterns = patterns('',
@@ -119,6 +118,8 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
+                       url(r'^api/v1/trials/messaget/$', TrialMessageCreate.as_view(),
+                           name="Trial message Upload"),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
