@@ -5,10 +5,20 @@
         <!-- Data block -->
         <article class="span12 data-block">
             <div class="data-container">
-                <h1>{{vm.file}}</h1>
+                <div class="row">
+                    <header>
+                        <h1>{{vm.file}}</h1>
+                        <div class="row">
+                        <div class="span1"><a class="btn btn-danger">Discard</a></div>
+                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCode()">Save</a></div>
+                        <div class="span2"><a class="btn btn">Save And Exit</a></div>
+                        </div>
+                    </header>
+                </div>
+
 
                 <section class="tab-content">
-                    <div class="editor" ui-ace="{ mode: 'python', theme: 'monokai' }" ng-model="code"></div>
+                    <div class="editor" ui-ace="{ mode: 'java', theme: 'monokai' }" ng-model="code"></div>
                 </section>
             </div>
 

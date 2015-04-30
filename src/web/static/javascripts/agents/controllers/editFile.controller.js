@@ -9,6 +9,7 @@
 
     function EditFileController($scope, $routeParams, Authentication, Agent, Team){
         var vm = this;
+        vm.getCode = getCode;
         activate();
 
         function activate(){
@@ -27,6 +28,21 @@
                 console.error(data.data);
             }
 
+        }
+
+        function getCode(){
+            var a = $scope.code;
+            var file = new Blob([a], {type: 'text/plain'}, vm.file);
+
+            console.log(file.filename);
+            Agent.upload(vm.agentName, file, vm.teamName).then(success, error);
+
+            function success(){
+                console.log("UPLOADDD")
+            }
+            function error(data){
+                console.error(data.data);
+            }
         }
 
     }
