@@ -593,6 +593,20 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {"status": "Created", "message": "The message has been saved!"})
 
+        trial = Trial.objects.get(identifier=trial_identifier)
+        trial.started = True
+        trial.save()
+
+        # save trial logs (only server by server)
+        f = open('media/tests_files/ciberOnline_log.json', 'r')
+        url = "/api/v1/trials/trial_log/"
+        data = {'trial_identifier': trial_identifier, 'log_json': f}
+        response = client.post(url, data)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
+        self.assertEqual(response.status_code, 201)
+        trial = Trial.objects.get(identifier=trial_identifier)
+        self.assertEqual(trial.log_json is None, False)
+
         return
 
 
@@ -689,7 +703,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"status": "Created", "message": "The message has been saved!"})
 
         # save trial logs (only server by server)
-        f = open('media/tests_files/ciberOnline_log.json.zip', 'r')
+        f = open('media/tests_files/ciberOnline_log.json', 'r')
         url = "/api/v1/trials/trial_log/"
         data = {'trial_identifier': trial_identifier, 'log_json': f}
         response = client.post(url, data)

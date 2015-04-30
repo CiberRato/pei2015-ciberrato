@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-from django.db import IntegrityError
-from django.db import transaction
 
 import os
+import gzip
+import tempfile
 
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
@@ -43,8 +43,19 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             if not trial_started(trial):
                 return Response({'status': 'Bad Request',
-                                 'message': 'The trial should be stated first!'},
+                                 'message': 'The trial should be started first!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+
+            temp = tempfile.NamedTemporaryFile()
+            output = gzip.open(temp.name, 'wb')
+
+            try:
+                output.write(serializer.validated_data['log_json'].read())
+            finally:
+                output.close()
+
+            serializer.validated_data['log_json'].name = trial.identifier + '.json.gz'
+            serializer.validated_data['log_json'].file = temp
 
             trial.log_json = serializer.validated_data['log_json']
             trial.save()
@@ -152,17 +163,18 @@ class GetTrialLog(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            file = default_storage.open(trial.log_json)
+            f = gzip.open(default_storage.path(trial.log_json), 'rb')
         except Exception:
             return Response({'status': 'Bad request',
                              'message': 'The file doesn\'t exists'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        wrapper = FileWrapper(file)
-        response = HttpResponse(wrapper, content_type="application/x-compressed")
-        response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.tar.gz'
-        response['Content-Length'] = os.path.getsize(file.name)
-        file.seek(0)
+        wrapper = FileWrapper(f)
+        response = HttpResponse(wrapper, content_type="application/json")
+        response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.json'
+        response['Content-Length'] = os.path.getsize(f.name)
+        f.seek(0)
+        f.close()
         return response
 
 
