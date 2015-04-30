@@ -15,6 +15,34 @@ def getText(nodelist):
         if node.nodeType == node.TEXT_NODE:
             rc.append(node.data)
     return ''.join(rc)
+
+class JsonListElements:
+	# Listar em cada self.grid, self.param, etc.. os parametros que podem ser listas!
+	def __init__(self):
+		self.prevPath = None
+		self.count = 0
+		self.list = None
+		self.lab = {'Corner': None, 'Wall': None, 'Beacon': None}
+		self.grid = {}
+		self.params = {}
+		self.data = {}
+
+	def postprocessorGrid(self, path, key, value):
+		self.list = self.grid
+		return self.postprocessor(path, key, value)
+
+	def postprocessor(self, path, key, value):
+		if key in self.list.keys() and self.list[key] == None:
+			self.list[key] = len(path)
+			tupl = key, [value]
+		else:
+			tupl = key, value
+
+		for key in self.list.keys():
+			if self.list[key] != None and self.list[key] > len(path):
+				self.list[key] = None
+		return tupl
+
 class Viewer:
 	def main(self, sim_id):
 		# Load settings
