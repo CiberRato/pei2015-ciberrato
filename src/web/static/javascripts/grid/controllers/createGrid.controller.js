@@ -75,12 +75,18 @@
 
             function createErrorFn(data){
                 var errors = "";
-                for (var value in data.data.message) {
-                    errors += "&bull;" + value.replace("_", " ") + ":<br/>"
-                    for (var error in data.data.message[value]){
-                        errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                
+                if (typeof data.data.message === 'object'){
+                    for (var value in data.data.message) {
+                        errors += "&bull;" + value.replace("_", " ") + ":<br/>"
+                        for (var error in data.data.message[value]){
+                            errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
+                        }
                     }
+                }else{
+                    errors = data.data.message;
                 }
+
                 $.jGrowl(errors, {
                     life: 5000,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
