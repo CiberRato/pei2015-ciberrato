@@ -13308,3 +13308,7 @@ div.jGrowl div.success a:hover {
     background-color: black;
     z-index: 0;
 }
+
+.editor {
+    height: 500px;
+}

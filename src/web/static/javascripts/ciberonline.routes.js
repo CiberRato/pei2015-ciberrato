@@ -131,6 +131,11 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/agent/myAgents.html',
             title: 'My Agents'
+        }).when('/panel/:teamName/:name/agentDetail/:fileName',{
+            controller:'EditFileController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/agent/fileEdit.html',
+            title: 'Edit File'
         }).when('/panel/:teamName/:name/agentDetail',{
             controller:'AgentDetailController',
             controllerAs: 'vm',

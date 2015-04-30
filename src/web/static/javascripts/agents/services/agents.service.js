@@ -21,7 +21,8 @@
             associate: associate,
             deleteAgent: deleteAgent,
             getLanguages: getLanguages,
-            validateAgent: validateAgent
+            validateAgent: validateAgent,
+            getFile: getFile
         };
 
         return Agent;
@@ -92,6 +93,10 @@
 
         function getLanguages(){
             return $http.get('api/v1/agents/allowed_languages/');
+        }
+
+        function getFile(team_name, agent_name, file_name){
+            return $http.get("/api/v1/agents/file/" + team_name + "/" + agent_name + "/" + file_name + "/");
         }
 
     }
