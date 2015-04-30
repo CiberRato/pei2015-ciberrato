@@ -27,8 +27,18 @@ class JsonListElements:
 		self.params = {}
 		self.data = {}
 
+	# Só para evitar verificar demasiadas keys 
 	def postprocessorGrid(self, path, key, value):
 		self.list = self.grid
+		return self.postprocessor(path, key, value)
+	def postprocessorLab(self, path, key, value):
+		self.list = self.lab
+		return self.postprocessor(path, key, value)
+	def postprocessorParams(self, path, key, value):
+		self.list = self.params
+		return self.postprocessor(path, key, value)
+	def postprocessorData(self, path, key, value):
+		self.list = self.data
 		return self.postprocessor(path, key, value)
 
 	def postprocessor(self, path, key, value):
