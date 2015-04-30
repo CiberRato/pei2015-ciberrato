@@ -89,7 +89,7 @@ class TrialMessageCreate(views.APIView):
                                  'message': 'The trial message can\'t be saved, the Trial is in LOG state!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            NotificationBroadcast.add(channel="user", status="info",
+            NotificationBroadcast.add(channel="admin", status="info",
                                       message=serializer.validated_data['message'])
 
             return Response({'status': 'Created',
@@ -122,7 +122,7 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
             trial.errors = serializer.validated_data['msg']
             trial.save()
 
-            NotificationBroadcast.add(channel="user", status="error",
+            NotificationBroadcast.add(channel="admin", status="error",
                                       message="The trial of " + trial.round.name + " has encountered an error!",
                                       trigger="trial_error")
 
