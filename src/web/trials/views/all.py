@@ -2,8 +2,6 @@ from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
-from django.db import IntegrityError
-from django.db import transaction
 
 import os
 
@@ -159,8 +157,8 @@ class GetTrialLog(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         wrapper = FileWrapper(file)
-        response = HttpResponse(wrapper, content_type="application/x-compressed")
-        response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.tar.gz'
+        response = HttpResponse(wrapper, content_type="application/json")
+        response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.json'
         response['Content-Length'] = os.path.getsize(file.name)
         file.seek(0)
         return response
