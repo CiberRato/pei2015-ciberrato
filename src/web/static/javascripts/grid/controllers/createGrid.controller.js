@@ -75,7 +75,7 @@
 
             function createErrorFn(data){
                 var errors = "";
-                
+
                 if (typeof data.data.message === 'object'){
                     for (var value in data.data.message) {
                         errors += "&bull;" + value.replace("_", " ") + ":<br/>"
