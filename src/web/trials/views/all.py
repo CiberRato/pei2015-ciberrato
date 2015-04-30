@@ -48,7 +48,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             temp = tempfile.NamedTemporaryFile()
             output = gzip.open(temp.name, 'wb')
-            
+
             try:
                 output.write(serializer.validated_data['log_json'].read())
             finally:
@@ -163,17 +163,18 @@ class GetTrialLog(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            file = default_storage.open(trial.log_json)
+            f = gzip.open(default_storage.path(trial.log_json), 'rb')
         except Exception:
             return Response({'status': 'Bad request',
                              'message': 'The file doesn\'t exists'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        wrapper = FileWrapper(file)
+        wrapper = FileWrapper(f)
         response = HttpResponse(wrapper, content_type="application/json")
         response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.json'
-        response['Content-Length'] = os.path.getsize(file.name)
-        file.seek(0)
+        response['Content-Length'] = os.path.getsize(f.name)
+        f.seek(0)
+        f.close()
         return response
 
 
