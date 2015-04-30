@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
 
 import os
+import gzip
+import tempfile
 
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
@@ -41,8 +43,19 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             if not trial_started(trial):
                 return Response({'status': 'Bad Request',
-                                 'message': 'The trial should be stated first!'},
+                                 'message': 'The trial should be started first!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+
+            temp = tempfile.NamedTemporaryFile()
+            output = gzip.open(temp.name, 'wb')
+            
+            try:
+                output.write(serializer.validated_data['log_json'].read())
+            finally:
+                output.close()
+
+            serializer.validated_data['log_json'].name = trial.identifier + '.json.gz'
+            serializer.validated_data['log_json'].file = temp
 
             trial.log_json = serializer.validated_data['log_json']
             trial.save()
