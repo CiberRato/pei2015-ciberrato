@@ -9,13 +9,6 @@ import sys
 from xml.dom import minidom
 from collections import OrderedDict
 
-def getText(nodelist):
-    rc = []
-    for node in nodelist:
-        if node.nodeType == node.TEXT_NODE:
-            rc.append(node.data)
-    return ''.join(rc)
-
 class JsonListElements:
 	# Listar em cada self.grid, self.param, etc.. os parametros que podem ser listas!
 	def __init__(self):
