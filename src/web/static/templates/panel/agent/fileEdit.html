@@ -7,13 +7,15 @@
             <div class="data-container">
                 <div class="row">
                     <header>
-                        <h1>{{vm.file}}</h1>
                         <div class="row">
-                        <div class="span1"><a class="btn btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
-                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCode()">Save</a></div>
-                        <div class="span2"><a class="btn btn" ng-click="vm.getCode()" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Save And Exit</a></div>
+                            <div class="span8"><h1>{{vm.file}}</h1></div>
+                            <div class="span1"><a class="btn btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
+                            <div class="span1"><a class="btn btn-success" ng-click="vm.getCode()">Save</a></div>
+                            <div class="span2"><a class="btn btn-success" ng-click="vm.getCode()" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Save And Exit</a></div>
                         </div>
+
                     </header>
+
                 </div>
 
 
