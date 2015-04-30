@@ -51,9 +51,13 @@
 
         }
 
-        function upload(agentName, value, teamName){
+        function upload(agentName, value, teamName, valueName){
             var fd = new FormData();
-            fd.append('file', value);
+            if(valueName === undefined) {
+                fd.append('file', value);
+            }else{
+                fd.append('file', value, valueName);
+            }
 
             return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName + '&team_name=' + teamName, fd, {
                 transformRequest: angular.identity,

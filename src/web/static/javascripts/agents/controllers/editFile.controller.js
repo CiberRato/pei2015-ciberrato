@@ -32,10 +32,9 @@
 
         function getCode(){
             var a = $scope.code;
-            var file = new Blob([a], {type: 'text/plain'}, vm.file);
+            var file = new Blob([a], {type: 'text/plain'});
 
-            console.log(file.filename);
-            Agent.upload(vm.agentName, file, vm.teamName).then(success, error);
+            Agent.upload(vm.agentName, file, vm.teamName, vm.file).then(success, error);
 
             function success(){
                 console.log("UPLOADDD")
