@@ -28,9 +28,8 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{URL:} ../api/v1/competitions/grid_positions/
         """
         grid_positions = []
-        for team in request.user.teams.all():
-            for grid in GridPositions.objects.filter(team=team):
-                grid_positions += [GridPositionsSimplex(grid)]
+        for grid in GridPositions.objects.filter(team=request.user.teams.all()):
+            grid_positions += [GridPositionsSimplex(grid)]
 
         serializer = self.serializer_class(grid_positions, many=True)
 
@@ -50,7 +49,7 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                name=serializer.validated_data['competition_name'])
+                                            name=serializer.validated_data['competition_name'])
 
             if competition.state_of_competition == 'Past':
                 return Response({'status': 'Bad Request',
@@ -78,15 +77,13 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
             try:
                 with transaction.atomic():
                     grid = GridPositions.objects.create(competition=competition, team=team)
-
-                    serializer = self.serializer_class(GridPositionsSimplex(grid))
-
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'You already have a grid for that competition.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            serializer = self.serializer_class(GridPositionsSimplex(grid))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
