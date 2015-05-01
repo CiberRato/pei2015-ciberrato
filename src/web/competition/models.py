@@ -75,13 +75,13 @@ class Round(models.Model):
     parent_competition = models.ForeignKey(Competition, blank=False)
 
     param_list_path = models.FileField(upload_to="params/%Y/%m/%d")
-    param_list_can_delete = models.BooleanField(default=True)
+    param_can_delete = models.BooleanField(default=True)
     #
     grid_path = models.FileField(upload_to="grids/%Y/%m/%d")
-    grid_path_can_delete = models.BooleanField(default=True)
+    grid_can_delete = models.BooleanField(default=True)
     #
     lab_path = models.FileField(upload_to="labs/%Y/%m/%d")
-    lab_path_can_delete = models.BooleanField(default=True)
+    lab_can_delete = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

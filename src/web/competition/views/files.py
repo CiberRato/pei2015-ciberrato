@@ -58,10 +58,9 @@ class GetRoundFile(views.APIView):
 class UploadRoundXMLView(views.APIView):
     parser_classes = (FileUploadParser,)
 
-    def __init__(self, file_to_save, folder):
+    def __init__(self, file_to_save):
         views.APIView.__init__(self)
         self.file_to_save = file_to_save
-        self.folder = folder
 
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsStaff(),
@@ -83,8 +82,8 @@ class UploadRoundXMLView(views.APIView):
         return self.file_save_xml(request.data.get('file', ''), r, request)
 
     def file_save_xml(self, file_obj, r, request):
-        if getattr(r, self.file_to_save, None) is not None:
-            getattr(r, self.file_to_save, None).delete(False)
+        if getattr(r, self.file_to_save+"_path", None) is not None and getattr(r, self.file_to_save+"_can_delete"):
+            getattr(r, self.file_to_save+"_path", None).delete(False)
 
         if not isinstance(file_obj, InMemoryUploadedFile) and file_obj.size is 0:
             return Response({'status': 'Bad request',
@@ -100,7 +99,8 @@ class UploadRoundXMLView(views.APIView):
             competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
             r = get_object_or_404(Round.objects.all(), name=request.GET.get('round', ''), parent_competition=competition)
 
-            setattr(r, self.file_to_save, file_obj)
+            setattr(r, self.file_to_save+"_path", file_obj)
+            setattr(r, self.file_to_save + "_can_delete", True)
             r.save()
 
         return Response({'status': 'Uploaded',
@@ -121,7 +121,7 @@ class UploadParamListView(UploadRoundXMLView):
         :type  round_name: str
         :param round_name: The team name
         """
-        UploadRoundXMLView.__init__(self, "param_list_path", "param_list")
+        UploadRoundXMLView.__init__(self, "param_list")
 
 
 class UploadGridView(UploadRoundXMLView):
@@ -137,7 +137,7 @@ class UploadGridView(UploadRoundXMLView):
         :type  round_name: str
         :param round_name: The team name
         """
-        UploadRoundXMLView.__init__(self, "grid_path", "grid")
+        UploadRoundXMLView.__init__(self, "grid")
 
 
 class UploadLabView(UploadRoundXMLView):
@@ -153,4 +153,4 @@ class UploadLabView(UploadRoundXMLView):
         :type  round_name: str
         :param round_name: The team name
         """
-        UploadRoundXMLView.__init__(self, "lab_path", "lab")
+        UploadRoundXMLView.__init__(self, "lab")
