@@ -151,9 +151,8 @@ class TrialByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
         trials = []
 
-        for competition_agent in agent.competitionagent_set.all():
-            for lga in LogTrialAgent.objects.filter(competition_agent=competition_agent):
-                trials += [TrialSimplex(lga.trial)]
+        for lga in LogTrialAgent.objects.filter(competition_agent=agent.competitionagent_set.all()):
+            trials += [TrialSimplex(lga.trial)]
 
         serializer = self.serializer_class(trials, many=True)
 
@@ -234,9 +233,9 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             grid_positions = get_object_or_404(GridPositions.objects.all(),
-                identifier=serializer.validated_data['grid_identifier'])
+                                               identifier=serializer.validated_data['grid_identifier'])
             trial = get_object_or_404(Trial.objects.all(),
-                identifier=serializer.validated_data['trial_identifier'])
+                                      identifier=serializer.validated_data['trial_identifier'])
 
             teams_in_grid = len(TrialGrid.objects.filter(trial=trial))
 
@@ -251,7 +250,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
 
             team_enrolled = TeamEnrolled.objects.filter(team=grid_positions.team,
-                                                          competition=grid_positions.competition)
+                                                        competition=grid_positions.competition)
 
             if len(team_enrolled) != 1:
                 return Response({'status': 'Permission denied',
@@ -263,14 +262,14 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The team must be enrolled in the competition with valid inscription.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if serializer.validated_data[
-                'position'] > grid_positions.competition.type_of_competition.number_teams_for_trial:
+            if serializer.validated_data['position'] > \
+                    grid_positions.competition.type_of_competition.number_teams_for_trial:
                 return Response({'status': 'Permission denied',
                                  'message': 'The position can\'t be higher than the number of teams allowed by trial.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
             if len(TrialGrid.objects.filter(trial=trial,
-                                                 position=serializer.validated_data['position'])) != 0:
+                                            position=serializer.validated_data['position'])) != 0:
                 return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -316,7 +315,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         sim = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
         sim_grid = get_object_or_404(TrialGrid.objects.all(), trial=sim,
-            position=request.GET.get('position', ''))
+                                     position=request.GET.get('position', ''))
 
         if sim_grid.grid_positions.competition.state_of_competition == 'Past':
             return Response({'status': 'Bad Request',
@@ -324,7 +323,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                             status=status.HTTP_400_BAD_REQUEST)
 
         team_enrolled = TeamEnrolled.objects.filter(team=sim_grid.grid_positions.team,
-                                                      competition=sim_grid.grid_positions.competition)
+                                                    competition=sim_grid.grid_positions.competition)
 
         if len(team_enrolled) != 1:
             return Response({'status': 'Permission denied',
