@@ -568,7 +568,7 @@ void cbSimulator::readChanges()
 	
 		//RobotActions();
 	//cout.form("Checking new registrations (%u)\n", curCycle);
-	CheckIn();
+	//CheckIn();
 	//cout.form("Reading view commands (%u)\n", curCycle);
 	
 	// Viewer can't send messages anymore!
@@ -623,93 +623,7 @@ void cbSimulator::step()
 */
 void cbSimulator::CheckIn()
 {
-	while (receptionist->CheckIn())
-	{
-		cbClientForm &form = receptionist->Form();
-		int cnt;
-		switch (form.type)
-		{
-			case cbClientForm::VIEW:
-				//cout << "View form is going to be processed\n";
-				cnt = views.size();
-				views.resize(cnt+1);
-				views[cnt] = form.client.view;
-
-				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
-
-                if (curState==INIT) {
-				    nextState=STOPPED;
-                    if(logging)
-                        openLog(logFilename.toLatin1().constData());
-                }
-                cout << "Viewer has been registered\n";
-                gui->appendMessage( "Viewer has been registered\n" );
-				UpdateViews();
-				break;
-			case cbClientForm::PANEL:
-				//cout << "Panel form is going to be processed\n";
-				cnt = panels.size();
-				panels.resize(cnt+1);
-				panels[cnt] = form.client.panel;
-				panels[cnt]->Reply(form.addr, form.port, param);
-
-				cout << "Panel has been registered\n";
-                gui->appendMessage( "Panel has been registered\n" );
-				break;
-			case cbClientForm::PANELVIEW:
-
-				form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
-
-				cnt = panels.size();
-				panels.resize(cnt+1);
-				panels[cnt] = form.client.panelview;
-
-				cnt = views.size();
-				views.resize(cnt+1);
-				views[cnt] = form.client.panelview;
-
-                if (curState==INIT) {
-				    nextState=STOPPED;
-                    if (logging)
-                        openLog(logFilename.toLatin1().constData());
-                }
-				cout << "PanelView has been registered\n";
-                gui->appendMessage( "PanelView has been registered\n" );
-				UpdateViews();
-                break;
-			case cbClientForm::ROBOT:
-			case cbClientForm::ROBOTBEACON:
-			{
-				//cout << "Robot form is going to be processed\n";
-				cbRobot *robot = form.client.robot;
-				if (registerRobot(robot))
-				{
-					robot->Reply(form.addr, form.port, param);
-                    cout << robot->Name() << " has been registered\n";
-                    gui->appendMessage( QString(robot->Name())+" has been registered" );
-                    UpdateState();
-                    UpdateViews();
-				}
-				else // robot was refused
-				{
-					robot->Refuse(form.addr, form.port);
-                    cout << robot->Name() << " has been refused\n";
-                    gui->appendMessage( QString(robot->Name())+" has been refused", true);
-					delete robot;
-				}
-				break;
-			}
-			case cbClientForm::UNKNOWN:
-                cerr << "UNKNOWN form was received, and discarded\n";
-                gui->appendMessage( "UNKNOWN form was received, and discarded", true);
-				// a refused replied must be sent
-				break;
-			case cbClientForm::NOBODY:
-                cerr << "NOBODY form was received, and discarded\n";
-                gui->appendMessage( "NOBODY form was received, and discarded", true);
-				break;
-		}
-	}
+	
 }
 
 void cbSimulator::start()
@@ -1695,13 +1609,100 @@ void cbSimulator::processRobotActions()
 void cbSimulator::processPanelCommands() 
 {
 	std::cout << "Processing PanelCommands" << std::endl;
-	/*while (true) {
-		CheckIn();
-	}*/
+	
 }
 void cbSimulator::processReceptionMessages() 
 {
 	std::cout << "Processing Reception requests" << std::endl;	
+	while (true) {
+		while (receptionist->CheckIn())
+		{
+			cbClientForm &form = receptionist->Form();
+			int cnt;
+			switch (form.type)
+			{
+				case cbClientForm::VIEW:
+					//cout << "View form is going to be processed\n";
+					cnt = views.size();
+					views.resize(cnt+1);
+					views[cnt] = form.client.view;
+
+					views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+
+	                if (curState==INIT) {
+					    nextState=STOPPED;
+	                    if(logging)
+	                        openLog(logFilename.toLatin1().constData());
+	                }
+	                cout << "Viewer has been registered\n";
+	                gui->appendMessage( "Viewer has been registered\n" );
+					UpdateViews();
+					break;
+				case cbClientForm::PANEL:
+					//cout << "Panel form is going to be processed\n";
+					cnt = panels.size();
+					panels.resize(cnt+1);
+					panels[cnt] = form.client.panel;
+					panels[cnt]->Reply(form.addr, form.port, param);
+
+					cout << "Panel has been registered\n";
+	                gui->appendMessage( "Panel has been registered\n" );
+					break;
+				case cbClientForm::PANELVIEW:
+
+					form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
+
+					cnt = panels.size();
+					panels.resize(cnt+1);
+					panels[cnt] = form.client.panelview;
+
+					cnt = views.size();
+					views.resize(cnt+1);
+					views[cnt] = form.client.panelview;
+
+	                if (curState==INIT) {
+					    nextState=STOPPED;
+	                    if (logging)
+	                        openLog(logFilename.toLatin1().constData());
+	                }
+					cout << "PanelView has been registered\n";
+	                gui->appendMessage( "PanelView has been registered\n" );
+					UpdateViews();
+	                break;
+				case cbClientForm::ROBOT:
+				case cbClientForm::ROBOTBEACON:
+				{
+					//cout << "Robot form is going to be processed\n";
+					cbRobot *robot = form.client.robot;
+					if (registerRobot(robot))
+					{
+						robot->Reply(form.addr, form.port, param);
+	                    cout << robot->Name() << " has been registered\n";
+	                    gui->appendMessage( QString(robot->Name())+" has been registered" );
+	                    UpdateState();
+	                    UpdateViews();
+					}
+					else // robot was refused
+					{
+						robot->Refuse(form.addr, form.port);
+	                    cout << robot->Name() << " has been refused\n";
+	                    gui->appendMessage( QString(robot->Name())+" has been refused", true);
+						delete robot;
+					}
+					break;
+				}
+				case cbClientForm::UNKNOWN:
+	                cerr << "UNKNOWN form was received, and discarded\n";
+	                gui->appendMessage( "UNKNOWN form was received, and discarded", true);
+					// a refused replied must be sent
+					break;
+				case cbClientForm::NOBODY:
+	                cerr << "NOBODY form was received, and discarded\n";
+	                gui->appendMessage( "NOBODY form was received, and discarded", true);
+					break;
+			}
+		}
+	}
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)
