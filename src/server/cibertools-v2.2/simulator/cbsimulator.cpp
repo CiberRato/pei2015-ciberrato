@@ -613,19 +613,6 @@ void cbSimulator::step()
 
 }
 
-/*
- * Private auxiliary member functions
- */
-
-/*!
-	Process registration requests of all
-	clients waiting at reception.
-*/
-void cbSimulator::CheckIn()
-{
-	
-}
-
 void cbSimulator::start()
 {
     if(curState==STOPPED)
@@ -649,66 +636,6 @@ void cbSimulator::stop()
         nextState = STOPPED;
         emit simRunning(false);
     }
-}
-
-/*!
-	For each robot read and process every action message.
-	These messages give new values for left and right motors
-	and for the end led.
-*/
-void cbSimulator::RobotActions()
-{
-	cbRobotAction action;
-	for (unsigned int i=0; i<robots.size(); i++)
-	{
-		cbRobot *robot = robots[i];
-        if (robot==0) continue;
-        robot->resetReceivedFlags();
-        robot->resetRequestedSensors();
-		while (robot->readAction(&action))
-		{
-			//cerr << "Robot action received l=" << action.leftMotor
-			//     << " r=" << action.rightMotor << "\n";
-			if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
-			if (action.rightMotorChanged)    robot->setRightMotor(   action.rightMotor);
-			if (action.endLedChanged)        robot->setEndLed(       action.endLed);
-			if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
-			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
-
-			for (unsigned int r=0; r< action.sensorRequests.size(); r++) {
-				robot->requestSensor(action.sensorRequests[r]);
-			}
-
-			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
-			if (action.sync) {
-				robot->setWaitingForSync(true);
-
-				if (syncmode && curState == RUNNING) {
-					bool stepSim = true;
-					for (unsigned int i=0; i < robots.size(); i++)
-					{
-						cbRobot *robot = robots[i];
-						if (robot == 0) continue;
-				        if (!robot->getWaitingForSync()) {
-				        	stepSim = false;
-				        	break;
-				        }	        
-					}
-					if (stepSim) {
-						for (unsigned int i=0; i < robots.size(); i++)
-						{
-							cbRobot *robot = robots[i];
-							if (robot == 0) continue;
-							robot->setWaitingForSync(false);
-						}
-						step();
-					}
-				}
-			}
-
-			action.sensorRequests.clear();
-		}
-	}
 }
 
 /*!
@@ -950,57 +877,6 @@ void cbSimulator::RobotsToXml(ostream &log, bool withActions, bool stateIndepend
 		}
         log << "</LogInfo>\n";
 	}
-}
-
-void cbSimulator::PanelCommands(){
-	cbPanelCommand command;
-	for (unsigned int i=0; i < panels.size(); i++)
-	{
-		while (((cbPanel *) panels[i])->readCommand(&command))
-		{
-			switch (command.type)
-			{
-				case cbPanelCommand::START:
-					start();
-					break;
-				case cbPanelCommand::RESTART:
-					reset();
-					break;
-				case cbPanelCommand::STOP:
-					stop();
-					break;
-				case cbPanelCommand::ROBOTDEL:
-					{
-						unsigned int id = command.robot.id;
-						if (id >=1 && id <= robots.size())
-						{
-                            cbRobot *robot = robots[id-1];
-                            if (robot != 0)
-                                robot->remove();
-                        }
-						break;
-					}
-				case cbPanelCommand::PARAMETERS:
-					setParameters(command.param);
-					break;
-				case cbPanelCommand::LAB:
-					setLab(command.lab);
-					if(grid != 0) {
-				       buildGraph();
-				       setDistMaxFromGridToTarget();
-					}
-
-					break;
-				case cbPanelCommand::GRID:
-					setGrid(command.grid);
-					buildGraph();
-				    setDistMaxFromGridToTarget();
-					break;
-				case cbPanelCommand::UNKNOWN:
-					break;
-			}
-		}
-	}	
 }
 
 void cbSimulator::buildGraph(void)
@@ -1609,6 +1485,56 @@ void cbSimulator::processRobotActions()
 void cbSimulator::processPanelCommands() 
 {
 	std::cout << "Processing PanelCommands" << std::endl;
+	while (true) {
+		cbPanelCommand command;
+		for (unsigned int i=0; i < panels.size(); i++)
+		{
+			while (((cbPanel *) panels[i])->readCommand(&command))
+			{
+				switch (command.type)
+				{
+					case cbPanelCommand::START:
+						start();
+						break;
+					case cbPanelCommand::RESTART:
+						reset();
+						break;
+					case cbPanelCommand::STOP:
+						stop();
+						break;
+					case cbPanelCommand::ROBOTDEL:
+						{
+							unsigned int id = command.robot.id;
+							if (id >=1 && id <= robots.size())
+							{
+	                            cbRobot *robot = robots[id-1];
+	                            if (robot != 0)
+	                                robot->remove();
+	                        }
+							break;
+						}
+					case cbPanelCommand::PARAMETERS:
+						setParameters(command.param);
+						break;
+					case cbPanelCommand::LAB:
+						setLab(command.lab);
+						if(grid != 0) {
+					       buildGraph();
+					       setDistMaxFromGridToTarget();
+						}
+
+						break;
+					case cbPanelCommand::GRID:
+						setGrid(command.grid);
+						buildGraph();
+					    setDistMaxFromGridToTarget();
+						break;
+					case cbPanelCommand::UNKNOWN:
+						break;
+				}
+			}
+		}	
+	}
 	
 }
 void cbSimulator::processReceptionMessages() 
