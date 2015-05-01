@@ -10,7 +10,7 @@ import tempfile
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 
-from ..simplex import TrialX
+from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
 from ..models import Trial
 

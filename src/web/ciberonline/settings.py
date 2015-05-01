@@ -44,7 +44,6 @@ INSTALLED_APPS = (
     'teams',
     'agent',
     'competition',
-    'trials',
     'notifications',
     'tokens',
 )
