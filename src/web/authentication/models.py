@@ -55,6 +55,7 @@ class Account(AbstractBaseUser):
 
     teaching_institution = models.CharField(max_length=140, validators=[MinLengthValidator(2)])
 
+    is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False, blank=False)
     is_superuser = models.BooleanField(default=False, blank=False)
     teams = models.ManyToManyField('Team', through='TeamMember', related_name="account")
