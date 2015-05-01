@@ -566,13 +566,20 @@ class AuthenticationTestCase(TestCase):
                               ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
 
         # prepare trial
-        """
         url = "/api/v1/trials/prepare/"
         data = {'trial_id': trial_identifier}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data,
-                         {"status": "Trial started", "message": "The trial is now in \"Prepare\" state!"})
-        """
+
+        if response.status_code == 200:
+            self.assertEqual(response.data,
+                             {"status": "Trial started", "message": "The trial is now in \"Prepare\" state!"})
+        elif response.status_code == 400:
+            self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
+
+        trial = Trial.objects.get(identifier=trial_identifier)
+        trial.prepare = True
+        trial.save()
+
         # start trial
         url = "/api/v1/trials/start/"
         data = {'trial_id': trial_identifier}
@@ -582,9 +589,11 @@ class AuthenticationTestCase(TestCase):
             self.assertEqual(response.data, {'status': 'Trial started',
                                              'message': 'Please wait that the trial starts at the simulator!'})
         elif response.status_code == 400:
-            # self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
-            pass
+            self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
 
+        trial = Trial.objects.get(identifier=trial_identifier)
+        trial.started = True
+        trial.save()
 
         # send a message
         url = "/api/v1/trials/message/"
@@ -592,10 +601,6 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {"status": "Created", "message": "The message has been saved!"})
-
-        trial = Trial.objects.get(identifier=trial_identifier)
-        trial.started = True
-        trial.save()
 
         # save trial logs (only server by server)
         f = open('media/tests_files/ciberOnline_log.json', 'r')
@@ -607,9 +612,6 @@ class AuthenticationTestCase(TestCase):
         trial = Trial.objects.get(identifier=trial_identifier)
         self.assertEqual(trial.log_json is None, False)
 
-        return
-
-
         # retrieve the agent list of one round
         url = "/api/v1/competitions/round_agents/R1/?competition_name=C1"
         response = client.get(url)
@@ -617,13 +619,15 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
-        self.assertEqual(rsp, [])
+        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE'), ('team_name', u'XPTO3')])])
 
         # test teams for one round
         url = "/api/v1/competitions/round_teams/R1/?competition_name=C1"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
+
+        return
 
         r = Round.objects.get(name="R1")
         competition_agent = CompetitionAgent.objects.filter(round=r)

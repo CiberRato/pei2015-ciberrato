@@ -460,7 +460,7 @@ class StartTrial(views.APIView):
         # verify if the round doesn't started already
         if not trial_prepare(trial):
             return Response({'status': 'Bad Request',
-                             'message': 'The trial is in state PREPARE!'},
+                             'message': 'The trial must be in state PREPARE!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # verify if round has files
