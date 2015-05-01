@@ -147,7 +147,6 @@ public:
 	void startTimer(void);
 
 public slots:
-    void readChanges();
 	void step();
 	void reset();
 	void start();
@@ -227,14 +226,11 @@ protected: // data members
     bool allowRegistrations;
     bool showPositions;
 
-    QThread threadPanelCommands;
-    QThread threadRobotActions;
+    vector<QThread *> threadPanelCommands;
+    vector<QThread *> threadRobotActions;
     QThread threadReceptionHandler;
 
 protected: // member functions
-	void CheckIn();
-	void PanelCommands();
-	void RobotActions();
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
 	void CheckCollisions();

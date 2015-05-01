@@ -22,7 +22,7 @@
  */
 
 
-
+#include <typeinfo>
 #include "cbposition.h"
 #include "cbparameters.h"
 
@@ -1388,23 +1388,13 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    /* Start the thread associated with the Panel Commands messages */
-    QObject::connect(&threadPanelCommands, SIGNAL(started()), this, SLOT(processPanelCommands()), Qt::DirectConnection);
-    threadPanelCommands.start();
-
-    /* Start the thread associated with the Robot Actions messages */
-    //moveToThread(&threadRobotActions);
-    QObject::connect(&threadRobotActions, SIGNAL(started()), this, SLOT(processRobotActions()), Qt::DirectConnection);
-    threadRobotActions.start();
-
-    /* Start the thread associated with the Reception Handler messages */
-    //moveToThread(&threadReceptionHandler);
-    QObject::connect(&threadReceptionHandler, SIGNAL(started()), this, SLOT(processReceptionMessages()), Qt::DirectConnection);
+    connect(&threadReceptionHandler, SIGNAL(started()), this, SLOT(processReceptionMessages()), Qt::DirectConnection);
     threadReceptionHandler.start();
 }
 
 void cbSimulator::processRobotActions() 
 {
+	std::cout << typeid(this).name() << std::endl;
 	std::cout << "Processing RobotActions" << std::endl;	
 	while (true) {
 		cbRobotAction action;
@@ -1523,6 +1513,7 @@ void cbSimulator::processReceptionMessages()
 		{
 			cbClientForm &form = receptionist->Form();
 			int cnt;
+			QThread * thr;
 			switch (form.type)
 			{
 				case cbClientForm::VIEW:
@@ -1549,6 +1540,11 @@ void cbSimulator::processReceptionMessages()
 					panels[cnt] = form.client.panel;
 					panels[cnt]->Reply(form.addr, form.port, param);
 
+					thr = new QThread;
+					connect(thr, SIGNAL(started()), this, SLOT(processPanelCommands()), Qt::DirectConnection);
+    				thr->start();
+    				threadPanelCommands.push_back(thr);
+
 					cout << "Panel has been registered\n";
 	                gui->appendMessage( "Panel has been registered\n" );
 					break;
@@ -1569,6 +1565,11 @@ void cbSimulator::processReceptionMessages()
 	                    if (logging)
 	                        openLog(logFilename.toLatin1().constData());
 	                }
+	                thr = new QThread;
+					connect(thr, SIGNAL(started()), this, SLOT(processPanelCommands()), Qt::DirectConnection);
+    				thr->start();
+    				threadPanelCommands.push_back(thr);
+
 					cout << "PanelView has been registered\n";
 	                gui->appendMessage( "PanelView has been registered\n" );
 					UpdateViews();
@@ -1583,6 +1584,12 @@ void cbSimulator::processReceptionMessages()
 						robot->Reply(form.addr, form.port, param);
 	                    cout << robot->Name() << " has been registered\n";
 	                    gui->appendMessage( QString(robot->Name())+" has been registered" );
+
+	                    thr = new QThread;
+					    connect(thr, SIGNAL(started()), this, SLOT(processRobotActions()), Qt::DirectConnection);
+					    thr->start();
+					    threadRobotActions.push_back(thr);
+
 	                    UpdateState();
 	                    UpdateViews();
 					}
