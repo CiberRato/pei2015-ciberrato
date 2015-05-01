@@ -74,6 +74,8 @@ public:
 	bool bad();
 	//void setXmlParser(QXmlSimpleReader *);
 	//void setXmlSource(QXmlInputSource *);
+signals:
+	void xpto();
 
 private: // data members
 	char xmlBuff[XMLMAX];		// buffer for xml messages

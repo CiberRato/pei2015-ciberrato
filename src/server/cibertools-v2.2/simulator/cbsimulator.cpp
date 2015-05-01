@@ -1388,8 +1388,9 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    connect(&threadReceptionHandler, SIGNAL(started()), this, SLOT(processReceptionMessages()), Qt::DirectConnection);
-    threadReceptionHandler.start();
+    connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+    //emit receptionNeeded();
+    //threadReceptionHandler.start();
 }
 
 void cbSimulator::processRobotActions() 
@@ -1508,7 +1509,7 @@ void cbSimulator::processPanelCommands()
 void cbSimulator::processReceptionMessages() 
 {
 	std::cout << "Processing Reception requests" << std::endl;	
-	while (true) {
+	//while (true) {
 		while (receptionist->CheckIn())
 		{
 			cbClientForm &form = receptionist->Form();
@@ -1613,7 +1614,7 @@ void cbSimulator::processReceptionMessages()
 					break;
 			}
 		}
-	}
+	//}
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)

@@ -189,6 +189,8 @@ signals:
     void robotRegistered(int);
     void robotDeleted(int);
 
+    void receptionNeeded();
+
 
 protected: // data members
 	unsigned int curCycle;		// current simulation cycle
