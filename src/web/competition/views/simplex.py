@@ -123,3 +123,9 @@ class TrialX():
         self.agents = []
         for log_trial_agent in log_trial_agents:
             self.agents += [AgentX(log_trial_agent, self.trial_id)]
+
+
+class RFile:
+    def __init__(self, p, name):
+        self.path = p
+        self.name = name

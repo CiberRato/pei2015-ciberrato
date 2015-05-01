@@ -10,7 +10,7 @@ from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, Ma
 from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
     CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledTeamsViewSet, ToggleTeamValid, \
     MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet, AdminEnrollTeam
-from competition.views.round import AgentsRound, RoundTeams, RoundViewSet, RoundFile
+from competition.views.round import AgentsRound, RoundTeams, RoundViewSet, RoundFile, GetResourcesFiles
 
 from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
     TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet, PrepareTrial
@@ -129,6 +129,10 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round/upload/lab/$', UploadLabView.as_view(),
                            name="Lab Upload"),
                        # upload agent code
+
+                       url(r'^api/v1/round_resources/$', GetResourcesFiles.as_view(),
+                           name="Resources"),
+
                        url(r'^api/v1/agents/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
 

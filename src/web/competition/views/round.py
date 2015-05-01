@@ -6,18 +6,15 @@ from django.db import transaction
 from hurry.filesize import size
 
 from rest_framework import permissions
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
-
-from authentication.models import TeamMember
-from authentication.serializers import AccountSerializer
 
 from teams.serializers import TeamSerializer
 
 from ..models import Competition, Round, CompetitionAgent
-from ..serializers import RoundSerializer, RoundAgentSerializer, AdminRoundSerializer, RoundFilesSerializer
+from ..serializers import RoundSerializer, RoundAgentSerializer, RoundFilesSerializer, RFileSerializer
 from ..permissions import IsStaff
-from .simplex import RoundSimplex, CompetitionAgentSimplex
+from .simplex import RoundSimplex, CompetitionAgentSimplex, RFile
 
 
 class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
@@ -209,3 +206,30 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(RoundFiles(r))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetResourcesFiles(views.APIView):
+    serializer_class = RFileSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def get(self, request):
+        """
+        B{Get} old and default params
+        B{URL:} ../api/v1/round_resources/
+        """
+        files = self.recursive_names()
+        serializer = self.serializer_class(files, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def recursive_names(self, dir_to_find='resources'):
+        dirs = default_storage.listdir(dir_to_find)
+        files = []
+
+        for d in dirs[0]:
+            files += self.recursive_names(dir_to_find=dir_to_find + "/" + str(d))
+        for f in dirs[1]:
+            files += [RFile(dir_to_find + "/" + str(f), f)]
+
+        return files

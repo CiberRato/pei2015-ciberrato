@@ -298,3 +298,11 @@ class TrialXSerializer(serializers.BaseSerializer):
             'type_of_competition': type_of_competition.data,
             'agents': agents.data
         }
+
+
+class RFileSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'name': instance.name,
+            'path': instance.path
+        }
