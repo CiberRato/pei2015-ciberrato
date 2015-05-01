@@ -90,7 +90,7 @@ class Viewer:
 		grid = parametersXML.getElementsByTagName('Grid')[0].toxml()
 
 		# Write parameters
-		json_obj = xmltodict.parse(parameters)
+		json_obj = xmltodict.parse(parameters, postprocessor=JsonListElements().postprocessorParams)
 		json_data = json.dumps(json_obj)
 
 		json_data = json_data.replace("@", "_")
@@ -99,7 +99,7 @@ class Viewer:
 		log_file.write("{"+json_data[1:-1]+",")
 
 		# Write lab
-		json_obj = xmltodict.parse(lab)
+		json_obj = xmltodict.parse(lab, postprocessor=JsonListElements().postprocessorLab)
 		json_data = json.dumps(json_obj)
 
 		json_data = json_data.replace("@", "_")
@@ -108,7 +108,7 @@ class Viewer:
 		log_file.write(json_data[1:-1]+",")
 
 		# Write grid
-		json_obj = xmltodict.parse(grid)
+		json_obj = xmltodict.parse(grid, postprocessor=JsonListElements().postprocessorGrid)
 		json_data = json.dumps(json_obj)
 
 		json_data = json_data.replace("@", "_")
@@ -175,7 +175,7 @@ class Viewer:
 			robotTime = itemlist[0].attributes['Time'].value
 
 			# Convert to json and write to log file
-			json_obj = xmltodict.parse(data)
+			json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
 			json_data = json.dumps(json_obj)
 			json_data = json_data.replace("@", "_")
 
