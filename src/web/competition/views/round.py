@@ -184,7 +184,7 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
 
-        class RFile:
+        class RsFile:
             def __init__(self, f):
                 if not bool(f) or not default_storage.exists(f):
                     self.file = ''
@@ -199,9 +199,9 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         class RoundFiles:
             def __init__(self, ro):
-                self.param_list = RFile(ro.param_list_path)
-                self.grid = RFile(ro.grid_path)
-                self.lab = RFile(ro.lab_path)
+                self.param_list = RsFile(ro.param_list_path)
+                self.grid = RsFile(ro.grid_path)
+                self.lab = RsFile(ro.lab_path)
 
         serializer = self.serializer_class(RoundFiles(r))
 
