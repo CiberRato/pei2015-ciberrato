@@ -15,10 +15,10 @@ class JsonListElements:
 		self.prevPath = None
 		self.count = 0
 		self.list = None
-		self.lab = {'Corner': None, 'Wall': None, 'Beacon': None}
-		self.grid = {}
+		self.lab = {'Corner': None, 'Wall': None, 'Beacon': None, 'Target': None}
+		self.grid = {'Position': None}
 		self.params = {}
-		self.data = {}
+		self.data = {'Robot': None, 'IRSensor': None}
 
 	# Só para evitar verificar demasiadas keys 
 	def postprocessorGrid(self, path, key, value):
