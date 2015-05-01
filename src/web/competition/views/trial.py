@@ -24,7 +24,7 @@ from notifications.models import NotificationBroadcast
 
 
 class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                        mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+                   mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Trial.objects.all()
     serializer_class = TrialSerializer
 

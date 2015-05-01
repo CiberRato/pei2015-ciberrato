@@ -299,7 +299,7 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
-                name=serializer.validated_data['competition_name'])
+                                            name=serializer.validated_data['competition_name'])
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
             if competition.state_of_competition != "Register":
