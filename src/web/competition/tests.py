@@ -595,23 +595,6 @@ class AuthenticationTestCase(TestCase):
         trial.started = True
         trial.save()
 
-        # send a message
-        url = "/api/v1/trials/message/"
-        data = {'trial_identifier': trial_identifier, 'message': 'Julian Calor - Another Template'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {"status": "Created", "message": "The message has been saved!"})
-
-        # save trial logs (only server by server)
-        f = open('media/tests_files/ciberOnline_log.json', 'r')
-        url = "/api/v1/trials/trial_log/"
-        data = {'trial_identifier': trial_identifier, 'log_json': f}
-        response = client.post(url, data)
-        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
-        self.assertEqual(response.status_code, 201)
-        trial = Trial.objects.get(identifier=trial_identifier)
-        self.assertEqual(trial.log_json is None, False)
-
         # retrieve the agent list of one round
         url = "/api/v1/competitions/round_agents/R1/?competition_name=C1"
         response = client.get(url)
@@ -627,8 +610,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [OrderedDict([('name', u'XPTO3'), ('max_members', 10)])])
 
-        return
-
         r = Round.objects.get(name="R1")
         competition_agent = CompetitionAgent.objects.filter(round=r)
         competition_agent = competition_agent[0]
@@ -642,7 +623,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'READY', 'errors': u''})
+        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'STARTED', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
         # get the trials by round
@@ -652,7 +633,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'READY', 'errors': u''})
+        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'STARTED', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
         # get the trials by competition
@@ -662,7 +643,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'READY', 'errors': u''})
+        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'STARTED', 'errors': u''})
         self.assertEqual(response.status_code, 200)
 
         # get the trial teams
@@ -693,7 +674,6 @@ class AuthenticationTestCase(TestCase):
                                'grid': u'/api/v1/competitions/round_file/C1/R1/grid/',
                                'type_of_competition': {'timeout': 5, 'single_position': False, 'name': u'Collaborative',
                                                        'number_agents_by_grid': 5, 'number_teams_for_trial': 1}})
-
         # try to send a message
         trial = Trial.objects.get(identifier=trial_identifier)
         trial.started = True
