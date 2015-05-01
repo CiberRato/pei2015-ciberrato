@@ -116,7 +116,6 @@ cbSimulator::cbSimulator()
 	curCycle = 0;
     endCycle = 3000; // provisório
 	cycle = 50;
-	poolCycleTime = 1;
 
 	curState = nextState = INIT;
 
@@ -188,8 +187,6 @@ cbSimulator::cbSimulator()
 
     setRegistrations(true);
     setShowPositions(false);
-
-    poolChanges.setInterval(poolCycleTime);
 }
 
 cbSimulator::~cbSimulator()
@@ -560,21 +557,6 @@ const char *cbSimulator::curStateAsString()
 {
     static const char *sas[] = { "Ready", "Stopped", "Running", "Finished" };
 	return sas[curState];
-}
-
-void cbSimulator::readChanges() 
-{
-	//cout.form("Reading robot actions (%u)\n", curCycle);
-	
-		//RobotActions();
-	//cout.form("Checking new registrations (%u)\n", curCycle);
-	//CheckIn();
-	//cout.form("Reading view commands (%u)\n", curCycle);
-	
-	// Viewer can't send messages anymore!
-	// There's a PanelView to do that kind of actions.
-	//ViewCommands();
-	PanelCommands();
 }
 
 void cbSimulator::step()
@@ -1292,7 +1274,6 @@ void cbSimulator::processEditParameters(void)
     cbRobot::homeReward = param->homeReward;
 
     timer.setInterval(cycle);
-    // Pools for changes every poolCycleTime
 
     emit toggleGPS(param->GPSOn);
 
@@ -1407,9 +1388,6 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    poolChanges.start(poolCycleTime);
-    QObject::connect(&poolChanges, SIGNAL(timeout()), this, SLOT(readChanges()));
-
     /* Start the thread associated with the Panel Commands messages */
     QObject::connect(&threadPanelCommands, SIGNAL(started()), this, SLOT(processPanelCommands()), Qt::DirectConnection);
     threadPanelCommands.start();
