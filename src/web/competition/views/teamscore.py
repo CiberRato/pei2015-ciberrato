@@ -63,6 +63,11 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            if trial.round.parent_competition.type_of_competition.name == "Private Competition":
+                return Response({'status': 'Bad Request',
+                                 'message': 'This grid can\'t be seen!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
             team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
