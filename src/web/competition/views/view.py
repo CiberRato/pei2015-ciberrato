@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from ..permissions import IsStaff
 from .simplex import RoundSimplex
-from ..models import Competition, TypeOfCompetition
+from ..models import Competition, TypeOfCompetition, TeamEnrolled
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
     CompetitionStateSerializer, TypeOfCompetitionSerializer
 
@@ -67,9 +67,10 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
         if competition.type_of_competition.name == "Private Competition":
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            if competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         serializer = CompetitionSerializer(competition)
 
@@ -192,16 +193,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
 
         if competition.type_of_competition.name == "Private Competition":
-            team_owner = False
-            for team in request.user.teams.all():
-                for enroll in team.teamenrolled_set.all():
-                    if enroll.competition == competition:
-                        team_owner = True
-                        break
-                if team_owner:
-                    break
-
-            if not team_owner:
+            if competition.teamenrolled_set.first().team not in request.user.teams.all():
                 return Response({'status': 'Bad request',
                                  'message': 'You can not see the rounds for this competition!'},
                                 status=status.HTTP_400_BAD_REQUEST)
