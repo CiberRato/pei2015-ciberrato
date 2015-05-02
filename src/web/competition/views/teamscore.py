@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -63,7 +64,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            if trial.round.parent_competition.type_of_competition.name == "Private Competition":
+            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
                 return Response({'status': 'Bad Request',
                                  'message': 'This grid can\'t be seen!'},
                                 status=status.HTTP_400_BAD_REQUEST)

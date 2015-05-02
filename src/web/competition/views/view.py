@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -8,7 +9,7 @@ from rest_framework.response import Response
 
 from ..permissions import IsStaff
 from .simplex import RoundSimplex
-from ..models import Competition, TypeOfCompetition, TeamEnrolled
+from ..models import Competition, TypeOfCompetition
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
     CompetitionStateSerializer, TypeOfCompetitionSerializer
 
@@ -66,7 +67,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             if competition.teamenrolled_set.first().team not in request.user.teams.all():
                 return Response({'status': 'Bad request',
                                  'message': 'You can not see the rounds for this competition!'},
@@ -87,7 +88,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be deleted!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -124,7 +125,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         if serializer.is_valid():
             competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
 
-            if competition.type_of_competition.name == "Private Competition":
+            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
                 return Response({'status': 'Bad Request',
                                  'message': 'This competition can\'t be changed!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -157,9 +158,9 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         state = dict(Competition.STATE)
 
         try:
-            toc = TypeOfCompetition.objects.get(name="Private Competition")
+            toc = TypeOfCompetition.objects.get(name=settings.PRIVATE_COMPETITIONS_NAME)
         except TypeOfCompetition.DoesNotExist:
-            toc = TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
+            toc = TypeOfCompetition.objects.create(name=settings.PRIVATE_COMPETITIONS_NAME, number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
                                                    timeout=1)
         if kwargs.get('pk', '') in state:
@@ -192,7 +193,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             if competition.teamenrolled_set.first().team not in request.user.teams.all():
                 return Response({'status': 'Bad request',
                                  'message': 'You can not see the rounds for this competition!'},
@@ -204,7 +205,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                                mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = TypeOfCompetition.objects.all().exclude(name="Private Competition")
+    queryset = TypeOfCompetition.objects.all().exclude(name=settings.PRIVATE_COMPETITIONS_NAME)
     serializer_class = TypeOfCompetitionSerializer
 
     def get_permissions(self):

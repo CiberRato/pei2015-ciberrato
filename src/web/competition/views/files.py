@@ -7,7 +7,6 @@ from rest_framework import permissions
 from rest_framework import views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 
 from ..models import Competition, Round
 from ..renderers import PlainTextRenderer

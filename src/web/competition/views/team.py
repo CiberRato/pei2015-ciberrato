@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.db import IntegrityError
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -38,7 +39,7 @@ class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericView
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             if competition.teamenrolled_set.first().team not in request.user.teams.all():
                 return Response({'status': 'Bad request',
                                  'message': 'You can not see the rounds for this competition!'},
@@ -64,7 +65,7 @@ class MyEnrolledTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
         enrolled_teams = []
         for team in request.user.teams.all():
             for eg in team.teamenrolled_set.all():
-                if eg.competition.type_of_competition.name != "Private Competition":
+                if eg.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
                     enrolled_teams += [TeamEnrolledSimplex(eg)]
 
         serializer = self.serializer_class(enrolled_teams, many=True)
@@ -89,7 +90,7 @@ class CompetitionGetNotValidTeamsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This competition can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -118,7 +119,7 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This competition can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -150,7 +151,7 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This competition can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -188,7 +189,7 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
             competition = get_object_or_404(Competition.objects.all(),
                                             name=serializer.validated_data['competition_name'])
 
-            if competition.type_of_competition.name == "Private Competition":
+            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
                 return Response({'status': 'Bad Request',
                                  'message': 'This competition can\'t be seen!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -269,7 +270,7 @@ class GetEnrolledTeamCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
 
         competitions = []
         for team_enrolled in teams:
-            if team_enrolled.competition.type_of_competition.name != "Private Competition":
+            if team_enrolled.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
                 competitions += [team_enrolled.competition]
 
         serializer = self.serializer_class(competitions, many=True)
@@ -390,7 +391,7 @@ class AdminEnrollTeam(mixins.DestroyModelMixin, viewsets.GenericViewSet):
 
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)

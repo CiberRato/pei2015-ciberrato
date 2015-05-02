@@ -48,7 +48,7 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(), name=serializer.validated_data['competition_name'])
 
-            if competition.type_of_competition.name == "Private Competition":
+            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
                 return Response({'status': 'Bad Request',
                                  'message': 'This grid can\'t be seen!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -85,7 +85,7 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
 
-        if trial.round.parent_competition.type_of_competition.name == "Private Competition":
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -104,7 +104,7 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
 
-        if trial.round.parent_competition.type_of_competition.name == "Private Competition":
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -196,7 +196,7 @@ class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -224,7 +224,7 @@ class TrialByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == "Private Competition":
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)

@@ -124,6 +124,8 @@ PREPARE_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trial_id/"
 
 TEST_CODE_ENDPOINT = "http://127.0.0.1:9000/api/v1/test_agent/?agent_name=<agent_name>&team_name=<team_name>/"
 
+PRIVATE_COMPETITIONS_NAME = "Private Competition"
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )

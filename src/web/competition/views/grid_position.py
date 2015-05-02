@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -166,7 +167,7 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
 
         grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
 
-        if grid.competition.type_of_competition.name == "Private Competition":
+        if grid.competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
                              'message': 'This grid can\'t be deleted!'},
                             status=status.HTTP_400_BAD_REQUEST)
