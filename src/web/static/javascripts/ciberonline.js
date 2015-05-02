@@ -17,7 +17,8 @@
             'ciberonline.streamviewer',
             'ciberonline.grid',
             'SwampDragonServices',
-            'ui.ace'
+            'ui.ace',
+            'ciberonline.users'
         ])
         .run(run);
 

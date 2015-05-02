@@ -164,6 +164,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html',
             title: 'All Competitions'
+        }).when('/admin/allUsers',{
+            controller:'ChangePermissionsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/user/changePermissions.html',
+            title: 'All Users'
         }).when('/admin/createTypeOfCompetition',{
             controller:'CreateTypeOfCompetitionController',
             controllerAs: 'vm',
