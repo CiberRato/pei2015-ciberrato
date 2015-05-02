@@ -161,7 +161,7 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         except TypeOfCompetition.DoesNotExist:
             toc = TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
-                                                   timeout=0)
+                                                   timeout=1)
         if kwargs.get('pk', '') in state:
             queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', '')).exclude(type_of_competition=toc)
         elif kwargs.get('pk', '') == 'All':
@@ -204,7 +204,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                                mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = TypeOfCompetition.objects.all()
+    queryset = TypeOfCompetition.objects.all().exclude(name="Private Competition")
     serializer_class = TypeOfCompetitionSerializer
 
     def get_permissions(self):

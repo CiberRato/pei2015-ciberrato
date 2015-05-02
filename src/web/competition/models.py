@@ -37,7 +37,7 @@ class Competition(models.Model):
         except TypeOfCompetition.DoesNotExist:
             toc = TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
-                                                   timeout=0)
+                                                   timeout=1)
 
         with transaction.atomic():
             # create a Private Competition to the team
