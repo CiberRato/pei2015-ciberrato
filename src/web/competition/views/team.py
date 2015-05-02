@@ -268,7 +268,8 @@ class GetEnrolledTeamCompetitionsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
 
         competitions = []
         for team_enrolled in teams:
-            competitions += [team_enrolled.competition]
+            if team_enrolled.competition.type_of_competition.name != "Private Competition":
+                competitions += [team_enrolled.competition]
 
         serializer = self.serializer_class(competitions, many=True)
 
@@ -387,6 +388,12 @@ class AdminEnrollTeam(mixins.DestroyModelMixin, viewsets.GenericViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
         team_not_enrolled = (len(TeamEnrolled.objects.filter(competition=competition, team=team)) == 0)
