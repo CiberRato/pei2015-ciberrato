@@ -20,12 +20,15 @@
 
             function getAgentSuccessFn(data){
                 vm.agent = data.data;
-                if(vm.agent.language === 'Python'){
+                console.log(vm.file.substr(vm.file.indexOf('.')))
+                if(vm.file.substr(vm.file.indexOf('.')) === '.py'){
                     vm.language = "python";
-                }else if(vm.agent.language === 'Java'){
+                }else if(vm.file.substr(vm.file.indexOf('.')) === '.java'){
                     vm.language = 'java';
-                }else if(vm.agent.language === 'C' || vm.agent.language === 'C++'){
+                }else if(vm.file.substr(vm.file.indexOf('.')) === '.c' || vm.file.substr(vm.file.indexOf('.')) === '.cpp') {
                     vm.language = 'c_cpp';
+                }else if(vm.file.substr(vm.file.indexOf('.')) === '.sh'){
+                    vm.language = 'sh';
                 }else{
                     vm.language = 'plain_text';
                 }
