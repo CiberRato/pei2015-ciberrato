@@ -18,6 +18,16 @@
 
             function getAllSuccessFn(data){
                 vm.users = data.data;
+                Users.getMe().then(getSuccessFn, getErrorFn);
+
+                function getSuccessFn(data){
+                    vm.user = data.data;
+                    console.log(vm.user);
+                }
+                function getErrorFn(data){
+                    console.error(data.data);
+                    $location.url('/panel/');
+                }
                 console.log(vm.users);
             }
 

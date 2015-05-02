@@ -10,6 +10,7 @@
     function Users($http){
         var Users = {
             getAll: getAll,
+            getMe: getMe,
             change: change
         };
 
@@ -17,6 +18,10 @@
 
         function getAll(){
             return $http.get('api/v1/accounts/');
+        }
+
+        function getMe(){
+            return $http.get('api/v1/me/');
         }
 
         function change(url){
