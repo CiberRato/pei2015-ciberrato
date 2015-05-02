@@ -7,6 +7,7 @@ from rest_framework import permissions
 from rest_framework import views, status
 from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from ..models import Competition, Round
 from ..renderers import PlainTextRenderer
@@ -154,3 +155,53 @@ class UploadLabView(UploadRoundXMLView):
         :param round_name: The team name
         """
         UploadRoundXMLView.__init__(self, "lab")
+
+
+class UploadResourceFile(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsStaff(),
+
+    def post(self, request, round_name, param):
+        """
+        B{Set} the round file
+        B{URL:} ../api/v1/set_round_file/<round_name>/<param>/
+
+        Upload resource
+
+        :type  round_name: str
+        :param round_name: The round name
+        :type  param: str
+        :param param: grid, lab or param_list
+        :type  path: str
+        :param path: The path to the file
+        """
+        print "OK"
+        path = request.data.get('path', None)
+
+        if path is None:
+            return Response({'status': 'Bad request',
+                             'message': 'The file that you requested doesn\'t exists!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not default_storage.exists(path):
+            return Response({'status': 'Bad request',
+                             'message': 'The file that you requested doesn\'t exists!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if param not in ['grid', 'lab', 'param_list']:
+            return Response({'status': 'Bad request',
+                             'message': 'Please provide one of those params: grid, lab or param_list'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        r = get_object_or_404(Round.objects.all(), name=round_name)
+
+        if getattr(r, param + "_path", None) is not None and getattr(r, param + "_can_delete"):
+            default_storage.delete(getattr(r, param + "_path", None))
+
+        setattr(r, param + "_path", path)
+        setattr(r, param + "_can_delete", False)
+        r.save()
+
+        return Response({'status': 'Uploaded',
+                         'message': 'The file has been associated!'},
+                        status=status.HTTP_201_CREATED)

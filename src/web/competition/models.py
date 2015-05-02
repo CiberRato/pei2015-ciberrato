@@ -75,7 +75,7 @@ class Round(models.Model):
     parent_competition = models.ForeignKey(Competition, blank=False)
 
     param_list_path = models.FileField(upload_to="params/%Y/%m/%d")
-    param_can_delete = models.BooleanField(default=True)
+    param_list_can_delete = models.BooleanField(default=True)
     #
     grid_path = models.FileField(upload_to="grids/%Y/%m/%d")
     grid_can_delete = models.BooleanField(default=True)
