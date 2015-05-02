@@ -12,9 +12,10 @@ from rest_framework.response import Response
 from teams.serializers import TeamSerializer
 
 from ..models import Competition, Round, CompetitionAgent
-from ..serializers import RoundSerializer, RoundAgentSerializer, RoundFilesSerializer, RFileSerializer
+from ..serializers import RoundSerializer, RoundAgentSerializer, RoundFilesSerializer, RFileSerializer, \
+    FolderSerializer
 from ..permissions import IsStaff
-from .simplex import RoundSimplex, CompetitionAgentSimplex, RFile
+from .simplex import RoundSimplex, CompetitionAgentSimplex, RFile, FolderSimplex
 
 
 class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
@@ -209,7 +210,8 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class GetResourcesFiles(views.APIView):
-    serializer_class = RFileSerializer
+    serializer_file_class = RFileSerializer
+    serializer_folder_class = FolderSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -220,16 +222,23 @@ class GetResourcesFiles(views.APIView):
         B{URL:} ../api/v1/round_resources/
         """
         files = self.recursive_names()
-        serializer = self.serializer_class(files, many=True)
+        serializer = self.serializer_folder_class(files, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def recursive_names(self, dir_to_find='resources'):
         dirs = default_storage.listdir(dir_to_find)
+
         files = []
+        folders = []
 
         for d in dirs[0]:
-            files += self.recursive_names(dir_to_find=dir_to_find + "/" + str(d))
+            folders += self.recursive_names(dir_to_find=dir_to_find + "/" + str(d))
         for f in dirs[1]:
             files += [RFile(dir_to_find + "/" + str(f), f)]
 
-        return files
+        if len(files) == 0:
+            return folders
+
+        serializer = self.serializer_file_class(files, many=True)
+
+        return folders + [FolderSimplex(dir_to_find.split("/")[-1], serializer.data)]

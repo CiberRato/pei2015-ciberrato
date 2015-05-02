@@ -300,9 +300,19 @@ class TrialXSerializer(serializers.BaseSerializer):
         }
 
 
+class FolderSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'type': 'folder',
+            'name': instance.name,
+            'sub': instance.sub
+        }
+
+
 class RFileSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
+            'type': 'file',
             'name': instance.name,
             'path': instance.path
         }

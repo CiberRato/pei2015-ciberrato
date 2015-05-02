@@ -129,3 +129,9 @@ class RFile:
     def __init__(self, p, name):
         self.path = p
         self.name = name
+
+
+class FolderSimplex:
+    def __init__(self, name, sub):
+        self.name = name
+        self.sub = sub
