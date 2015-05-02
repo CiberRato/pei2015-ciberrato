@@ -268,7 +268,11 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', True), ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', True),
+             ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict(
+                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
 
         # get agents by user
         url = "/api/v1/agents/agents_by_user/gipmon/"
@@ -280,7 +284,11 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', True), ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO1')]))
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', True),
+             ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict(
+                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO1')]))
 
         # get the agent information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
@@ -510,6 +518,19 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)
 
+        # upload resource
+        url = "/api/v1/set_round_file/R1/lab/"
+        data = {'path': 'resources/CiberRTSS2007/CiberRTSS07_FinalLab.xml'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {"status": "Uploaded", "message": "The file has been associated!"})
+        self.assertEqual(response.status_code, 201)
+
+        # see round files
+        url = "/api/v1/competitions/round_files/R1/?competition_name=C1"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)
+
         # create trial (only by admin)
         url = "/api/v1/competitions/trial/"
         data = {'round_name': 'R1', 'competition_name': 'C1'}
@@ -602,7 +623,8 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
-        self.assertEqual(rsp, [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE'), ('team_name', u'XPTO3')])])
+        self.assertEqual(rsp,
+                         [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE'), ('team_name', u'XPTO3')])])
 
         # test teams for one round
         url = "/api/v1/competitions/round_teams/R1/?competition_name=C1"
@@ -757,7 +779,8 @@ class AuthenticationTestCase(TestCase):
                                             ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
             [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
              ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
-                                                                                                 'number_of_agents', 5),
+                                                                                                     'number_of_agents',
+                                                                                                     5),
                                                                                                  ('time', 10)]),
                                OrderedDict([('trial', OrderedDict(
                                    [('identifier', trial_identifier), ('round_name', u'R1'),
@@ -783,7 +806,8 @@ class AuthenticationTestCase(TestCase):
                                             ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
             [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
              ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
-                                                                                                 'number_of_agents', 5),
+                                                                                                     'number_of_agents',
+                                                                                                     5),
                                                                                                  ('time', 10)]),
                                OrderedDict([('trial', OrderedDict(
                                    [('identifier', trial_identifier), ('round_name', u'R1'),
@@ -809,7 +833,8 @@ class AuthenticationTestCase(TestCase):
                                             ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
             [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
              ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
-                                                                                                 'number_of_agents', 5),
+                                                                                                     'number_of_agents',
+                                                                                                     5),
                                                                                                  ('time', 10)]),
                                OrderedDict([('trial', OrderedDict(
                                    [('identifier', trial_identifier), ('round_name', u'R1'),
@@ -848,7 +873,8 @@ class AuthenticationTestCase(TestCase):
                                             ('number_of_agents', 5), ('time', 9)]), OrderedDict([('trial', OrderedDict(
             [('identifier', trial_identifier), ('round_name', u'R1'), ('competition_name', u'C1'), ('state', u'ERROR'),
              ('errors', u'cenas')])), ('team', OrderedDict([('name', u'XPTO3'), ('max_members', 10)])), ('score', 10), (
-                                                                                                 'number_of_agents', 5),
+                                                                                                     'number_of_agents',
+                                                                                                     5),
                                                                                                  ('time', 10)]),
                                OrderedDict([('trial', OrderedDict(
                                    [('identifier', trial_identifier), ('round_name', u'R1'),
@@ -921,9 +947,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         for r in Round.objects.all():
-            r.lab_path.delete()
-            r.param_list_path.delete()
-            r.grid_path.delete()
+            if r.lab_can_delete:
+                r.lab_path.delete()
+            if r.param_list_can_delete:
+                r.param_list_path.delete()
+            if r.grid_can_delete:
+                r.grid_path.delete()
 
         # delete the agent associated
         url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=1"

@@ -175,7 +175,6 @@ class UploadResourceFile(views.APIView):
         :type  path: str
         :param path: The path to the file
         """
-        print "OK"
         path = request.data.get('path', None)
 
         if path is None:
@@ -198,7 +197,7 @@ class UploadResourceFile(views.APIView):
         if getattr(r, param + "_path", None) is not None and getattr(r, param + "_can_delete"):
             default_storage.delete(getattr(r, param + "_path", None))
 
-        setattr(r, param + "_path", path)
+        setattr(r, param + "_path", default_storage.path(path))
         setattr(r, param + "_can_delete", False)
         r.save()
 
