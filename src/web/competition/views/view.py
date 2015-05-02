@@ -65,6 +65,12 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         serializer = CompetitionSerializer(competition)
 
         return Response(serializer.data)
@@ -79,6 +85,11 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be deleted!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         for r in competition.round_set.all():
             r.delete()
@@ -95,7 +106,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = CompetitionStateSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def update(self, request, *args, **kwargs):
         """
@@ -111,6 +122,12 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
         if serializer.is_valid():
             competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+
+            if competition.type_of_competition.name == "Private Competition":
+                return Response({'status': 'Bad Request',
+                                 'message': 'This competition can\'t be changed!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             competition.state_of_competition = serializer.data.get('state_of_competition', '')
             competition.save()
 
