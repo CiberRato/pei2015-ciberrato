@@ -6,7 +6,7 @@
         <article class="span12 data-block">
             <div class="data-container">
                 <div class="row">
-                    <header>
+                    <header style="padding-bottom: 0%">
                         <div class="row">
                             <div class="span8"><h1>{{vm.file}}</h1></div>
                             <div class="span1"><a class="btn btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
@@ -18,13 +18,8 @@
 
                 </div>
 
-
                 <section class="tab-content">
-                    <div ng-if="vm.language == 'python'" class="editor" ui-ace="{ mode: 'python', theme: 'monokai' }" ng-model="code"></div>
-                    <div ng-if="vm.language == 'java'" class="editor" ui-ace="{ mode: 'java', theme: 'monokai' }" ng-model="code"></div>
-                    <div ng-if="vm.language == 'c_cpp'" class="editor" ui-ace="{ mode: 'c_cpp', theme: 'monokai' }" ng-model="code"></div>
-                    <div ng-if="vm.language != 'python' && vm.language!= 'java' && vm.language != 'c_cpp'" class="editor" ui-ace="{ mode: 'plain_text', theme: 'monokai' }" ng-model="code"></div>
-
+                    <div class="editor" ui-ace="aceOptions" ng-model="code"></div>
                 </section>
             </div>
 

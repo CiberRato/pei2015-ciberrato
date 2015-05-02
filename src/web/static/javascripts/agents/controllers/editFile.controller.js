@@ -30,6 +30,7 @@
                     vm.language = 'plain_text';
                 }
                 console.log(vm.language);
+                $scope.aceOptions = {mode: vm.language, theme: 'monokai'};
                 Agent.getFile(vm.teamName, vm.agentName, vm.file).then(getFileSuccessFn, getFileErrorFn);
 
             }
@@ -39,9 +40,8 @@
             }
 
             function getFileSuccessFn(data){
-                console.log(data.data);
-
                 $scope.code = data.data;
+
             }
 
             function getFileErrorFn(data){
@@ -52,6 +52,8 @@
 
         function getCode(){
             var a = $scope.code;
+            console.log(a);
+
             var file = new Blob([a], {type: 'text/plain'});
 
             Agent.upload(vm.agentName, file, vm.teamName, vm.file).then(success, error);
@@ -63,6 +65,8 @@
                 console.error(data.data);
             }
         }
+
+
 
     }
 })();
