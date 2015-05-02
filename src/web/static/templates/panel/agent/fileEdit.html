@@ -20,7 +20,11 @@
 
 
                 <section class="tab-content">
-                    <div class="editor" ui-ace="{ mode: 'java', theme: 'monokai' }" ng-model="code"></div>
+                    <div ng-if="vm.language == 'python'" class="editor" ui-ace="{ mode: 'python', theme: 'monokai' }" ng-model="code"></div>
+                    <div ng-if="vm.language == 'java'" class="editor" ui-ace="{ mode: 'java', theme: 'monokai' }" ng-model="code"></div>
+                    <div ng-if="vm.language == 'c_cpp'" class="editor" ui-ace="{ mode: 'c_cpp', theme: 'monokai' }" ng-model="code"></div>
+                    <div ng-if="vm.language != 'python' && vm.language!= 'java' && vm.language != 'c_cpp'" class="editor" ui-ace="{ mode: 'plain_text', theme: 'monokai' }" ng-model="code"></div>
+
                 </section>
             </div>
 

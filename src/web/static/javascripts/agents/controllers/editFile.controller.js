@@ -16,11 +16,31 @@
             vm.teamName = $routeParams.teamName;
             vm.agentName = $routeParams.name;
             vm.file = $routeParams.fileName;
+            Agent.getAgent(vm.agentName, vm.teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
-            Agent.getFile(vm.teamName, vm.agentName, vm.file).then(getFileSuccessFn, getFileErrorFn);
+            function getAgentSuccessFn(data){
+                vm.agent = data.data;
+                if(vm.agent.language === 'Python'){
+                    vm.language = "python";
+                }else if(vm.agent.language === 'Java'){
+                    vm.language = 'java';
+                }else if(vm.agent.language === 'C' || vm.agent.language === 'C++'){
+                    vm.language = 'c_cpp';
+                }else{
+                    vm.language = 'plain_text';
+                }
+                console.log(vm.language);
+                Agent.getFile(vm.teamName, vm.agentName, vm.file).then(getFileSuccessFn, getFileErrorFn);
+
+            }
+
+            function getAgentErrorFn(data){
+                console.error(data.data);
+            }
 
             function getFileSuccessFn(data){
                 console.log(data.data);
+
                 $scope.code = data.data;
             }
 
