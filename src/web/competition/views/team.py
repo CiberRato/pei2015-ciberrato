@@ -37,6 +37,12 @@ class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericView
         :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This competition can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.serializer_class(competition.teamenrolled_set.all(), many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -52,17 +58,13 @@ class MyEnrolledTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet)
     def retrieve(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of a Teams enrolled
-        B{URL:} ../api/v1/competitions/my_enrolled_teams/<username>/
-
-        :type  username: str
-        :param username: The username
+        B{URL:} ../api/v1/competitions/my_enrolled_teams/
         """
-        user = get_object_or_404(Account.objects.all(), username=kwargs.get('pk'))
-
         enrolled_teams = []
-        for team in user.teams.all():
+        for team in request.user.teams.all():
             for eg in team.teamenrolled_set.all():
-                enrolled_teams += [TeamEnrolledSimplex(eg)]
+                if eg.competition.type_of_competition.name != "Private Competition":
+                    enrolled_teams += [TeamEnrolledSimplex(eg)]
 
         serializer = self.serializer_class(enrolled_teams, many=True)
 
@@ -85,6 +87,12 @@ class CompetitionGetNotValidTeamsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This competition can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         not_valid = TeamEnrolled.objects.filter(valid=False, competition=competition)
         not_valid_teams = [g.team for g in not_valid]
         serializer = self.serializer_class(not_valid_teams, many=True)
@@ -108,6 +116,11 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This competition can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if len(competition.round_set.all()) == 0:
             return Response({'status': 'Bad request',
@@ -135,6 +148,11 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This competition can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         if len(competition.round_set.all()) == 0:
             return Response({'status': 'Bad request',
@@ -168,6 +186,12 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(),
                                             name=serializer.validated_data['competition_name'])
+
+            if competition.type_of_competition.name == "Private Competition":
+                return Response({'status': 'Bad Request',
+                                 'message': 'This competition can\'t be seen!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             team_enrolled = get_object_or_404(TeamEnrolled.objects.all(), competition=competition, team=team)
             team_enrolled.valid = not team_enrolled.valid
