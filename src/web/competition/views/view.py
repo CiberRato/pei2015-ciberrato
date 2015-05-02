@@ -196,6 +196,11 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
+            if serializer.validated_data['name'] == 'Private Competition':
+                return Response({'status': 'Bad request',
+                                 'message': 'This type of competition name is reserved!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 with transaction.atomic():
                     TypeOfCompetition.objects.create(**serializer.validated_data)
@@ -233,6 +238,12 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         :param type_of_competition_name: The type_of_competition name
         """
         queryset = TypeOfCompetition.objects.all()
+
+        if kwargs.get('pk', '') == 'Private Competition':
+            return Response({'status': 'Bad request',
+                             'message': 'This type of competition is reserved!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
         type_of_competition.delete()

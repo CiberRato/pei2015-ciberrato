@@ -30,6 +30,15 @@ class Competition(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @staticmethod
+    def create_private_competition(team):
+        try:
+            TypeOfCompetition.objects.get(name="Private Competition")
+        except TypeOfCompetition.DoesNotExist:
+            TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
+                                             number_agents_by_grid=50, single_position=False,
+                                             timeout=0)
+
     class Meta:
         ordering = ['created_at']
 
