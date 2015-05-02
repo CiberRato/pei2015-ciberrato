@@ -11,6 +11,8 @@ from authentication.serializers import AccountSerializer
 from teams.permissions import IsAdminOfTeam
 from teams.serializers import TeamSerializer, EditTeamSerializer, Member2TeamSerializer, MemberSerializer
 
+from competition.models import Competition
+
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.order_by('-name')
@@ -47,6 +49,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             try:
                 with transaction.atomic():
                     g = Team.objects.create(**serializer.validated_data)
+                    Competition.create_private_competition(team=g)
                     TeamMember.objects.create(team=g, account=self.request.user, is_admin=True)
             except IntegrityError:
                 return Response({'status': 'Bad request',

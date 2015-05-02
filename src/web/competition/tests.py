@@ -616,16 +616,6 @@ class AuthenticationTestCase(TestCase):
         trial.started = True
         trial.save()
 
-        # retrieve the agent list of one round
-        url = "/api/v1/competitions/round_agents/R1/?competition_name=C1"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        rsp = response.data
-        del rsp[0]['created_at']
-        del rsp[0]['updated_at']
-        self.assertEqual(rsp,
-                         [OrderedDict([('round_name', u'R1'), ('agent_name', u'KAMIKAZE'), ('team_name', u'XPTO3')])])
-
         # test teams for one round
         url = "/api/v1/competitions/round_teams/R1/?competition_name=C1"
         response = client.get(url)
@@ -1111,11 +1101,6 @@ class AuthenticationTestCase(TestCase):
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
 
-        url = "/api/v1/competitions/round/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
-
         client.force_authenticate(user=None)
 
     def cascade_setup(self):
@@ -1249,11 +1234,6 @@ class AuthenticationTestCase(TestCase):
             r.lab_path.delete()
             r.param_list_path.delete()
             r.grid_path.delete()
-
-        url = "/api/v1/competitions/round/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'R1'), ('parent_competition_name', u'C1')])])
 
         client.force_authenticate(user=None)
 

@@ -18,8 +18,8 @@ from ..permissions import IsStaff
 from .simplex import RoundSimplex, CompetitionAgentSimplex, RFile, FolderSimplex
 
 
-class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin,
-                   mixins.ListModelMixin, viewsets.GenericViewSet):
+class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
+                   mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Round.objects.all()
     serializer_class = RoundSerializer
 
@@ -27,14 +27,6 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
         return permissions.IsAuthenticated(), IsStaff(),
-
-    def list(self, request, **kwargs):
-        """
-        B{List} of rounds
-        B{URL:} ../api/v1/competitions/round/
-        """
-        serializer = self.serializer_class([RoundSimplex(r=query) for query in Round.objects.all()], many=True)
-        return Response(serializer.data)
 
     def create(self, request, **kwargs):
         """
@@ -83,6 +75,12 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class(RoundSimplex(r))
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -103,40 +101,15 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Ret
                             status=status.HTTP_400_BAD_REQUEST)
 
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         r.delete()
         return Response(status=status.HTTP_200_OK)
-
-
-class AgentsRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = CompetitionAgent.objects.all()
-    serializer_class = RoundAgentSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the agents available to compete in the round
-        B{URL:} ../api/v1/competitions/round_agents/<round_name>/?competition_name=<competition_name>
-
-        :type  round_name: str
-        :param round_name: The round name
-        :type  competition_name: str
-        :param competition_name: The competition name
-        """
-        if 'competition_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?competition_name=<competition_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
-        competition_agents = CompetitionAgent.objects.filter(round=r)
-        competition_agents = [CompetitionAgentSimplex(agent) for agent in competition_agents]
-        serializer = self.serializer_class(competition_agents, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -157,6 +130,12 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_teams = [agent.agent.team for agent in competition_agents]

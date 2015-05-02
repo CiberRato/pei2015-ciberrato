@@ -10,7 +10,7 @@ from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, Ma
 from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
     CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledTeamsViewSet, ToggleTeamValid, \
     MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet, AdminEnrollTeam
-from competition.views.round import AgentsRound, RoundTeams, RoundViewSet, RoundFile, GetResourcesFiles
+from competition.views.round import RoundTeams, RoundViewSet, RoundFile, GetResourcesFiles
 
 from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
     TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet, PrepareTrial
@@ -40,7 +40,6 @@ router_accounts.register(r'account_by_last_name', AccountByLastName)
 router_accounts.register(r'toggle_staff', ToggleUserToStaff)
 router_accounts.register(r'toggle_super_user', ToggleUserToSuperUser)
 router_accounts.register(r'login_to', LoginToOtherUser)
-router_accounts.register(r'me', MyDetails)
 # GROUPS URLs
 router_teams = routers.SimpleRouter()
 router_teams.register(r'members', TeamMembersViewSet)
@@ -80,7 +79,6 @@ router_competitions.register(r'toggle_team_inscription', ToggleTeamValid)
 router_competitions.register(r'remove_enroll_team', AdminEnrollTeam)
 # Round
 router_competitions.register(r'round', RoundViewSet)
-router_competitions.register(r'round_agents', AgentsRound)
 router_competitions.register(r'round_teams', RoundTeams)
 router_competitions.register(r'round_files', RoundFile)
 # Trial
@@ -115,6 +113,7 @@ router_trials.register(r'prepare', PrepareTrial)
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
+                       url(r'^api/v1/me/$', MyDetails.as_view(), name="ME"),
                        url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),

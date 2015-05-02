@@ -165,6 +165,12 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                             status=status.HTTP_403_FORBIDDEN)
 
         grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
+
+        if grid.competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be deleted!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         grid.delete()
 
         return Response({'status': 'Deleted',

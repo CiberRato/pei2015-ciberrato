@@ -255,7 +255,7 @@ class LogoutView(views.APIView):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
 
-class MyDetails(mixins.ListModelMixin, viewsets.GenericViewSet):
+class MyDetails(views.APIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
