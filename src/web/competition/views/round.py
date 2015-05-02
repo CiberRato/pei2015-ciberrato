@@ -130,6 +130,12 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         competition_agents = CompetitionAgent.objects.filter(round=r)
         competition_teams = [agent.agent.team for agent in competition_agents]
