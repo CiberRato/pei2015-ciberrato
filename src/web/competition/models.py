@@ -41,7 +41,7 @@ class Competition(models.Model):
 
         with transaction.atomic():
             # create a Private Competition to the team
-            competition = Competition.objects.create(name=uuid.uuid4, type_of_competition=toc)
+            competition = Competition.objects.create(name=uuid.uuid4(), type_of_competition=toc)
 
             # enroll the team in that Competition
             TeamEnrolled.objects.create(competition=competition, team=team, valid=True)

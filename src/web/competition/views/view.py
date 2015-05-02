@@ -155,10 +155,16 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         """
         state = dict(Competition.STATE)
 
+        try:
+            toc = TypeOfCompetition.objects.get(name="Private Competition")
+        except TypeOfCompetition.DoesNotExist:
+            toc = TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
+                                                   number_agents_by_grid=50, single_position=False,
+                                                   timeout=0)
         if kwargs.get('pk', '') in state:
-            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', ''))
+            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', '')).exclude(type_of_competition=toc)
         elif kwargs.get('pk', '') == 'All':
-            queryset = Competition.objects.all()
+            queryset = Competition.objects.all().exclude(type_of_competition=toc)
         else:
             return Response({'status': 'Bad Request',
                              'message': 'The state must mach: {\'Past\', \'Register\', \'Competition\', \'All\'}'},
@@ -184,6 +190,22 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+
+        if competition.type_of_competition.name == "Private Competition":
+            team_owner = False
+            for team in request.user.teams.all():
+                for enroll in team.teamenrolled_set.all():
+                    if enroll.competition == competition:
+                        team_owner = True
+                        break
+                if team_owner:
+                    break
+
+            if not team_owner:
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.serializer_class([RoundSimplex(r) for r in competition.round_set.all()], many=True)
         return Response(serializer.data)
 
