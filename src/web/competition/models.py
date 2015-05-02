@@ -2,7 +2,7 @@ import uuid
 
 from django.core.validators import MinValueValidator, MinLengthValidator
 from ciberonline.validators import validate_word
-from django.db import models
+from django.db import models, transaction, IntegrityError
 from django.conf import settings
 from authentication.models import Account, Team
 
@@ -33,11 +33,25 @@ class Competition(models.Model):
     @staticmethod
     def create_private_competition(team):
         try:
-            TypeOfCompetition.objects.get(name="Private Competition")
+            toc = TypeOfCompetition.objects.get(name="Private Competition")
         except TypeOfCompetition.DoesNotExist:
-            TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
-                                             number_agents_by_grid=50, single_position=False,
-                                             timeout=0)
+            toc = TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
+                                                   number_agents_by_grid=50, single_position=False,
+                                                   timeout=0)
+
+        with transaction.atomic():
+            # create a Private Competition to the team
+            competition = Competition.objects.create(name=uuid.uuid4, type_of_competition=toc)
+
+            # enroll the team in that Competition
+            TeamEnrolled.objects.create(competition=competition, team=team, valid=True)
+
+            # now the Competition is changed to the state "Competition"
+            competition.state_of_competition = 'Competition'
+            competition.save()
+
+            # now let's create a Grid Position for the team
+            GridPositions.objects.create(competition=competition, team=team)
 
     class Meta:
         ordering = ['created_at']
