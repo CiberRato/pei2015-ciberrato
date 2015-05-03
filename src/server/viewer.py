@@ -20,7 +20,7 @@ class JsonListElements:
 		self.params = {}
 		self.data = {'Robot': None, 'IRSensor': None}
 
-	# Só para evitar verificar demasiadas keys 
+	# Só para evitar verificar demasiadas keys
 	def postprocessorGrid(self, path, key, value):
 		self.list = self.grid
 		return self.postprocessor(path, key, value)
@@ -143,7 +143,6 @@ class Viewer:
 					if len(checkedRobots) != prevlen:
 						data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
 						response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
-						print response.text
 					prevlen = len(checkedRobots)
 					print "[VIEWER] Robots Registered: " + str(checkedRobots)
 

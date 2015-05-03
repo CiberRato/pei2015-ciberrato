@@ -295,6 +295,7 @@ class TrialXSerializer(serializers.BaseSerializer):
             'grid': instance.grid,
             'param_list': instance.param_list,
             'lab': instance.lab,
+            'allow_remote_agents': instance.allow_remote_agents,
             'type_of_competition': type_of_competition.data,
             'agents': agents.data
         }
