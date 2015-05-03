@@ -1103,106 +1103,6 @@ class AuthenticationTestCase(TestCase):
 
         client.force_authenticate(user=None)
 
-    def cascade_setup(self):
-        return
-        references = []
-
-        # competitive and colaborative methods
-        colaborativa = TypeOfCompetition.objects.get(name='Collaborative')
-
-        # create competition
-        c3 = Competition.objects.create(name="C3", type_of_competition=colaborativa)
-        references += [c3]
-
-        # create round
-        r7 = Round.objects.create(name="R7", parent_competition=c3)
-        references += [r7]
-
-        # create another round
-        r8 = Round.objects.create(name="R8", parent_competition=c3)
-        references += [r8]
-
-        # create another round more
-        r9 = Round.objects.create(name="R9", parent_competition=c3)
-        references += [r9]
-
-        # create an agent
-        user = Account.objects.get(username="gipmon")
-        team = Team.objects.get(name="XPTO1")
-        a = Agent.objects.create(agent_name="RQ7", user=user, team=team)
-        references += [a]
-
-        # create a competition agent
-        competition_agent = CompetitionAgent.objects.create(competition=c3, round=r7, agent=a)
-        references += [competition_agent]
-
-        # enroll in competition
-        team_enrolled = TeamEnrolled.objects.create(competition=c3, team=team)
-        references += [team_enrolled]
-
-        # create trial
-        trial = Trial.objects.create(round=r7)
-        references += [trial]
-
-        # create trial agent
-        lga = LogTrialAgent.objects.create(competition_agent=competition_agent, trial=trial, pos=1)
-        references += [lga]
-
-        # c3|r7|r8|r9|a|competition_agent|team_enroll|trial|lga
-        return references
-
-    def test_cascade_delete_competition(self):
-        return
-        references = self.cascade_setup()
-
-        competition_len = len(Competition.objects.all())  # 2 => C1 and C2
-        round_len = len(Round.objects.all())  # 4 => R1, R7, R8 e R9
-        agent_len = len(Agent.objects.all())  # 1 => RQ7
-        competition_agent_len = len(CompetitionAgent.objects.all())  # 1
-        team_enrolled_len = len(TeamEnrolled.objects.all())  # 1
-        trial_len = len(Trial.objects.all())  # 1
-        log_trial_agent_len = len(LogTrialAgent.objects.all())  # 1
-
-        references[0].delete()
-
-        """
-        Is suppose when it's deleted a Competition to delete all the Rounds, TeamEnrolled,
-        Trials and TrialsLogs. The agent is suppose to not be deleted.
-        """
-        self.assertEqual(len(Competition.objects.all()), competition_len - 1)
-        self.assertEqual(len(Round.objects.all()), round_len - 3)
-        self.assertEqual(len(Agent.objects.all()), agent_len)
-        self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
-        self.assertEqual(len(TeamEnrolled.objects.all()), team_enrolled_len - 1)
-        self.assertEqual(len(Trial.objects.all()), trial_len - 1)
-        self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
-
-    def test_cascade_delete_round(self):
-        return
-        references = self.cascade_setup()
-
-        competition_len = len(Competition.objects.all())  # 2 => C1 and C2
-        round_len = len(Round.objects.all())  # 4 => R1, R7, R8 e R9
-        agent_len = len(Agent.objects.all())  # 1 => RQ7
-        competition_agent_len = len(CompetitionAgent.objects.all())  # 1
-        team_enrolled_len = len(TeamEnrolled.objects.all())  # 1
-        trial_len = len(Trial.objects.all())  # 1
-        log_trial_agent_len = len(LogTrialAgent.objects.all())  # 1
-
-        references[1].delete()
-
-        """
-        Is suppose when it's deleted a Round,
-        Trials and TrialsLogs. The agent is suppose to not be deleted.
-        """
-        self.assertEqual(len(Competition.objects.all()), competition_len)
-        self.assertEqual(len(Round.objects.all()), round_len - 1)
-        self.assertEqual(len(Agent.objects.all()), agent_len)
-        self.assertEqual(len(CompetitionAgent.objects.all()), competition_agent_len - 1)
-        self.assertEqual(len(TeamEnrolled.objects.all()), team_enrolled_len)
-        self.assertEqual(len(Trial.objects.all()), trial_len - 1)
-        self.assertEqual(len(LogTrialAgent.objects.all()), log_trial_agent_len - 1)
-
     def test_uploadFile(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
@@ -1313,6 +1213,37 @@ class AuthenticationTestCase(TestCase):
         del rsp['round']['created_at']
         del rsp['round']['updated_at']
         self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}})
+
+        # now let's launch one trial for that round
+        url = "/api/v1/competitions/private/launch_trial/"
+        data = {'round_name': round_name}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {"status":"Bad request","message":"The grid must have at least one agent!"})
+
+        # create one agent
+        team = Team.objects.get(name="TestTeam")
+        Agent.objects.create(user=user, team=team, agent_name="KAMIKAZE", code_valid=True)
+
+        grid_identifier = GridPositions.objects.first()
+        grid_identifier = grid_identifier.identifier
+
+        # associate to the grid position
+        url = "/api/v1/competitions/agent_grid/"
+        data = {'grid_identifier': grid_identifier, 'agent_name': 'KAMIKAZE', 'team_name': 'TestTeam', 'position': 1}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {'grid_identifier': grid_identifier, 'agent_name': 'KAMIKAZE',
+                                         'team_name': 'TestTeam', 'position': 1})
+        rsp = response.data
+        del rsp['grid_identifier']
+        self.assertEqual(rsp, OrderedDict([(u'agent_name', u'KAMIKAZE'), (u'team_name', u'TestTeam'), (u'position', 1)]))
+
+        # now let's launch one trial for that round
+        url = "/api/v1/competitions/private/launch_trial/"
+        data = {'round_name': round_name}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {"status":"Bad Request","message":"The simulator appears to be down!"})
 
         client.force_authenticate(user=None)
 

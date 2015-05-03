@@ -25,7 +25,7 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
-    CreatePrivateCompetitionRound, GetRoundTrials
+    CreatePrivateCompetitionRound, GetRoundTrials, RunPrivateTrial
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation, AgentsByTeamValidViewSet
@@ -127,6 +127,9 @@ urlpatterns = patterns('',
                        url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/competitions/private/', include(router_private_competitions.urls)),
+                       url(r'^api/v1/competitions/private/launch_trial/$', RunPrivateTrial.as_view(),
+                           name="Launch private trial"),
+
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
                        url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),

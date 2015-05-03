@@ -6,13 +6,16 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 
 from rest_framework import permissions
-from rest_framework import viewsets, status, mixins
+from rest_framework import viewsets, status, mixins, views
 from rest_framework.response import Response
+
+import requests
 
 from authentication.models import Team, TeamMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
-from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round, Trial
+from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round, Trial,\
+    CompetitionAgent, LogTrialAgent
 from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer, \
     InputPrivateRoundSerializer, TrialSerializer, PrivateRoundTrialsSerializer
 from .simplex import TrialSimplex
@@ -192,10 +195,10 @@ class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         class PrivateRoundTrials:
             def __init__(self, rnd, trials_simplex):
-                serializer = PrivateRoundSerializer(rnd)
-                self.round = serializer.data
-                serializer = TrialSerializer(trials_simplex, many=True)
-                self.trials = serializer.data
+                serial = PrivateRoundSerializer(rnd)
+                self.round = serial.data
+                serial = TrialSerializer(trials_simplex, many=True)
+                self.trials = serial.data
 
         # join the trials with the files name
         private_round = PrivateRoundTrials(r, trials)
@@ -204,3 +207,99 @@ class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(private_round)
 
         return Response(serializer.data)
+
+
+class RunPrivateTrial(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def post(request):
+        """
+        B{Launch} one trial for that round
+        B{URL:} ../api/v1/competitions/private/launch_trial/
+        """
+        # get round
+        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
+
+        # verify if the round is from a private competition
+        if r.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad request',
+                             'message': 'You can only see this for private competitions!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # verify if the teams owns it
+        team_enrolled = TeamEnrolled.objects.filter(competition=r.parent_competition).first()
+        if team_enrolled.team not in request.user.teams.all():
+            return Response({'status': 'Bad request',
+                             'message': 'You can not see the rounds for this competition!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # get team grid position for this competition
+        grid_position = r.parent_competition.gridpositions_set.first()
+
+        # the grid must have at least one agent
+        if grid_position.agentgrid_set.count() == 0:
+            return Response({'status': 'Bad request',
+                             'message': 'The grid must have at least one agent!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # create trial for this round
+        trial = Trial.objects.create(round=r)
+
+        # same method used in the prepare
+        agents_grid = AgentGrid.objects.filter(grid_position=grid_position)
+
+        pos = 1
+        for agent_grid in agents_grid:
+            if agent_grid.agent.code_valid:
+                team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
+                                                       competition=trial.round.parent_competition)
+                if team_enroll.valid:
+                    # competition agent
+                    competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
+                        competition=trial.round.parent_competition,
+                        agent=agent_grid.agent,
+                        round=trial.round)) == 0)
+
+                    if competition_agent_not_exists:
+                        competition_agent = CompetitionAgent.objects.create(
+                            competition=trial.round.parent_competition,
+                            agent=agent_grid.agent,
+                            round=trial.round)
+                    else:
+                        competition_agent = CompetitionAgent.objects.get(
+                            competition=trial.round.parent_competition,
+                            agent=agent_grid.agent,
+                            round=trial.round)
+
+                    log_sim_agent_not_exists = (len(LogTrialAgent.objects.filter(
+                        competition_agent=competition_agent,
+                        trial=trial,
+                        pos=pos)) == 0)
+
+                    # log trial agent
+                    if log_sim_agent_not_exists:
+                        LogTrialAgent.objects.create(competition_agent=competition_agent,
+                                                     trial=trial,
+                                                     pos=pos)
+
+                    pos += 1
+
+        params = {'trial_identifier': trial.identifier}
+
+        try:
+            requests.post(settings.PREPARE_SIM_ENDPOINT, params)
+        except requests.ConnectionError:
+            return Response({'status': 'Bad Request',
+                             'message': 'The simulator appears to be down!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        trial.waiting = True
+        trial.prepare = False
+        trial.started = False
+        trial.save()
+
+        return Response({'status': 'Trial started',
+                         'message': 'The solo trial has been launched!'},
+                        status=status.HTTP_200_OK)

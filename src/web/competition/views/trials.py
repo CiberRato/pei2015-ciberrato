@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
+from django.conf import settings
 
 import os
 import gzip
@@ -15,7 +16,7 @@ from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSe
 from ..models import Trial
 
 from competition.shortcuts import *
-from notifications.models import NotificationBroadcast
+from notifications.models import NotificationBroadcast, NotificationTeam
 
 
 class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -193,13 +194,24 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
         serializer = self.serializer_class(TrialX(trial))
 
-        trial.waiting = False
-        trial.prepare = True
-        trial.started = False
-        trial.save()
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            trial.waiting = False
+            trial.prepare = False
+            trial.started = True
 
-        NotificationBroadcast.add(channel="user", status="ok",
-                                  message="The trial of " + trial.round.name + " can now be started!",
-                                  trigger="trial_prepare")
+            team = trial.logtrialagent_set.first()
+            team = team.competition_agent.agent.team
+
+            NotificationTeam.add(team=team, status="ok",
+                                 message="The trial has started!",
+                                 trigger="trial_started")
+        else:
+            trial.waiting = False
+            trial.prepare = True
+            trial.started = False
+            NotificationBroadcast.add(channel="user", status="ok",
+                                      message="The trial of " + trial.round.name + " can now be started!",
+                                      trigger="trial_prepare")
+        trial.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
