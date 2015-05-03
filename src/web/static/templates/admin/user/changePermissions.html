@@ -21,7 +21,7 @@
                                 <th>Username</th>
                                 <th>Teaching Institution</th>
                                 <th>is_staff</th>
-                                <th>is_superuser</th>
+                                <th ng-if="vm.user.is_superuser == true">is_superuser</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -33,8 +33,8 @@
                                 <td ng-if="value.is_staff==true"><input type="checkbox" name="option1" checked ng-model="value.is_staff" ng-change="vm.removeStaff(value.username, $index)"></td>
                                 <td ng-if="value.is_staff==false"><input type="checkbox" name="option1" ng-model="value.is_staff" ng-change="vm.addStaff(value.username, $index)"></td>
 
-                                <td ng-if="value.is_superuser==true"><input type="checkbox" name="option1" checked ng-model="value.is_superuser" ng-change="vm.removeSuperUser(value.username, $index)"></td>
-                                <td ng-if="value.is_superuser==false"><input type="checkbox" name="option1" ng-model="value.is_superuser" ng-change="vm.addSuperUser(value.username, $index)"></td>
+                                <td ng-if="value.is_superuser==true && vm.user.is_superuser == true"><input type="checkbox" name="option1" checked ng-model="value.is_superuser" ng-change="vm.removeSuperUser(value.username, $index)"></td>
+                                <td ng-if="value.is_superuser==false && vm.user.is_superuser == true"><input type="checkbox" name="option1" ng-model="value.is_superuser" ng-change="vm.addSuperUser(value.username, $index)"></td>
 
                             </tr>
                             </tbody>
