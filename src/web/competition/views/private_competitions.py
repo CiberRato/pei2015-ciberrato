@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from authentication.models import Team, TeamMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
-from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round
+from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round, Trial
 from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer, \
     InputPrivateRoundSerializer
 from ..permissions import IsStaff
@@ -148,3 +148,42 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
         setattr(r, param + "_path", default_storage.path(path))
         setattr(r, param + "_can_delete", False)
         r.save()
+
+
+class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Round.objects.all()
+    #serializer_class = Teste
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{List} the trials for one round
+        B{URL:} ../api/v1/competitions/private/round/<round_name>/
+        """
+        # the round must exist
+        r = Round.objects.get(name=kwargs.get('pk'))
+
+        # the parent competition of the round must be private competition
+        if r.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad request',
+                             'message': 'You can only see this for private competitions!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # the team must be enrolled in the parent competition
+        team_enrolled = TeamEnrolled.objects.filter(competition=r.parent_competition).first()
+        if team_enrolled.team not in request.user.teams.all():
+            return Response({'status': 'Bad request',
+                             'message': 'You can not see the rounds for this competition!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # get the trials
+        trials = Trial.objects.filter(round=r)
+
+        class PrivateRound:
+            def __init__(self):
+                serializer = PrivateRoundSerializer(r)
+                self.round = serializer.data
+
+                self.trials = serializer.data
+        # join the trials with the files name
+
+        # serializer

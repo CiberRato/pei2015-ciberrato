@@ -201,9 +201,13 @@ class GetResourcesFiles(views.APIView):
         B{Get} old and default params
         B{URL:} ../api/v1/round_resources/
         """
-        files = self.recursive_names()
-        serializer = self.serializer_folder_class(files, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer_lab = self.serializer_folder_class(self.recursive_names(dir_to_find='resources/labs'), many=True)
+        serializer_grid = self.serializer_folder_class(self.recursive_names(dir_to_find='resources/grids'), many=True)
+        serializer_param_list = self.serializer_folder_class(self.recursive_names(dir_to_find='resources/param_lists'),
+                                                             many=True)
+        return Response({'labs': serializer_lab.data,
+                         'grids': serializer_grid.data,
+                         'pram_lists': serializer_param_list.data}, status=status.HTTP_200_OK)
 
     def recursive_names(self, dir_to_find='resources'):
         dirs = default_storage.listdir(dir_to_find)

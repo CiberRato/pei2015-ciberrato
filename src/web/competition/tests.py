@@ -1306,6 +1306,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, [{'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml',
                                 'grid': u'Ciber2005_FinalGrid.xml'}])
 
+        # now let's get the files name for this round and the trials list
         """
         url = "/api/v1/competitions/private/round/" + round_name + "/"
         response = client.get(path=url)
