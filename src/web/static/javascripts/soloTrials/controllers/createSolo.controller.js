@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('CreateSoloController', CreateSoloController);
 
-    CreateSoloController.$inject = ['SoloTrials', '$routeParams', 'Round'];
+    CreateSoloController.$inject = ['SoloTrials', '$routeParams', 'Round', '$location'];
 
-    function CreateSoloController(SoloTrials, $routeParams, Round){
+    function CreateSoloController(SoloTrials, $routeParams, Round, $location){
         var vm = this;
         vm.competitionName = $routeParams.identifier;
         vm.teamName = $routeParams.teamName;
@@ -41,18 +41,12 @@
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
+                $location.url("/panel/" + vm.teamName + "/" + vm.competitionName + "/soloTrials");
             }
 
             function createErrorFn(data){
                 console.error(data.data);
-                var errors = "";
-                for (var value in data.data.message) {
-                    errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
-                    for (var error in data.data.message[value]){
-                        errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
-                    }
-                }
-                $.jGrowl(errors, {
+                $.jGrowl(data.data.message, {
                     life: 5000,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
