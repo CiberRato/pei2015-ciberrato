@@ -1,3 +1,6 @@
+from django.core.files.storage import default_storage
+from os.path import basename
+
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 
@@ -80,15 +83,6 @@ class RoundSerializer(serializers.ModelSerializer):
         model = Round
         fields = ('name', 'parent_competition_name',)
         read_only_fields = ()
-
-
-class AdminRoundSerializer(serializers.ModelSerializer):
-    parent_competition_name = serializers.CharField(max_length=128)
-
-    class Meta:
-        model = Round
-        fields = ('name', 'parent_competition_name', 'param_list_path', 'grid_path', 'lab_path',)
-        read_only_fields = ('param_list_path', 'grid_path', 'lab_path',)
 
 
 class TeamEnrolledSerializer(serializers.ModelSerializer):
@@ -220,8 +214,6 @@ class TeamScoreOutSerializer(serializers.ModelSerializer):
         read_only_fields = ('trial', 'team',)
 
 
-
-
 class LogTrial(serializers.ModelSerializer):
     trial_identifier = serializers.CharField(max_length=100)
 
@@ -325,4 +317,18 @@ class PrivateCompetitionSerializer(serializers.BaseSerializer):
         return {
             'competition': competition.data,
             'team': instance.team.name
+        }
+
+
+class PrivateRoundSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        grid = basename(default_storage.path(instance.grid))
+        lab = basename(default_storage.path(instance.lab))
+        param_list = basename(default_storage.path(instance.param_list))
+
+        return {
+            'name': instance.name,
+            'grid': grid,
+            'param_list': param_list,
+            'lab': lab
         }
