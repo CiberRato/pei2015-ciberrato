@@ -16,7 +16,8 @@
             'ciberonline.logviewer',
             'ciberonline.streamviewer',
             'ciberonline.grid',
-            'SwampDragonServices'
+            'SwampDragonServices',
+            'ciberonline.soloTrials'
         ])
         .run(run);
 
