@@ -1307,14 +1307,17 @@ class AuthenticationTestCase(TestCase):
                                 'grid': u'Ciber2005_FinalGrid.xml'}])
 
         # now let's get the files name for this round and the trials list
-        """
-        url = "/api/v1/competitions/private/round/" + round_name + "/"
+        url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        """
+        rsp = response.data
+        del rsp['round']['name']
+        del rsp['round']['created_at']
+        del rsp['round']['updated_at']
+        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml', 'grid': u'Ciber2005_FinalGrid.xml'}})
+
 
         client.force_authenticate(user=None)
-        return
 
     def test_url_slug(self):
         user = Account.objects.get(username="gipmon")

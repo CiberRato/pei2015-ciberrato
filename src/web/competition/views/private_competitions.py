@@ -14,7 +14,7 @@ from authentication.models import Team, TeamMember
 from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round, Trial
 from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer, \
-    InputPrivateRoundSerializer, TrialSerializer
+    InputPrivateRoundSerializer, TrialSerializer, PrivateRoundTrialsSerializer
 from .simplex import TrialSimplex
 from ..permissions import IsStaff
 from authentication.models import Account
@@ -153,11 +153,11 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
 
 class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Round.objects.all()
-    #serializer_class = Teste
+    serializer_class = PrivateRoundTrialsSerializer
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{List} the trials for one round
+        B{List} the trials for one round and the file list
         B{URL:} ../api/v1/competitions/private/round/<round_name>/
         """
         # the round must exist
@@ -180,14 +180,17 @@ class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trials = Trial.objects.filter(round=r)
         trials = [TrialSimplex(trial) for trial in trials]
 
-        class PrivateRound:
+        class PrivateRoundTrials:
             def __init__(self, rnd, trials_simplex):
                 serializer = PrivateRoundSerializer(rnd)
                 self.round = serializer.data
-                serializer = TrialSerializer(trials_simplex)
+                serializer = TrialSerializer(trials_simplex, many=True)
                 self.trials = serializer.data
 
         # join the trials with the files name
-        private_round = PrivateRound(r, trials)
+        private_round = PrivateRoundTrials(r, trials)
 
         # serializer
+        serializer = self.serializer_class(private_round)
+
+        return Response(serializer.data)
