@@ -19,6 +19,13 @@
 
             function getTrialsSuccessFn(data){
                 vm.trials = data.data;
+                for(var i =0; i<vm.trials.trials.length; i++){
+                    vm.trials.trials[i].total = vm.trials.trials[i].created_at.substr(0, vm.trials.trials[i].created_at.indexOf('.'));
+                    vm.trials.trials[i].date = vm.trials.trials[i].total.substr(0, vm.trials.trials[i].created_at.indexOf('T'));
+                    vm.trials.trials[i].hour = vm.trials.trials[i].total.substr(vm.trials.trials[i].created_at.indexOf('T')+1);
+
+                    console.log(vm.trials.trials[i].hour);
+                }
                 console.log(vm.trials);
             }
 
@@ -44,6 +51,12 @@
 
                     function getTrialsSuccessFn(data){
                         vm.trials = data.data;
+                        for(var i =0; i<vm.trials.trials.length; i++){
+                            vm.trials.trials[i].total = vm.trials.trials[i].created_at.substr(0, vm.trials.trials[i].created_at.indexOf('.'));
+                            vm.trials.trials[i].date = vm.trials.trials[i].total.substr(0, vm.trials.trials[i].created_at.indexOf('T'));
+                            vm.trials.trials[i].hour = vm.trials.trials[i].total.substr(vm.trials.trials[i].created_at.indexOf('T')+1);
+
+                        }
                         console.log(vm.trials);
                     }
 

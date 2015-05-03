@@ -15,27 +15,21 @@
                         <table ng-if="vm.trials.trials.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th>Trials</th>
-                                <th>Grid</th>
-                                <th>Lab</th>
-                                <th>Param List</th>
+                                <th>Date</th>
+                                <th>State</th>
+                                <th>Watch Trial</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.solos">
-                                <td>
-                                    <a href="/panel/{{value.name}}">Trials</a>
-                                </td>
-                                <td>{{value.grid}}</td>
-                                <td>{{value.lab}}</td>
-                                <td>{{value.param_list}}</a>
-
-                                </td>
+                            <tr ng-repeat="(key, value) in vm.trials.trials">
+                                <td>{{value.date}}&nbsp;&nbsp;&nbsp;{{value.hour}}</td>
+                                <td>{{value.state}}</td>
+                                <td>Watch</td>
 
                             </tr>
                             </tbody>
                         </table>
-
+                        <a ng-if="vm.trials.trials.length != 0" class="btn btn-alt btn-large btn-success" ng-click="vm.launchTrial()">Launch Trial</a>
                         <a ng-if="vm.trials.trials.length == 0" class="btn btn-alt btn-large btn-success" ng-click="vm.launchTrial()">Launch your First Trial</a>
                     </div>
 
