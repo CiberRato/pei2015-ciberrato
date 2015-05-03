@@ -9,13 +9,18 @@
 
     function SoloTrials($http){
         var SoloTrials = {
-            getByTeam: getByTeam
+            getByTeam: getByTeam,
+            getAll: getAll
         };
 
         return SoloTrials;
 
         function getByTeam(competitionName){
             return $http.get("/api/v1/competitions/private/rounds/" + competitionName + "/");
+        }
+
+        function getAll(){
+            return $http.get("/api/v1/competitions/private/list/");
         }
     }
 
