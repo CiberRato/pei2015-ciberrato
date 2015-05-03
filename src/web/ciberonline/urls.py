@@ -25,7 +25,7 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
-    CreatePrivateCompetitionRound
+    CreatePrivateCompetitionRound, GetRoundTrials
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation, AgentsByTeamValidViewSet
@@ -118,6 +118,7 @@ router_private_competitions = routers.SimpleRouter()
 router_private_competitions.register(r'list', PrivateCompetitionsUser)
 router_private_competitions.register(r'rounds', PrivateCompetitionsRounds)
 router_private_competitions.register(r'create_round', CreatePrivateCompetitionRound)
+router_private_competitions.register(r'round', GetRoundTrials)
 
 
 urlpatterns = patterns('',

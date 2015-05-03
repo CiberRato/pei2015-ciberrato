@@ -336,6 +336,14 @@ class PrivateRoundSerializer(serializers.BaseSerializer):
         }
 
 
+class PrivateRoundTrialsSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        return {
+            'round': instance.round,
+            'trials': instance.trials
+        }
+
+
 class InputPrivateRoundSerializer(serializers.ModelSerializer):
     competition_name = serializers.CharField(max_length=128)
     grid = serializers.CharField(max_length=150)
