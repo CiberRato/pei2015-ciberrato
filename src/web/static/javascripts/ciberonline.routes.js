@@ -116,6 +116,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/soloTrials/allSolos.html',
             title: 'My Solo Trials'
+        }).when('/panel/:identifier',{
+            controller:'TrialsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/allTrials.html',
+            title: 'My Solo Trials'
         }).when('/panel/myCompetitions/:username',{
             controller:'MyCompetitionsController',
             controllerAs:'vm',

@@ -11,7 +11,9 @@
         var SoloTrials = {
             getByTeam: getByTeam,
             getAll: getAll,
-            create: create
+            create: create,
+            getTrials: getTrials,
+            launchTrial: launchTrial
         };
 
         return SoloTrials;
@@ -30,6 +32,16 @@
                 grid: grid,
                 lab: lab,
                 param_list: param
+            });
+        }
+
+        function getTrials(roundName){
+            return $http.get("/api/v1/competitions/private/round/" + roundName + "/");
+        }
+
+        function launchTrial(roundName){
+            return $http.post("/api/v1/competitions/private/launch_trial/", {
+                round_name: roundName
             });
         }
     }
