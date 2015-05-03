@@ -1,26 +1,19 @@
+import uuid
+
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
-import uuid
 from django.db import transaction
 from django.conf import settings
 from django.core.files.storage import default_storage
-
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins, views
 from rest_framework.response import Response
-
 import requests
-
-from authentication.models import Team, TeamMember
-
-from .simplex import GridPositionsSimplex, AgentGridSimplex
-from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round, Trial,\
+from ..models import Competition, TeamEnrolled, AgentGrid, Round, Trial, \
     CompetitionAgent, LogTrialAgent
-from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer, \
+from ..serializers import PrivateCompetitionSerializer, PrivateRoundSerializer, \
     InputPrivateRoundSerializer, TrialSerializer, PrivateRoundTrialsSerializer
 from .simplex import TrialSimplex
-from ..permissions import IsStaff
-from authentication.models import Account
 
 
 class PrivateCompetitionsUser(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -125,7 +118,8 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
             try:
                 has = Round.objects.filter(parent_competition=private_competition,
                                            grid_path=default_storage.path(serializer.validated_data['grid']),
-                                           param_list_path=default_storage.path(serializer.validated_data['param_list']),
+                                           param_list_path=default_storage.path(
+                                               serializer.validated_data['param_list']),
                                            lab_path=default_storage.path(serializer.validated_data['lab'])).count()
 
                 if has > 0:
