@@ -33,9 +33,9 @@ class Competition(models.Model):
     @staticmethod
     def create_private_competition(team):
         try:
-            toc = TypeOfCompetition.objects.get(name="Private Competition")
+            toc = TypeOfCompetition.objects.get(name=settings.PRIVATE_COMPETITIONS_NAME)
         except TypeOfCompetition.DoesNotExist:
-            toc = TypeOfCompetition.objects.create(name="Private Competition", number_teams_for_trial=1,
+            toc = TypeOfCompetition.objects.create(name=settings.PRIVATE_COMPETITIONS_NAME, number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
                                                    timeout=1)
 
