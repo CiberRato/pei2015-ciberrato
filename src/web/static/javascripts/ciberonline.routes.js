@@ -111,6 +111,11 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/liveCompetitions.html',
             title: 'Current Competitions'
+        }).when('/panel/mySoloTrials',{
+            controller:'SoloByUserController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/allSolos.html',
+            title: 'My Solo Trials'
         }).when('/panel/myCompetitions/:username',{
             controller:'MyCompetitionsController',
             controllerAs:'vm',
@@ -141,6 +146,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/agent/allAgents.html',
             title: 'All Agents'
+        }).when('/panel/:teamName/:identifier/soloTrials',{
+            controller:'SoloByTeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/soloByTeam.html',
+            title: 'Solo Trials'
         }).when('/admin/',{
             templateUrl: '/static/templates/admin/index.html',
             title: 'Welcome!'
