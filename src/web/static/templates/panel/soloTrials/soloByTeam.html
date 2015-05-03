@@ -9,81 +9,27 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2>Solo Trials ({{vm.teamName}}) <a ng-if="vm.solos.length != 0" href="/panel/createGridPosition" class="btn"><strong>+</strong></a></h2>
+                        <h2>Solo Trials ({{vm.teamName}}) <a ng-if="vm.solos.length != 0" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial" class="btn"><strong>+</strong></a></h2>
                         <p ng-if="vm.solos.length == 0">You don't have solo trial created.</p>
                         <p ng-if="vm.solos.length != 0">Here is shown in table the list of all solo trials created.</p>
                         <table ng-if="vm.solos.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th></th>
-                                <th>Team Name</th>
-                                <th>Manage Grid Position</th>
-                                <th>Remove Grid Position</th>
+                                <th>Trials</th>
+                                <th>Grid</th>
+                                <th>Lab</th>
+                                <th>Param List</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.grids">
+                            <tr ng-repeat="(key, value) in vm.solos">
                                 <td>
-                                    <a ng-if="value.competition.type_of_competition.name == 'Private Competition'"><strong>Solo Trials</strong></a>
-                                    <a ng-if="value.competition.state_of_competition == 'Register' && value.competition.type_of_competition.name != 'Private Competition'" href="/panel/competitions/{{value.competition.name}}">{{value.competition.name}}</a>
-                                    <a ng-if="value.competition.state_of_competition != 'Register' && value.competition.type_of_competition.name != 'Private Competition'" href="/panel/{{value.competition.name}}">{{value.competition.name}}</a>
-
+                                    <a><strong>Trials</strong></a>
                                 </td>
-                                <td><a href="panel/{{value.team_name}}/teamMembers">{{value.team_name}}</a></td>
-                                <td ng-if = "value.competition.state_of_competition == 'Past'">Competition Finished</td>
-                                <td ng-if = "value.competition.state_of_competition != 'Past'"><a  data-toggle="modal" ng-click="vm.identifier=value.identifier; vm.team=value.team_name; vm.getCompetition(value.competition.name); vm.getAgents()" href="#addAgents{{key}}">Manage</a>
-                                    <div class="modal fade"  id="addAgents{{key}}">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">×</button>
-                                            <p ng-if="vm.models.lists.Available.length == 0" align="center">You don't have any agent with valid code</p>
-                                            <h2 ng-if="vm.models.lists.Available.length != 0" align="center">Drag the agents for this grid position (Max: {{value.competition.type_of_competition.number_agents_by_grid}})</h2>
-                                        </div>
-                                        <div ng-if="vm.models.lists.Available.length != 0" class="modal-body" style="text-align: center">
-                                            <div class="row" style="padding-left: 40px">
-                                                <div ng-repeat="(listName, list) in vm.models.lists" class="span3 associateAgents">
-                                                    <!-- The dnd-list directive allows to drop elements into it.
-                                                        The dropped data will be added to the referenced list -->
-                                                    <h3>{{listName}}</h3>
-                                                    <ul dnd-list="list"
-                                                            >
-                                                        <!-- The dnd-draggable directive makes an element draggable and will
-                                                             transfer the object that was assigned to it. If an element was
-                                                             dragged away, you have to remove it from the original list
-                                                             yourself using the dnd-moved attribute -->
-                                                        <li ng-if="listName == 'GridPosition'" ng-repeat="item in list"
-                                                            dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1); "
-                                                            dnd-effect-allowed="move"
-                                                            dnd-selected="vm.models.selected = item"
-                                                            ng-class="{'selected': vm.models.selected === item}"
-                                                            dnd-disable-if="true"
-                                                                >
-                                                            {{item.pos}} - {{item.label}} <button type="button" class="close" ng-click="vm.disassociate(item.pos, value.team_name)">×</button>
+                                <td>{{value.grid}}</td>
+                                <td>{{value.lab}}</td>
+                                <td>{{value.param_list}}</a>
 
-                                                        </li>
-                                                        <li ng-if="listName == 'Available'" ng-repeat="item in list"
-                                                            dnd-draggable="item"
-                                                            dnd-moved="list.splice($index, 1); vm.associate(item.label, value.team_name);"
-                                                            dnd-effect-allowed="move"
-                                                            dnd-selected="vm.models.selected = item"
-                                                            ng-class="{'selected': vm.models.selected === item}"
-                                                            dnd-disable-if="vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"
-                                                                >
-                                                            {{item.label}}
-                                                        </li>
-                                                    </ul>
-                                                </div>
-
-                                            </div>
-                                            <p ng-if = "vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"><strong>You can't associate more agents, limit reached.</strong></p>
-
-                                        </div>
-                                        <div ng-if="value.competition.allow_remote_agents == true && vm.models.lists.Available.length != 0" class="modal-footer">
-                                            <a  class="btn btn-alt btn-large btn-success"  ng-click="vm.associateAllRemote()">All Remote</a>
-
-                                        </div>
-
-                                    </div>
                                 </td>
 
                             </tr>
