@@ -131,6 +131,11 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/agent/myAgents.html',
             title: 'My Agents'
+        }).when('/panel/:teamName/:name/agentDetail/:fileName',{
+            controller:'EditFileController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/agent/fileEdit.html',
+            title: 'Edit File'
         }).when('/panel/:teamName/:name/agentDetail',{
             controller:'AgentDetailController',
             controllerAs: 'vm',
@@ -159,6 +164,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html',
             title: 'All Competitions'
+        }).when('/admin/allUsers',{
+            controller:'ChangePermissionsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/user/changePermissions.html',
+            title: 'All Users'
         }).when('/admin/createTypeOfCompetition',{
             controller:'CreateTypeOfCompetitionController',
             controllerAs: 'vm',
