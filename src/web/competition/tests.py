@@ -520,7 +520,7 @@ class AuthenticationTestCase(TestCase):
 
         # upload resource
         url = "/api/v1/set_round_file/R1/lab/"
-        data = {'path': 'resources/CiberRTSS2007/CiberRTSS07_FinalLab.xml'}
+        data = {'path': 'resources/labs/CiberRTSS2007/CiberRTSS07_FinalLab.xml'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {"status": "Uploaded", "message": "The file has been associated!"})
         self.assertEqual(response.status_code, 201)
@@ -1272,9 +1272,9 @@ class AuthenticationTestCase(TestCase):
         # now let's create one round for this competition based on the files
         url = "/api/v1/competitions/private/create_round/"
         data = {'competition_name': competition_name,
-                'grid': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml',
-                'param_list': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml',
-                'lab': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml'}
+                'grid': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml',
+                'param_list': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml',
+                'lab': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml'}
         response = client.post(path=url, data=data)
         rsp = response.data
         round_name = rsp['name']
@@ -1288,9 +1288,9 @@ class AuthenticationTestCase(TestCase):
         # an error round
         url = "/api/v1/competitions/private/create_round/"
         data = {'competition_name': competition_name,
-                'grid': 'resources/CiberRato2005/Ciber2005_FinalGridx.xml',
-                'param_list': 'resources/CiberRato2005/Ciber2005_FinalxGrid.xml',
-                'lab': 'resources/CiberRato2005/Ciber2005_FinalGrid.xmxl'}
+                'grid': 'resources/grids/CiberRato2005/Ciber2005_FinalGridx.xml',
+                'param_list': 'resources/grids/CiberRato2005/Ciber2005_FinalxGrid.xml',
+                'lab': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xmxl'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {"status": "Bad request", "message": "The file doesn't exists!"})

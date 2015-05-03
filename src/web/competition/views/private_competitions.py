@@ -14,7 +14,8 @@ from authentication.models import Team, TeamMember
 from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round, Trial
 from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer, \
-    InputPrivateRoundSerializer
+    InputPrivateRoundSerializer, TrialSerializer
+from .simplex import TrialSimplex
 from ..permissions import IsStaff
 from authentication.models import Account
 
@@ -177,13 +178,16 @@ class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # get the trials
         trials = Trial.objects.filter(round=r)
+        trials = [TrialSimplex(trial) for trial in trials]
 
         class PrivateRound:
-            def __init__(self):
-                serializer = PrivateRoundSerializer(r)
+            def __init__(self, rnd, trials_simplex):
+                serializer = PrivateRoundSerializer(rnd)
                 self.round = serializer.data
-
+                serializer = TrialSerializer(trials_simplex)
                 self.trials = serializer.data
+
         # join the trials with the files name
+        private_round = PrivateRound(r, trials)
 
         # serializer
