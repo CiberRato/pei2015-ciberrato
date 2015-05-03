@@ -1273,8 +1273,8 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/private/create_round/"
         data = {'competition_name': competition_name,
                 'grid': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml',
-                'param_list': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml',
-                'lab': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml'}
+                'param_list': 'resources/param_lists/param0.xml',
+                'lab': 'resources/labs/CiberRato2006/Ciber2006_FinalLab.xml'}
         response = client.post(path=url, data=data)
         rsp = response.data
         round_name = rsp['name']
@@ -1282,8 +1282,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml',
-                               'grid': u'Ciber2005_FinalGrid.xml'})
+        self.assertEqual(rsp, {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'})
 
         # an error round
         url = "/api/v1/competitions/private/create_round/"
@@ -1303,8 +1302,7 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['name']
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
-        self.assertEqual(rsp, [{'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml',
-                                'grid': u'Ciber2005_FinalGrid.xml'}])
+        self.assertEqual(rsp, [{'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
 
         # now let's get the files name for this round and the trials list
         url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
@@ -1314,8 +1312,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['round']['name']
         del rsp['round']['created_at']
         del rsp['round']['updated_at']
-        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml', 'grid': u'Ciber2005_FinalGrid.xml'}})
-
+        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}})
 
         client.force_authenticate(user=None)
 
