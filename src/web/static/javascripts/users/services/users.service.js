@@ -11,7 +11,9 @@
         var Users = {
             getAll: getAll,
             getMe: getMe,
-            change: change
+            change: change,
+            toggleStaff: toggleStaff,
+            toggleSuperUser: toggleSuperUser
         };
 
         return Users;
@@ -26,6 +28,14 @@
 
         function change(url){
             return $http.get(url);
+        }
+
+        function toggleStaff(username){
+            return $http.put("api/v1/toggle_staff/" + username + "/");
+        }
+
+        function toggleSuperUser(username){
+            return $http.put("api/v1/toggle_super_user/" + username + "/");
         }
     }
 
