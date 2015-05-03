@@ -1237,249 +1237,34 @@ class AuthenticationTestCase(TestCase):
 
         client.force_authenticate(user=None)
 
-    def test_max_agents_colaborativa(self):
-        return
+    def test_private_competitions(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
         client.force_authenticate(user=user)
 
-        url = "/api/v1/competitions/enroll/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'Created', 'message': 'The team has enrolled.'})
-
-        # get my enrolled teams
-        url = "/api/v1/competitions/my_enrolled_teams/gipmon/"
-        response = client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
-                                                                                                "number_teams_for_trial": 1,
-                                                                                                "number_agents_by_grid": 5,
-                                                                                                "single_position": False,
-                                                                                                "timeout": 5},
-                                                          "state_of_competition": "Register",
-                                                          "allow_remote_agents": True}, "team_name": "XPTO3",
-                                          "valid": False}])
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'language': 'Python'}
+        # lets start to create another team for the current logged user
+        url = "/api/v1/teams/crud/"
+        data = {'name': 'TestTeam', 'max_members': 10}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE1'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
-        a1 = Agent.objects.get(agent_name="KAMIKAZE1")
-        a1.code_valid = True
-        a1.save()
-        self.assertEqual(a1.code_valid, True)
+        self.assertEqual(response.data, OrderedDict([('name', u'TestTeam'), ('max_members', 10)]))
 
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE2'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
-
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE3', 'team_name': 'XPTO3', 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE3'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE4', 'team_name': 'XPTO3', 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE4'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE5', 'team_name': 'XPTO3', 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE5'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE6', 'team_name': 'XPTO3', 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict(
-            [(u'agent_name', u'KAMIKAZE6'), (u'language', 'Python'), (u'team_name', u'XPTO3')]))
-
-        # only admin
-        url = "/api/v1/competitions/toggle_team_inscription/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
-        self.assertEqual(response.status_code, 200)
-
-        # get competitions valid inscriptions
-        url = "/api/v1/competitions/enroll/XPTO3/"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [{"competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
-                                                                                                "number_teams_for_trial": 1,
-                                                                                                "number_agents_by_grid": 5,
-                                                                                                "single_position": False,
-                                                                                                "timeout": 5},
-                                                          "state_of_competition": "Register",
-                                                          "allow_remote_agents": True}, "team_name": "XPTO3",
-                                          "valid": True}])
-
-        # create grid position
-        url = "/api/v1/competitions/grid_position/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-        identifier = response.data["identifier"]
-
-        self.assertEqual(response.data, {"identifier": identifier, "competition": {"name": "C1",
-                                                                                   "type_of_competition": {
-                                                                                       "name": "Collaborative",
-                                                                                       "number_teams_for_trial": 1,
-                                                                                       "number_agents_by_grid": 5,
-                                                                                       "single_position": False,
-                                                                                       "timeout": 5},
-                                                                                   "state_of_competition": "Register",
-                                                                                   "allow_remote_agents": True},
-                                         "team_name": "XPTO3"})
-        self.assertEqual(response.status_code, 201)
-
-        # associate agent to the grid
-        for i in range(1, 6):
-            url = "/api/v1/competitions/agent_grid/"
-            agent = 'KAMIKAZE' + str(i), i
-            data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
-            response = client.post(path=url, data=data)
-            self.assertEqual(response.data,
-                             {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
-
-        # clean the 4
-        url = "/api/v1/competitions/agent_grid/" + identifier + "/?position=4"
-        response = client.delete(path=url, data=data)
-
-        url = "/api/v1/competitions/agent_grid/"
-        agent = 'KAMIKAZE' + str(4), 4
-        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
-
-        # see agents order
-        url = "/api/v1/competitions/agent_grid/" + identifier + "/"
+        # now it should have for this logged user at least one private competition
+        url = "/api/v1/competitions/private/list/"
         response = client.get(path=url)
-        self.assertEqual(response.data, [
-            {"grid_identifier": identifier, "agent_name": "KAMIKAZE1", "position": 1},
-            {"grid_identifier": identifier, "agent_name": "KAMIKAZE2", "position": 2},
-            {"grid_identifier": identifier, "agent_name": "KAMIKAZE3", "position": 3},
-            {"grid_identifier": identifier, "agent_name": "KAMIKAZE4", "position": 4},
-            {"grid_identifier": identifier, "agent_name": "KAMIKAZE5", "position": 5}])
-
-        url = "/api/v1/competitions/agent_grid/"
-        agent = 'KAMIKAZE6', 6
-        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data,
-                         {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
+        rsp = response.data
+        del rsp[0]['competition']['name']
+        self.assertEqual(rsp, [{'competition': {'state_of_competition': 'Competition',
+                                                'type_of_competition': OrderedDict(
+                                                    [('name', settings.PRIVATE_COMPETITIONS_NAME), ('number_teams_for_trial', 1),
+                                                     ('number_agents_by_grid', 50), ('single_position', False),
+                                                     ('timeout', 1)]), 'allow_remote_agents': False},
+                                'team': u'TestTeam'}])
 
         client.force_authenticate(user=None)
-
-    def test_max_agents_competitiva(self):
         return
-        user = Account.objects.get(username="gipmon")
-        client = APIClient()
-        client.force_authenticate(user=user)
-
-        # competitive and colaborative methods
-        competitiva = TypeOfCompetition.objects.get(name='Competitive')
-
-        c = Competition.objects.get(name="C1")
-        c.type_of_competition = competitiva
-        c.save()
-
-        url = "/api/v1/competitions/enroll/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'Created', 'message': 'The team has enrolled.'})
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE1', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data,
-                         OrderedDict([('agent_name', u'KAMIKAZE1'), (u'language', 'Python'),
-                                      ('is_remote', False), ('team_name', u'XPTO3')]))
-
-        a1 = Agent.objects.get(agent_name="KAMIKAZE1")
-        a1.is_presential = True
-        a1.save()
-
-        # create a agent for team
-        url = "/api/v1/agents/agent/"
-        data = {'agent_name': 'KAMIKAZE2', 'team_name': 'XPTO3', 'is_remote': False, 'language': 'Python'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data,
-                         OrderedDict([('agent_name', u'KAMIKAZE2'), (u'language', 'Python'),
-                                      ('is_remote', False), ('team_name', u'XPTO3')]))
-
-        a2 = Agent.objects.get(agent_name="KAMIKAZE2")
-        a2.is_presential = True
-        a2.save()
-
-        # only admin
-        url = "/api/v1/competitions/toggle_team_inscription/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'status': 'Inscription toggled!', 'message': 'Inscription is now: True'})
-        self.assertEqual(response.status_code, 200)
-
-        # create grid position
-        url = "/api/v1/competitions/grid_position/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-        identifier = response.data["identifier"]
-        self.assertEqual(response.data, {"identifier": identifier, "competition": {"name": "C1",
-                                                                                   "type_of_competition": {
-                                                                                       "name": "Collaborative",
-                                                                                       "number_teams_for_trial": 1,
-                                                                                       "number_agents_by_grid": 5,
-                                                                                       "single_position": False,
-                                                                                       "timeout": 5},
-                                                                                   "state_of_competition": "Register",
-                                                                                   "allow_remote_agents": True},
-                                         "team_name": "XPTO3"})
-        self.assertEqual(response.status_code, 201)
-
-        url = "/api/v1/competitions/agent_grid/"
-        agent = 'KAMIKAZE1', 1
-        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]})
-
-        url = "/api/v1/competitions/agent_grid/"
-        agent = 'KAMIKAZE2', 2
-        data = {'grid_identifier': identifier, 'agent_name': agent[0], 'position': agent[1]}
-        response = client.post(path=url, data=data)
-        self.assertEqual(response.data,
-                         {'status': 'Bad Request', 'message': 'You can not add more agents to the grid.'})
-
-        client.force_authenticate(user=None)
 
     def test_url_slug(self):
-        return
         user = Account.objects.get(username="gipmon")
         client = APIClient()
         client.force_authenticate(user=user)

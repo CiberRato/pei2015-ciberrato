@@ -316,3 +316,13 @@ class RFileSerializer(serializers.BaseSerializer):
             'name': instance.name,
             'path': instance.path
         }
+
+
+class PrivateCompetitionSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        competition = CompetitionSerializer(instance.competition)
+
+        return {
+            'competition': competition.data,
+            'team': instance.team.name
+        }
