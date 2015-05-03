@@ -1300,7 +1300,11 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
         rsp = response.data
-        self.assertEqual(rsp, [{'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
+        del rsp[0]['name']
+        del rsp[0]['created_at']
+        del rsp[0]['updated_at']
+        self.assertEqual(rsp, [{'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml',
+                                'grid': u'Ciber2005_FinalGrid.xml'}])
 
         """
         url = "/api/v1/competitions/private/round/" + round_name + "/"
