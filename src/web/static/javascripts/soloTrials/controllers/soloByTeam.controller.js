@@ -20,16 +20,6 @@
             function getByTeamSuccessFn(data){
                 vm.solos = data.data;
                 console.log(vm.solos);
-                Round.getResources().then(success, error);
-
-                function success(data){
-                    vm.resources = data.data;
-                    console.log(vm.resources);
-                }
-
-                function error(data){
-                    console.error(data.data);
-                }
             }
 
 

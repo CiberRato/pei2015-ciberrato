@@ -146,6 +146,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/agent/allAgents.html',
             title: 'All Agents'
+        }).when('/panel/:teamName/:identifier/createSoloTrial',{
+            controller:'CreateSoloController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/createSolo.html',
+            title: 'Solo Trials'
         }).when('/panel/:teamName/:identifier/soloTrials',{
             controller:'SoloByTeamController',
             controllerAs: 'vm',
