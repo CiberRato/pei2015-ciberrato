@@ -1269,6 +1269,28 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [])
 
         # now let's create one round for this competition based on the files
+        url = "/api/v1/competitions/private/create_round/"
+        data = {'competition_name': competition_name,
+                'grid': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml',
+                'param_list': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml',
+                'lab': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml'}
+        response = client.post(path=url, data=data)
+        rsp = response.data
+        del rsp['name']
+        del rsp['created_at']
+        del rsp['updated_at']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(rsp, {'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml', 'grid': u'Ciber2005_FinalGrid.xml'})
+
+        # an error round
+        url = "/api/v1/competitions/private/create_round/"
+        data = {'competition_name': competition_name,
+                'grid': 'resources/CiberRato2005/Ciber2005_FinalGridx.xml',
+                'param_list': 'resources/CiberRato2005/Ciber2005_FinalxGrid.xml',
+                'lab': 'resources/CiberRato2005/Ciber2005_FinalGrid.xmxl'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status":"Bad request","message":"The file doesn't exists!"})
 
         client.force_authenticate(user=None)
         return
