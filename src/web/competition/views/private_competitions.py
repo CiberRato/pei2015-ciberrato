@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
+import uuid
 from django.db import transaction
 from django.conf import settings
+from django.core.files.storage import default_storage
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -11,7 +13,8 @@ from authentication.models import Team, TeamMember
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid, Round
-from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer
+from ..serializers import CompetitionSerializer, PrivateCompetitionSerializer, PrivateRoundSerializer, \
+    InputPrivateRoundSerializer
 from ..permissions import IsStaff
 from authentication.models import Account
 
@@ -72,3 +75,76 @@ class PrivateCompetitionsRounds(mixins.RetrieveModelMixin, viewsets.GenericViewS
         serializer = self.serializer_class(rounds, many=True)
 
         return Response(serializer.data)
+
+
+class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Competition.objects.all()
+    serializer_class = InputPrivateRoundSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Create} a private competition round
+        B{URL:} ../api/v1/competitions/private/create_round/
+
+        :type  competition_name: str
+        :param competition_name: The competition name
+        :type  grid: str
+        :param grid: The grid path from resources
+        :type  param_list: str
+        :param param_list: The param_list from resources
+        :type  lab: str
+        :param lab: The lab from resources
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            private_competition = get_object_or_404(Competition.objects.all(),
+                                                    name=serializer.validated_data['competition_name'])
+
+            # this competition must be a private competition
+            if private_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+                return Response({'status': 'Bad request',
+                                 'message': 'You can only see this for private competitions!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # verify if the team is enrolled in the competition
+            team_enrolled = TeamEnrolled.objects.filter(competition=private_competition).first()
+            if team_enrolled.team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # create a round for this competition
+            try:
+                with transaction.atomic():
+                    r = Round.objects.create(name=uuid.uuid4(), parent_competition=private_competition)
+                    CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['grid'], 'grid')
+                    CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['param_list'], 'param_list')
+                    CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['lab'], 'lab')
+            except IntegrityError, e:
+                return Response({'status': 'Bad request',
+                                 'message': e.message},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = PrivateRoundSerializer(r)
+            return Response(serializer.data)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def set_param(r, path, param):
+        if not default_storage.exists(path):
+            raise IntegrityError('The file doesn\'t exists!')
+
+        # verify if is a valid path
+        if not path.startswith('resources/'):
+            raise IntegrityError('Invalid file!')
+
+        setattr(r, param + "_path", default_storage.path(path))
+        setattr(r, param + "_can_delete", False)
+        r.save()

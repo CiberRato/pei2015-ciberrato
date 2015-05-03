@@ -186,6 +186,12 @@ class UploadResourceFile(views.APIView):
                              'message': 'The file that you requested doesn\'t exists!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # verify if is a valid path
+        if not path.startswith('resources/'):
+            return Response({'status': 'Bad request',
+                             'message': 'Invalid file!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         if param not in ['grid', 'lab', 'param_list']:
             return Response({'status': 'Bad request',
                              'message': 'Please provide one of those params: grid, lab or param_list'},

@@ -322,9 +322,9 @@ class PrivateCompetitionSerializer(serializers.BaseSerializer):
 
 class PrivateRoundSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
-        grid = basename(default_storage.path(instance.grid))
-        lab = basename(default_storage.path(instance.lab))
-        param_list = basename(default_storage.path(instance.param_list))
+        grid = basename(default_storage.path(instance.grid_path))
+        lab = basename(default_storage.path(instance.lab_path))
+        param_list = basename(default_storage.path(instance.param_list_path))
 
         return {
             'name': instance.name,
@@ -334,3 +334,15 @@ class PrivateRoundSerializer(serializers.BaseSerializer):
             'created_at': instance.created_at,
             'updated_at': instance.updated_at
         }
+
+
+class InputPrivateRoundSerializer(serializers.ModelSerializer):
+    competition_name = serializers.CharField(max_length=128)
+    grid = serializers.CharField(max_length=150)
+    param_list = serializers.CharField(max_length=150)
+    lab = serializers.CharField(max_length=150)
+
+    class Meta:
+        model = Round
+        fields = ('competition_name', 'grid', 'param_list', 'lab',)
+        read_only_fields = ()
