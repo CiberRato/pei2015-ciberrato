@@ -1257,7 +1257,8 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['competition']['name']
         self.assertEqual(rsp, [{'competition': {'state_of_competition': 'Competition',
                                                 'type_of_competition': OrderedDict(
-                                                    [('name', settings.PRIVATE_COMPETITIONS_NAME), ('number_teams_for_trial', 1),
+                                                    [('name', settings.PRIVATE_COMPETITIONS_NAME),
+                                                     ('number_teams_for_trial', 1),
                                                      ('number_agents_by_grid', 50), ('single_position', False),
                                                      ('timeout', 1)]), 'allow_remote_agents': False},
                                 'team': u'TestTeam'}])
@@ -1276,11 +1277,13 @@ class AuthenticationTestCase(TestCase):
                 'lab': 'resources/CiberRato2005/Ciber2005_FinalGrid.xml'}
         response = client.post(path=url, data=data)
         rsp = response.data
+        round_name = rsp['name']
         del rsp['name']
         del rsp['created_at']
         del rsp['updated_at']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml', 'grid': u'Ciber2005_FinalGrid.xml'})
+        self.assertEqual(rsp, {'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml',
+                               'grid': u'Ciber2005_FinalGrid.xml'})
 
         # an error round
         url = "/api/v1/competitions/private/create_round/"
@@ -1289,8 +1292,21 @@ class AuthenticationTestCase(TestCase):
                 'param_list': 'resources/CiberRato2005/Ciber2005_FinalxGrid.xml',
                 'lab': 'resources/CiberRato2005/Ciber2005_FinalGrid.xmxl'}
         response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {"status": "Bad request", "message": "The file doesn't exists!"})
+
+        # this round must have one round
+        url = "/api/v1/competitions/private/rounds/" + competition_name + "/"
+        response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"status":"Bad request","message":"The file doesn't exists!"})
+        rsp = response.data
+        self.assertEqual(rsp, [{'param_list': u'Ciber2005_FinalGrid.xml', 'lab': u'Ciber2005_FinalGrid.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
+
+        """
+        url = "/api/v1/competitions/private/round/" + round_name + "/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        """
 
         client.force_authenticate(user=None)
         return
