@@ -164,7 +164,7 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
         r.save()
 
 
-class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class GetRoundTrials(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Round.objects.all()
     serializer_class = PrivateRoundTrialsSerializer
 
@@ -207,6 +207,33 @@ class GetRoundTrials(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(private_round)
 
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Destroy} the round
+        B{URL:} ../api/v1/competitions/private/round/<round_name>/
+        """
+        # the round must exist
+        r = Round.objects.get(name=kwargs.get('pk'))
+
+        # the parent competition of the round must be private competition
+        if r.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad request',
+                             'message': 'You can only see this for private competitions!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # the team must be enrolled in the parent competition
+        team_enrolled = TeamEnrolled.objects.filter(competition=r.parent_competition).first()
+        if team_enrolled.team not in request.user.teams.all():
+            return Response({'status': 'Bad request',
+                             'message': 'You can not see the rounds for this competition!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        r.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The round has been deleted!'},
+                        status=status.HTTP_200_OK)
 
 
 class RunPrivateTrial(views.APIView):

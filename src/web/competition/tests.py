@@ -1182,7 +1182,8 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'})
+        self.assertEqual(rsp, {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml',
+                               'grid': u'Ciber2005_FinalGrid.xml'})
 
         # an error round
         url = "/api/v1/competitions/private/create_round/"
@@ -1202,7 +1203,8 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['name']
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
-        self.assertEqual(rsp, [{'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
+        self.assertEqual(rsp, [
+            {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
 
         # now let's get the files name for this round and the trials list
         url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
@@ -1212,14 +1214,15 @@ class AuthenticationTestCase(TestCase):
         del rsp['round']['name']
         del rsp['round']['created_at']
         del rsp['round']['updated_at']
-        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}})
+        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml',
+                                                       'grid': u'Ciber2005_FinalGrid.xml'}})
 
         # now let's launch one trial for that round
         url = "/api/v1/competitions/private/launch_trial/"
         data = {'round_name': round_name}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {"status":"Bad request","message":"The grid must have at least one agent!"})
+        self.assertEqual(response.data, {"status": "Bad request", "message": "The grid must have at least one agent!"})
 
         # create one agent
         team = Team.objects.get(name="TestTeam")
@@ -1236,14 +1239,22 @@ class AuthenticationTestCase(TestCase):
                                          'team_name': 'TestTeam', 'position': 1})
         rsp = response.data
         del rsp['grid_identifier']
-        self.assertEqual(rsp, OrderedDict([(u'agent_name', u'KAMIKAZE'), (u'team_name', u'TestTeam'), (u'position', 1)]))
+        self.assertEqual(rsp,
+                         OrderedDict([(u'agent_name', u'KAMIKAZE'), (u'team_name', u'TestTeam'), (u'position', 1)]))
 
         # now let's launch one trial for that round
         url = "/api/v1/competitions/private/launch_trial/"
         data = {'round_name': round_name}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {"status":"Bad Request","message":"The simulator appears to be down!"})
+        self.assertEqual(response.data, {"status": "Bad Request", "message": "The simulator appears to be down!"})
+
+        # delete the round
+        url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
+        response = client.delete(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The round has been deleted!"})
+        self.assertEqual(Round.objects.all().count(), 1)
 
         client.force_authenticate(user=None)
 
