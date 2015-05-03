@@ -1253,6 +1253,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/private/list/"
         response = client.get(path=url)
         rsp = response.data
+        competition_name = rsp[0]['competition']['name']
         del rsp[0]['competition']['name']
         self.assertEqual(rsp, [{'competition': {'state_of_competition': 'Competition',
                                                 'type_of_competition': OrderedDict(
@@ -1260,6 +1261,14 @@ class AuthenticationTestCase(TestCase):
                                                      ('number_agents_by_grid', 50), ('single_position', False),
                                                      ('timeout', 1)]), 'allow_remote_agents': False},
                                 'team': u'TestTeam'}])
+
+        # this round must have no rounds
+        url = "/api/v1/competitions/private/rounds/" + competition_name + "/"
+        response = client.get(path=url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
+
+        # now let's create one round for this competition based on the files
 
         client.force_authenticate(user=None)
         return

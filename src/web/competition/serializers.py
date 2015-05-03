@@ -330,5 +330,7 @@ class PrivateRoundSerializer(serializers.BaseSerializer):
             'name': instance.name,
             'grid': grid,
             'param_list': param_list,
-            'lab': lab
+            'lab': lab,
+            'created_at': instance.created_at,
+            'updated_at': instance.updated_at
         }
