@@ -120,6 +120,16 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
 
             # create a round for this competition
             try:
+                has = Round.objects.filter(parent_competition=private_competition,
+                                           grid_path=default_storage.path(serializer.validated_data['grid']),
+                                           param_list_path=default_storage.path(serializer.validated_data['param_list']),
+                                           lab_path=default_storage.path(serializer.validated_data['lab'])).count()
+
+                if has > 0:
+                    return Response({'status': 'Bad request',
+                                     'message': 'You already have one round with those files!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
                 with transaction.atomic():
                     r = Round.objects.create(name=uuid.uuid4(), parent_competition=private_competition)
                     CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['grid'], 'grid')
