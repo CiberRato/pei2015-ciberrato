@@ -1222,7 +1222,7 @@ class AuthenticationTestCase(TestCase):
         data = {'round_name': round_name}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {"status": "Bad request", "message": "The grid must have at least one agent!"})
+        self.assertEqual(response.data, {"status": "Bad request", "message": "Your Grid must have at least one agent!"})
 
         # create one agent
         team = Team.objects.get(name="TestTeam")
@@ -1249,11 +1249,20 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {"status": "Bad Request", "message": "The simulator appears to be down!"})
 
+        trial = Trial.objects.all()
+        trial_identifier = trial[0].identifier
+
+        # delete the trial
+        url = "/api/v1/competitions/private/trial/" + trial_identifier + "/"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, "The solo trial has been deleted!")
+        self.assertEqual(Trial.objects.all().count(), 0)
+
         # delete the round
         url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"status": "Deleted", "message": "The round has been deleted!"})
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The solo trials had been deleted!"})
         self.assertEqual(Round.objects.all().count(), 1)
 
         client.force_authenticate(user=None)

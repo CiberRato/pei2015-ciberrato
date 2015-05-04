@@ -222,7 +222,7 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         r.delete()
 
         return Response({'status': 'Deleted',
-                         'message': 'The round has been deleted!'},
+                         'message': 'The solo trials had been deleted!'},
                         status=status.HTTP_200_OK)
 
 
@@ -258,7 +258,7 @@ class RunPrivateTrial(views.APIView):
         # the grid must have at least one agent
         if grid_position.agentgrid_set.count() == 0:
             return Response({'status': 'Bad request',
-                             'message': 'The grid must have at least one agent!'},
+                             'message': 'Your Grid must have at least one agent!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # create trial for this round
@@ -319,4 +319,36 @@ class RunPrivateTrial(views.APIView):
 
         return Response({'status': 'Trial started',
                          'message': 'The solo trial has been launched!'},
+                        status=status.HTTP_200_OK)
+
+
+class SoloTrial(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = TrialSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        B{Destroy} the trial
+        B{URL:} ../api/v1/competitions/private/trial/<trial_identifier>/
+        """
+        # the round must exist
+        trial = Trial.objects.get(identifier=kwargs.get('pk'))
+
+        # the parent competition of the round must be private competition
+        if trial.round.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad request',
+                             'message': 'You can only see this for private competitions!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # the team must be enrolled in the parent competition
+        team_enrolled = TeamEnrolled.objects.filter(competition=trial.round.parent_competition).first()
+        if team_enrolled.team not in request.user.teams.all():
+            return Response({'status': 'Bad request',
+                             'message': 'You can not see the rounds for this competition!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        trial.delete()
+
+        return Response({'status': 'Deleted',
+                         'message': 'The solo trial has been deleted!'},
                         status=status.HTTP_200_OK)
