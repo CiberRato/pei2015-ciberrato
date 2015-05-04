@@ -1391,15 +1391,15 @@ void cbSimulator::startTimer(void)
     connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 
-void cbSimulator::processRobotActions()
+void cbSimulator::processRobotActions(const QString &id)
 {
-	std::cout << typeid(this).name() << std::endl;
-	std::cout << "Processing RobotActions" << std::endl;
+	unsigned int robotid = id.toInt();
+	std::cout << "RobotActions send by robot " << robotid << std::endl;
 	cbRobotAction action;
 	for (unsigned int i = 0; i < robots.size(); i++)
 	{
 		cbRobot *robot = robots[i];
-		if (robot == 0) continue;
+		if (robot == 0 || robot->Id() != robotid) continue;
 		robot->resetReceivedFlags();
 		robot->resetRequestedSensors();
 		while (robot->readAction(&action))
@@ -1573,7 +1573,10 @@ void cbSimulator::processReceptionMessages()
 				cout << robot->Name() << " has been registered\n";
 				gui->appendMessage( QString(robot->Name()) + " has been registered" );
 
-				connect(robot, SIGNAL(readyRead()), this, SLOT(processRobotActions()));
+				QSignalMapper* mapper = new QSignalMapper(this);
+				connect(robot, SIGNAL(readyRead()), mapper, SLOT(map()));
+				mapper->setMapping(robot, QString::number(robot->Id()));
+				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
 
 				UpdateState();
 				UpdateViews();

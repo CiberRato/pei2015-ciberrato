@@ -163,7 +163,7 @@ public slots:
     void setShowMeasures(bool);
     void setShowPositions(bool);
 
-    void processRobotActions();
+    void processRobotActions(const QString&);
     void processPanelCommands();
     void processReceptionMessages();
 
