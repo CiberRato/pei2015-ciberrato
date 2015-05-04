@@ -124,7 +124,7 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
 
                 if has > 0:
                     return Response({'status': 'Bad request',
-                                     'message': 'You already have one round with those files!'},
+                                     'message': 'You already have one solo trial with those files!'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
                 with transaction.atomic():

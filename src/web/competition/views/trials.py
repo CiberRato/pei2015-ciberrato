@@ -203,7 +203,7 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             team = team.competition_agent.agent.team
 
             NotificationTeam.add(team=team, status="ok",
-                                 message="The trial has started!",
+                                 message="The solo trial has started!",
                                  trigger="trial_started")
         else:
             trial.waiting = False
