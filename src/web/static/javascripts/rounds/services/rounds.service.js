@@ -30,7 +30,8 @@
             saveScore: saveScore,
             getScoresByTrial: getScoresByTrial,
             getScoresByRound: getScoresByRound,
-            updateScore: updateScore
+            updateScore: updateScore,
+            getResources: getResources
         };
 
         return Round;
@@ -167,6 +168,10 @@
                 number_of_agents: agents,
                 time: time
             });
+        }
+
+        function getResources(){
+            return $http.get("api/v1/round_resources/");
         }
 
     }

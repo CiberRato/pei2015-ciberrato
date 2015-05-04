@@ -10,7 +10,7 @@ from authentication.serializers import AccountSerializer, AccountSerializerUpdat
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 from tokens.models import UserToken
-from notifications.models import NotificationTeam
+from notifications.models import NotificationTeam, NotificationUser
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -290,6 +290,14 @@ class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
         instance.is_staff = not instance.is_staff
+
+        if instance.is_staff:
+            NotificationUser.add(user=instance, status="info",
+                                 message="Congratulations! Now you are a staff user!")
+        else:
+            NotificationUser.add(user=instance, status="info",
+                                 message="Now you are not a staff user!")
+
         instance.save()
 
         return Response({'status': 'Updated',
@@ -320,6 +328,15 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             instance.is_staff = True
         else:
             instance.is_superuser = False
+
+        if instance.is_staff:
+            NotificationUser.add(user=instance, status="info",
+                                 message="Congratulations! Now you are a staff user!")
+            NotificationUser.add(user=instance, status="info",
+                                 message="Congratulations! Now you are a super user!")
+        else:
+            NotificationUser.add(user=instance, status="info",
+                                 message="Now you are not a super user!")
 
         instance.save()
         return Response({'status': 'Updated',

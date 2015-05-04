@@ -18,7 +18,8 @@
             'ciberonline.grid',
             'SwampDragonServices',
             'ui.ace',
-            'ciberonline.users'
+            'ciberonline.users',
+            'ciberonline.soloTrials'
         ])
         .run(run);
 

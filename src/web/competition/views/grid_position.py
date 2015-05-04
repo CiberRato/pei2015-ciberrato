@@ -213,6 +213,11 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You must be part of the agent team.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
+            if agent.team not in request.user.teams.all():
+                return Response({'status': 'Bad Request',
+                                 'message': 'You must be part of the agent team.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             if not agent.code_valid:
                 return Response({'status': 'Bad Request',
                                  'message': 'The agent must have the code valid!'},

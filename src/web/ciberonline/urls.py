@@ -24,6 +24,9 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
 
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 
+from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
+    PrivateCompetitionRound, RunPrivateTrial, SoloTrial
+
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation, AgentsByTeamValidViewSet
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
@@ -110,12 +113,23 @@ router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
 router_trials.register(r'prepare', PrepareTrial)
 
+# Private Competitions
+router_private_competitions = routers.SimpleRouter()
+router_private_competitions.register(r'list', PrivateCompetitionsUser)
+router_private_competitions.register(r'rounds', PrivateCompetitionsRounds)
+router_private_competitions.register(r'round', PrivateCompetitionRound)
+router_private_competitions.register(r'trial', SoloTrial)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/me/$', MyDetails.as_view(), name="ME"),
                        url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
+                       url(r'^api/v1/competitions/private/', include(router_private_competitions.urls)),
+                       url(r'^api/v1/competitions/private/launch_trial/$', RunPrivateTrial.as_view(),
+                           name="Launch private trial"),
+
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
                        url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),
