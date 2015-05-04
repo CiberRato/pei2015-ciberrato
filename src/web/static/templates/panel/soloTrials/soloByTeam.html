@@ -15,26 +15,34 @@
                         <table ng-if="vm.solos.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
-                                <th>Trials</th>
                                 <th>Grid</th>
                                 <th>Lab</th>
                                 <th>Param List</th>
+                                <th>Trials</th>
+                                <th>Remove</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.solos">
-                                <td>
-                                    <a href="/panel/{{value.name}}">Trials</a>
-                                </td>
                                 <td>{{value.grid}}</td>
                                 <td>{{value.lab}}</td>
-                                <td>{{value.param_list}}</a>
-
+                                <td>{{value.param_list}}</td>
+                                <td><a ng-if="vm.solos.length != 0" href="/panel/{{value.name}}" class="btn awe-arrow-right"></a></td>
+                                <td><a data-toggle="modal" href="#confirmType{{key}}" class="btn btn-primary btn-flat">X</a>
+                                    <div  class="modal fade hide"  id="confirmType{{key}}">
+                                        <div class="modal-body">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <p align="center"><strong>This Solo Trial will be Removed!</strong></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a ng-click="vm.deleteSoloTrial(value.name)" class="btn btn-alt btn-danger" data-dismiss="modal">Delete</a>
+                                        </div>
+                                    </div>
                                 </td>
-
                             </tr>
                             </tbody>
                         </table>
+                        <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
 
                         <a ng-if="vm.solos.length == 0" class="btn btn-alt btn-large btn-success" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial">Create your First Solo Trial</a>
                     </div>

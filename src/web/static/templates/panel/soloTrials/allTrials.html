@@ -18,6 +18,7 @@
                                 <th>Date</th>
                                 <th>State</th>
                                 <th>Watch Trial</th>
+                                <th>Remove</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -25,10 +26,13 @@
                                 <td>{{value.date}}&nbsp;&nbsp;&nbsp;{{value.hour}}</td>
                                 <td>{{value.state}}</td>
                                 <td>Watch</td>
+                                <td><a ng-click="vm.removeTrial(value.identifier)" class="btn btn-primary btn-flat">X</a>
+
 
                             </tr>
                             </tbody>
                         </table>
+                        <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
                         <a ng-if="vm.trials.trials.length != 0" class="btn btn-alt btn-large btn-success" ng-click="vm.launchTrial()">Launch Trial</a>
                         <a ng-if="vm.trials.trials.length == 0" class="btn btn-alt btn-large btn-success" ng-click="vm.launchTrial()">Launch your First Trial</a>
                     </div>
