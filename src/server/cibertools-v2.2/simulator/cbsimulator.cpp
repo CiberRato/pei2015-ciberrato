@@ -1503,7 +1503,6 @@ void cbSimulator::processReceptionMessages()
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;
-		QThread * thr;
 		QSignalMapper* mapper;
 		switch (form.type)
 		{
