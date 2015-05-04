@@ -50,7 +50,7 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
             if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
                 return Response({'status': 'Bad Request',
-                                 'message': 'This grid can\'t be seen!'},
+                                 'message': 'You can not create for that competition!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
@@ -86,9 +86,10 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
 
         if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            if trial.round.parent_competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'This trial can\'t be seen!!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.serializer_class(TrialSimplex(trial))
 
@@ -106,7 +107,7 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
+                             'message': 'This trial can\'t be seen!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         trial.delete()
