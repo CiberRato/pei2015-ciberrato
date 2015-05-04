@@ -13310,5 +13310,6 @@ div.jGrowl div.success a:hover {
 }
 
 .editor {
+    top: -30px;
     height: 500px;
 }
