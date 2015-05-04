@@ -13,7 +13,9 @@
             getAll: getAll,
             create: create,
             getTrials: getTrials,
-            launchTrial: launchTrial
+            launchTrial: launchTrial,
+            removeTrial: removeTrial,
+            removeSoloTrial: removeSoloTrial
         };
 
         return SoloTrials;
@@ -43,6 +45,14 @@
             return $http.post("/api/v1/competitions/private/launch_trial/", {
                 round_name: roundName
             });
+        }
+
+        function removeTrial(identifier){
+            return $http.delete("/api/v1/competitions/private/trial/" + identifier + "/");
+        }
+
+        function removeSoloTrial(name){
+            return $http.delete("/api/v1/competitions/private/round/" + name + "/");
         }
     }
 
