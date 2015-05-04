@@ -31,8 +31,6 @@
         }
         function getSimulationSuccessFn(data){
             $scope.simulation = data.data;
-            console.log($scope.simulation);
-            //console.log("simulation" + simulation);
             console.log("ACTIVATED");
             Competition.getCompetition($scope.simulation.competition_name).then(getCompetitionSucess, getCompetitionError);
 
@@ -41,7 +39,6 @@
 
         function getCompetitionSucess(data){
             $scope.competition = data.data;
-            console.log($scope.competition);
             StreamViewer.getLabViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getLabSuccessFn, getErrorFn);
 
         }
@@ -58,7 +55,6 @@
         }
 
         function getLabSuccessFn(data){
-            console.log(data.data);
             console.log("TENHO O FICHEIRO: lab!");
             lab = x2js.xml_str2json(data.data);
 
@@ -90,6 +86,7 @@
 
         function PrepareParameters(){
             $scope.lab_obj = angular.fromJson(lab);
+            console.log($scope.lab_obj);
             $scope.parameters_obj = angular.fromJson(parameters);
             $scope.grid_obj = angular.fromJson(grid);
 
@@ -269,17 +266,18 @@
             var y;
             var color;
             var dir;
-            if($scope.numRobots==1){
+
+            for (i = 0; i < $scope.robot.length; i++) {
                 ctx2.beginPath();
-                ctx2.arc($scope.robot.Pos._X * $scope.zoom, $scope.robot.Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
                 ctx2.fillStyle = "rgba(0, 0, 0, 0.0)";
                 ctx2.lineWidth = 1;
                 ctx2.strokeStyle = $scope.circleBorder;
                 ctx2.stroke();
-                if($scope.robot.Scores._Collision=='True'){
-                    x =  $scope.robot.Pos._X * $scope.zoom - $scope.zoom/2;
-                    y =  $scope.robot.Pos._Y * $scope.zoom - $scope.zoom/2;
-                    dir = $scope.dir[0];
+                if($scope.robot[i].Scores._Collision=='True'){
+                    x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
+                    y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
+                    dir = $scope.dir[i];
                     ctx2.save();
                     ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
                     ctx2.rotate(dir * Math.PI/180);
@@ -289,10 +287,10 @@
                     ctx2.restore();
                 }
                 else{
-                    x =  $scope.robot.Pos._X * $scope.zoom - $scope.zoom/2;
-                    y =  $scope.robot.Pos._Y * $scope.zoom - $scope.zoom/2;
-                    color = $scope.mickeyColor[0];
-                    dir = $scope.dir[0];
+                    x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
+                    y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
+                    color = $scope.mickeyColor[i];
+                    dir = $scope.dir[i];
                     ctx2.save();
                     ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
                     ctx2.rotate(dir * Math.PI/180);
@@ -300,42 +298,6 @@
                     ctx2.fill();
                     ctx2.stroke();
                     ctx2.restore();
-                }
-
-            }
-            else {
-                for (i = 0; i < $scope.robot.length; i++) {
-                    ctx2.beginPath();
-                    ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
-                    ctx2.fillStyle = "rgba(0, 0, 0, 0.0)";
-                    ctx2.lineWidth = 1;
-                    ctx2.strokeStyle = $scope.circleBorder;
-                    ctx2.stroke();
-                    if($scope.robot[i].Scores._Collision=='True'){
-                        x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
-                        y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
-                        dir = $scope.dir[i];
-                        ctx2.save();
-                        ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
-                        ctx2.rotate(dir * Math.PI/180);
-                        ctx2.drawImage($scope.blackmouse, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
-                        ctx2.fill();
-                        ctx2.stroke();
-                        ctx2.restore();
-                    }
-                    else{
-                        x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
-                        y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
-                        color = $scope.mickeyColor[i];
-                        dir = $scope.dir[i];
-                        ctx2.save();
-                        ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
-                        ctx2.rotate(dir * Math.PI/180);
-                        ctx2.drawImage(color, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
-                        ctx2.fill();
-                        ctx2.stroke();
-                        ctx2.restore();
-                    }
                 }
             }
         }
@@ -368,14 +330,11 @@
 
             /* Retrieve spawning direction for every robot */
             $scope.dir = [];
-            if($scope.numRobots>1){
-                for(i=0; i<$scope.numRobots; i++){
-                    $scope.dir[i] = parseInt($scope.logBuff_obj[0].LogInfo.Robot[i].Pos._Dir) + 90;
-                }
+            for(i=0; i<$scope.numRobots; i++){
+                $scope.dir[i] = parseInt($scope.logBuff_obj[0].LogInfo.Robot[i].Pos._Dir) + 90;
             }
-            else{
-                $scope.dir[0] = parseInt($scope.logBuff_obj[0].LogInfo.Robot.Pos._Dir) + 90;
-            }
+
+
 
 
             /* Robots Object */
@@ -506,7 +465,6 @@
                             $scope.idx++;
                         }
                     }
-                    //console.log("IDX"+$scope.idx);
                 }catch(TypeError){
 
                 }
