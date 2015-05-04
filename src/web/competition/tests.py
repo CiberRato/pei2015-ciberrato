@@ -1170,7 +1170,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, [])
 
         # now let's create one round for this competition based on the files
-        url = "/api/v1/competitions/private/create_round/"
+        url = "/api/v1/competitions/private/round/"
         data = {'competition_name': competition_name,
                 'grid': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml',
                 'param_list': 'resources/param_lists/param0.xml',
@@ -1186,7 +1186,7 @@ class AuthenticationTestCase(TestCase):
                                'grid': u'Ciber2005_FinalGrid.xml'})
 
         # an error round
-        url = "/api/v1/competitions/private/create_round/"
+        url = "/api/v1/competitions/private/round/"
         data = {'competition_name': competition_name,
                 'grid': 'resources/grids/CiberRato2005/Ciber2005_FinalGridx.xml',
                 'param_list': 'resources/grids/CiberRato2005/Ciber2005_FinalxGrid.xml',

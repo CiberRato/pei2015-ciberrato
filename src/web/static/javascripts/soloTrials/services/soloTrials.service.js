@@ -27,7 +27,7 @@
         }
 
         function create(competitionName, grid, lab, param){
-            return $http.post("/api/v1/competitions/private/create_round/", {
+            return $http.post("/api/v1/competitions/private/round/", {
                 competition_name: competitionName,
                 grid: grid,
                 lab: lab,

@@ -74,7 +74,8 @@ class PrivateCompetitionsRounds(mixins.RetrieveModelMixin, viewsets.GenericViewS
         return Response(serializer.data)
 
 
-class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                              mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = InputPrivateRoundSerializer
 
@@ -84,7 +85,7 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
     def create(self, request, *args, **kwargs):
         """
         B{Create} a private competition round
-        B{URL:} ../api/v1/competitions/private/create_round/
+        B{URL:} ../api/v1/competitions/private/round/
 
         :type  competition_name: str
         :param competition_name: The competition name
@@ -129,9 +130,9 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
 
                 with transaction.atomic():
                     r = Round.objects.create(name=uuid.uuid4(), parent_competition=private_competition)
-                    CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['grid'], 'grid')
-                    CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['param_list'], 'param_list')
-                    CreatePrivateCompetitionRound.set_param(r, serializer.validated_data['lab'], 'lab')
+                    PrivateCompetitionRound.set_param(r, serializer.validated_data['grid'], 'grid')
+                    PrivateCompetitionRound.set_param(r, serializer.validated_data['param_list'], 'param_list')
+                    PrivateCompetitionRound.set_param(r, serializer.validated_data['lab'], 'lab')
             except IntegrityError, e:
                 return Response({'status': 'Bad request',
                                  'message': e.message},
@@ -156,11 +157,6 @@ class CreatePrivateCompetitionRound(mixins.CreateModelMixin, viewsets.GenericVie
         setattr(r, param + "_path", default_storage.path(path))
         setattr(r, param + "_can_delete", False)
         r.save()
-
-
-class GetRoundTrials(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
-    queryset = Round.objects.all()
-    serializer_class = PrivateRoundTrialsSerializer
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -198,7 +194,7 @@ class GetRoundTrials(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, viewse
         private_round = PrivateRoundTrials(r, trials)
 
         # serializer
-        serializer = self.serializer_class(private_round)
+        serializer = PrivateRoundTrialsSerializer(private_round)
 
         return Response(serializer.data)
 
