@@ -164,7 +164,7 @@ public slots:
     void setShowPositions(bool);
 
     void processRobotActions(const QString&);
-    void processPanelCommands();
+    void processPanelCommands(const QString&);
     void processReceptionMessages();
 
 signals:

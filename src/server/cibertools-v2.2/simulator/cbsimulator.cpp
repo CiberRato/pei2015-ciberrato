@@ -1394,7 +1394,8 @@ void cbSimulator::startTimer(void)
 void cbSimulator::processRobotActions(const QString &id)
 {
 	unsigned int robotid = id.toInt();
-	std::cout << "RobotActions send by robot " << robotid << std::endl;
+	// debug
+	//std::cout << "RobotActions send by robot " << robotid << std::endl;
 	cbRobotAction action;
 	for (unsigned int i = 0; i < robots.size(); i++)
 	{
@@ -1447,66 +1448,63 @@ void cbSimulator::processRobotActions(const QString &id)
 		}
 	}
 }
-void cbSimulator::processPanelCommands()
+void cbSimulator::processPanelCommands(const QString &panelId)
 {
-	std::cout << "Processing PanelCommands" << std::endl;
+	unsigned int i = panelId.toInt();
+	//std::cout << "Processing panel commands for panel with id " << i << std::endl;
 	cbPanelCommand command;
-	for (unsigned int i = 0; i < panels.size(); i++)
+	while (((cbPanel *) panels[i])->readCommand(&command))
 	{
-		while (((cbPanel *) panels[i])->readCommand(&command))
+		switch (command.type)
 		{
-			switch (command.type)
+		case cbPanelCommand::START:
+			start();
+			break;
+		case cbPanelCommand::RESTART:
+			reset();
+			break;
+		case cbPanelCommand::STOP:
+			stop();
+			break;
+		case cbPanelCommand::ROBOTDEL:
+		{
+			unsigned int id = command.robot.id;
+			if (id >= 1 && id <= robots.size())
 			{
-			case cbPanelCommand::START:
-				start();
-				break;
-			case cbPanelCommand::RESTART:
-				reset();
-				break;
-			case cbPanelCommand::STOP:
-				stop();
-				break;
-			case cbPanelCommand::ROBOTDEL:
-			{
-				unsigned int id = command.robot.id;
-				if (id >= 1 && id <= robots.size())
-				{
-					cbRobot *robot = robots[id - 1];
-					if (robot != 0)
-						robot->remove();
-				}
-				break;
+				cbRobot *robot = robots[id - 1];
+				if (robot != 0)
+					robot->remove();
 			}
-			case cbPanelCommand::PARAMETERS:
-				setParameters(command.param);
-				break;
-			case cbPanelCommand::LAB:
-				setLab(command.lab);
-				if (grid != 0) {
-					buildGraph();
-					setDistMaxFromGridToTarget();
-				}
-
-				break;
-			case cbPanelCommand::GRID:
-				setGrid(command.grid);
+			break;
+		}
+		case cbPanelCommand::PARAMETERS:
+			setParameters(command.param);
+			break;
+		case cbPanelCommand::LAB:
+			setLab(command.lab);
+			if (grid != 0) {
 				buildGraph();
 				setDistMaxFromGridToTarget();
-				break;
-			case cbPanelCommand::UNKNOWN:
-				break;
 			}
+			break;
+		case cbPanelCommand::GRID:
+			setGrid(command.grid);
+			buildGraph();
+			setDistMaxFromGridToTarget();
+			break;
+		case cbPanelCommand::UNKNOWN:
+			break;
 		}
 	}
 }
 void cbSimulator::processReceptionMessages()
 {
-	std::cout << "Processing Reception requests" << std::endl;
 	while (receptionist->CheckIn())
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;
 		QThread * thr;
+		QSignalMapper* mapper;
 		switch (form.type)
 		{
 		case cbClientForm::VIEW:
@@ -1533,7 +1531,11 @@ void cbSimulator::processReceptionMessages()
 			panels[cnt] = form.client.panel;
 			panels[cnt]->Reply(form.addr, form.port, param);
 
-			connect(panels[cnt], SIGNAL(readyRead()), this, SLOT(processPanelCommands()));
+			mapper = new QSignalMapper(this);
+			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
+			//connect(panels[cnt], SIGNAL(readyRead()), this, SLOT(processPanelCommands()));
 
 			cout << "Panel has been registered\n";
 			gui->appendMessage( "Panel has been registered\n" );
@@ -1556,7 +1558,13 @@ void cbSimulator::processReceptionMessages()
 					openLog(logFilename.toLatin1().constData());
 			}
 
-			connect(form.client.panelview, SIGNAL(readyRead()), this, SLOT(processPanelCommands()));
+
+			mapper = new QSignalMapper(this);
+			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
+
+			//connect(form.client.panelview, SIGNAL(readyRead()), this, SLOT(processPanelCommands()));
 
 			cout << "PanelView has been registered\n";
 			gui->appendMessage( "PanelView has been registered\n" );
@@ -1573,7 +1581,7 @@ void cbSimulator::processReceptionMessages()
 				cout << robot->Name() << " has been registered\n";
 				gui->appendMessage( QString(robot->Name()) + " has been registered" );
 
-				QSignalMapper* mapper = new QSignalMapper(this);
+				mapper = new QSignalMapper(this);
 				connect(robot, SIGNAL(readyRead()), mapper, SLOT(map()));
 				mapper->setMapping(robot, QString::number(robot->Id()));
 				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
