@@ -818,13 +818,10 @@ void cbSimulator::UpdateState()
 {
     if(simTime() <= curTime() && isTimed()) {
         nextState = FINISHED;
-	    if (logging) 
+	    if (logging) {
 	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
-	    closeLog();
-
-	    for (unsigned int i = 0; i < robots.size(); i++) {
-	    	disconnect(robots[i], SLOT(map()));
 	    }
+	    closeLog();
     }
 
     if (nextState != curState) {
