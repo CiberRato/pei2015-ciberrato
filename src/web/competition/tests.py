@@ -523,7 +523,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(len(response.data), 3)
 
         # upload resource
-        url = "/api/v1/set_round_file/R1/lab/"
+        url = "/api/v1/set_round_file/C1/R1/lab/"
         data = {'path': 'resources/labs/CiberRTSS2007/CiberRTSS07_FinalLab.xml'}
         response = client.post(path=url, data=data)
         self.assertEqual(response.data, {"status": "Uploaded", "message": "The file has been associated!"})

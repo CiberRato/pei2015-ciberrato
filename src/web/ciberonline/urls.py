@@ -17,7 +17,7 @@ from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile, \
-    UploadResourceFile
+    UploadResourceFile, GetRoundJsonFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition, \
     RankingByTeamInCompetition
@@ -164,8 +164,13 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
                            GetRoundFile.as_view(),
                            name="Get round file"),
+                       # get json round file
+                       url(
+                           r'^api/v1/competitions/round_json_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
+                           GetRoundJsonFile.as_view(),
+                           name="Get json round file"),
                        # set round file
-                       url(r'^api/v1/set_round_file/(?P<round_name>.+)/(?P<param>.+)/$',
+                       url(r'^api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
                            UploadResourceFile.as_view(), name="Set round file"),
 
                        # get agent files

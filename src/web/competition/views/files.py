@@ -12,6 +12,9 @@ from ..models import Competition, Round
 from ..renderers import PlainTextRenderer
 from ..permissions import IsStaff
 
+import xmltodict
+import json
+
 
 class GetRoundFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
@@ -53,6 +56,93 @@ class GetRoundFile(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         return Response(data)
+
+
+class JsonListElements:
+    def __init__(self):
+        self.prevPath = None
+        self.count = 0
+        self.list = None
+        self.lab = {'Corner': None, 'Wall': None, 'Beacon': None, 'Target': None}
+        self.grid = {'Position': None}
+        self.params = {}
+        self.data = {'Robot': None, 'IRSensor': None}
+
+    def postprocessorGrid(self, path, key, value):
+        self.list = self.grid
+        return self.postprocessor(path, key, value)
+
+    def postprocessorLab(self, path, key, value):
+        self.list = self.lab
+        return self.postprocessor(path, key, value)
+
+    def postprocessorParams(self, path, key, value):
+        self.list = self.params
+        return self.postprocessor(path, key, value)
+
+    def postprocessor(self, path, key, value):
+        if key in self.list.keys() and self.list[key] == None:
+            self.list[key] = len(path)
+            tupl = key, [value]
+        else:
+            tupl = key, value
+        for key in self.list.keys():
+            if self.list[key] != None and self.list[key] > len(path):
+                self.list[key] = None
+        return tupl
+
+
+class GetRoundJsonFile(views.APIView):
+    renderer_classes = (PlainTextRenderer,)
+
+    @staticmethod
+    def get(request, competition_name, round_name, param):
+        """
+        B{Retrieve} the round files
+        B{URL:} ../api/v1/competitions/round_json_file/<competition_name>/<round_name>/<param>/
+
+        Get Round Files as json
+
+        :type  competition_name: str
+        :param competition_name: The agent name
+        :type  round_name: str
+        :param round_name: The team name
+        :type  param: str
+        :param param: The file type: param_list, lab, grid
+        """
+        if param != 'param_list' and param != 'lab' and param != 'grid':
+            return Response({'status': 'Bad request',
+                             'message': 'A valid *file*'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # see if round exists
+        competition = get_object_or_404(Competition.objects.all(), name=competition_name)
+        r = get_object_or_404(Round.objects.all(), name=round_name, parent_competition=competition)
+
+        try:
+            if bool(getattr(r, param + '_path', '')) and default_storage.exists(getattr(r, param + '_path', '')):
+                data = default_storage.open(getattr(r, param + '_path', '')).read()
+
+                if param == 'param_list':
+                    json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorParams)
+                elif param == 'lab':
+                    json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorLab)
+                else:
+                    json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorGrid)
+
+                json_data = json.dumps(json_obj)
+                json_data = json_data.replace("@", "_")
+                json_data = json_data.replace('"#text": "\\""', "")
+            else:
+                return Response({'status': 'Bad request',
+                                 'message': 'The file doesn\'t exists!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response({'status': 'Bad request',
+                             'message': 'The file doesn\'t exists'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(json_data)
 
 
 class UploadRoundXMLView(views.APIView):
@@ -160,13 +250,15 @@ class UploadResourceFile(views.APIView):
     def get_permissions(self):
         return permissions.IsAuthenticated(), IsStaff(),
 
-    def post(self, request, round_name, param):
+    def post(self, request, competition_name, round_name, param):
         """
         B{Set} the round file
-        B{URL:} ../api/v1/set_round_file/<round_name>/<param>/
+        B{URL:} ../api/v1/set_round_file/<competition_name>/<round_name>/<param>/
 
         Upload resource
 
+        :type  competition_name: str
+        :param competition_name: The competition name
         :type  round_name: str
         :param round_name: The round name
         :type  param: str
@@ -197,7 +289,8 @@ class UploadResourceFile(views.APIView):
                              'message': 'Please provide one of those params: grid, lab or param_list'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        r = get_object_or_404(Round.objects.all(), name=round_name)
+        competition = get_object_or_404(Competition.objects.all(), name=competition_name)
+        r = get_object_or_404(Round.objects.all(), name=round_name, parent_competition=competition)
 
         if getattr(r, param + "_path", None) is not None and getattr(r, param + "_can_delete"):
             default_storage.delete(getattr(r, param + "_path", None))
