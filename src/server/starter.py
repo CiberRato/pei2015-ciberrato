@@ -130,7 +130,7 @@ class Starter:
 		(viewer_c, starter_c) = multiprocessing.Pipe(True)
 		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = Thread(target=viewer.main, args=(sim_id,starter_c,timeout_event,))
+		viewer_thread = Thread(target=viewer.main, args=(sim_id, allow_remote, starter_c,timeout_event,))
 		viewer_thread.start()
 		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
