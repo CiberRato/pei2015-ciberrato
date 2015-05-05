@@ -287,9 +287,9 @@ bool cbRobot::readAction(cbRobotAction *action)
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
 
-	// REMEMBER TO CHECK THIS....
-    //if (showActions)
-    //    simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
+	
+    if (showActions)
+        simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
 
 	/* parse xml message */
     parser.setContentHandler(&handler);
@@ -297,8 +297,8 @@ bool cbRobot::readAction(cbRobotAction *action)
 	if (!parser.parse(source))
 	{
         cerr << "cbRobot::Fail parsing xml action message: \"" << xmlBuff << "\"\n";
-        //simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
-        //simulator->GUI()->appendMessage( QString(" \"")+xmlBuff+"\"" , true);
+        simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
+        simulator->GUI()->appendMessage( QString(" \"")+xmlBuff+"\"" , true);
 
 		return false;
 	}
