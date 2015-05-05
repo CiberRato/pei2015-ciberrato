@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('TrialsController', TrialsController);
 
-    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout'];
+    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon'];
 
-    function TrialsController(SoloTrials, $routeParams, $timeout){
+    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon){
         var vm = this;
         vm.roundName = $routeParams.identifier;
         vm.launchTrial = launchTrial;
@@ -80,6 +80,34 @@
 
                     console.log(vm.trials.trials[i].hour);
                 }
+                $dragon.onReady(function() {
+                    swampdragon.open(function () {
+                        $dragon.onChannelMessage(function(channels, data) {
+                            /*
+                             if (data.data.message.status == 200){
+                             $.jGrowl(data.data.message.content, {
+                             life: 3500,
+                             theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                             });
+                             }else if(data.data.message.status == 400){
+                             $.jGrowl(data.data.message.content, {
+                             life: 3500,
+                             theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
+                             });
+                             }
+                             */
+                            if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log'){
+                                $timeout(function(){
+                                    getTrials();
+                                });
+                            }
+
+                            console.log(channels);
+                            console.log(data.data._type);
+                            console.log(data.data.message);
+                        });
+                    });
+                });
                 console.log(vm.trials);
             }
 
