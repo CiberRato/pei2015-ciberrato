@@ -45,7 +45,7 @@ CRQDataView::CRQDataView(CRReply *r, CRLab *l, QString skinFName, QWidget *paren
     ui->label_Lab->setText(QString(lab->labName()));
     finalTime = reply->parameters->simTime;
     curTime = 0; // Current time
-    nRobots = 5; // Number of robots by default
+    nRobots = 20; // Number of robots by default
 
     ui->lcdNumber_Time->display(finalTime);
     connect( this, SIGNAL( timeRemaining(int) ), ui->lcdNumber_Time, SLOT( display(int) ) );

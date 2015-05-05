@@ -56,6 +56,21 @@ void CRQRobotInfo::skin(QString skinName)
     char rob3File[4096];
     char rob4File[4096];
     char rob5File[4096];
+    char rob6File[4096];
+    char rob7File[4096];
+    char rob8File[4096];
+    char rob9File[4096];
+    char rob10File[4096];
+    char rob11File[4096];
+    char rob12File[4096];
+    char rob13File[4096];
+    char rob14File[4096];
+    char rob15File[4096];
+    char rob16File[4096];
+    char rob17File[4096];
+    char rob18File[4096];
+    char rob19File[4096];
+    char rob20File[4096];
     char backFile[4096];
     char runFile[4096];
     char waitFile[4096];
@@ -89,7 +104,67 @@ void CRQRobotInfo::skin(QString skinName)
     strcat(rob5File, skinName.toAscii());
     strcat(rob5File, "/rob5/rob.png");
 
-    robFiles << backFile << rob1File << rob2File << rob3File << rob4File << rob5File;
+    strcpy(rob6File, "skins/");
+    strcat(rob6File, skinName.toAscii());
+    strcat(rob6File, "/rob5/rob.png");
+
+    strcpy(rob7File, "skins/");
+    strcat(rob7File, skinName.toAscii());
+    strcat(rob7File, "/rob5/rob.png");
+
+    strcpy(rob8File, "skins/");
+    strcat(rob8File, skinName.toAscii());
+    strcat(rob8File, "/rob5/rob.png");
+
+    strcpy(rob9File, "skins/");
+    strcat(rob9File, skinName.toAscii());
+    strcat(rob9File, "/rob5/rob.png");
+
+    strcpy(rob10File, "skins/");
+    strcat(rob10File, skinName.toAscii());
+    strcat(rob10File, "/rob5/rob.png");
+
+    strcpy(rob11File, "skins/");
+    strcat(rob11File, skinName.toAscii());
+    strcat(rob11File, "/rob5/rob.png");
+
+    strcpy(rob12File, "skins/");
+    strcat(rob12File, skinName.toAscii());
+    strcat(rob12File, "/rob5/rob.png");
+
+    strcpy(rob13File, "skins/");
+    strcat(rob13File, skinName.toAscii());
+    strcat(rob13File, "/rob5/rob.png");
+
+    strcpy(rob14File, "skins/");
+    strcat(rob14File, skinName.toAscii());
+    strcat(rob14File, "/rob5/rob.png");
+
+    strcpy(rob15File, "skins/");
+    strcat(rob15File, skinName.toAscii());
+    strcat(rob15File, "/rob5/rob.png");
+
+    strcpy(rob16File, "skins/");
+    strcat(rob16File, skinName.toAscii());
+    strcat(rob16File, "/rob5/rob.png");
+
+    strcpy(rob17File, "skins/");
+    strcat(rob17File, skinName.toAscii());
+    strcat(rob17File, "/rob5/rob.png");
+
+    strcpy(rob18File, "skins/");
+    strcat(rob18File, skinName.toAscii());
+    strcat(rob18File, "/rob5/rob.png");
+
+    strcpy(rob19File, "skins/");
+    strcat(rob19File, skinName.toAscii());
+    strcat(rob19File, "/rob5/rob.png");
+
+    strcpy(rob20File, "skins/");
+    strcat(rob20File, skinName.toAscii());
+    strcat(rob20File, "/rob5/rob.png");
+
+    robFiles << backFile << rob1File << rob2File << rob3File << rob4File << rob5File << rob6File << rob7File << rob8File << rob9File << rob10File << rob11File << rob12File << rob13File << rob14File << rob15File << rob16File << rob17File << rob18File << rob19File << rob20File;
 
     strcpy(runFile, "skins/");
     strcat(runFile, skinName.toAscii());

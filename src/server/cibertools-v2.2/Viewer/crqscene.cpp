@@ -39,7 +39,7 @@ CRQScene::CRQScene( CRLab *lb, QObject * parent  )
     zoom = 34;			// 1 unidade no  lab ==> 34 pixeis no scene
 	lab = lb;
 	robotsVarStatus = 0;
-	nRobots = 5;
+	nRobots = 20;
 	labStatus = 0;
 	usedId = NULL;
 	bgInitSprite = NULL;
@@ -440,16 +440,16 @@ void CRQScene::skin(QString skinFileName)
         skinName = QString(tmp).trimmed();
 		fp.close();
 
-        robPixmap.resize(5);
-        robPixmapReturn.resize(5);
-        robPixmapCollision.resize(5);
-        startPixmap.resize(5);
+        robPixmap.resize(20);
+        robPixmapReturn.resize(20);
+        robPixmapCollision.resize(20);
+        startPixmap.resize(20);
 
         // robot files
-        for(unsigned int r=0; r < 5; r++)
+        for(unsigned int r=0; r < 20; r++)
         {
             QString baseName;
-            baseName = QString("skins/")+skinName+"/rob"+QString::number(r+1)+"/";
+            baseName = QString("skins/")+skinName+"/rob"+QString::number(r%5+1)+"/";
             QString robFile = baseName;
             robFile.append("rob.png");
             QString robFileReturn = baseName;
