@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <sstream>
 
 using namespace std;
 
@@ -12,12 +13,12 @@ CRQRobotInfo::CRQRobotInfo(CRRobot *rob, QString skinName, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    skin(skinName); /* Change skin */
+    skin(skinName, rob->id()); /* Change skin */
     robot = rob;
 
     ui->lcdNumber_ID->display(rob->id());
 
-    QPixmap *pixx = new QPixmap(robFiles[rob->id()]);
+    QPixmap *pixx = new QPixmap(robFiles[1]);
     QMatrix mat;
     QPixmap tmp = pixx->transformed(mat.rotate(-90));
     ui->label_Icon->setPixmap(tmp.scaled(ui->label_Icon->size()));
@@ -49,13 +50,9 @@ CRQRobotInfo::~CRQRobotInfo()
     delete ui;
 }
 
-void CRQRobotInfo::skin(QString skinName)
+void CRQRobotInfo::skin(QString skinName, int robotid)
 {
-    char rob1File[4096];
-    char rob2File[4096];
-    char rob3File[4096];
-    char rob4File[4096];
-    char rob5File[4096];
+    char robFile[4096];
     char backFile[4096];
     char runFile[4096];
     char waitFile[4096];
@@ -69,27 +66,17 @@ void CRQRobotInfo::skin(QString skinName)
     strcat(backFile, skinName.toAscii());
     strcat(backFile, "/robbg.png");
 
-    strcpy(rob1File, "skins/");
-    strcat(rob1File, skinName.toAscii());
-    strcat(rob1File, "/rob1/rob.png");
+    // Need the sstream because need to convert an int to a char*
+    strcpy(robFile, "skins/");
+    strcat(robFile, skinName.toAscii());
+    stringstream strs;
+    strs << "/rob";
+    strs << ((robotid-1) % 5) + 1;
+    strs << "/rob.png";
+    string temp_str = strs.str();
 
-    strcpy(rob2File, "skins/");
-    strcat(rob2File, skinName.toAscii());
-    strcat(rob2File, "/rob2/rob.png");
-
-    strcpy(rob3File, "skins/");
-    strcat(rob3File, skinName.toAscii());
-    strcat(rob3File, "/rob3/rob.png");
-
-    strcpy(rob4File, "skins/");
-    strcat(rob4File, skinName.toAscii());
-    strcat(rob4File, "/rob4/rob.png");
-
-    strcpy(rob5File, "skins/");
-    strcat(rob5File, skinName.toAscii());
-    strcat(rob5File, "/rob5/rob.png");
-
-    robFiles << backFile << rob1File << rob2File << rob3File << rob4File << rob5File;
+    strcat(robFile, temp_str.c_str());
+    robFiles << backFile << robFile;
 
     strcpy(runFile, "skins/");
     strcat(runFile, skinName.toAscii());

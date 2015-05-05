@@ -42,8 +42,10 @@ public:
 	~cbGrid();
 
 	int toXml(char *buff, int cnt);
-
+    void positionsCollide(bool);
+    bool getPositionsCollide();
 private:
+    bool collide;
 };
 
 #endif

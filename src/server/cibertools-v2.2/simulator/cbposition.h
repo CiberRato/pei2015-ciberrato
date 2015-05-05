@@ -61,14 +61,12 @@ public:
 	double Y();
 	double radianDirection();
 	double degreeDirection();
-	unsigned int getNumberRobotsAllowed();
 	inline double Direction() { return direction; }
 	inline double directionInDegrees() { return direction*(180/M_PI); }
 
 private:
 	cbPoint coord;
 	double direction;	// in radians
-	unsigned int nRobots;
 };
 
 #endif

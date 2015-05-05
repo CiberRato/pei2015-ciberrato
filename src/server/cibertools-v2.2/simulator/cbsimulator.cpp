@@ -22,7 +22,7 @@
  */
 
 
-
+#include <typeinfo>
 #include "cbposition.h"
 #include "cbparameters.h"
 
@@ -120,6 +120,7 @@ cbSimulator::cbSimulator()
 	curState = nextState = INIT;
 
     logging=false;
+    syncmode = false;
     logStream=0;
 
 	distMaxToTarget=0.0;
@@ -195,6 +196,11 @@ cbSimulator::~cbSimulator()
 		delete logStream;
 		logStream=0;
 	}
+}
+
+void cbSimulator::activateSyncMode() {
+	syncmode = true;
+	param->sync = true;
 }
 
 void cbSimulator::reset()
@@ -275,6 +281,8 @@ void cbSimulator::setGrid(cbGrid *g)
 
 	if(grid!=0) delete grid;
 	/* set the new grid */
+	if (g->getPositionsCollide()) 
+		setCollisions(false);
 	grid = g;
 	/* resize robot array to new grid size */
 	robots.resize(grid->size());
@@ -521,6 +529,7 @@ bool cbSimulator::registerRobot(cbRobot *robot)
         lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
 
     emit robotRegistered((int) id);
+
 	return true;
 }
 
@@ -552,18 +561,8 @@ const char *cbSimulator::curStateAsString()
 
 void cbSimulator::step()
 {
-	//cout.form("Reading robot actions (%u)\n", curCycle);
-	RobotActions();
 	if(logging) 
 		RobotsToXml(*logStream, true, false);
-	//cout.form("Checking new registrations (%u)\n", curCycle);
-	CheckIn();
-	//cout.form("Reading view commands (%u)\n", curCycle);
-	
-	// Viewer can't send messages anymore!
-	// There's a PanelView to do that kind of actions.
-	//ViewCommands();
-	PanelCommands();
 
 	if (curState == RUNNING)
 	{
@@ -587,7 +586,6 @@ void cbSimulator::step()
 		//cout.form("Updating sensors (%u)\n", curCycle);
 		UpdateSensors();
 	}
-
 	//cout.form("Sending sensors to robots(%u)\n", curCycle);
 	SendSensors();
 	//cout.form("Updating views (%u)\n", curCycle);
@@ -597,100 +595,6 @@ void cbSimulator::step()
 
 }
 
-/*
- * Private auxiliary member functions
- */
-
-/*!
-	Process registration requests of all
-	clients waiting at reception.
-*/
-void cbSimulator::CheckIn()
-{
-	while (receptionist->CheckIn())
-	{
-		cbClientForm &form = receptionist->Form();
-		int cnt;
-		switch (form.type)
-		{
-			case cbClientForm::VIEW:
-				//cout << "View form is going to be processed\n";
-				cnt = views.size();
-				views.resize(cnt+1);
-				views[cnt] = form.client.view;
-
-				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
-
-                if (curState==INIT) {
-				    nextState=STOPPED;
-                    if(logging)
-                        openLog(logFilename.toLatin1().constData());
-                }
-                cout << "Viewer has been registered\n";
-                gui->appendMessage( "Viewer has been registered\n" );
-				break;
-			case cbClientForm::PANEL:
-				//cout << "Panel form is going to be processed\n";
-				cnt = panels.size();
-				panels.resize(cnt+1);
-				panels[cnt] = form.client.panel;
-				panels[cnt]->Reply(form.addr, form.port, param);
-
-				cout << "Panel has been registered\n";
-                gui->appendMessage( "Panel has been registered\n" );
-				break;
-			case cbClientForm::PANELVIEW:
-				cnt = panels.size();
-				panels.resize(cnt+1);
-				panels[cnt] = form.client.panelview;
-				panels[cnt]->Reply(form.addr, form.port, param, grid, lab);
-
-				cnt = views.size();
-				views.resize(cnt+1);
-				views[cnt] = form.client.panelview;
-				views[cnt]->AcceptWithoutReply(form.addr, form.port);
-
-                if (curState==INIT) {
-				    nextState=STOPPED;
-                    if (logging)
-                        openLog(logFilename.toLatin1().constData());
-                }
-				cout << "PanelView has been registered\n";
-                gui->appendMessage( "PanelView has been registered\n" );
-                break;
-			case cbClientForm::ROBOT:
-			case cbClientForm::ROBOTBEACON:
-			{
-				//cout << "Robot form is going to be processed\n";
-				cbRobot *robot = form.client.robot;
-				if (registerRobot(robot))
-				{
-					robot->Reply(form.addr, form.port, param);
-                    cout << robot->Name() << " has been registered\n";
-                    gui->appendMessage( QString(robot->Name())+" has been registered" );
-				}
-				else // robot was refused
-				{
-					robot->Refuse(form.addr, form.port);
-                    cout << robot->Name() << " has been refused\n";
-                    gui->appendMessage( QString(robot->Name())+" has been refused", true);
-					delete robot;
-				}
-				break;
-			}
-			case cbClientForm::UNKNOWN:
-                cerr << "UNKNOWN form was received, and discarded\n";
-                gui->appendMessage( "UNKNOWN form was received, and discarded", true);
-				// a refused replied must be sent
-				break;
-			case cbClientForm::NOBODY:
-                cerr << "NOBODY form was received, and discarded\n";
-                gui->appendMessage( "NOBODY form was received, and discarded", true);
-				break;
-		}
-	}
-}
-
 void cbSimulator::start()
 {
     if(curState==STOPPED)
@@ -698,6 +602,12 @@ void cbSimulator::start()
         nextState = RUNNING;
         emit simRunning(true);
         emit simReset(false);
+        step();
+        
+        if (!syncmode) {
+			timer.start(cycleTime());
+	   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
+		}
     }
 }
 
@@ -708,41 +618,6 @@ void cbSimulator::stop()
         nextState = STOPPED;
         emit simRunning(false);
     }
-}
-
-/*!
-	For each robot read and process every action message.
-	These messages give new values for left and right motors
-	and for the end led.
-*/
-void cbSimulator::RobotActions()
-{
-	cbRobotAction action;
-	for (unsigned int i=0; i<robots.size(); i++)
-	{
-		cbRobot *robot = robots[i];
-        if (robot==0) continue;
-        robot->resetReceivedFlags();
-        robot->resetRequestedSensors();
-		while (robot->readAction(&action))
-		{
-			//cerr << "Robot action received l=" << action.leftMotor
-			//     << " r=" << action.rightMotor << "\n";
-			if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
-			if (action.rightMotorChanged)    robot->setRightMotor(   action.rightMotor);
-			if (action.endLedChanged)        robot->setEndLed(       action.endLed);
-			if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
-			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
-
-			for (unsigned int r=0; r< action.sensorRequests.size(); r++) {
-				robot->requestSensor(action.sensorRequests[r]);
-			}
-
-			if (action.sayReceived)   robot->setSayMessage(action.sayMessage);
-
-			action.sensorRequests.clear();
-		}
-	}
 }
 
 /*!
@@ -928,7 +803,7 @@ void cbSimulator::UpdateViews()
 		const char* xmlCharA = xmlString.c_str();
 
 		for (unsigned int j = 0; j < views.size(); j++) {
-			cbView *view = views[j];
+			cbView *view = (cbView *) views[j];
 			view->send(xmlCharA, xmlString.length()+1);
 		}
 	}
@@ -943,8 +818,9 @@ void cbSimulator::UpdateState()
 {
     if(simTime() <= curTime() && isTimed()) {
         nextState = FINISHED;
-	    if (logging) 
+	    if (logging) {
 	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
+	    }
 	    closeLog();
     }
 
@@ -953,6 +829,13 @@ void cbSimulator::UpdateState()
             emit simReady(true);
         curState = nextState;
         emit stateChanged(curStateAsString());
+
+        if (curState == FINISHED) {
+        	for (unsigned int i= 0; i < robotMappers.size(); i++) {
+        		if (robotMappers[i] == NULL) continue;
+        		disconnect(robots[i], SIGNAL(readyRead()), robotMappers[i], SLOT(map()));
+        	}
+        }
     }
 
     for (unsigned int i=0; i<robots.size(); i++)
@@ -984,57 +867,6 @@ void cbSimulator::RobotsToXml(ostream &log, bool withActions, bool stateIndepend
 		}
         log << "</LogInfo>\n";
 	}
-}
-
-void cbSimulator::PanelCommands(){
-	cbPanelCommand command;
-	for (unsigned int i=0; i < panels.size(); i++)
-	{
-		while (panels[i]->readCommand(&command))
-		{
-			switch (command.type)
-			{
-				case cbPanelCommand::START:
-					start();
-					break;
-				case cbPanelCommand::RESTART:
-					reset();
-					break;
-				case cbPanelCommand::STOP:
-					stop();
-					break;
-				case cbPanelCommand::ROBOTDEL:
-					{
-						unsigned int id = command.robot.id;
-						if (id >=1 && id <= robots.size())
-						{
-                            cbRobot *robot = robots[id-1];
-                            if (robot != 0)
-                                robot->remove();
-                        }
-						break;
-					}
-				case cbPanelCommand::PARAMETERS:
-					setParameters(command.param);
-					break;
-				case cbPanelCommand::LAB:
-					setLab(command.lab);
-					if(grid != 0) {
-				       buildGraph();
-				       setDistMaxFromGridToTarget();
-					}
-
-					break;
-				case cbPanelCommand::GRID:
-					setGrid(command.grid);
-					buildGraph();
-				    setDistMaxFromGridToTarget();
-					break;
-				case cbPanelCommand::UNKNOWN:
-					break;
-			}
-		}
-	}	
 }
 
 void cbSimulator::buildGraph(void)
@@ -1409,6 +1241,7 @@ void cbSimulator::processEditParameters(void)
 {
 	cycle           = param->cycleTime;
 	endCycle        = param->simTime;
+	syncmode 		= param->sync;
 
 	//Noise
 	cbMotor::noise         = param->motorsNoise;
@@ -1563,8 +1396,226 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    timer.start(cycleTime());
-    QObject::connect(&timer,SIGNAL(timeout()),this,SLOT(step()));
+    connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+}
+
+void cbSimulator::processRobotActions(const QString &id)
+{
+	unsigned int robotid = id.toInt();
+	// debug
+	//std::cout << "RobotActions send by robot " << robotid << std::endl;
+	cbRobotAction action;
+	for (unsigned int i = 0; i < robots.size(); i++)
+	{
+		cbRobot *robot = robots[i];
+		if (robot == 0 || robot->Id() != robotid) continue;
+		robot->resetReceivedFlags();
+		robot->resetRequestedSensors();
+		while (robot->readAction(&action))
+		{
+			//cerr << "Robot action received l=" << action.leftMotor
+			//     << " r=" << action.rightMotor << "\n";
+			if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
+			if (action.rightMotorChanged)    robot->setRightMotor(   action.rightMotor);
+			if (action.endLedChanged)        robot->setEndLed(       action.endLed);
+			if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
+			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
+
+			for (unsigned int r = 0; r < action.sensorRequests.size(); r++) {
+				robot->requestSensor(action.sensorRequests[r]);
+			}
+
+			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
+			if (action.sync) {
+				robot->setWaitingForSync(true);
+
+				if (syncmode) { //&& curState == RUNNING) {
+					bool stepSim = true;
+					for (unsigned int i = 0; i < robots.size(); i++)
+					{
+						cbRobot *robot = robots[i];
+						if (robot == 0) continue;
+						if (!robot->getWaitingForSync()) {
+							stepSim = false;
+							break;
+						}
+					}
+					if (stepSim) {
+						for (unsigned int i = 0; i < robots.size(); i++)
+						{
+							cbRobot *robot = robots[i];
+							if (robot == 0) continue;
+							robot->setWaitingForSync(false);
+						}
+						step();
+					}
+				}
+			}
+
+			action.sensorRequests.clear();
+		}
+	}
+}
+void cbSimulator::processPanelCommands(const QString &panelId)
+{
+	unsigned int i = panelId.toInt();
+	//std::cout << "Processing panel commands for panel with id " << i << std::endl;
+	cbPanelCommand command;
+	while (((cbPanel *) panels[i])->readCommand(&command))
+	{
+		switch (command.type)
+		{
+		case cbPanelCommand::START:
+			start();
+			break;
+		case cbPanelCommand::RESTART:
+			reset();
+			break;
+		case cbPanelCommand::STOP:
+			stop();
+			break;
+		case cbPanelCommand::ROBOTDEL:
+		{
+			unsigned int id = command.robot.id;
+			if (id >= 1 && id <= robots.size())
+			{
+				cbRobot *robot = robots[id - 1];
+				if (robot != 0)
+					robot->remove();
+			}
+			break;
+		}
+		case cbPanelCommand::PARAMETERS:
+			setParameters(command.param);
+			break;
+		case cbPanelCommand::LAB:
+			setLab(command.lab);
+			if (grid != 0) {
+				buildGraph();
+				setDistMaxFromGridToTarget();
+			}
+			break;
+		case cbPanelCommand::GRID:
+			setGrid(command.grid);
+			buildGraph();
+			setDistMaxFromGridToTarget();
+			break;
+		case cbPanelCommand::UNKNOWN:
+			break;
+		}
+	}
+}
+void cbSimulator::processReceptionMessages()
+{
+	while (receptionist->CheckIn())
+	{
+		cbClientForm &form = receptionist->Form();
+		int cnt;
+		QSignalMapper* mapper;
+		switch (form.type)
+		{
+		case cbClientForm::VIEW:
+			//cout << "View form is going to be processed\n";
+			cnt = views.size();
+			views.resize(cnt + 1);
+			views[cnt] = form.client.view;
+
+			views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+
+			if (curState == INIT) {
+				nextState = STOPPED;
+				if (logging)
+					openLog(logFilename.toLatin1().constData());
+			}
+			cout << "Viewer has been registered\n";
+			gui->appendMessage( "Viewer has been registered\n" );
+			UpdateViews();
+			break;
+		case cbClientForm::PANEL:
+			//cout << "Panel form is going to be processed\n";
+			cnt = panels.size();
+			panels.resize(cnt + 1);
+			panels[cnt] = form.client.panel;
+			panels[cnt]->Reply(form.addr, form.port, param);
+
+			mapper = new QSignalMapper(this);
+			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
+
+			cout << "Panel has been registered\n";
+			gui->appendMessage( "Panel has been registered\n" );
+			break;
+		case cbClientForm::PANELVIEW:
+
+			form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
+
+			cnt = panels.size();
+			panels.resize(cnt + 1);
+			panels[cnt] = form.client.panelview;
+
+			cnt = views.size();
+			views.resize(cnt + 1);
+			views[cnt] = form.client.panelview;
+
+			if (curState == INIT) {
+				nextState = STOPPED;
+				if (logging)
+					openLog(logFilename.toLatin1().constData());
+			}
+
+
+			mapper = new QSignalMapper(this);
+			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
+
+			cout << "PanelView has been registered\n";
+			gui->appendMessage( "PanelView has been registered\n" );
+			UpdateViews();
+			break;
+		case cbClientForm::ROBOT:
+		case cbClientForm::ROBOTBEACON:
+		{
+			//cout << "Robot form is going to be processed\n";
+			cbRobot *robot = form.client.robot;
+			if (registerRobot(robot))
+			{
+				robot->Reply(form.addr, form.port, param);
+				cout << robot->Name() << " has been registered\n";
+				gui->appendMessage( QString(robot->Name()) + " has been registered" );
+
+				mapper = new QSignalMapper(this);
+				connect(robot, SIGNAL(readyRead()), mapper, SLOT(map()));
+				mapper->setMapping(robot, QString::number(robot->Id()));
+				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
+
+				robotMappers.resize(robots.size());
+				robotMappers[robot->Id() - 1] = mapper;
+
+				UpdateState();
+				UpdateViews();
+			}
+			else // robot was refused
+			{
+				robot->Refuse(form.addr, form.port);
+				cout << robot->Name() << " has been refused\n";
+				gui->appendMessage( QString(robot->Name()) + " has been refused", true);
+				delete robot;
+			}
+			break;
+		}
+		case cbClientForm::UNKNOWN:
+			cerr << "UNKNOWN form was received, and discarded\n";
+			gui->appendMessage( "UNKNOWN form was received, and discarded", true);
+			// a refused replied must be sent
+			break;
+		case cbClientForm::NOBODY:
+			cerr << "NOBODY form was received, and discarded\n";
+			gui->appendMessage( "NOBODY form was received, and discarded", true);
+			break;
+		}
+	}
 }
 
 bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)

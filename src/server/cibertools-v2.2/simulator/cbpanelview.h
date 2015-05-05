@@ -24,11 +24,13 @@
 #include "cbpanel.h"
 #include "cbview.h"
 
-class cbPanelView : public cbPanel, public cbView
+class cbPanelView : public cbClient, public cbPanelInterface, public cbViewInterface
 {
 public:
 	cbPanelView();
 	~cbPanelView();
+
+    virtual bool readCommand(cbPanelCommand *command);
 };
 
 #endif

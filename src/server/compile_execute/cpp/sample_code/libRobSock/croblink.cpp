@@ -253,6 +253,15 @@ int CRobLink::ReadSensors()
     return n;
 }
 
+void CRobLink::sync() 
+{
+    char xml[128];
+    const char fmt[] = "<Actions> <Sync/> </Actions>\n";
+    unsigned int n = sprintf(xml, "%s", fmt);
+    port.send_info(xml, n+1);
+    //cout << xml;
+}
+
 void CRobLink::requestGround()
 {
     char xml[128];

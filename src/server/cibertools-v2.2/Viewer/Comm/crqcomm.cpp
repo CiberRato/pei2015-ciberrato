@@ -194,6 +194,10 @@ void CRQComm::replyControler()
                 //scene->update();
                 // the score window
                 
+                grid = reply->grid; // Grid given by handler
+                lab->addGrid(grid);         // Add grid to lab
+                scene->drawGrid(lab);   // Draw grid in scene
+                
                 dataView = new CRQDataView(reply, lab, skinFName, 0);
                 scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
                 dataView->show();
@@ -203,10 +207,6 @@ void CRQComm::replyControler()
                                 "Control Panel");
                 if(control == 'y')
                     commControlPanel->show();*/
-
-                grid = reply->grid; // Grid given by handler
-                lab->addGrid(grid);         // Add grid to lab
-                scene->drawGrid(lab);   // Draw grid in scene
                 //scene->update();
                 return;
             }

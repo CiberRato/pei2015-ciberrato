@@ -51,6 +51,8 @@ private:
 	cbGrid *grid;
 	cbPosition pos;
 	cbPoint point;
+
+    unsigned int nRobots;
 };     
 
 #endif

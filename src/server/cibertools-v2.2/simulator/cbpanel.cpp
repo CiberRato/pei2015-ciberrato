@@ -28,7 +28,7 @@
 
 using namespace std;
 
-cbPanel::cbPanel() : cbClient()
+cbPanel::cbPanel()
 {
 }
 

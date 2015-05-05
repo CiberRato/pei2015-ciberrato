@@ -134,6 +134,9 @@ bool cbParamHandler::startElement( const QString&, const QString&, const QString
         const QString &homeReward = attr.value(QString("HomeReward"));
         if (!homeReward.isNull()) param->homeReward = homeReward.toInt();
 
+		const QString &sync = attr.value(QString("Sync"));
+        if (!sync.isNull()) param->sync = (sync == "On" ? true : false);
+
 		const QString &labfn = attr.value(QString("Lab"));
 		if (!labfn.isNull()) param->labFilename = labfn;
 		const QString &gridfn = attr.value(QString("Grid"));

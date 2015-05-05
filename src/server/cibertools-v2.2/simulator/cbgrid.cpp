@@ -25,6 +25,7 @@
 
 cbGrid::cbGrid()
 {
+    collide = false;
 }
 
 cbGrid::~cbGrid()
@@ -53,4 +54,12 @@ int cbGrid::toXml(char *xml, int n)
     }
               
 	return cnt;
+}
+
+bool cbGrid::getPositionsCollide() {
+    return collide;
+}
+
+void cbGrid::positionsCollide(bool val) {
+    collide = val;
 }

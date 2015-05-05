@@ -19,14 +19,48 @@
 */
 
 #include "cbpanelview.h"
+#include "cbpanelhandler.h"
 #include <iostream>
 
 using namespace std;
 
-cbPanelView::cbPanelView() : cbPanel(), cbView()
+cbPanelView::cbPanelView() : cbClient(), cbPanelInterface(), cbViewInterface()
 {
 }
 
 cbPanelView::~cbPanelView()
 {
+}
+
+bool cbPanelView::readCommand(cbPanelCommand *command)
+{
+    /* look for an incoming message */
+    char xmlBuff[1024*32];
+    int xmlSize;
+
+    if (!hasPendingDatagrams())
+        return false;
+
+    if ((xmlSize=readDatagram(xmlBuff, 1024*32-1)) < 0)
+    {
+        cerr << "Error reading from Viewer Socket - " << errorString().toStdString();
+        return false;
+    }
+    else xmlBuff[xmlSize]='\0';
+
+#ifdef DEBUG_VIEW
+    cerr << "cbPanelView: " << xmlBuff << endl;
+#endif
+
+    /* parse xml message */
+    source.setData(QByteArray(xmlBuff));
+    cbPanelHandler *handler = new cbPanelHandler(QString(xmlBuff));
+    parser.setContentHandler(handler);
+    if (!parser.parse(source))
+    {
+        cerr << "cbPanelView::Fail parsing xml view message\n";
+        return false;
+    }
+    *command = handler->Command();
+    return true;
 }

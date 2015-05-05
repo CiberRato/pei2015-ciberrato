@@ -28,8 +28,10 @@
 #include "cbsimulatorGUI.h"
 
 #include <QObject>
+#include <QtGui>
 #include <QVector>
 #include <QTimer>
+#include <QThread>
 #include <iostream>
 #include <vector>
 
@@ -46,6 +48,9 @@ class cbGrid;
 class cbRobot;
 class cbView;
 class cbPanel;
+class cbClient;
+class cbViewInterface;
+class cbPanelInterface;
 class cbPanelView;
 class cbReceptionist;
 
@@ -129,6 +134,8 @@ public:
 	void setDefaultGrid(void);
 	void setDefaultParameters(void);
 
+    void activateSyncMode();
+
 public:
 	//DEBUG
 #define GRIDSIZE 84
@@ -157,6 +164,10 @@ public slots:
     void setShowMeasures(bool);
     void setShowPositions(bool);
 
+    void processRobotActions(const QString&);
+    void processPanelCommands(const QString&);
+    void processReceptionMessages();
+
 signals:
     void toggleGPS(bool);
     void toggleScoreSensor(bool);
@@ -179,6 +190,8 @@ signals:
     void robotRegistered(int);
     void robotDeleted(int);
 
+    void receptionNeeded();
+
 
 protected: // data members
 	unsigned int curCycle;		// current simulation cycle
@@ -197,13 +210,14 @@ protected: // data members
 
 	cbSimulatorGUI *gui;
 
-    vector<cbView *> views;
-    vector<cbPanel *> panels;
+    vector<cbClient *> views;
+    vector<cbClient *> panels;
     vector<cbRobot *> robots;
 
 	State curState, nextState;	// current and next states
 
     bool logging;
+    bool syncmode;
     ostream *logStream;
 	QString logFilename;
 	
@@ -211,14 +225,13 @@ protected: // data members
 	double distMaxToTarget;
 
     QTimer timer;
-
+    
     bool allowRegistrations;
     bool showPositions;
 
+    vector<QSignalMapper*> robotMappers;
+
 protected: // member functions
-	void CheckIn();
-	void PanelCommands();
-	void RobotActions();
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
 	void CheckCollisions();

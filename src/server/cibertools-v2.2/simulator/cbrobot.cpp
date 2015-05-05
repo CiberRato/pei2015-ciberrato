@@ -111,6 +111,7 @@ cbRobot::cbRobot(const double irSensorAngle[]) : cbClient()
 	endLed = false;
     returningLed=false;
     visitingLed=false;
+    waitingSync=false;
 
 	resetReceivedFlags();
 
@@ -286,6 +287,7 @@ bool cbRobot::readAction(cbRobotAction *action)
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
 
+	
     if (showActions)
         simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
 
@@ -896,8 +898,9 @@ void cbRobot::sendSensors()
 	cerr << "Measures sent to robot " << id << "\n" << xml;
 #endif
 
-    if (showMeasures)
-        simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
+	// CHECK THIS...
+    //if (showMeasures)
+    //    simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
 
 }
 

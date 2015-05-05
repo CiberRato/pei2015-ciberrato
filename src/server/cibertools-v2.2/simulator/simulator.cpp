@@ -135,9 +135,7 @@ double  cbBeaconSensor::sensorAperture    = M_PI;
 
 void CommandLineError()
 {
-    QMessageBox::critical(0,"Error", 
-		    "SYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui]",
-		    QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
+    printf("\nSYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui] [-sync]\n");
     exit(1);
 }
 
@@ -231,6 +229,10 @@ int main(int argc, char *argv[])
 			// wait until second pass of command line parsing
             p+=1;
 		}
+        else if (strcmp(argv[p], "-sync") == 0) {
+            // wait until second pass of command line parsing
+            p+=1;
+        }
         else {
             CommandLineError();
 		}
@@ -302,6 +304,10 @@ int main(int argc, char *argv[])
 			nogui = true;
 			p+=1;
 		}
+        else if (strcmp(argv[p], "-sync") == 0) {
+            simulator.activateSyncMode();
+            p+=1;
+        }
         else {
             CommandLineError();
 		}

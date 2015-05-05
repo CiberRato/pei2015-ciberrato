@@ -36,7 +36,8 @@ cbParameters::cbParameters()
         
 	simTime        = 2000;   
 	cycleTime      = 50;     
-	keyTime        = 1500;  
+	keyTime        = 1500;
+	sync		   = false;
 	GPSOn          = cbRobot::GPSOn;
 	scoreSensorOn  = cbRobot::scoreSensorOn;
 	showActions    = cbRobot::showActions;
@@ -85,14 +86,14 @@ int cbParameters::toXml(char *buff, int len)
 {
 	int cnt = sprintf(buff, "<Parameters SimTime=\"%u\" CycleTime=\"%u\"\n"
 			"\t\tCompassNoise=\"%g\" BeaconNoise=\"%g\" ObstacleNoise=\"%g\"\n"
-			"\t\tMotorsNoise=\"%g\" KeyTime=\"%u\"\n"
+			"\t\tMotorsNoise=\"%g\" KeyTime=\"%u\" SyncMode=\"%s\"\n"
 			"\t\tGPS=\"%s\" GPSLinNoise=\"%g\" GPSDirNoise=\"%g\" \n"
                         "\t\tScoreSensor=\"%s\" ShowActions=\"%s\" NBeacons=\"%d\" \n",
 			simTime, cycleTime, 
 			compassNoise, beaconNoise, obstacleNoise, motorsNoise,
-			keyTime, (GPSOn?"On":"Off"), gpsLinNoise, gpsDirNoise,
-                        (scoreSensorOn?"On":"Off"),(showActions?"True":"False"),
-			nBeacons);
+			keyTime, (sync ? "On":"Off"), (GPSOn ? "On":"Off"), 
+			gpsLinNoise, gpsDirNoise, (scoreSensorOn ? "On":"Off"),
+			(showActions ? "True":"False"), nBeacons);
 
 	cnt = cnt + sprintf(buff+cnt, 
 			"\t\tNRequestsPerCycle=\"%d\" \n"

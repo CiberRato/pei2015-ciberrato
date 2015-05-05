@@ -6,7 +6,6 @@
 
 import socket
 
-UDP_PORT = 6000
 NUM_IR_SENSORS = 4
 
 class CRobLink:
@@ -14,14 +13,21 @@ class CRobLink:
     def __init__ (self, robName, robId, host):
         self.robName = robName
         self.robId = robId
-        self.host = host
+
+        val = host.split(":")
+        port_conn = 6000
+        if len(val) > 1:
+            self.host = val[0]
+            port_conn = int(val[1])
+        else:
+            self.host = host
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_DGRAM) # UDP
         
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />'
         
-        self.sock.sendto(msg, (self.host, UDP_PORT))  # TODO consider host arg
+        self.sock.sendto(msg, (self.host, port_conn))  # TODO consider host arg
         data, (host,self.port) = self.sock.recvfrom(1024)
         #print "received message:", data, " port ", self.port
 
@@ -49,7 +55,11 @@ class CRobLink:
         sax.parseString( d2, handler )
         self.status = handler.status
         self.measures  = handler.measures
-        
+    
+    def syncRobot(self):
+        msg = '<Actions> <Sync/> </Actions>'
+        self.sock.sendto(msg,(self.host, self.port))
+
     def driveMotors(self, lPow, rPow):
         msg = '<Actions LeftMotor="'+str(lPow)+'" RightMotor="'+str(rPow)+'"/>'
         self.sock.sendto(msg,(self.host,self.port))

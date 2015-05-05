@@ -27,7 +27,7 @@
 
 using std::cerr;
 
-cbView::cbView() : cbClient()
+cbView::cbView()
 {
 }
 
