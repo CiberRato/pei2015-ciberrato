@@ -924,17 +924,17 @@ class AuthenticationTestCase(TestCase):
                                          "validation_result": "Deu problemas com o Rafael!"})
 
         # get round file: param_list
-        url = "/api/v1/competitions/round_file/R1/?file=param_list"
+        url = "/api/v1/competitions/round_file/C1/R1/param_list/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
         # get round file: grid
-        url = "/api/v1/competitions/round_file/R1/?file=grid"
+        url = "/api/v1/competitions/round_file/C1/R1/grid/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
         # get round file: lab
-        url = "/api/v1/competitions/round_file/R1/?file=lab"
+        url = "/api/v1/competitions/round_file/C1/R1/lab/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
 
