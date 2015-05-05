@@ -272,7 +272,8 @@ class AuthenticationTestCase(TestCase):
             [('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', True),
              ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict(
                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO3')]))
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', True), ('is_superuser', False)])),
+             ('team_name', u'XPTO3')]))
 
         # get agents by user
         url = "/api/v1/agents/agents_by_user/gipmon/"
@@ -288,7 +289,8 @@ class AuthenticationTestCase(TestCase):
             [('agent_name', u'Remote'), ('is_remote', True), ('rounds', []), ('code_valid', True),
              ('validation_result', u''), ('language', 'Unknown'), ('competitions', []), ('user', OrderedDict(
                 [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
-                 ('first_name', u'Rafael'), ('last_name', u'Ferreira')])), ('team_name', u'XPTO1')]))
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', True), ('is_superuser', False)])),
+             ('team_name', u'XPTO1')]))
 
         # get the agent information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
@@ -302,11 +304,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
-                          'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-                              ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
+                         {'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'competitions': [],
+                          'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                               ('teaching_institution', u'Universidade de Aveiro'),
+                                               ('first_name', u'Rafael'), ('last_name', u'Ferreira'),
+                                               ('is_staff', True), ('is_superuser', False)]), 'is_remote': False,
+                          'code_valid': False, 'rounds': [], 'team_name': u'XPTO3'})
 
         # upload agent code
         url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
@@ -362,11 +365,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
-                          'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-                              ('last_name', u'Ferreira')]), 'code_valid': False, 'rounds': []})
+                         {'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'competitions': [],
+                          'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                               ('teaching_institution', u'Universidade de Aveiro'),
+                                               ('first_name', u'Rafael'), ('last_name', u'Ferreira'),
+                                               ('is_staff', True), ('is_superuser', False)]), 'is_remote': False,
+                          'code_valid': False, 'rounds': [], 'team_name': u'XPTO3'})
 
         url = "/api/v1/agents/allowed_languages/"
         response = client.get(url)
@@ -580,11 +584,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['created_at']
 
         self.assertEqual(rsp,
-                         {'is_remote': False, 'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'',
-                          'team_name': u'XPTO3', 'competitions': [], 'user': OrderedDict(
-                             [('email', u'rf@rf.pt'), ('username', u'gipmon'),
-                              ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'),
-                              ('last_name', u'Ferreira')]), 'code_valid': True, 'rounds': []})
+                         {'agent_name': u'KAMIKAZE', 'language': 'Python', 'validation_result': u'', 'competitions': [],
+                          'user': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'),
+                                               ('teaching_institution', u'Universidade de Aveiro'),
+                                               ('first_name', u'Rafael'), ('last_name', u'Ferreira'),
+                                               ('is_staff', True), ('is_superuser', False)]), 'is_remote': False,
+                          'code_valid': True, 'rounds': [], 'team_name': u'XPTO3'})
 
         # prepare trial
         url = "/api/v1/trials/prepare/"
@@ -680,8 +685,10 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         del rsp['trial_id']
         del rsp['agents']
+
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/C1/R1/param_list/',
+        self.assertEqual(rsp, {'allow_remote_agents': True,
+                               'param_list': u'/api/v1/competitions/round_file/C1/R1/param_list/',
                                'lab': u'/api/v1/competitions/round_file/C1/R1/lab/',
                                'grid': u'/api/v1/competitions/round_file/C1/R1/grid/',
                                'type_of_competition': {'timeout': 5, 'single_position': False, 'name': u'Collaborative',
@@ -1255,7 +1262,7 @@ class AuthenticationTestCase(TestCase):
         # delete the trial
         url = "/api/v1/competitions/private/trial/" + trial_identifier + "/"
         response = client.delete(path=url)
-        self.assertEqual(response.data, "The solo trial has been deleted!")
+        self.assertEqual(response.data, {'status': 'Deleted', 'message': 'The solo trial has been deleted!'})
         self.assertEqual(Trial.objects.all().count(), 0)
 
         # delete the round
