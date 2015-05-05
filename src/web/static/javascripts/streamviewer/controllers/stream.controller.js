@@ -33,8 +33,6 @@
             $scope.simulation = data.data;
             console.log("ACTIVATED");
             Competition.getCompetition($scope.simulation.competition_name).then(getCompetitionSucess, getCompetitionError);
-
-
         }
 
         function getCompetitionSucess(data){
@@ -56,25 +54,19 @@
 
         function getLabSuccessFn(data){
             console.log("TENHO O FICHEIRO: lab!");
-            lab = x2js.xml_str2json(data.data);
-
-
-            $scope.lab_obj = angular.fromJson(lab);
+            $scope.lab_obj = data.data;
             StreamViewer.getParametersViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getParametersSuccessFn, getErrorFn);
 
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
-            parameters = x2js.xml_str2json(data.data);
-
-
-            $scope.parameters_obj = angular.fromJson(parameters);
+            $scope.parameters_obj = data.data;
             StreamViewer.getGridViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getGridSuccessFn, getErrorFn);
 
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
-            grid = x2js.xml_str2json(data.data);
+            grid = data.data;
             PrepareParameters();
             $scope.drawMap();
             ctx = c1.getContext("2d");
