@@ -67,13 +67,13 @@
      </property>
      <property name="minimumSize">
       <size>
-       <width>30</width>
+       <width>40</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>30</width>
+       <width>40</width>
        <height>16777215</height>
       </size>
      </property>
@@ -84,7 +84,7 @@
       <enum>QFrame::NoFrame</enum>
      </property>
      <property name="numDigits">
-      <number>1</number>
+      <number>3</number>
      </property>
      <property name="segmentStyle">
       <enum>QLCDNumber::Outline</enum>
