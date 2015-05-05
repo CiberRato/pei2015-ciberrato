@@ -47,16 +47,13 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id):
+	def main(self, sim_id, starter_c):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
 		SIMULATOR_HOST = settings["settings"]["simulator_host"]
 		SIMULATOR_PORT = settings["settings"]["simulator_port"]
-
-		STARTER_HOST = settings["settings"]["starter_viewer_host"]
-		STARTER_PORT = settings["settings"]["starter_viewer_port"]
 
 		WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 		WEBSOCKET_PORT = settings["settings"]["websocket_port"]
@@ -116,13 +113,8 @@ class Viewer:
 
 		log_file.write(json_data[1:-1]+",")
 
-
-		starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		starter_s.connect((STARTER_HOST, STARTER_PORT))
-
 		# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
-		data = starter_s.recv(4096)
+		data = starter_c.recv(4096)
 		robotsXML = minidom.parseString(data)
 		robots = robotsXML.getElementsByTagName('Robots')
 		robotsAmount = robots[0].attributes['Amount'].value
@@ -146,13 +138,13 @@ class Viewer:
 					prevlen = len(checkedRobots)
 					print "[VIEWER] Robots Registered: " + str(checkedRobots)
 
-		starter_s.send("<RobotsRegistered/>")
+		starter_c.send("<RobotsRegistered/>")
 
 		print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 
-		data = starter_s.recv(4096)
+		data = starter_c.recv(4096)
 		while data != "<StartedAgents/>":
-			data = starter_s.recv(4096)
+			data = starter_c.recv(4096)
 
 		# Sending simulator msg to start the simulation
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
@@ -199,11 +191,11 @@ class Viewer:
 		# Send websocket msg telling it's over
 		websocket_tcp.send("END")
 
-		starter_s.send('<EndedSimulation/>')
+		starter_c.send('<EndedSimulation/>')
 
 		# Close all connections
 		websocket_tcp.close()
-		starter_s.close()
+		starter_c.close()
 		simulator_s.close()
 
 		# Close all open files
