@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, starter_c):
+	def main(self, sim_id, starter_c, robotsRegistered_event):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
@@ -114,7 +114,7 @@ class Viewer:
 		log_file.write(json_data[1:-1]+",")
 
 		# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
-		data = starter_c.recv(4096)
+		data = starter_c.recv()
 		robotsXML = minidom.parseString(data)
 		robots = robotsXML.getElementsByTagName('Robots')
 		robotsAmount = robots[0].attributes['Amount'].value
@@ -138,13 +138,14 @@ class Viewer:
 					prevlen = len(checkedRobots)
 					print "[VIEWER] Robots Registered: " + str(checkedRobots)
 
-		starter_c.send("<RobotsRegistered/>")
+		# Robots have registered signal starter
+		robotsRegistered_event.set()
 
 		print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 
-		data = starter_c.recv(4096)
+		data = starter_c.recv()
 		while data != "<StartedAgents/>":
-			data = starter_c.recv(4096)
+			data = starter_c.recv()
 
 		# Sending simulator msg to start the simulation
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
