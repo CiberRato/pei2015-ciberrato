@@ -229,6 +229,8 @@ protected: // data members
     bool allowRegistrations;
     bool showPositions;
 
+    vector<QSignalMapper*> robotMappers;
+
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
