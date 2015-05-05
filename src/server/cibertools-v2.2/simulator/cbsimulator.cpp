@@ -821,6 +821,10 @@ void cbSimulator::UpdateState()
 	    if (logging) 
 	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
 	    closeLog();
+
+	    for (unsigned int i = 0; i < mappers.size(); i++) {
+	    	disconnect(mappers[i], SLOT(map()));
+	    }
     }
 
     if (nextState != curState) {
@@ -1534,6 +1538,8 @@ void cbSimulator::processReceptionMessages()
 			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
 			mapper->setMapping(panels[cnt], QString::number(cnt));
 			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
+
+			mappers.push_back(mapper);
 			//connect(panels[cnt], SIGNAL(readyRead()), this, SLOT(processPanelCommands()));
 
 			cout << "Panel has been registered\n";
@@ -1562,7 +1568,7 @@ void cbSimulator::processReceptionMessages()
 			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
 			mapper->setMapping(panels[cnt], QString::number(cnt));
 			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
-
+			mappers.push_back(mapper);
 			//connect(form.client.panelview, SIGNAL(readyRead()), this, SLOT(processPanelCommands()));
 
 			cout << "PanelView has been registered\n";
@@ -1584,7 +1590,7 @@ void cbSimulator::processReceptionMessages()
 				connect(robot, SIGNAL(readyRead()), mapper, SLOT(map()));
 				mapper->setMapping(robot, QString::number(robot->Id()));
 				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
-
+				mappers.push_back(mapper);
 				UpdateState();
 				UpdateViews();
 			}

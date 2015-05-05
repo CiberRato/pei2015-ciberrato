@@ -28,6 +28,7 @@
 #include "cbsimulatorGUI.h"
 
 #include <QObject>
+#include <QtGui>
 #include <QVector>
 #include <QTimer>
 #include <QThread>
@@ -228,9 +229,7 @@ protected: // data members
     bool allowRegistrations;
     bool showPositions;
 
-    vector<QThread *> threadPanelCommands;
-    vector<QThread *> threadRobotActions;
-    QThread threadReceptionHandler;
+    vector<QSignalMapper*> mappers;
 
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
