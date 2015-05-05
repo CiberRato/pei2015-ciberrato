@@ -822,8 +822,8 @@ void cbSimulator::UpdateState()
 	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
 	    closeLog();
 
-	    for (unsigned int i = 0; i < mappers.size(); i++) {
-	    	disconnect(mappers[i], SLOT(map()));
+	    for (unsigned int i = 0; i < robots.size(); i++) {
+	    	disconnect(robots[i], SLOT(map()));
 	    }
     }
 
