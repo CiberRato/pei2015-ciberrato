@@ -35,17 +35,17 @@
 
 class CRQScene : public QGraphicsScene
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	/*! This is the constructor.
 	 */
-    CRQScene( CRLab *, QObject * parent = 0 );
+	CRQScene( CRLab *, QObject * parent = 0 );
 	/*! This is the destructor.
 	 */
 	~CRQScene();
 	/*! Draws the received lab, with walls, one beacon end one target area.
-     *  Each of them will be one scene item.
-	 */ 
+	 *  Each of them will be one scene item.
+	 */
 	void drawLab( CRLab * );
 
 	/*! Function called when the skin changed.
@@ -56,20 +56,20 @@ public:
 	/*! Draws the received grid. At this moment it is only a lot of squares.
 	 */
 	void drawGrid( CRLab * );
-	/*! Draws all robots considering the images that we have in the 
+	/*! Draws all robots considering the images that we have in the
 	 *  images/robotN directory, where N is the id of the robot. If the robot
 	 *  does not exist, it will be created, otherwise the existent item will
 	 *  be moved and/or rotated.
 	 */
 	int drawRobot( CRLab * );
-    /*! Clear the scene, all elements will be lost.
+	/*! Clear the scene, all elements will be lost.
 	 */
 	void clear( void );
-    /*! Draw the initial image in scene when aplication begins. This
+	/*! Draw the initial image in scene when aplication begins. This
 	 * function also is called when a reset or connect is done.
 	 */
 	void bgInitDraw(void);
-    /*! Draw the game image in scene when lab is ready . This
+	/*! Draw the game image in scene when lab is ready . This
 	 * function also is called when a connect is done.
 	 */
 	void bgGameDraw(void);
@@ -77,9 +77,9 @@ public:
 	 *  Global variable that contain the number of robots. By default there
 	 *  will be 3, but the grid may change this value.
 	 */
-	int nRobots; 					 
+	int nRobots;
 	/*! \var colorSmall
-	 * 	Global variable that contains the color of the walls whose height 
+	 * 	Global variable that contains the color of the walls whose height
 	 * 	is lower than the beacon height.
 	 */
 	QColor colorSmall;
@@ -90,15 +90,15 @@ public:
 	QColor colorBig;
 	/*! \var backImage
 	 * Global variable used to activate the use of sounds
-	 */ 
+	 */
 	char sound;
 	/*! \var lab
 	 * Global pointer that contain the lab received.
 	 */
-   	CRLab *lab;
+	CRLab *lab;
 
 signals:
-    /*! This signal is emited when new lab is draw in scene.
+	/*! This signal is emited when new lab is draw in scene.
 	 * \param x x dimension in pixeis
 	 * \param y y dimension in pixeis
 	 */
@@ -106,51 +106,51 @@ signals:
 
 private:
 	// Vector of robots
-    vector<QGraphicsPixmapItem *> robots;
+	vector<QGraphicsPixmapItem *> robots;
 
-    // Robot images
-    vector<QPixmap *> robPixmap;
-    vector<QPixmap *> robPixmapReturn;
-    vector<QPixmap *> robPixmapCollision;
-    vector<QPixmap *> startPixmap;
+	// Robot images
+	vector<QPixmap *> robPixmap;
+	vector<QPixmap *> robPixmapReturn;
+	vector<QPixmap *> robPixmapCollision;
+	vector<QPixmap *> startPixmap;
 
-    // Vector of starting points
-    vector<QGraphicsEllipseItem *> startP;
+	// Vector of starting points
+	vector<QGraphicsEllipseItem *> startP;
 
 	// Means that robots already exists
 	int *usedId;
 
-	// Status of the robots construction		
+	// Status of the robots construction
 	int robotsVarStatus;
-	
-    // Zoom for the Scene
+
+	// Zoom for the Scene
 	double zoom;
-	
+
 	// Tell if lab is available
 	int labStatus;
 
-    // Size of the Scene in pixels
-    int sizeInPixels;
+	// Size of the Scene in pixels
+	int sizeInPixels;
 
 	// Game Background
-    QGraphicsPixmapItem *bgGameSprite;
-    QString *bgGameImage;
+	QGraphicsPixmapItem *bgGameSprite;
+	QString *bgGameImage;
 
-	// Initial Background 
-    QGraphicsPixmapItem *bgInitSprite;
-    QString *bgInitImage;
+	// Initial Background
+	QGraphicsPixmapItem *bgInitSprite;
+	QString *bgInitImage;
 
-    QString *lowerWallsFile;
-    QString *higherWallsFile;	
+	QString *lowerWallsFile;
+	QString *higherWallsFile;
 	QString *beaconFile;
 	QString curSkinName;
 
 	// Game sounds
 	QSound *collisionSound;
-    QSound *returningSound;
-    QSound *finishedSound;
-    int playSoundReturning[10];
-    int playSoundFinished[10];
+	QSound *returningSound;
+	QSound *finishedSound;
+	int playSoundReturning[10];
+	int playSoundFinished[10];
 };
 
 
