@@ -1162,13 +1162,7 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         competition_name = rsp[0]['competition']['name']
         del rsp[0]['competition']['name']
-        self.assertEqual(rsp, [{'competition': {'state_of_competition': 'Competition',
-                                                'type_of_competition': OrderedDict(
-                                                    [('name', settings.PRIVATE_COMPETITIONS_NAME),
-                                                     ('number_teams_for_trial', 1),
-                                                     ('number_agents_by_grid', 50), ('single_position', False),
-                                                     ('timeout', 1)]), 'allow_remote_agents': False},
-                                'team': u'TestTeam'}])
+        self.assertEqual(rsp, [{'number_of_trials': 0, 'number_of_rounds': 0, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('single_position', False), ('timeout', 1)]), 'allow_remote_agents': False}, 'team': u'TestTeam'}])
 
         # this round must have no rounds
         url = "/api/v1/competitions/private/rounds/" + competition_name + "/"
@@ -1255,6 +1249,13 @@ class AuthenticationTestCase(TestCase):
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data, {"status": "Bad Request", "message": "The simulator appears to be down!"})
+
+        # let see the stats
+        url = "/api/v1/competitions/private/list/"
+        response = client.get(path=url)
+        rsp = response.data
+        del rsp[0]['competition']['name']
+        self.assertEqual(rsp, [{'number_of_trials': 1, 'number_of_rounds': 1, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('single_position', False), ('timeout', 1)]), 'allow_remote_agents': False}, 'team': u'TestTeam'}])
 
         trial = Trial.objects.all()
         trial_identifier = trial[0].identifier

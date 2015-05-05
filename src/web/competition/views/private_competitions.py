@@ -29,7 +29,6 @@ class PrivateCompetitionsUser(mixins.ListModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/competitions/private/list/
         """
         private_competitions_team_enrolled = []
-
         for team in request.user.teams.all():
             for team_enrolled in team.teamenrolled_set.all():
                 if team_enrolled.competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:

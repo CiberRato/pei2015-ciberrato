@@ -314,10 +314,14 @@ class RFileSerializer(serializers.BaseSerializer):
 class PrivateCompetitionSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         competition = CompetitionSerializer(instance.competition)
+        rounds = Round.objects.filter(parent_competition=instance.competition)
+        trials = reduce(lambda r, h: r + h.trial_set.count(), rounds.all(), 0)
 
         return {
             'competition': competition.data,
-            'team': instance.team.name
+            'team': instance.team.name,
+            'number_of_rounds': rounds.count(),
+            'number_of_trials': trials
         }
 
 
