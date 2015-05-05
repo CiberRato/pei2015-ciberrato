@@ -53,7 +53,7 @@ public:
 
 	/*! This function is used to change skin
 	 */
-	void skin(QString skinName);
+	void skin(QString skinName, int id);
 signals:
 	/*! Signal emited to change the score.
 	 */
