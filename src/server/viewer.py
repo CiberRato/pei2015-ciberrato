@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, starter_c, robotsRegistered_event):
+	def main(self, sim_id, remote, starter_c, robotsRegistered_event):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
@@ -150,10 +150,11 @@ class Viewer:
 		# Sending simulator msg to start the simulation
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
-		# Connect to websockets
-		websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
+		if remote:
+			# Connect to websockets
+			websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
 
 		robotTime = 0
 		firstTime = True
@@ -175,15 +176,15 @@ class Viewer:
 				if int(robotTime) != 0:
 					log_file.write(",")
 					log_file.write(json_data)
-					# Send data to the websockets
-					websocket_tcp.send(json_data)
+					if remote:
+						# Send data to the websockets
+						websocket_tcp.send(json_data)
 			else:
 				firstTime = False
 				log_file.write(json_data)
-				# Send data to the websockets
-				websocket_tcp.send(json_data)
-
-
+				if remote:
+					# Send data to the websockets
+					websocket_tcp.send(json_data)
 
 		log_file.write("]}")
 
