@@ -67,8 +67,8 @@
             return $http.delete('/api/v1/competitions/remove_enroll_team/'+ competitionName + '/?team_name=' + teamName);
         }
 
-        function getMyCompetitions(username){
-            return $http.get('/api/v1/competitions/my_enrolled_teams/' + username + '/');
+        function getMyCompetitions(){
+            return $http.get('/api/v1/competitions/my_enrolled_teams/');
         }
 
         function getPast(){

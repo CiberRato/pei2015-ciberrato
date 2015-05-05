@@ -10,18 +10,22 @@ from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, Ma
 from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, CompetitionGetNotValidTeamsViewSet, \
     CompetitionOldestRoundViewSet, CompetitionEarliestRoundViewSet, MyEnrolledTeamsViewSet, ToggleTeamValid, \
     MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet, AdminEnrollTeam
-from competition.views.round import AgentsRound, RoundTeams, RoundViewSet, RoundFile
+from competition.views.round import RoundTeams, RoundViewSet, RoundFile, GetResourcesFiles
 
 from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
     TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet, PrepareTrial
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
-from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile
+from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile, \
+    UploadResourceFile, GetRoundJsonFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition, \
     RankingByTeamInCompetition
 
-from trials.views.all import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
+from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
+
+from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
+    PrivateCompetitionRound, RunPrivateTrial, SoloTrial
 
 from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserViewSet, AgentCodeValidation, \
     SubmitCodeForValidation, AgentsByTeamValidViewSet
@@ -39,7 +43,6 @@ router_accounts.register(r'account_by_last_name', AccountByLastName)
 router_accounts.register(r'toggle_staff', ToggleUserToStaff)
 router_accounts.register(r'toggle_super_user', ToggleUserToSuperUser)
 router_accounts.register(r'login_to', LoginToOtherUser)
-router_accounts.register(r'me', MyDetails)
 # GROUPS URLs
 router_teams = routers.SimpleRouter()
 router_teams.register(r'members', TeamMembersViewSet)
@@ -79,7 +82,6 @@ router_competitions.register(r'toggle_team_inscription', ToggleTeamValid)
 router_competitions.register(r'remove_enroll_team', AdminEnrollTeam)
 # Round
 router_competitions.register(r'round', RoundViewSet)
-router_competitions.register(r'round_agents', AgentsRound)
 router_competitions.register(r'round_teams', RoundTeams)
 router_competitions.register(r'round_files', RoundFile)
 # Trial
@@ -111,11 +113,23 @@ router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
 router_trials.register(r'prepare', PrepareTrial)
 
+# Private Competitions
+router_private_competitions = routers.SimpleRouter()
+router_private_competitions.register(r'list', PrivateCompetitionsUser)
+router_private_competitions.register(r'rounds', PrivateCompetitionsRounds)
+router_private_competitions.register(r'round', PrivateCompetitionRound)
+router_private_competitions.register(r'trial', SoloTrial)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
+                       url(r'^api/v1/me/$', MyDetails.as_view(), name="ME"),
                        url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
+                       url(r'^api/v1/competitions/private/', include(router_private_competitions.urls)),
+                       url(r'^api/v1/competitions/private/launch_trial/$', RunPrivateTrial.as_view(),
+                           name="Launch private trial"),
+
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
                        url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),
@@ -129,6 +143,10 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round/upload/lab/$', UploadLabView.as_view(),
                            name="Lab Upload"),
                        # upload agent code
+
+                       url(r'^api/v1/round_resources/$', GetResourcesFiles.as_view(),
+                           name="Resources"),
+
                        url(r'^api/v1/agents/upload/agent/$', UploadAgent.as_view(),
                            name="Lab Upload"),
 
@@ -146,6 +164,15 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
                            GetRoundFile.as_view(),
                            name="Get round file"),
+                       # get json round file
+                       url(
+                           r'^api/v1/competitions/round_json_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
+                           GetRoundJsonFile.as_view(),
+                           name="Get json round file"),
+                       # set round file
+                       url(r'^api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
+                           UploadResourceFile.as_view(), name="Set round file"),
+
                        # get agent files
                        url(r'^api/v1/agents/agent_file/(?P<team_name>.+)/(?P<agent_name>.+)/$',
                            GetAgentFilesSERVER.as_view(),

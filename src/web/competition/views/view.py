@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -65,6 +66,13 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
+
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         serializer = CompetitionSerializer(competition)
 
         return Response(serializer.data)
@@ -79,6 +87,11 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         """
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
+
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be deleted!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         for r in competition.round_set.all():
             r.delete()
@@ -95,7 +108,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
     serializer_class = CompetitionStateSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsStaff(),
 
     def update(self, request, *args, **kwargs):
         """
@@ -111,6 +124,12 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
         if serializer.is_valid():
             competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+
+            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+                return Response({'status': 'Bad Request',
+                                 'message': 'This competition can\'t be changed!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             competition.state_of_competition = serializer.data.get('state_of_competition', '')
             competition.save()
 
@@ -138,10 +157,16 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         """
         state = dict(Competition.STATE)
 
+        try:
+            toc = TypeOfCompetition.objects.get(name=settings.PRIVATE_COMPETITIONS_NAME)
+        except TypeOfCompetition.DoesNotExist:
+            toc = TypeOfCompetition.objects.create(name=settings.PRIVATE_COMPETITIONS_NAME, number_teams_for_trial=1,
+                                                   number_agents_by_grid=50, single_position=False,
+                                                   timeout=1)
         if kwargs.get('pk', '') in state:
-            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', ''))
+            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', '')).exclude(type_of_competition=toc)
         elif kwargs.get('pk', '') == 'All':
-            queryset = Competition.objects.all()
+            queryset = Competition.objects.all().exclude(type_of_competition=toc)
         else:
             return Response({'status': 'Bad Request',
                              'message': 'The state must mach: {\'Past\', \'Register\', \'Competition\', \'All\'}'},
@@ -167,13 +192,20 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.serializer_class([RoundSimplex(r) for r in competition.round_set.all()], many=True)
         return Response(serializer.data)
 
 
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                                mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = TypeOfCompetition.objects.all()
+    queryset = TypeOfCompetition.objects.all().exclude(name=settings.PRIVATE_COMPETITIONS_NAME)
     serializer_class = TypeOfCompetitionSerializer
 
     def get_permissions(self):
@@ -196,6 +228,11 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
+            if serializer.validated_data['name'] == settings.PRIVATE_COMPETITIONS_NAME:
+                return Response({'status': 'Bad request',
+                                 'message': 'This type of competition name is reserved!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 with transaction.atomic():
                     TypeOfCompetition.objects.create(**serializer.validated_data)
@@ -233,6 +270,12 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         :param type_of_competition_name: The type_of_competition name
         """
         queryset = TypeOfCompetition.objects.all()
+
+        if kwargs.get('pk', '') == settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad request',
+                             'message': 'This type of competition is reserved!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
         type_of_competition.delete()

@@ -33,14 +33,16 @@
                                 <th>File Name</th>
                                 <th>Size</th>
                                 <th>Last Modification</th>
+                                <th>Download</th>
                                 <th>Remove File</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
-                                <td><a href="/api/v1/agents/file/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank">{{value.file}}</a></td>
+                                <td><a href="/panel/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/agentDetail/{{value.file}}/">{{value.file}}</a></td>
                                 <td>{{value.size}}</td>
                                 <td>{{value.last_modification}}</td>
+                                <td><a class = "awe-download-alt" href="/api/v1/agents/file/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank"></a></td>
                                 <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
                             </tbody>

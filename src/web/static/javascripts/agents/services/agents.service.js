@@ -21,7 +21,8 @@
             associate: associate,
             deleteAgent: deleteAgent,
             getLanguages: getLanguages,
-            validateAgent: validateAgent
+            validateAgent: validateAgent,
+            getFile: getFile
         };
 
         return Agent;
@@ -50,9 +51,13 @@
 
         }
 
-        function upload(agentName, value, teamName){
+        function upload(agentName, value, teamName, valueName){
             var fd = new FormData();
-            fd.append('file', value);
+            if(valueName === undefined) {
+                fd.append('file', value);
+            }else{
+                fd.append('file', value, valueName);
+            }
 
             return $http.post('/api/v1/agents/upload/agent/?agent_name=' + agentName + '&team_name=' + teamName, fd, {
                 transformRequest: angular.identity,
@@ -92,6 +97,10 @@
 
         function getLanguages(){
             return $http.get('api/v1/agents/allowed_languages/');
+        }
+
+        function getFile(team_name, agent_name, file_name){
+            return $http.get("/api/v1/agents/file/" + team_name + "/" + agent_name + "/" + file_name + "/");
         }
 
     }

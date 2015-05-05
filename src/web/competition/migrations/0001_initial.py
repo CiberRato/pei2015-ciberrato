@@ -11,8 +11,8 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('authentication', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
@@ -121,8 +121,11 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=128, validators=[django.core.validators.RegexValidator(re.compile(b'^[-a-zA-Z0-9_ ]+$'), b'Enter a valid word consisting of letters, numbers, underscores, spaces or hyphens.', b'invalid'), django.core.validators.MinLengthValidator(1)])),
                 ('param_list_path', models.FileField(upload_to=b'params/%Y/%m/%d')),
+                ('param_list_can_delete', models.BooleanField(default=True)),
                 ('grid_path', models.FileField(upload_to=b'grids/%Y/%m/%d')),
+                ('grid_can_delete', models.BooleanField(default=True)),
                 ('lab_path', models.FileField(upload_to=b'labs/%Y/%m/%d')),
+                ('lab_can_delete', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('parent_competition', models.ForeignKey(to='competition.Competition')),
@@ -196,19 +199,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ('position', 'grid_positions', 'trial'),
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='TrialMessage',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('message', models.CharField(max_length=150)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('trial', models.ForeignKey(to='competition.Trial')),
-            ],
-            options={
             },
             bases=(models.Model,),
         ),

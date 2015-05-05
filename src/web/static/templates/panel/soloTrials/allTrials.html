@@ -1,0 +1,71 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+                        <h2>Trials</h2>
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Grid</th>
+                                <th>Lab</th>
+                                <th>Param List</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <td>{{vm.trials.round.grid}}</td>
+                                <td>{{vm.trials.round.lab}}</td>
+                                <td>{{vm.trials.round.param_list}}</td>
+                            </tbody>
+                        </table>
+                        <p ng-if="vm.trials.trials.length == 0"><strong>You don't have any trial created.</strong></p>
+                        <p ng-if="vm.trials.trials.length != 0">Here is shown in table the list of all trials created.</p>
+                        <table ng-if="vm.trials.trials.length != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>State</th>
+                                <th>Watch Trial</th>
+                                <th>Remove</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.trials.trials">
+                                <td>{{value.date}}&nbsp;&nbsp;&nbsp;{{value.hour}}</td>
+                                <td ng-if="value.state != 'ERROR'">{{value.state}}</td>
+                                <td ng-if="value.state == 'ERROR'"><a data-toggle="modal" href="#error">{{value.state}}</a>
+                                    <div class="modal fade"  id="error">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+
+                                            <p align="center">{{value.errors}}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p ng-if="value.state == 'WAITING' || value.state == 'ERROR' || value.state == 'READY'">Didn't Start</p>
+                                    <a href="/panel/{{value.identifier}}/liveStream" ng-if="value.state == 'STARTED' || value.state == 'PREPARE'">Watch Live</a>
+                                    <a href="/panel/{{value.identifier}}/watchTrial" ng-if="value.state == 'LOG'">Watch</a></td>
+                                <td><a ng-click="vm.removeTrial(value.identifier)" class="btn btn-primary btn-flat">X</a>
+
+
+                            </tr>
+                            </tbody>
+                        </table>
+                        <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
+                        <a ng-if="vm.trials.trials.length != 0" class="btn btn-alt btn-large btn-success" ng-click="vm.launchTrial()">Launch Trial</a>
+                        <a ng-if="vm.trials.trials.length == 0" class="btn btn-alt btn-large btn-success" ng-click="vm.launchTrial()">Launch your First Trial</a>
+                    </div>
+
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
+from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -165,6 +166,12 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
                             status=status.HTTP_403_FORBIDDEN)
 
         grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
+
+        if grid.competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be deleted!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         grid.delete()
 
         return Response({'status': 'Deleted',
@@ -202,6 +209,11 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                       agent_name=serializer.validated_data['agent_name'])
 
             if team not in request.user.teams.all():
+                return Response({'status': 'Bad Request',
+                                 'message': 'You must be part of the agent team.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if agent.team not in request.user.teams.all():
                 return Response({'status': 'Bad Request',
                                  'message': 'You must be part of the agent team.'},
                                 status=status.HTTP_400_BAD_REQUEST)

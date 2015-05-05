@@ -1,0 +1,55 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>All Users</h2>
+                        <p ng-if="vm.users.results.length != 0">Here is shown in table the list of all users registered.</p>
+                        <p ng-if="vm.users.results.length == 0">There are no users registered.</p>
+
+                        <table ng-if="vm.users.results.length != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Teaching Institution</th>
+                                <th>is_staff</th>
+                                <th ng-if="vm.user.is_superuser == true">is_superuser</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.users.results">
+                                <td>{{value.first_name}} {{value.last_name}}</td>
+                                <td><a href="panel/{{ value.username }}/memberProfile">{{value.username}}</a></td>
+                                <td>{{value.teaching_institution}}</td>
+
+                                <td ng-if="value.is_staff==true"><input type="checkbox" name="option1" checked ng-model="value.is_staff" ng-change="vm.removeStaff(value.username, $index)"></td>
+                                <td ng-if="value.is_staff==false"><input type="checkbox" name="option1" ng-model="value.is_staff" ng-change="vm.addStaff(value.username, $index)"></td>
+
+                                <td ng-if="value.is_superuser==true && vm.user.is_superuser == true"><input type="checkbox" name="option1" checked ng-model="value.is_superuser" ng-change="vm.removeSuperUser(value.username, $index)"></td>
+                                <td ng-if="value.is_superuser==false && vm.user.is_superuser == true"><input type="checkbox" name="option1" ng-model="value.is_superuser" ng-change="vm.addSuperUser(value.username, $index)"></td>
+
+                            </tr>
+                            </tbody>
+
+                        </table>
+                        <nav>
+                            <ul class="pager">
+                                <li ng-if="vm.users.previous != null" ng-click="vm.change(vm.users.previous)"><a href="#">Previous</a></li>
+                                <li ng-if="vm.users.next!=null" ng-click="vm.change(vm.users.next)"><a href="#">Next</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>

@@ -20,10 +20,10 @@
 
         function getLogSuccess(log){
 
-            $scope.logInfo_obj = log.data.Log;
-            $scope.parameters_obj = log.data.Parameters;
-            $scope.lab_obj = log.data.Lab;
-            $scope.grid_obj = log.data.Grid;
+            $scope.log = log.data.Log;
+            $scope.param = log.data.Parameters;
+            $scope.map = log.data.Lab;
+            $scope.grid = log.data.Grid;
 
             showViewer();
         }
@@ -36,8 +36,6 @@
             $("#row1").show("slow");
             $("#row2").show("slow");
             $("#row3").show("slow");
-            $("#row4").show("slow");
-            $("#row5").show("slow");
 
             $scope.zoom = 50;
 
@@ -74,42 +72,35 @@
 
         function drawBeacon(){
             var i;
-            if($scope.nBeacon==1){
+
+            for(i=0;i<$scope.map.Beacon.length;i++){
+                console.log($scope.map.Beacon[i]);
                 ctx1.beginPath();
-                ctx1.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                ctx1.arc($scope.map.Beacon[i]._X * $scope.zoom, $scope.map.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
                 ctx1.fillStyle = $scope.circleBorder;
                 ctx1.fill();
+
+                var dx = ($scope.map.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Target[i]._Radius);
+                var dy = ($scope.map.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Target[i]._Radius);
+                var dWidth = $scope.zoom*$scope.map.Target[i]._Radius*2;
+                var dHeight = $scope.zoom*$scope.map.Target[i]._Radius*2;
+
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx1.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.beacon._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.zoom*$scope.lab_obj.Target._Radius*2,$scope.zoom*$scope.lab_obj.Target._Radius*2 );
+                    ctx1.drawImage(imageObj, dx, dy, dWidth, dHeight);
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx1.fill();
                 ctx1.stroke();
+            }
 
-            }
-            else{
-                for(i=0;i<$scope.lab_obj.Beacon.length;i++){
-                    ctx1.beginPath();
-                    ctx1.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
-                    ctx1.fillStyle = $scope.circleBorder;
-                    ctx1.fill();
-                    var imageObj = new Image();
-                    imageObj.onload = function() {
-                        ctx1.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Target._Radius, $scope.zoom*$scope.lab_obj.Target._Radius*2,$scope.zoom*$scope.lab_obj.Target._Radius*2 );
-                    };
-                    imageObj.src = $scope.cheeseColor;
-                    ctx1.fill();
-                    ctx1.stroke();
-                }
-            }
         }
 
         function drawWalls(){
             var i;
-            for (i = 0; i < $scope.lab_obj.Wall.length; i++) {
+            for (i = 0; i < $scope.map.Wall.length; i++) {
 
-                if($scope.lab_obj.Wall[i]._Height < $scope.beacon_height){
+                if($scope.map.Wall[i]._Height < $scope.map.Beacon[0]._Height){
                     ctx1.fillStyle = $scope.smallWallColor;
                 }
                 else{
@@ -117,8 +108,8 @@
                 }
                 ctx1.beginPath();
                 var b = 0;
-                for(; b < $scope.lab_obj.Wall[i].Corner.length; b++){
-                    ctx1.lineTo($scope.lab_obj.Wall[i].Corner[b]._X * $scope.zoom ,$scope.lab_obj.Wall[i].Corner[b]._Y * $scope.zoom);
+                for(; b < $scope.map.Wall[i].Corner.length; b++){
+                    ctx1.lineTo($scope.map.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Wall[i].Corner[b]._Y * $scope.zoom);
                 }
                 ctx1.closePath();
                 ctx1.fill();
@@ -133,17 +124,18 @@
             var y;
             var color;
             var dir;
-            if($scope.numRobots==1){
+
+            for (i = 0; i < $scope.robot.length; i++) {
                 ctx2.beginPath();
-                ctx2.arc($scope.robot.Pos._X * $scope.zoom, $scope.robot.Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
                 ctx2.fillStyle = "rgba(0, 0, 0, 0.0)";
                 ctx2.lineWidth = 1;
                 ctx2.strokeStyle = $scope.circleBorder;
                 ctx2.stroke();
-                if($scope.robot.Scores._Collision=='True'){
-                    x =  $scope.robot.Pos._X * $scope.zoom - $scope.zoom/2;
-                    y =  $scope.robot.Pos._Y * $scope.zoom - $scope.zoom/2;
-                    dir = $scope.dir[0];
+                if($scope.robot[i].Scores._Collision=='True'){
+                    x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
+                    y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
+                    dir = $scope.dir[i];
                     ctx2.save();
                     ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
                     ctx2.rotate(dir * Math.PI/180);
@@ -153,10 +145,10 @@
                     ctx2.restore();
                 }
                 else{
-                    x =  $scope.robot.Pos._X * $scope.zoom - $scope.zoom/2;
-                    y =  $scope.robot.Pos._Y * $scope.zoom - $scope.zoom/2;
-                    color = $scope.mickeyColor[0];
-                    dir = $scope.dir[0];
+                    x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
+                    y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
+                    color = $scope.mickeyColor[i];
+                    dir = $scope.dir[i];
                     ctx2.save();
                     ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
                     ctx2.rotate(dir * Math.PI/180);
@@ -165,54 +157,18 @@
                     ctx2.stroke();
                     ctx2.restore();
                 }
-
-            }
-            else {
-                for (i = 0; i < $scope.robot.length; i++) {
-                    ctx2.beginPath();
-                    ctx2.arc($scope.robot[i].Pos._X * $scope.zoom, $scope.robot[i].Pos._Y * $scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
-                    ctx2.fillStyle = "rgba(0, 0, 0, 0.0)";
-                    ctx2.lineWidth = 1;
-                    ctx2.strokeStyle = $scope.circleBorder;
-                    ctx2.stroke();
-                    if($scope.robot[i].Scores._Collision=='True'){
-                        x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
-                        y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
-                        dir = $scope.dir[i];
-                        ctx2.save();
-                        ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
-                        ctx2.rotate(dir * Math.PI/180);
-                        ctx2.drawImage($scope.blackmouse, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
-                        ctx2.fill();
-                        ctx2.stroke();
-                        ctx2.restore();
-                    }
-                    else{
-                        x =  $scope.robot[i].Pos._X * $scope.zoom - $scope.zoom/2;
-                        y =  $scope.robot[i].Pos._Y * $scope.zoom - $scope.zoom/2;
-                        color = $scope.mickeyColor[i];
-                        dir = $scope.dir[i];
-                        ctx2.save();
-                        ctx2.translate(x + $scope.zoom/2,y+ $scope.zoom/2);
-                        ctx2.rotate(dir * Math.PI/180);
-                        ctx2.drawImage(color, -$scope.zoom/2, -$scope.zoom/2, $scope.zoom , $scope.zoom );
-                        ctx2.fill();
-                        ctx2.stroke();
-                        ctx2.restore();
-                    }
-                }
             }
         }
 
         function doIt() {
 
-            c1.width=$scope.zoom * $scope.lab_obj._Width;
-            c1.height=$scope.zoom * $scope.lab_obj._Height;
-            c2.width=$scope.zoom * $scope.lab_obj._Width;
-            c2.height=$scope.zoom * $scope.lab_obj._Height;
-            ctx1.translate(0, $scope.zoom * $scope.lab_obj._Height);
+            c1.width=$scope.zoom * $scope.map._Width;
+            c1.height=$scope.zoom * $scope.map._Height;
+            c2.width=$scope.zoom * $scope.map._Width;
+            c2.height=$scope.zoom * $scope.map._Height;
+            ctx1.translate(0, $scope.zoom * $scope.map._Height);
             ctx1.scale(1, -1);
-            ctx2.translate(0, $scope.zoom * $scope.lab_obj._Height);
+            ctx2.translate(0, $scope.zoom * $scope.map._Height);
             ctx2.scale(1, -1);
 
             $scope.velButton = '1x';
@@ -222,51 +178,22 @@
 
             $scope.slow = 0;
             $scope.playvar = 0;
-            /* Parameters Object */
-            $scope.param = $scope.parameters_obj;
-            /* Map Object */
-            $scope.map = $scope.lab_obj;
-            /* Grid Object */
-            $scope.grid = $scope.grid_obj;
-            /* Log Object */
-            $scope.log = $scope.logInfo_obj;
-
-            /* Beacons Object */
-            $scope.beacon = $scope.lab_obj.Beacon;
 
             /* Number of Beacons */
-            if (isArray($scope.lab_obj.Beacon)) {
-                $scope.nBeacon = $scope.lab_obj.Beacon.length;
+            $scope.nBeacon = $scope.map.Beacon.length;
 
-            }
-            else {
-                $scope.nBeacon = 1
-            }
             /* Find beacon height */
-            if ($scope.nBeacon == 1)
-                $scope.beacon_height = $scope.lab_obj.Beacon._Height;
-            else
-                $scope.beacon_height = $scope.lab_obj.Beacon[0]._Height;
+            $scope.beacon_height = $scope.map.Beacon[0]._Height;
 
             /* Number of Robots */
-            if (isArray($scope.log[0].LogInfo.Robot)) {
-                $scope.numRobots = $scope.log[0].LogInfo.Robot.length;
-            }
-            else {
-                $scope.numRobots = 1;
-            }
+            $scope.numRobots = $scope.log[0].LogInfo.Robot.length;
+
 
             /* Retrieve spawning direction for every robot */
             $scope.dir = [];
-            if ($scope.numRobots > 1) {
-                for (i = 0; i < $scope.numRobots; i++) {
-                    $scope.dir[i] = parseInt($scope.log[0].LogInfo.Robot[i].Pos._Dir) + 90;
-                }
+            for (i = 0; i < $scope.numRobots; i++) {
+                $scope.dir[i] = parseInt($scope.log[0].LogInfo.Robot[i].Pos._Dir) + 90;
             }
-            else {
-                $scope.dir[0] = parseInt($scope.log[0].LogInfo.Robot.Pos._Dir) + 90;
-            }
-
 
             /* Robots Object */
             $scope.robot = $scope.log[0].LogInfo.Robot;
@@ -323,28 +250,20 @@
             /* Line Color */
             $scope.lineColor = [];
 
-            if ($scope.numRobots==1){
-                $scope.pline = "";
-                $scope.bclass[0] = 'btn btn-success'
-                $scope.toggleText[0] = 'Show';
-                $scope.slyne[0] = false;
-                $scope.robotColor[0] = $scope.mickeyColor[0];
-                $scope.lineColor[0] = $scope.lColor[0];
-            }else{
-                $scope.pline = [];
-                for (i = 0; i < $scope.numRobots; i++) {
-                    $scope.pline[i] = "";
-                    $scope.bclass[i] = 'btn btn-success'
-                    $scope.toggleText[i] = 'Show';
-                    $scope.slyne[i] = false;
-                    if (i > 4) {
-                        $scope.robotColor[i] = $scope.mickeyColor[0];
-                        $scope.lineColor[i] = $scope.lColor[0];
-                    }
-                    else {
-                        $scope.robotColor[i] = $scope.mickeyColor[i];
-                        $scope.lineColor[i] = $scope.lColor[i];
-                    }
+
+            $scope.pline = [];
+            for (i = 0; i < $scope.numRobots; i++) {
+                $scope.pline[i] = "";
+                $scope.bclass[i] = 'btn btn-success'
+                $scope.toggleText[i] = 'Show';
+                $scope.slyne[i] = false;
+                if (i > 4) {
+                    $scope.robotColor[i] = $scope.mickeyColor[0];
+                    $scope.lineColor[i] = $scope.lColor[0];
+                }
+                else {
+                    $scope.robotColor[i] = $scope.mickeyColor[i];
+                    $scope.lineColor[i] = $scope.lColor[i];
                 }
             }
 
@@ -394,7 +313,7 @@
                 try {
                     $scope.updateValues();
 
-                    $(".leftGrip").css("left", ($scope.idx * ($("#tmline").width())-20) / $scope.param._SimTime);
+                    $(".leftGrip").css("left", ($scope.idx * ($("#tmline").width())) / $scope.param._SimTime);
                     if ($scope.playvar) {
                         $scope.idx++;
                     }
@@ -413,44 +332,33 @@
                 $scope.time = $scope.log[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */
-                if ($scope.numRobots != 1) {
-                    for (i = 0; i < $scope.numRobots; i++) {
-                        $scope.dir[i] = parseInt($scope.log[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
-                    }
-                }
-                else {
-                    $scope.dir[0] = parseInt($scope.log[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
+
+                for (i = 0; i < $scope.numRobots; i++) {
+                    $scope.dir[i] = parseInt($scope.log[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
 
                 /* Calculate visited points line */
                 if (($scope.last_idx + 1) != $scope.idx) {
-                    if ($scope.numRobots!=1){
-                        for (i = 0; i < $scope.numRobots; i++) {
-                            $scope.pline[i] = "";
-                        }
-                    }else{
-                        $scope.pline = "";
+
+                    for (i = 0; i < $scope.numRobots; i++) {
+                        $scope.pline[i] = "";
                     }
 
+
                     for (b = 0; b < $scope.idx; b++) {
-                        if ($scope.numRobots != 1) {
-                            for (i = 0; i < $scope.numRobots; i++) {
-                                $scope.pline[i] += $scope.log[b].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
-                            }
+
+                        for (i = 0; i < $scope.numRobots; i++) {
+                            $scope.pline[i] += $scope.log[b].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
                         }
-                        else {
-                            $scope.pline += $scope.log[b].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
-                        }
+
                     }
                 } else {
-                    if ($scope.numRobots != 1) {
-                        for (i = 0; i < $scope.numRobots; i++) {
-                            $scope.pline[i] += $scope.log[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
-                        }
+
+                    for (i = 0; i < $scope.numRobots; i++) {
+                        $scope.pline[i] += $scope.log[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
                     }
-                    else {
-                        $scope.pline += $scope.log[$scope.idx].LogInfo.Robot.Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot.Pos._Y * $scope.zoom + " ";
-                    }
+
+
                 }
                 $scope.last_idx = $scope.idx;
                 $scope.drawRobots();

@@ -16,3 +16,4 @@ hurry.filesize
 swampdragon
 swampdragon-auth
 django-redis
+xmltodict

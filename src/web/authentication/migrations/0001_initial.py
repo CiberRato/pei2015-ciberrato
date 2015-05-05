@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
                 ('first_name', models.CharField(max_length=40, validators=[django.core.validators.RegexValidator(re.compile(b'^[-a-zA-Z0-9_ ]+$'), b'Enter a valid word consisting of letters, numbers, underscores, spaces or hyphens.', b'invalid'), django.core.validators.MinLengthValidator(2)])),
                 ('last_name', models.CharField(max_length=40, validators=[django.core.validators.RegexValidator(re.compile(b'^[-a-zA-Z0-9_ ]+$'), b'Enter a valid word consisting of letters, numbers, underscores, spaces or hyphens.', b'invalid'), django.core.validators.MinLengthValidator(2)])),
                 ('teaching_institution', models.CharField(max_length=140, validators=[django.core.validators.MinLengthValidator(2)])),
+                ('is_active', models.BooleanField(default=True)),
                 ('is_staff', models.BooleanField(default=False)),
                 ('is_superuser', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

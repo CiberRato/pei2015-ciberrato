@@ -24,8 +24,9 @@
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.grids">
                                 <td>
-                                    <a ng-if="value.competition.state_of_competition == 'Register'" href="/panel/competitions/{{value.competition.name}}">{{value.competition.name}}</a>
-                                    <a ng-if="value.competition.state_of_competition != 'Register'" href="/panel/{{value.competition.name}}">{{value.competition.name}}</a>
+                                    <a ng-if="value.competition.type_of_competition.name == 'Private Competition'" href="/panel/{{value.team_name}}/{{value.competition.name}}/soloTrials"><strong>Solo Trials</strong></a>
+                                    <a ng-if="value.competition.state_of_competition == 'Register' && value.competition.type_of_competition.name != 'Private Competition'" href="/panel/competitions/{{value.competition.name}}">{{value.competition.name}}</a>
+                                    <a ng-if="value.competition.state_of_competition != 'Register' && value.competition.type_of_competition.name != 'Private Competition'" href="/panel/{{value.competition.name}}">{{value.competition.name}}</a>
 
                                 </td>
                                 <td><a href="panel/{{value.team_name}}/teamMembers">{{value.team_name}}</a></td>
@@ -85,7 +86,8 @@
                                     </div>
                                 </td>
 
-                                <td><a ng-click="vm.destroy(value.team_name, value.competition.name)" class="btn btn-primary btn-flat">X</a></td>
+                                <td ng-if="value.competition.type_of_competition.name != 'Private Competition'"><a ng-click="vm.destroy(value.team_name, value.competition.name)" class="btn btn-primary btn-flat">X</a></td>
+                                <td ng-if="value.competition.type_of_competition.name == 'Private Competition'"><a  disabled class="btn btn-primary btn-flat">X</a></td>
 
                             </tr>
                             </tbody>

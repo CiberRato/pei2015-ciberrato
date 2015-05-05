@@ -47,6 +47,12 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(), name=serializer.validated_data['competition_name'])
+
+            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+                return Response({'status': 'Bad Request',
+                                 'message': 'You can not create for that competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
                                   parent_competition=competition)
 
@@ -78,6 +84,13 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         :param identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
+
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if trial.round.parent_competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'This trial can\'t be seen!!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.serializer_class(TrialSimplex(trial))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -91,6 +104,12 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         :param identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
+
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad Request',
+                             'message': 'This trial can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         trial.delete()
 
         return Response({'status': 'Deleted',
@@ -177,6 +196,12 @@ class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
+
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class([TrialSimplex(sim) for sim in r.trial_set.all()], many=True)
 
@@ -199,6 +224,12 @@ class TrialByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param competition_name: The competition name
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
+
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            return Response({'status': 'Bad Request',
+                             'message': 'This grid can\'t be seen!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         trials = []
 
         for r in competition.round_set.all():
@@ -210,13 +241,11 @@ class TrialByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                            mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+                       mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = TrialGrid.objects.all()
     serializer_class = TrialGridInputSerializer
 
     def get_permissions(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return permissions.IsAuthenticated(),
         return permissions.IsAuthenticated(), IsStaff(),
 
     def create(self, request, *args, **kwargs):

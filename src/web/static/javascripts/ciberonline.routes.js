@@ -111,6 +111,16 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/competition/liveCompetitions.html',
             title: 'Current Competitions'
+        }).when('/panel/mySoloTrials',{
+            controller:'SoloByUserController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/allSolos.html',
+            title: 'My Solo Trials'
+        }).when('/panel/:identifier',{
+            controller:'TrialsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/allTrials.html',
+            title: 'My Solo Trials'
         }).when('/panel/myCompetitions/:username',{
             controller:'MyCompetitionsController',
             controllerAs:'vm',
@@ -131,6 +141,11 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/agent/myAgents.html',
             title: 'My Agents'
+        }).when('/panel/:teamName/:name/agentDetail/:fileName',{
+            controller:'EditFileController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/agent/fileEdit.html',
+            title: 'Edit File'
         }).when('/panel/:teamName/:name/agentDetail',{
             controller:'AgentDetailController',
             controllerAs: 'vm',
@@ -141,6 +156,16 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/agent/allAgents.html',
             title: 'All Agents'
+        }).when('/panel/:teamName/:identifier/createSoloTrial',{
+            controller:'CreateSoloController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/createSolo.html',
+            title: 'Solo Trials'
+        }).when('/panel/:teamName/:identifier/soloTrials',{
+            controller:'SoloByTeamController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/soloTrials/soloByTeam.html',
+            title: 'Solo Trials'
         }).when('/admin/',{
             templateUrl: '/static/templates/admin/index.html',
             title: 'Welcome!'
@@ -159,6 +184,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html',
             title: 'All Competitions'
+        }).when('/admin/allUsers',{
+            controller:'ChangePermissionsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/user/changePermissions.html',
+            title: 'All Users'
         }).when('/admin/createTypeOfCompetition',{
             controller:'CreateTypeOfCompetitionController',
             controllerAs: 'vm',
