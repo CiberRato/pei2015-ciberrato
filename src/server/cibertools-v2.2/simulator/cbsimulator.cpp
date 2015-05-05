@@ -832,6 +832,7 @@ void cbSimulator::UpdateState()
 
         if (curState == FINISHED) {
         	for (unsigned int i= 0; i < robotMappers.size(); i++) {
+        		if (robotMappers[i] == NULL) continue;
         		disconnect(robots[i], SIGNAL(readyRead()), robotMappers[i], SLOT(map()));
         	}
         }
@@ -1589,7 +1590,8 @@ void cbSimulator::processReceptionMessages()
 				mapper->setMapping(robot, QString::number(robot->Id()));
 				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
 
-				robotMappers.push_back(mapper);
+				robotMappers.resize(robots.size());
+				robotMappers[robot->Id() - 1] = mapper;
 
 				UpdateState();
 				UpdateViews();
