@@ -58,7 +58,7 @@ class TeamsModelsTestCase(TestCase):
         # only one team is stored
         response = client.get(url)
         self.assertEqual(response.data, OrderedDict([(u'count', 1), (u'next', None), (u'previous', None), (
-        u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)])])]))
+            u'results', [OrderedDict([('name', u'XPTO'), ('max_members', 10)])])]))
 
         # create a team
         data = {'name': 'TestTeam', 'max_members': 10}
@@ -87,7 +87,10 @@ class TeamsModelsTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': True, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': True, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # only one member in the team
         url = "/api/v1/teams/members/TestTeam/"
@@ -104,7 +107,10 @@ class TeamsModelsTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # verify if the user is in the team and is not an admin
         url = "/api/v1/teams/member/TestTeam/?username=eypo"
@@ -114,7 +120,10 @@ class TeamsModelsTestCase(TestCase):
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
 
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # only two members in the team
         url = "/api/v1/teams/members/TestTeam/"
@@ -130,7 +139,10 @@ class TeamsModelsTestCase(TestCase):
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
 
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': True, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': True, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # delete the user from the admins list
         url = "/api/v1/teams/admin/TestTeam/?username=eypo"
@@ -140,7 +152,10 @@ class TeamsModelsTestCase(TestCase):
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
 
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # delete the user from the grou
         url = "/api/v1/teams/member/TestTeam/?username=eypo"
@@ -163,7 +178,10 @@ class TeamsModelsTestCase(TestCase):
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
 
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 10)])})
 
         # update the team
         url = "/api/v1/teams/crud/TestTeam/"
@@ -177,8 +195,8 @@ class TeamsModelsTestCase(TestCase):
         data = {'name': '', 'max_members': -1}
         response = client.put(path=url, data=data, format='json')
         self.assertEqual(response.data, {'status': 'Bad request', 'message': {
-        'max_members': [u'Ensure this value is greater than or equal to 1.'],
-        'name': [u'This field may not be blank.']}})
+            'max_members': [u'Ensure this value is greater than or equal to 1.'],
+            'name': [u'This field may not be blank.']}})
         self.assertEqual(response.status_code, 400)
 
         # see if has been updated
@@ -324,7 +342,10 @@ class TeamsModelsTestCase(TestCase):
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
 
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 2)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 2)])})
 
         # verify if the user is in the team and is not an admin
         url = "/api/v1/teams/member/TestTeam/?username=eypo"
@@ -334,7 +355,10 @@ class TeamsModelsTestCase(TestCase):
         del rsp['account']['updated_at']
         del rsp['account']['created_at']
 
-        self.assertEqual(rsp, {'account': OrderedDict([('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]), 'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 2)])})
+        self.assertEqual(rsp, {'account': OrderedDict(
+            [('email', u'ey@rf.pt'), ('username', u'eypo'), ('teaching_institution', u'Universidade de Aveiro'),
+             ('first_name', u'Costa'), ('last_name', u'Ferreira'), ('is_staff', False), ('is_superuser', False)]),
+                               'is_admin': False, 'team': OrderedDict([('name', u'TestTeam'), ('max_members', 2)])})
 
         # can't add another member
         url = "/api/v1/teams/member/"
