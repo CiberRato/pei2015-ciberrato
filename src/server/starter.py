@@ -58,9 +58,6 @@ class Starter:
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
 
-		VIEWER_HOST = settings["settings"]["starter_viewer_host"]
-		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
-
 		SERVICES_HOST = settings["settings"]["services_end_point_host"]
 		SERVICES_PORT = settings["settings"]["services_end_point_port"]
 
@@ -129,18 +126,13 @@ class Starter:
 		time.sleep(1)
 
 		print "[STARTER] Creating process for viewer"
+		(viewer_c, starter_c) = multiprocessing.Pipe(True)
 		viewer = Viewer()
-		viewer_thread = Thread(target=viewer.main, args=(sim_id,))
+		viewer_thread = Thread(target=viewer.main, args=(sim_id,starter_c,))
 		viewer_thread.start()
 		print "[STARTER] Successfully opened viewer"
 
-		# Establish connection with viewer
-		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-		viewer_tcp.bind((VIEWER_HOST, VIEWER_PORT))
-		viewer_tcp.listen(1)
-		viewer_c, viewer_c_addr = viewer_tcp.accept()
 
 		print "[STARTER] Viewer ready, sending message to viewer about the number of agents\n"
 		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
