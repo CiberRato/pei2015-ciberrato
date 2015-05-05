@@ -143,6 +143,7 @@ private:
     QString *lowerWallsFile;
     QString *higherWallsFile;	
 	QString *beaconFile;
+	QString curSkinName;
 
 	// Game sounds
 	QSound *collisionSound;

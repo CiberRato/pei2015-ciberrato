@@ -39,7 +39,7 @@ CRQScene::CRQScene( CRLab *lb, QObject * parent  )
     zoom = 34;			// 1 unidade no  lab ==> 34 pixeis no scene
 	lab = lb;
 	robotsVarStatus = 0;
-	nRobots = 20;
+	nRobots = 5;
 	labStatus = 0;
 	usedId = NULL;
 	bgInitSprite = NULL;
@@ -53,7 +53,8 @@ CRQScene::CRQScene( CRLab *lb, QObject * parent  )
     }
     setSceneRect(0, 0, lb->labSize().x() * zoom, lb->labSize().y() *zoom );
     setBackgroundBrush( QColor( 255, 255, 255 ) );
-    skin("skins/default/default.skin");
+    curSkinName = "skins/default/default.skin";
+    skin(curSkinName);
     setBackgroundBrush( QColor( 255, 255, 255 ) );
 
     QGraphicsView view (this);
@@ -248,10 +249,17 @@ int CRQScene::drawRobot( CRLab * l_b )
         return 0;
     }
 
+    std::cout << nRobots << std::endl;
     if (robotsVarStatus == 0)
     {
-		if( lab->grid() != NULL )		// if grid exist
-			nRobots = lab->grid()->howManyPositions(); 
+		if( lab->grid() != NULL ) {
+            // if grid exist
+            if (nRobots != lab->grid()->howManyPositions()) {
+                nRobots = lab->grid()->howManyPositions();
+                // must reload skin when the number of robots detects a change 
+                skin(curSkinName);
+            }
+        }	
 
 		usedId = new int[nRobots];   // estado dos robots
 		for ( int n = 0; n < nRobots; n++ )
@@ -262,6 +270,7 @@ int CRQScene::drawRobot( CRLab * l_b )
     }
 
 	// percorre todos os robots existentes no lab
+    std::cout << nRobots << std::endl;
     for( int nRobs=1; nRobs<=nRobots; nRobs++ )
     {
 		rob=lab->robot( nRobs );
@@ -440,13 +449,13 @@ void CRQScene::skin(QString skinFileName)
         skinName = QString(tmp).trimmed();
 		fp.close();
 
-        robPixmap.resize(20);
-        robPixmapReturn.resize(20);
-        robPixmapCollision.resize(20);
-        startPixmap.resize(20);
+        robPixmap.resize(nRobots);
+        robPixmapReturn.resize(nRobots);
+        robPixmapCollision.resize(nRobots);
+        startPixmap.resize(nRobots);
 
         // robot files
-        for(unsigned int r=0; r < 20; r++)
+        for(unsigned int r = 0; r < nRobots; r++)
         {
             QString baseName;
             baseName = QString("skins/")+skinName+"/rob"+QString::number(r%5+1)+"/";

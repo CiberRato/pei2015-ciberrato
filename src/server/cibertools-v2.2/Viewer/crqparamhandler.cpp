@@ -26,27 +26,27 @@
 using namespace std;
 
 bool CRQParamHandler::startDocument()
-	{
-	paramObject = 0;
+{
+    paramObject = 0;
 
     return TRUE;
-	}
+}
 
 bool CRQParamHandler::endDocument()
 {
     return TRUE;
 }
 
-bool CRQParamHandler::startElement( const QString&, const QString&, 
+bool CRQParamHandler::startElement( const QString&, const QString&,
                                     const QString& qName, const QXmlAttributes& attr)
 {
-	/* process begin tag */
+    /* process begin tag */
 
     const QString &tag = qName;
 
-    if( tag == "Viewer" )
+    if ( tag == "Viewer" )
     {
-        if((paramObject = new CRMainParameters()) == NULL )
+        if ((paramObject = new CRMainParameters()) == NULL )
         {
             cerr << "Erro a criar o objecto parameters\n";
             return false;
@@ -83,8 +83,8 @@ bool CRQParamHandler::startElement( const QString&, const QString&,
 
         return true;
     }
-	else
-		return false;
+    else
+        return false;
 }
 
 
@@ -96,5 +96,5 @@ void CRQParamHandler::setDocumentLocator( QXmlLocator * )
 
 CRMainParameters * CRQParamHandler::parameters()
 {
-	return paramObject;
+    return paramObject;
 }
