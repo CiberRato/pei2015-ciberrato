@@ -29,18 +29,14 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data['results']
         del rsp[0]['updated_at']
         del rsp[0]['created_at']
-        self.assertEqual(rsp, [OrderedDict(
-            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
-             ('first_name', u'unit'), ('last_name', u'test')])])
+        self.assertEqual(rsp, [OrderedDict([('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'), ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
 
         url = "/api/v1/account_by_first_name/unit/"
         response = client.get(url)
         rsp = response.data
         del rsp[0]['updated_at']
         del rsp[0]['created_at']
-        self.assertEqual(rsp, [OrderedDict(
-            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
-             ('first_name', u'unit'), ('last_name', u'test')])])
+        self.assertEqual(rsp, [OrderedDict([('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'), ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
         self.assertEqual(response.status_code, 200)
 
         url = "/api/v1/account_by_last_name/test/"
@@ -48,9 +44,7 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         del rsp[0]['updated_at']
         del rsp[0]['created_at']
-        self.assertEqual(rsp, [OrderedDict(
-            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
-             ('first_name', u'unit'), ('last_name', u'test')])])
+        self.assertEqual(rsp, [OrderedDict([('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'), ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
         self.assertEqual(response.status_code, 200)
 
         url = "/api/v1/accounts/"
@@ -94,9 +88,7 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['updated_at']
         del rsp['created_at']
-        self.assertEqual(rsp,
-                         {'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
-                          'first_name': u'unit', 'last_name': u'test'})
+        self.assertEqual(rsp, {'username': u'test1', 'first_name': u'unit', 'last_name': u'test', 'is_superuser': False, 'is_staff': False, 'teaching_institution': u'testUA', 'email': u'test1@test.com'})
 
         url = "/api/v1/accounts/test/"
         data = {'email': 'test2@test.com', 'first_name': 'unit', 'last_name': 'test',
@@ -111,8 +103,7 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['updated_at']
         del rsp['created_at']
-        self.assertEqual(rsp, {'username': u'test', 'first_name': u'unit', 'last_name': u'test',
-                               'teaching_institution': u'testUA', 'email': u'test2@test.com'})
+        self.assertEqual(rsp, {'username': u'test', 'first_name': u'unit', 'last_name': u'test', 'is_superuser': False, 'is_staff': False, 'teaching_institution': u'testUA', 'email': u'test2@test.com'})
 
         # update a user to staff member
         user.is_staff = True
@@ -142,9 +133,7 @@ class AuthenticationTestCase(TestCase):
         rsp = dict(response.data)
         del rsp['updated_at']
         del rsp['created_at']
-        self.assertEqual(rsp,
-                         {'email': u'test1@test.com', 'username': u'test1', 'teaching_institution': u'testUA',
-                          'first_name': u'unit', 'last_name': u'test'})
+        self.assertEqual(rsp, {'username': u'test1', 'first_name': u'unit', 'last_name': u'test', 'is_superuser': False, 'is_staff': False, 'teaching_institution': u'testUA', 'email': u'test1@test.com'})
 
         # see if the user is currently logged in
         url = "/api/v1/me/"
