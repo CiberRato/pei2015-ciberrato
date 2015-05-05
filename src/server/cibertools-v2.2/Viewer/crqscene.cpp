@@ -39,7 +39,7 @@ CRQScene::CRQScene( CRLab *lb, QObject * parent  )
     zoom = 34;          // 1 unidade no  lab ==> 34 pixeis no scene
     lab = lb;
     robotsVarStatus = 0;
-    nRobots = 5;
+    nRobots = 0;
     labStatus = 0;
     usedId = NULL;
     bgInitSprite = NULL;
@@ -249,7 +249,6 @@ int CRQScene::drawRobot( CRLab * l_b )
         return 0;
     }
 
-    std::cout << nRobots << std::endl;
     if (robotsVarStatus == 0)
     {
         if ( lab->grid() != NULL ) {
@@ -270,7 +269,6 @@ int CRQScene::drawRobot( CRLab * l_b )
     }
 
     // percorre todos os robots existentes no lab
-    std::cout << nRobots << std::endl;
     for ( int nRobs = 1; nRobs <= nRobots; nRobs++ )
     {
         rob = lab->robot( nRobs );
