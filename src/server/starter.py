@@ -11,6 +11,7 @@ import sys
 import tarfile
 import re
 import zipfile
+import multiprocessing
 from threading import Thread
 from xml.dom import minidom
 from viewer import *
@@ -127,9 +128,11 @@ class Starter:
 
 		print "[STARTER] Creating process for viewer"
 		(viewer_c, starter_c) = multiprocessing.Pipe(True)
+		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = Thread(target=viewer.main, args=(sim_id,starter_c,))
+		viewer_thread = Thread(target=viewer.main, args=(sim_id,starter_c,timeout_event,))
 		viewer_thread.start()
+		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
 
 
@@ -158,18 +161,15 @@ class Starter:
 
 		# Waiting for viewer to send robots registry confirmation
 		if allow_remote:
-			viewer_c.settimeout(TIMEOUT)
-		try:
-			data = viewer_c.recv(4096)
-		except socket.timeout:
+			# Use events to create Timeout
+			timeout_event.wait(TIMEOUT)
+
+		if not timeout_event.isSet():
 			print "[STARTER] Failed to register all robots in the timeout established"
 			# Canceling everything regarding this simulation
 			# Shuting down connections to viewer
 			print "[STARTER] Killing Sockets"
-			viewer_c.shutdown(socket.SHUT_RDWR)
 			viewer_c.close()
-			viewer_tcp.shutdown(socket.SHUT_RDWR)
-			viewer_tcp.close()
 
 			# Waiting for viewer to die
 			print "[STARTER] Killing Viewer"
@@ -204,9 +204,8 @@ class Starter:
 				tempFilesList[key].close()
 			raise Exception("[STARTER] ERROR: Agents weren't all registered")
 
+		timeout_event.clear()
 		if allow_remote:
-			viewer_c.settimeout(None)
-
 			services_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			services_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -227,10 +226,7 @@ class Starter:
 				# Canceling everything regarding this simulation
 				# Shuting down connections to viewer
 				print "[STARTER] Killing Sockets"
-				viewer_c.shutdown(socket.SHUT_RDWR)
 				viewer_c.close()
-				viewer_tcp.shutdown(socket.SHUT_RDWR)
-				viewer_tcp.close()
 
 				services_c.shutdown(socket.SHUT_RDWR)
 				services_c.close()
@@ -276,18 +272,16 @@ class Starter:
 		viewer_c.send("<StartedAgents/>")
 
 		print "[STARTER] Waiting for simulation to end.."
-		data = viewer_c.recv(4096)
+		data = viewer_c.recv()
 		while data != "<EndedSimulation/>":
-			data = viewer_c.recv(4096)
+			data = viewer_c.recv()
 
 		print "[STARTER] Simulation ended, killing simulator and running agents"
 		print "[STARTER] Posting log to the database.."
 
 		# Shuting down connections to viewer
-		viewer_c.shutdown(socket.SHUT_RDWR)
 		viewer_c.close()
-		viewer_tcp.shutdown(socket.SHUT_RDWR)
-		viewer_tcp.close()
+
 		if allow_remote:
 			services_c.shutdown(socket.SHUT_RDWR)
 			services_c.close()
