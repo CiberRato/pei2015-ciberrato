@@ -34,16 +34,13 @@
 
             $("#waitawhile").hide("fast");
             $("#row1").show("slow");
-            $("#row2").show("slow");
             $("#row3").show("slow");
+            $("#row2").show("slow");
+
 
             $scope.zoom = 50;
 
             doIt();
-        }
-
-        function isArray(myArray) {
-            return myArray.constructor.toString().indexOf("Array") > -1;
         }
 
         $scope.drawMap=function(){
@@ -368,29 +365,6 @@
             $scope.refreshSVG = function () {
                 $scope.updateValues();
                 $timeout($scope.refreshSVG, 1000);
-
-            };
-
-            $scope.setMazeColor = function (id) {
-
-                if (id == 1) {
-                    $scope.groundColor = 'black';
-                    $scope.cheeseColor = 'static/img/svg/cheese.svg';
-                    $scope.circleBorder = '#00ffff';
-                    $scope.greatWallColor = '#008000';
-                    $scope.smallWallColor = '#0000ff';
-                    $scope.gridColor = '#cfd4db';
-
-                }
-                if (id == 2) {
-                    $scope.groundColor = 'darkgrey';
-                    $scope.cheeseColor = 'static/img/svg/blackCheese.svg';
-                    $scope.circleBorder = '#cfd4db';
-                    $scope.greatWallColor = '#353535';
-                    $scope.smallWallColor = '#727272';
-                    $scope.gridColor = '#cfd4db';
-
-                }
 
             };
 

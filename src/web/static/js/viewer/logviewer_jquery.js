@@ -55,7 +55,4 @@ $(document).keydown(function(e) {
     }
     e.preventDefault(); // prevent the default action (scroll / move caret)
 });
-$("#mazeColor").change(function() {
-    angular.element('[ng-controller=LogViewer]').scope().setMazeColor($( "#mazeColor" ).val());
-    return false;
-});
+
