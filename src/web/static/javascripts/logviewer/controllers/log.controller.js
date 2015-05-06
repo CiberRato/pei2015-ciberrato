@@ -15,6 +15,8 @@
         var ctx1 = c1.getContext("2d");
         var c2 = document.getElementById("layer2");
         var ctx2 = c2.getContext("2d");
+        var c3 = document.getElementById("layer3");
+        var ctx3 = c3.getContext("2d");
 
         LogViewer.getLog($routeParams.identifier).then(getLogSuccess, getLogError);
 
@@ -113,6 +115,26 @@
             }
         }
 
+        $scope.drawLine=function(){
+            ctx3.clearRect(0, 0, c3.width, c3.height);
+            var i;
+            var b;
+            for(i = 0; i < $scope.robot.length; i++){
+                if($scope.slyne[i]==true){
+                    ctx3.beginPath();
+                    ctx3.moveTo($scope.plinex[i][0],$scope.pliney[i][0]);
+                    for(b = 1; b < $scope.idx; b++){
+                        ctx3.lineTo($scope.plinex[i][b],$scope.pliney[i][b]);
+                    }
+                    ctx3.lineWidth = 5;
+                    ctx3.strokeStyle = $scope.lColor[i];
+                    ctx3.stroke();
+                    console.log('aqui'+b);
+                }
+            }
+
+        }
+
         $scope.drawRobots=function(){
             ctx2.clearRect(0, 0, c2.width, c2.height);
 
@@ -163,10 +185,14 @@
             c1.height=$scope.zoom * $scope.map._Height;
             c2.width=$scope.zoom * $scope.map._Width;
             c2.height=$scope.zoom * $scope.map._Height;
+            c3.width=$scope.zoom * $scope.map._Width;
+            c3.height=$scope.zoom * $scope.map._Height;
             ctx1.translate(0, $scope.zoom * $scope.map._Height);
             ctx1.scale(1, -1);
             ctx2.translate(0, $scope.zoom * $scope.map._Height);
             ctx2.scale(1, -1);
+            ctx3.translate(0, $scope.zoom * $scope.map._Height);
+            ctx3.scale(1, -1);
 
             $scope.velButton = '1x';
 
@@ -248,9 +274,11 @@
             $scope.lineColor = [];
 
 
-            $scope.pline = [];
+            $scope.plinex = [];
+            $scope.pliney = [];
             for (i = 0; i < $scope.numRobots; i++) {
-                $scope.pline[i] = "";
+                $scope.plinex[i] = [];
+                $scope.pliney[i] = [];
                 $scope.bclass[i] = 'btn btn-success'
                 $scope.toggleText[i] = 'Show';
                 $scope.slyne[i] = false;
@@ -338,27 +366,32 @@
                 if (($scope.last_idx + 1) != $scope.idx) {
 
                     for (i = 0; i < $scope.numRobots; i++) {
-                        $scope.pline[i] = "";
+                        $scope.plinex[i] = [];
+                        $scope.pliney[i] = [];
                     }
 
 
                     for (b = 0; b < $scope.idx; b++) {
 
                         for (i = 0; i < $scope.numRobots; i++) {
-                            $scope.pline[i] += $scope.log[b].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[b].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
+                            $scope.plinex[i][b] = $scope.log[b].LogInfo.Robot[i].Pos._X * $scope.zoom;
+                            $scope.pliney[i][b] = $scope.log[b].LogInfo.Robot[i].Pos._Y * $scope.zoom;
                         }
 
                     }
                 } else {
 
                     for (i = 0; i < $scope.numRobots; i++) {
-                        $scope.pline[i] += $scope.log[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom + "," + $scope.log[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom + " ";
+                        $scope.plinex[i][$scope.idx] = $scope.log[$scope.idx].LogInfo.Robot[i].Pos._X * $scope.zoom;
+                        $scope.pliney[i][$scope.idx] = $scope.log[$scope.idx].LogInfo.Robot[i].Pos._Y * $scope.zoom;
                     }
 
 
                 }
                 $scope.last_idx = $scope.idx;
+                $scope.drawLine();
                 $scope.drawRobots();
+
 
             };
 
