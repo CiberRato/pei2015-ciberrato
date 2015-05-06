@@ -13302,7 +13302,14 @@ div.jGrowl div.success a:hover {
     left: 0;
     z-index: 2;
 }
+
 #layer3 {
+    width: 100%;
+    height: auto;
+    background-color: black;
+    z-index: 0;
+}
+#layer4 {
     width: 100%;
     height: auto;
     position: absolute;

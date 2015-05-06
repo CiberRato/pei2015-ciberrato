@@ -15,7 +15,7 @@
         var ctx1 = c1.getContext("2d");
         var c2 = document.getElementById("layer2");
         var ctx2 = c2.getContext("2d");
-        var c3 = document.getElementById("layer3");
+        var c3 = document.getElementById("layer4");
         var ctx3 = c3.getContext("2d");
 
         LogViewer.getLog($routeParams.identifier).then(getLogSuccess, getLogError);
