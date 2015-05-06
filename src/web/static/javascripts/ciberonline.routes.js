@@ -116,7 +116,7 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/soloTrials/allSolos.html',
             title: 'My Solo Trials'
-        }).when('/panel/:identifier',{
+        }).when('/panel/trials/:identifier',{
             controller:'TrialsController',
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/soloTrials/allTrials.html',
