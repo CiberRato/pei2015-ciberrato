@@ -54,19 +54,22 @@
 
         function getLabSuccessFn(data){
             console.log("TENHO O FICHEIRO: lab!");
-            $scope.lab_obj = data.data;
+            console.log(data.data);
+            $scope.map = data.data;
             StreamViewer.getParametersViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getParametersSuccessFn, getErrorFn);
 
         }
         function getParametersSuccessFn(data){
             console.log("TENHO O FICHEIRO: parameters!");
-            $scope.parameters_obj = data.data;
+            console.log(data.data);
+            $scope.param = data.data;
             StreamViewer.getGridViewer($scope.simulation.round_name, $scope.simulation.competition_name).then(getGridSuccessFn, getErrorFn);
 
         }
         function getGridSuccessFn(data){
             console.log("TENHO O FICHEIRO: grid!");
-            grid = data.data;
+            console.log(data.data);
+            $scope.grid = data.data;
             PrepareParameters();
             $scope.drawMap();
             ctx = c1.getContext("2d");
@@ -77,42 +80,31 @@
         }
 
         function PrepareParameters(){
-            $scope.lab_obj = angular.fromJson(lab);
-            console.log($scope.lab_obj);
-            $scope.parameters_obj = angular.fromJson(parameters);
-            $scope.grid_obj = angular.fromJson(grid);
+            
+            c3.width=$scope.zoom * $scope.map.Lab._Width;
+            c3.height=$scope.zoom * $scope.map.Lab._Height;
 
-            c3.width=$scope.zoom * $scope.lab_obj.Lab._Width;
-            c3.height=$scope.zoom * $scope.lab_obj.Lab._Height;
-
-            ctx.translate(0, $scope.zoom * $scope.lab_obj.Lab._Height);
+            ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
             ctx.scale(1, -1);
 
             /* Parameters Object */
-            $scope.param=$scope.parameters_obj.Parameters;
+            //$scope.param=$scope.param.Parameters;
 
             /* Map Object */
-            $scope.map = $scope.lab_obj.Lab;
+            //$scope.map = $scope.map.Lab;
 
             /* Grid Object */
-            $scope.grid = $scope.grid_obj.Grid;
-
+            //$scope.grid = $scope.grid_obj.Grid;
+            console.log($scope.map);
             /* Beacons Object */
-            $scope.beacon = $scope.lab_obj.Lab.Beacon;
+            $scope.beacon = $scope.map.Lab.Beacon;
 
             /* Number of Beacons */
-            if(isArray($scope.map.Beacon)){
-                $scope.nBeacon = $scope.map.Beacon.length;
-            }
-            else{
-                $scope.nBeacon = 1
-            }
+          	$scope.nBeacon = $scope.map.Lab.Beacon.length;
+           
 
             /* Find beacon height */
-            if($scope.nBeacon == 1)
-                $scope.beacon_height = $scope.lab_obj.Lab.Beacon._Height;
-            else
-                $scope.beacon_height = $scope.lab_obj.Lab.Beacon[0]._Height;
+            $scope.beacon_height = $scope.map.Lab.Beacon[0]._Height;
 
             /* Set Maze Colors */
             $scope.groundColor = 'black';
@@ -186,9 +178,9 @@
 
         function drawGrid(){
             var i;
-            for(i=0;i<$scope.grid.Position.length;i++) {
+            for(i=0;i<$scope.grid.Grid.Position.length;i++) {
                 ctx.beginPath();
-                ctx.arc($scope.grid.Position[i]._X*$scope.zoom, $scope.grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                ctx.arc($scope.grid.Grid.Position[i]._X*$scope.zoom, $scope.grid.Grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
                 ctx.fillStyle = $scope.gridColor;
                 ctx.fill();
                 ctx.lineWidth = 2;
@@ -199,42 +191,35 @@
 
         function drawBeacon(){
             var i;
-            if($scope.nBeacon==1){
+            
+            for(i=0;i<$scope.map.Lab.Beacon.length;i++){
+                console.log($scope.map.Lab.Beacon[i]);
                 ctx.beginPath();
-                ctx.arc($scope.beacon._X * $scope.zoom, $scope.beacon._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Lab.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                ctx.arc($scope.map.Lab.Beacon[i]._X * $scope.zoom, $scope.map.Lab.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
                 ctx.fillStyle = $scope.circleBorder;
                 ctx.fill();
+
+                var dx = ($scope.map.Lab.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
+                var dy = ($scope.map.Lab.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
+                var dWidth = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
+                var dHeight = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
+
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx.drawImage(imageObj, $scope.beacon._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Lab.Target._Radius, $scope.beacon._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Lab.Target._Radius, $scope.zoom*$scope.lab_obj.Lab.Target._Radius*2,$scope.zoom*$scope.lab_obj.Lab.Target._Radius*2);
+                    ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
                 };
                 imageObj.src = $scope.cheeseColor;
                 ctx.fill();
                 ctx.stroke();
-
             }
-            else{
-                for(i=0;i<$scope.lab_obj.Lab.Beacon.length;i++){
-                    ctx.beginPath();
-                    ctx.arc($scope.beacon[i]._X * $scope.zoom, $scope.beacon[i]._Y * $scope.zoom, $scope.zoom*$scope.lab_obj.Lab.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
-                    ctx.fillStyle = $scope.circleBorder;
-                    ctx.fill();
-                    var imageObj = new Image();
-                    imageObj.onload = function() {
-                        ctx.drawImage(imageObj, $scope.beacon[i]._X * $scope.zoom - $scope.zoom*$scope.lab_obj.Lab.Target._Radius, $scope.beacon[i]._Y * $scope.zoom - $scope.zoom*$scope.lab_obj.Lab.Target._Radius, $scope.zoom*$scope.lab_obj.Lab.Target._Radius*2,$scope.zoom*$scope.lab_obj.Lab.Target._Radius*2 );
-                    };
-                    imageObj.src = $scope.cheeseColor;
-                    ctx.fill();
-                    ctx.stroke();
-                }
-            }
+            
         }
 
         function drawWalls(){
             var i;
-            for (i = 0; i < $scope.lab_obj.Lab.Wall.length; i++) {
+            for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
 
-                if($scope.lab_obj.Lab.Wall[i]._Height < $scope.beacon_height){
+                if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
                     ctx.fillStyle = $scope.smallWallColor;
                 }
                 else{
@@ -242,8 +227,8 @@
                 }
                 ctx.beginPath();
                 var b = 0;
-                for(; b < $scope.lab_obj.Lab.Wall[i].Corner.length; b++){
-                    ctx.lineTo($scope.lab_obj.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.lab_obj.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
+                    ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
                 }
                 ctx.closePath();
                 ctx.fill();
@@ -295,21 +280,18 @@
         }
 
         function doIt() {
-            c1.width=$scope.zoom * $scope.lab_obj.Lab._Width;
-            c1.height=$scope.zoom * $scope.lab_obj.Lab._Height;
-            c2.width=$scope.zoom * $scope.lab_obj.Lab._Width;
-            c2.height=$scope.zoom * $scope.lab_obj.Lab._Height;
-            ctx.translate(0, $scope.zoom * $scope.lab_obj.Lab._Height);
+            c1.width=$scope.zoom * $scope.map.Lab._Width;
+            c1.height=$scope.zoom * $scope.map.Lab._Height;
+            c2.width=$scope.zoom * $scope.map.Lab._Width;
+            c2.height=$scope.zoom * $scope.map.Lab._Height;
+            ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
             ctx.scale(1, -1);
-            ctx2.translate(0, $scope.zoom * $scope.lab_obj.Lab._Height);
+            ctx2.translate(0, $scope.zoom * $scope.map.Lab._Height);
             ctx2.scale(1, -1);
 
-            if(isArray($scope.logBuff_obj[0].LogInfo.Robot)){
-                $scope.numRobots = $scope.logBuff_obj[0].LogInfo.Robot.length;
-            }
-            else{
-                $scope.numRobots = 1;
-            }
+            
+            $scope.numRobots = $scope.logBuff_obj[0].LogInfo.Robot.length;
+            
 
             $scope.finalResults = [];
 
@@ -415,30 +397,30 @@
             var tick = function() {
                 try {
 
-                    if ($scope.parameters_obj.Parameters._SimTime == $scope.logBuff_obj[$scope.idx].LogInfo._Time) {
+                    if ($scope.param.Parameters._SimTime == $scope.logBuff_obj[$scope.idx].LogInfo._Time) {
                         $scope.playvar = -1;
                         console.log('parou tudo');
-                        if ($scope.numRobots != 1) {
-                            $scope.finalResults = $scope.logBuff_obj[$scope.idx].LogInfo.Robot
-                            var swapped;
-                            do {
-                                swapped = false;
-                                for (var i = 0; i < $scope.finalResults.length - 1; i++) {
-                                    if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
-                                        var temp = $scope.finalResults[i];
-                                        var temp2 = $scope.mickeysFINAL[i];
+                        
+                        $scope.finalResults = $scope.logBuff_obj[$scope.idx].LogInfo.Robot
+                        var swapped;
+                        do {
+                            swapped = false;
+                            for (var i = 0; i < $scope.finalResults.length - 1; i++) {
+                                if ($scope.finalResults[i].Scores._Score > $scope.finalResults[i + 1].Scores._Score) {
+                                    var temp = $scope.finalResults[i];
+                                    var temp2 = $scope.mickeysFINAL[i];
 
-                                        $scope.finalResults[i] = $scope.finalResults[i + 1];
-                                        $scope.mickeysFINAL[i] = $scope.mickeysFINAL[i + 1];
+                                    $scope.finalResults[i] = $scope.finalResults[i + 1];
+                                    $scope.mickeysFINAL[i] = $scope.mickeysFINAL[i + 1];
 
-                                        $scope.finalResults[i + 1] = temp;
-                                        $scope.mickeysFINAL[i + 1] = temp2;
-                                        swapped = true;
-                                    }
+                                    $scope.finalResults[i + 1] = temp;
+                                    $scope.mickeysFINAL[i + 1] = temp2;
+                                    swapped = true;
                                 }
-                            } while (swapped);
-                            ;
-                        }
+                            }
+                        } while (swapped);
+                        
+                        
 
                     }
                 }catch(TypeError){
@@ -480,14 +462,11 @@
                 $scope.time = $scope.logBuff_obj[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */
-                if($scope.numRobots != 1){
-                    for(i=0; i<$scope.numRobots; i++){
-                        $scope.dir[i] = parseInt($scope.logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
-                    }
+                
+                for(i=0; i<$scope.numRobots; i++){
+                    $scope.dir[i] = parseInt($scope.logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
-                else {
-                    $scope.dir[0] = parseInt($scope.logBuff_obj[$scope.idx].LogInfo.Robot.Pos._Dir) + 90;
-                }
+                
                 $scope.drawRobots();
 
             };
