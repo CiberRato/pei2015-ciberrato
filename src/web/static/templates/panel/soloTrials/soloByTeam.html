@@ -9,9 +9,9 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2>Solo Trials ({{vm.teamName}}) <a ng-if="vm.solos.length != 0" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial" class="btn"><strong>+</strong></a></h2>
-                        <p ng-if="vm.solos.length == 0">You don't have solo trial created.</p>
-                        <p ng-if="vm.solos.length != 0">Here is shown in table the list of all solo trials created.</p>
+                        <h2>Maps ({{vm.teamName}}) <a ng-if="vm.solos.length != 0" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial" class="btn"><strong>+</strong></a></h2>
+                        <p ng-if="vm.solos.length == 0">You don't have maps created.</p>
+                        <p ng-if="vm.solos.length != 0">Here is shown in table the list of all maps created.</p>
                         <table ng-if="vm.solos.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
@@ -32,7 +32,7 @@
                                     <div  class="modal fade hide"  id="confirmType{{key}}">
                                         <div class="modal-body">
                                             <button type="button" class="close" data-dismiss="modal">×</button>
-                                            <p align="center"><strong>This Solo Trial will be Removed!</strong></p>
+                                            <p align="center"><strong>This Map will be Removed!</strong></p>
                                         </div>
                                         <div class="modal-footer">
                                             <a ng-click="vm.deleteSoloTrial(value.name)" class="btn btn-alt btn-danger" data-dismiss="modal">Delete</a>
@@ -44,7 +44,7 @@
                         </table>
                         <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
 
-                        <a ng-if="vm.solos.length == 0" class="btn btn-alt btn-large btn-success" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial">Create your First Solo Trial</a>
+                        <a ng-if="vm.solos.length == 0" class="btn btn-alt btn-large btn-success" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial">Create your First Map</a>
                     </div>
 
                 </section>
