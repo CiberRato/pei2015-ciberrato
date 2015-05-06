@@ -48,6 +48,7 @@ class JsonListElements:
 
 class Viewer:
 	def main(self, sim_id):
+		time.sleep(1)
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
