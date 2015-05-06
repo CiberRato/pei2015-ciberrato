@@ -9,8 +9,6 @@
 
     function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout){
 
-        var username;
-        var x2js = new X2JS();
         var parameters;
         $scope.simulation;
         var grid;
@@ -87,15 +85,6 @@
             ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
             ctx.scale(1, -1);
 
-            /* Parameters Object */
-            //$scope.param=$scope.param.Parameters;
-
-            /* Map Object */
-            //$scope.map = $scope.map.Lab;
-
-            /* Grid Object */
-            //$scope.grid = $scope.grid_obj.Grid;
-            console.log($scope.map);
             /* Beacons Object */
             $scope.beacon = $scope.map.Lab.Beacon;
 
@@ -159,10 +148,6 @@
                 // The browser doesn't support WebSocket
                 alert("WebSocket NOT supported by your Browser!");
             }
-        }
-
-        function isArray(myArray) {
-            return myArray.constructor.toString().indexOf("Array") > -1;
         }
 
         $scope.drawMap=function(){
