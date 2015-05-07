@@ -24,8 +24,8 @@ class Competition(models.Model):
 
     allow_remote_agents = models.BooleanField(default=False, blank=False)
 
-    type_of_competition = models.ForeignKey('TypeOfCompetition', blank=False)
-    state_of_competition = models.CharField(choices=STATE, default='Register', max_length=100)
+    type_of_competition = models.ForeignKey('TypeOfCompetition', db_index=True, blank=False)
+    state_of_competition = models.CharField(choices=STATE, db_index=True, default='Register', max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
