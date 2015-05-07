@@ -19,6 +19,9 @@ import json
 class GetRoundFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
 
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     @staticmethod
     def get(request, competition_name, round_name, param):
         """
@@ -58,6 +61,63 @@ class GetRoundFile(views.APIView):
         return Response(data)
 
 
+class GetRoundResourcesFile(views.APIView):
+    renderer_classes = (PlainTextRenderer,)
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def post(request):
+        """
+        B{Retrieve} the round resources files
+        B{URL:} ../api/v1/competitions/resources_file/
+
+        POST
+        Get resource Files in json
+
+        :type  path: str
+        :param path: The file path
+        """
+        path = request.data.get('path', None)
+
+        if path is None:
+            return Response({'status': 'Bad request',
+                             'message': 'The file that you requested doesn\'t exists!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not default_storage.exists(path):
+            return Response({'status': 'Bad request',
+                             'message': 'The file that you requested doesn\'t exists!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # verify if is a valid path
+        if not path.startswith('resources/'):
+            return Response({'status': 'Bad request',
+                             'message': 'Invalid file!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            data = default_storage.open(path).read()
+
+            if 'param_list' in path:
+                json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorParams)
+            elif 'lab' in path:
+                json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorLab)
+            else:
+                json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorGrid)
+
+            json_data = json.dumps(json_obj)
+            json_data = json_data.replace("@", "_")
+            json_data = json_data.replace('"#text": "\\""', "")
+        except Exception:
+            return Response({'status': 'Bad request',
+                             'message': 'The file doesn\'t exists'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(json_data)
+
+
 class JsonListElements:
     def __init__(self):
         self.prevPath = None
@@ -94,6 +154,9 @@ class JsonListElements:
 
 class GetRoundJsonFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
 
     @staticmethod
     def get(request, competition_name, round_name, param):

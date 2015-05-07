@@ -1174,7 +1174,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/private/round/"
         data = {'competition_name': competition_name,
                 'grid': 'resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml',
-                'param_list': 'resources/param_lists/param0.xml',
+                'param_list': 'resources/param_lists/param.xml',
                 'lab': 'resources/labs/CiberRato2006/Ciber2006_FinalLab.xml'}
         response = client.post(path=url, data=data)
         rsp = response.data
@@ -1183,7 +1183,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml',
+        self.assertEqual(rsp, {'param_list': u'param.xml', 'lab': u'Ciber2006_FinalLab.xml',
                                'grid': u'Ciber2005_FinalGrid.xml'})
 
         # an error round
@@ -1205,7 +1205,7 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
         self.assertEqual(rsp, [
-            {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
+            {'param_list': u'param.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
 
         # now let's get the files name for this round and the trials list
         url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
@@ -1215,7 +1215,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['round']['name']
         del rsp['round']['created_at']
         del rsp['round']['updated_at']
-        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param0.xml', 'lab': u'Ciber2006_FinalLab.xml',
+        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param.xml', 'lab': u'Ciber2006_FinalLab.xml',
                                                        'grid': u'Ciber2005_FinalGrid.xml'}})
 
         # now let's launch one trial for that round
@@ -1272,6 +1272,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The solo trials had been deleted!"})
         self.assertEqual(Round.objects.all().count(), 1)
+
+        # see round resource file
+        url = "/api/v1/resources_file/"
+        data = {'path': 'resources/grids/CiberRato2010/Ciber2010_Grid.xml'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.status_code, 200)
 
         client.force_authenticate(user=None)
 
