@@ -13,6 +13,8 @@
         vm.competitionName = $routeParams.identifier;
         vm.teamName = $routeParams.teamName;
         vm.create = create;
+        vm.getGrid = getGrid;
+        vm.getLab = getLab;
         activate();
 
         function activate(){
@@ -20,6 +22,7 @@
 
             function getResourcesSuccessFn(data){
                 vm.resources = data.data;
+                console.log(vm.resources);
             }
 
 
@@ -51,6 +54,31 @@
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
+        }
+
+        function getGrid(){
+            var grid = document.getElementById("grid").value;
+            SoloTrials.getResource(grid).then(getResourceSuccessFn, getResourceErrorFn);
+
+            function getResourceSuccessFn(data){
+                vm.grid = data.data;
+                console.log(data.data);
+            }
+        }
+
+        function getLab(){
+            var lab = document.getElementById("lab").value;
+            console.log(lab);
+            SoloTrials.getResource(lab).then(getResourceSuccessFn, getResourceErrorFn);
+
+            function getResourceSuccessFn(data){
+                vm.lab = data.data;
+                console.log(data.data);
+            }
+        }
+
+        function getResourceErrorFn(data){
+            console.error(data.data);
         }
 
     }

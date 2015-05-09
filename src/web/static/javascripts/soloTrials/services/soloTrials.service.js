@@ -15,7 +15,8 @@
             getTrials: getTrials,
             launchTrial: launchTrial,
             removeTrial: removeTrial,
-            removeSoloTrial: removeSoloTrial
+            removeSoloTrial: removeSoloTrial,
+            getResource: getResource
         };
 
         return SoloTrials;
@@ -53,6 +54,12 @@
 
         function removeSoloTrial(name){
             return $http.delete("/api/v1/competitions/private/round/" + name + "/");
+        }
+
+        function getResource(name){
+            return $http.post("/api/v1/resources_file/", {
+                path: name
+            });
         }
     }
 

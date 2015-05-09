@@ -28,9 +28,10 @@
                                         <div class="control-group">
                                             <label class="control-label" for="select1">Grid</label>
                                             <div class="controls">
-                                                <select id="select1" name="option">
+                                                <select id="select1" ng-change="vm.getGrid()" ng-model="vm.resources.grid">
+                                                    <option value="" disabled>--Please select one grid</option>
                                                     <optgroup ng-repeat="(key, value) in vm.resources.grids" label="{{value.name}}">
-                                                        <option ng-repeat="(key1, value1) in value.sub" value="{{value1.path}}">{{value1.name}}</option>
+                                                        <option ng-repeat="(key1, value1) in value.sub" id="grid" value="{{value1.path}}" name="{{value1.name}}" >{{value1.name}}</option>
                                                     </optgroup>
                                                 </select>
                                             </div>
@@ -39,9 +40,10 @@
                                         <div class="control-group">
                                             <label class="control-label" for="select2">Lab</label>
                                             <div class="controls">
-                                                <select id="select2" name="option">
+                                                <select id="select2" ng-change="vm.getLab()" ng-model="vm.resources.lab">
+                                                    <option value="" disabled>--Please select one lab</option>
                                                     <optgroup ng-repeat="(key, value) in vm.resources.labs" label="{{value.name}}">
-                                                        <option ng-repeat="(key1, value1) in value.sub" value="{{value1.path}}">{{value1.name}}</option>
+                                                        <option ng-repeat="(key1, value1) in value.sub" id="lab" value="{{value1.path}}" name="{{value1.name}}">{{value1.name}}</option>
                                                     </optgroup>
                                                 </select>
                                             </div>
@@ -50,9 +52,9 @@
                                         <div class="control-group">
                                             <label class="control-label" for="select3">Param List</label>
                                             <div class="controls">
-                                                <select id="select3" name="option">
+                                                <select id="select3">
                                                     <optgroup ng-repeat="(key, value) in vm.resources.pram_lists" label="{{value.name}}">
-                                                        <option ng-repeat="(key1, value1) in value.sub" value="{{value1.path}}">{{value1.name}}</option>
+                                                        <option ng-repeat="(key1, value1) in value.sub" value="{{value1.path}}" name="{{value1.name}}">{{value1.name}}</option>
                                                     </optgroup>
                                                 </select>
                                             </div>
