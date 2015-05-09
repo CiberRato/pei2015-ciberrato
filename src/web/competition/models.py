@@ -22,8 +22,6 @@ class Competition(models.Model):
 
     enrolled_teams = models.ManyToManyField(Team, through='TeamEnrolled', related_name="competition")
 
-    allow_remote_agents = models.BooleanField(default=False, blank=False)
-
     type_of_competition = models.ForeignKey('TypeOfCompetition', db_index=True, blank=False)
     state_of_competition = models.CharField(choices=STATE, db_index=True, default='Register', max_length=100)
 
@@ -64,6 +62,8 @@ class TypeOfCompetition(models.Model):
     name = models.CharField(max_length=128, blank=False, unique=True, validators=[validate_word, MinLengthValidator(1)])
     number_teams_for_trial = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
     number_agents_by_grid = models.IntegerField(validators=[MinValueValidator(1)], blank=False, default=1)
+
+    allow_remote_agents = models.BooleanField(default=False, blank=False)
 
     single_position = models.BooleanField(default=False)
     timeout = models.IntegerField(validators=[MinValueValidator(0)], default=5)

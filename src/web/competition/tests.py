@@ -16,7 +16,7 @@ class AuthenticationTestCase(TestCase):
         colaborativa = TypeOfCompetition.objects.create(name='Collaborative', number_teams_for_trial=1,
                                                         number_agents_by_grid=5)
 
-        c = Competition.objects.create(name="C1", type_of_competition=colaborativa, allow_remote_agents=True)
+        c = Competition.objects.create(name="C1", type_of_competition=colaborativa)
         r = Round.objects.create(name="R1", parent_competition=c)
 
         a1 = Account.objects.create(email="rf@rf.pt", username="gipmon", first_name="Rafael", last_name="Ferreira",
@@ -75,11 +75,10 @@ class AuthenticationTestCase(TestCase):
 
         # create competition
         url = "/api/v1/competitions/crud/"
-        data = {'name': 'C2', 'type_of_competition': competitiva.name, 'allow_remote_agents': False}
+        data = {'name': 'C2', 'type_of_competition': competitiva.name}
         response = client.post(url, data)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', competitiva.name),
-                                                     ('allow_remote_agents', False)]))
+        self.assertEqual(response.data, OrderedDict([('name', u'C2'), ('type_of_competition', competitiva.name)]))
 
         # get competition Register
         url = "/api/v1/competitions/get/Register/"
@@ -89,12 +88,12 @@ class AuthenticationTestCase(TestCase):
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Register", "allow_remote_agents": True},
+                                          "state_of_competition": "Register"},
                                          {"name": "C2",
                                           "type_of_competition": {"name": "Competitive", "number_teams_for_trial": 3,
                                                                   "number_agents_by_grid": 1, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Register", "allow_remote_agents": False}])
+                                          "state_of_competition": "Register"}])
         # get all competitions
         url = "/api/v1/competitions/get/All/"
         response = client.get(url)
@@ -103,12 +102,12 @@ class AuthenticationTestCase(TestCase):
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Register", "allow_remote_agents": True},
+                                          "state_of_competition": "Register"},
                                          {"name": "C2",
                                           "type_of_competition": {"name": "Competitive", "number_teams_for_trial": 3,
                                                                   "number_agents_by_grid": 1, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Register", "allow_remote_agents": False}])
+                                          "state_of_competition": "Register"}])
 
 
         # enroll one team in the competition, the team stays with the inscription valid=False
@@ -130,7 +129,7 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
                                                           "state_of_competition": "Register",
-                                                          "allow_remote_agents": True}, "team_name": "XPTO1",
+                                                          }, "team_name": "XPTO1",
                                           "valid": False}])
 
         # the team can't enroll twice
@@ -167,10 +166,10 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
                                                           "state_of_competition": "Register",
-                                                          "allow_remote_agents": True}, "team_name": "XPTO1",
+                                                          }, "team_name": "XPTO1",
                                           "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
             "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-            "timeout": 5}, "state_of_competition": "Register", "allow_remote_agents": True}, "team_name": "XPTO2",
+            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2",
                                                             "valid": False}, {
                                              "competition": {"name": "C1",
                                                              "type_of_competition": {"name": "Collaborative",
@@ -179,7 +178,7 @@ class AuthenticationTestCase(TestCase):
                                                                                      "single_position": False,
                                                                                      "timeout": 5},
                                                              "state_of_competition": "Register",
-                                                             "allow_remote_agents": True}, "team_name": "XPTO3",
+                                                             }, "team_name": "XPTO3",
                                              "valid": False}])
 
         # only admin
@@ -417,7 +416,7 @@ class AuthenticationTestCase(TestCase):
                                                                                                "single_position": False,
                                                                                                "timeout": 5},
                                                          "state_of_competition": "Register",
-                                                         "allow_remote_agents": True}, "team_name": "XPTO3"})
+                                                         }, "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the grid position
@@ -430,7 +429,7 @@ class AuthenticationTestCase(TestCase):
                                                                                                "single_position": False,
                                                                                                "timeout": 5},
                                                          "state_of_competition": "Register",
-                                                         "allow_remote_agents": True}, "team_name": "XPTO3"})
+                                                         }, "team_name": "XPTO3"})
         self.assertEqual(response.status_code, 200)
 
         # list user grids
@@ -455,7 +454,7 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
                                                           "state_of_competition": "Register",
-                                                          "allow_remote_agents": True}, "team_name": "XPTO3"}])
+                                                          }, "team_name": "XPTO3"}])
         self.assertEqual(response.status_code, 200)
 
         # associate agent to the grid
@@ -687,8 +686,7 @@ class AuthenticationTestCase(TestCase):
         del rsp['agents']
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'allow_remote_agents': True,
-                               'param_list': u'/api/v1/competitions/round_file/C1/R1/param_list/',
+        self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/C1/R1/param_list/',
                                'lab': u'/api/v1/competitions/round_file/C1/R1/lab/',
                                'grid': u'/api/v1/competitions/round_file/C1/R1/grid/',
                                'type_of_competition': {'timeout': 5, 'single_position': False, 'name': u'Collaborative',
@@ -1003,11 +1001,10 @@ class AuthenticationTestCase(TestCase):
                                                                                                 "single_position": False,
                                                                                                 "timeout": 5},
                                                           "state_of_competition": "Register",
-                                                          "allow_remote_agents": True}, "team_name": "XPTO1",
+                                                          }, "team_name": "XPTO1",
                                           "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
             "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-            "timeout": 5}, "state_of_competition": "Register",
-                                                                            "allow_remote_agents": True},
+            "timeout": 5}, "state_of_competition": "Register"},
                                                             "team_name": "XPTO2", "valid": False}, {
                                              "competition": {"name": "C1",
                                                              "type_of_competition": {"name": "Collaborative",
@@ -1015,8 +1012,7 @@ class AuthenticationTestCase(TestCase):
                                                                                      "number_agents_by_grid": 5,
                                                                                      "single_position": False,
                                                                                      "timeout": 5},
-                                                             "state_of_competition": "Register",
-                                                             "allow_remote_agents": True}, "team_name": "XPTO3",
+                                                             "state_of_competition": "Register"}, "team_name": "XPTO3",
                                              "valid": True}])
 
         # get my enrolled teams
@@ -1027,18 +1023,18 @@ class AuthenticationTestCase(TestCase):
                                                                                  "number_agents_by_grid": 5,
                                                                                  "single_position": False,
                                                                                  "timeout": 5},
-                                           "state_of_competition": "Register", "allow_remote_agents": True},
+                                           "state_of_competition": "Register"},
                            "team_name": "XPTO1",
                            "valid": False}, {"competition": {"name": "C1", "type_of_competition": {
             "name": "Collaborative", "number_teams_for_trial": 1, "number_agents_by_grid": 5, "single_position": False,
-            "timeout": 5}, "state_of_competition": "Register", "allow_remote_agents": True}, "team_name": "XPTO2",
+            "timeout": 5}, "state_of_competition": "Register"}, "team_name": "XPTO2",
                                              "valid": False}, {
                               "competition": {"name": "C1", "type_of_competition": {"name": "Collaborative",
                                                                                     "number_teams_for_trial": 1,
                                                                                     "number_agents_by_grid": 5,
                                                                                     "single_position": False,
                                                                                     "timeout": 5},
-                                              "state_of_competition": "Register", "allow_remote_agents": True},
+                                              "state_of_competition": "Register"},
                               "team_name": "XPTO3",
                               "valid": True}],
                          response.data)
@@ -1064,8 +1060,7 @@ class AuthenticationTestCase(TestCase):
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Register",
-                                          "allow_remote_agents": True}])
+                                          "state_of_competition": "Register"}])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
@@ -1095,8 +1090,7 @@ class AuthenticationTestCase(TestCase):
                                           "type_of_competition": {"name": "Collaborative", "number_teams_for_trial": 1,
                                                                   "number_agents_by_grid": 5, "single_position": False,
                                                                   "timeout": 5},
-                                          "state_of_competition": "Competition",
-                                          "allow_remote_agents": True}])
+                                          "state_of_competition": "Competition"}])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -1162,7 +1156,7 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         competition_name = rsp[0]['competition']['name']
         del rsp[0]['competition']['name']
-        self.assertEqual(rsp, [{'number_of_trials': 0, 'number_of_rounds': 0, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('single_position', False), ('timeout', 1)]), 'allow_remote_agents': False}, 'team': u'TestTeam'}])
+        self.assertEqual(rsp, [{'number_of_trials': 0, 'number_of_rounds': 0, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('single_position', False), ('timeout', 1)])}, 'team': u'TestTeam'}])
 
         # this round must have no rounds
         url = "/api/v1/competitions/private/rounds/" + competition_name + "/"
@@ -1255,7 +1249,7 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
         rsp = response.data
         del rsp[0]['competition']['name']
-        self.assertEqual(rsp, [{'number_of_trials': 1, 'number_of_rounds': 1, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('single_position', False), ('timeout', 1)]), 'allow_remote_agents': False}, 'team': u'TestTeam'}])
+        self.assertEqual(rsp, [{'number_of_trials': 1, 'number_of_rounds': 1, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('single_position', False), ('timeout', 1)])}, 'team': u'TestTeam'}])
 
         trial = Trial.objects.all()
         trial_identifier = trial[0].identifier
