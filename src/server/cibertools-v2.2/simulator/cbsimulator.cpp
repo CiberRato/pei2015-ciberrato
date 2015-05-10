@@ -121,6 +121,7 @@ cbSimulator::cbSimulator()
 
     logging=false;
     syncmode = false;
+    syncmode_timeout = 0;
     logStream=0;
 
 	distMaxToTarget=0.0;
@@ -198,9 +199,12 @@ cbSimulator::~cbSimulator()
 	}
 }
 
-void cbSimulator::activateSyncMode() {
+void cbSimulator::activateSyncMode(int timeout) {
 	syncmode = true;
 	param->sync = true;
+
+	if (timeout > 0)
+		syncmode_timeout = timeout;
 }
 
 void cbSimulator::reset()

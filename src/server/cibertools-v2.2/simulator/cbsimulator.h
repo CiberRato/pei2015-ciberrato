@@ -134,7 +134,7 @@ public:
 	void setDefaultGrid(void);
 	void setDefaultParameters(void);
 
-    void activateSyncMode();
+    void activateSyncMode(int timeout=0);
 
 public:
 	//DEBUG
@@ -218,6 +218,8 @@ protected: // data members
 
     bool logging;
     bool syncmode;
+    int syncmode_timeout;
+    
     ostream *logStream;
 	QString logFilename;
 	
