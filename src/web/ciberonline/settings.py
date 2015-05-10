@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'competition',
     'notifications',
     'tokens',
+    'stickynote'
 )
 
 MIDDLEWARE_CLASSES = (
