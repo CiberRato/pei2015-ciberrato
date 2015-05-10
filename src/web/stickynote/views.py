@@ -70,7 +70,30 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
         serializer = self.serializer_class(sticky_note)
         return Response(serializer.data)
 
+    def update(self, request, *args, **kwargs):
+        """
+        B{Update} the sticky note
+        B{URL:} ../api/v1/sticky_notes/crud/<identifier>/
 
+        :type  time: str
+        :param time: The time in seconds that the note will be shown
+        :type  note: str
+        :type  note: The sticky note
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            sticky_notes = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+
+            sticky_notes.time = serializer.data.get('time', 5)
+            sticky_notes.note = serializer.data.get('note', '')
+            sticky_notes.save()
+
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         """
