@@ -31,53 +31,29 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
 
     def create(self, request, *args, **kwargs):
         """
-        B{Create} an sticky note
-        B{URL:} ../api/v1/competitions/grid_positions/
+        B{Create} a sticky note
+        B{URL:} ../api/v1/sticky_notes/crud/
 
-        :type  competition_name: str
-        :param competition_name: The type of competition name
-        :type  team_name: str
-        :type  team_name: The team name
+        :type  time: str
+        :param time: The time in seconds that the note will be shown
+        :type  note: str
+        :type  note: The sticky note
         """
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            competition = get_object_or_404(Competition.objects.all(),
-                                            name=serializer.validated_data['competition_name'])
-
-            if competition.state_of_competition == 'Past':
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is in \'Past\' state.'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
-
-            if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'You must be part of the team.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=competition)
-            if len(team_enrolled) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'Your team must be enrolled in the competition.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            if not team_enrolled[0].valid:
-                return Response({'status': 'Permission denied',
-                                 'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
             try:
                 with transaction.atomic():
-                    grid = GridPositions.objects.create(competition=competition, team=team)
+                    sticky = StickyNote.objects.create(time=serializer.validated_data['time'],
+                                                       note=serializer.validated_data['note'])
             except IntegrityError:
                 return Response({'status': 'Bad request',
-                                 'message': 'You already have a grid for that competition.'},
+                                 'message': 'The sticky note couldn\'t be created!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = self.serializer_class(GridPositionsSimplex(grid))
+            serializer = self.serializer_class(sticky)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
