@@ -1408,7 +1408,7 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-    connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+	connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 
 void cbSimulator::processRobotActions(const QString &id)
@@ -1453,6 +1453,7 @@ void cbSimulator::processRobotActions(const QString &id)
 						}
 					}
 					if (stepSim) {
+						timer.stop();
 						for (unsigned int i = 0; i < robots.size(); i++)
 						{
 							cbRobot *robot = robots[i];
@@ -1460,6 +1461,8 @@ void cbSimulator::processRobotActions(const QString &id)
 							robot->setWaitingForSync(false);
 						}
 						step();
+
+						timer.start(syncTimeout());
 					}
 				}
 			}
@@ -1634,47 +1637,47 @@ bool cbSimulator::allRobotsVisitedOrVisitingTarget(int targId)
 {
 	unsigned int n = robots.size();
 	bool allVisit = true;
-	for (unsigned int i=0; i<n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		if (robots[i] == 0) continue;
-        if(! (robots[i]->visitedTarget(targId)
-              || (robots[i]->isOnTarget(targId) && robots[i]->visitingLedOn())))
-        {
-            allVisit = false;
-        }
+		if (! (robots[i]->visitedTarget(targId)
+		        || (robots[i]->isOnTarget(targId) && robots[i]->visitingLedOn())))
+		{
+			allVisit = false;
+		}
 
 	}
 
 	return allVisit;
-	
+
 }
 
 bool cbSimulator::allRobotsOnTarget(int targId)
 {
 	unsigned int n = robots.size();
 	bool allOnTarget = true;
-	for (unsigned int i=0; i<n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		if (robots[i] == 0) continue;
-		if(! robots[i]->isOnTarget(targId) ) {
-            allOnTarget = false;
-        }
+		if (! robots[i]->isOnTarget(targId) ) {
+			allOnTarget = false;
+		}
 	}
 
 	return allOnTarget;
-	
+
 }
 
 void cbSimulator::deleteRobot(uint id)
 {
-    assert (id >= 1 && id <= robots.size());
+	assert (id >= 1 && id <= robots.size());
 
-    if (robots[id-1] != 0) {
-        const char *name = ((cbRobot *) robots[id-1])->Name();
-        delete robots[id-1];
-        robots[id-1] = 0;
-        gui->appendMessage(QString(name) + " has been deleted from position " + QString::number(id));
+	if (robots[id - 1] != 0) {
+		const char *name = ((cbRobot *) robots[id - 1])->Name();
+		delete robots[id - 1];
+		robots[id - 1] = 0;
+		gui->appendMessage(QString(name) + " has been deleted from position " + QString::number(id));
 
-        emit robotDeleted((int) id);
-    }
+		emit robotDeleted((int) id);
+	}
 }
