@@ -135,7 +135,7 @@ double  cbBeaconSensor::sensorAperture    = M_PI;
 
 void CommandLineError()
 {
-    printf("\nSYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui] [-sync]\n");
+    printf("\nSYNOPSIS: simulator [-lab file] [-grid file] [-log file] [-param file] [-port portnumber] [-showgraph id] [-gps] [-nogui] [-sync [timeoutms]]\n");
     exit(1);
 }
 
@@ -235,8 +235,9 @@ int main(int argc, char *argv[])
             if (p+1 < argc) {
                 sscanf(argv[p+1], "%u", &timeout);
                 p+=2;
+            } else {
+                p+=1;
             }
-            else CommandLineError();
         }
         else {
             CommandLineError();
@@ -317,7 +318,10 @@ int main(int argc, char *argv[])
 
                 simulator.activateSyncMode(timeout);
             }
-            else CommandLineError();
+            else {
+                p+=1;
+                simulator.activateSyncMode();
+            }
         }
         else {
             CommandLineError();
