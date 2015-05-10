@@ -60,43 +60,14 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
 
     def retrieve(self, request, *args, **kwargs):
         """
-        B{Retrieve} the grid positions details
-        B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?team_name=<team_name>
+        B{Retrieve} the sticky note represented by the identifier
+        B{URL:} ../api/v1/sticky_notes/crud/<identifier>/
 
-        :type  competition_name: str
-        :param competition_name: The type of competition name
-        :type  team_name: str
-        :type  team_name: The team name
+        :type  identifier: str
+        :param identifier: The identifier
         """
-        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
-
-        if competition.state_of_competition == 'Past':
-            return Response({'status': 'Bad Request',
-                             'message': 'The competition is in \'Past\' state.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
-
-        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        team_enrolled = TeamEnrolled.objects.filter(team=team, competition=competition)
-        if len(team_enrolled) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        if not team_enrolled[0].valid:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
-
-        serializer = self.serializer_class(GridPositionsSimplex(grid))
-
+        sticky_note = get_object_or_404(StickyNote.objects.all(), identifier=kwargs.get('pk', ''))
+        serializer = self.serializer_class(sticky_note)
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
