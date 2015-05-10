@@ -14,7 +14,8 @@ class TypeOfCompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypeOfCompetition
-        fields = ('name', 'number_teams_for_trial', 'number_agents_by_grid', 'single_position', 'timeout')
+        fields = ('name', 'number_teams_for_trial', 'number_agents_by_grid', 'allow_remote_agents',
+                  'single_position', 'timeout')
         read_only_fields = ()
 
 
@@ -43,17 +44,16 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition', 'state_of_competition', 'allow_remote_agents')
-        read_only_fields = ('name', 'type_of_competition', 'state_of_competition', 'allow_remote_agents')
+        fields = ('name', 'type_of_competition', 'state_of_competition')
+        read_only_fields = ('name', 'type_of_competition', 'state_of_competition')
 
 
 class CompetitionInputSerializer(serializers.ModelSerializer):
     type_of_competition = serializers.CharField(max_length=128)
-    allow_remote_agents = serializers.BooleanField(required=True)
 
     class Meta:
         model = Competition
-        fields = ('name', 'type_of_competition', 'allow_remote_agents', 'state_of_competition')
+        fields = ('name', 'type_of_competition', 'state_of_competition')
         read_only_fields = ('state_of_competition',)
 
 
@@ -287,7 +287,6 @@ class TrialXSerializer(serializers.BaseSerializer):
             'grid': instance.grid,
             'param_list': instance.param_list,
             'lab': instance.lab,
-            'allow_remote_agents': instance.allow_remote_agents,
             'type_of_competition': type_of_competition.data,
             'agents': agents.data
         }

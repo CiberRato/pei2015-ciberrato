@@ -35,16 +35,16 @@
                                             <p align="center"><strong>This Map will be Removed!</strong></p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a ng-click="vm.deleteSoloTrial(value.name)" class="btn btn-alt btn-danger" data-dismiss="modal">Delete</a>
+                                            <a ng-click="vm.deleteSoloTrial(value.name)" class="btn btn-flat btn-danger" data-dismiss="modal">Delete</a>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
-                        <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
+                        <a href="javascript:history.go(-1)" class="btn btn-flat btn-large btn-primary">Back</a>
 
-                        <a ng-if="vm.solos.length == 0" class="btn btn-alt btn-large btn-success" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial">Create your First Map</a>
+                        <a ng-if="vm.solos.length == 0" class="btn btn-flat btn-large btn-success" href="panel/{{vm.teamName}}/{{vm.competitionName}}/createSoloTrial">Create your First Map</a>
                     </div>
 
                 </section>

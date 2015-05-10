@@ -238,7 +238,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The competition is in \'Past\' state.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            if not grid.competition.allow_remote_agents and agent.is_remote:
+            if not grid.competition.type_of_competition.allow_remote_agents and agent.is_remote:
                 return Response({'status': 'Bad Request',
                                  'message': 'The competition is not accepting remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)

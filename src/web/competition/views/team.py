@@ -342,7 +342,7 @@ class EnrollTeam(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                                 status=status.HTTP_400_BAD_REQUEST)
 
             # if the competition allow remote agents let's create a remote agent for the team
-            if competition.allow_remote_agents:
+            if competition.type_of_competition.allow_remote_agents:
                 if Agent.objects.filter(agent_name="Remote", is_remote=True, team=team).count() == 0:
                     try:
                         with transaction.atomic():

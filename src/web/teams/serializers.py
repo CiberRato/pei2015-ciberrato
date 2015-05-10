@@ -12,8 +12,7 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
 
-        fields = ('name', 'max_members')
-        read_only_fields = ('created_at', 'updated_at')
+        fields = ('name', 'max_members',)
 
 
 class EditTeamSerializer(serializers.ModelSerializer):
@@ -23,7 +22,6 @@ class EditTeamSerializer(serializers.ModelSerializer):
         model = Team
 
         fields = ('name', 'max_members')
-        read_only_fields = ('created_at', 'updated_at')
 
 
 class Member2TeamSerializer(serializers.ModelSerializer):

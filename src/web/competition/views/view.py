@@ -43,8 +43,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
             try:
                 with transaction.atomic():
                     Competition.objects.create(name=serializer.validated_data['name'],
-                                               type_of_competition=type_of_competition,
-                                               allow_remote_agents=serializer.validated_data['allow_remote_agents'])
+                                               type_of_competition=type_of_competition)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'There is already a competition with that name.'},
