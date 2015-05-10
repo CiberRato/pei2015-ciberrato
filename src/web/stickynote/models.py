@@ -6,7 +6,7 @@ from django.core.validators import MinLengthValidator
 class StickyNote(models.Model):
     identifier = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
 
-    active = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
     time = models.IntegerField(default=5)
     note = models.CharField(max_length=150, validators=[MinLengthValidator(1)])
 
