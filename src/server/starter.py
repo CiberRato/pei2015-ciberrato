@@ -95,7 +95,7 @@ class Starter:
 				if TIMEOUT < 1:
 					raise Exception("[STARTER] ERROR: Timeout invalid")
 				allow_remote = details["allow_remote_agents"]
-				if allow_remote != True or allow_remote != False
+				if not isinstance(allow_remote, bool):
 					raise Exception("[STARTER] ERROR: Allow Remote Field invalid")
 				continue
 
@@ -109,10 +109,13 @@ class Starter:
 
 		print "[STARTER] Process ID: ", os.getpid()
 
-		print "[STARTER] Creating process for Websocket end-point.."
-		websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout = subprocess.PIPE)
-		print "[STARTER] Successfully opened process with process id: ", websocket.pid
-		time.sleep(0.5)
+		# Hardcode sync mode to be false while not given by get simulation
+		sync = False
+		if not sync:
+			print "[STARTER] Creating process for Websocket end-point.."
+			websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout = subprocess.PIPE)
+			print "[STARTER] Successfully opened process with process id: ", websocket.pid
+			time.sleep(0.5)
 
 		print "[STARTER] Creating process for simulator"
 		##CHECK ./simulator --help 				##
@@ -131,7 +134,7 @@ class Starter:
 		viewer_c, starter_c = multiprocessing.Pipe(True)
 		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, starter_c,timeout_event,))
+		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,))
 		viewer_thread.start()
 		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
@@ -161,13 +164,8 @@ class Starter:
 				print "[STARTER] Successfully opened container: %s\n" % (docker_container, )
 
 		# Waiting for viewer to send robots registry confirmation
-		if allow_remote:
-			# Use events to create Timeout
-			# This is for copetitions
-			timeout_event.wait(TIMEOUT)
-		else:
-			# This is for private trials
-			timeout_event.wait(30)
+		# Use events to create timeouts
+		timeout_event.wait(TIMEOUT)
 
 		if not timeout_event.is_set():
 			print "[STARTER] Failed to register all robots in the timeout established"
@@ -186,10 +184,11 @@ class Starter:
 			simulator.terminate()
 			simulator.wait()
 
-			# Killing Websockets
-			print "[STARTER] Killing Websocket"
-			websocket.terminate()
-			websocket.wait()
+			if not sync:
+				# Killing Websockets
+				print "[STARTER] Killing Websocket"
+				websocket.terminate()
+				websocket.wait()
 
 			# Kill docker container
 			print "[STARTER] Killing Docker Containers"
@@ -249,10 +248,11 @@ class Starter:
 				simulator.terminate()
 				simulator.wait()
 
-				# Killing Websockets
-				print "[STARTER] Killing Websocket"
-				websocket.terminate()
-				websocket.wait()
+				if not sync:
+					# Killing Websockets
+					print "[STARTER] Killing Websocket"
+					websocket.terminate()
+					websocket.wait()
 
 				# Kill docker container
 				print "[STARTER] Killing Docker Containers"
@@ -296,9 +296,10 @@ class Starter:
 		# Waiting for viewer to die
 		viewer_thread.join()
 
-		# Killing Websockets
-		websocket.terminate()
-		websocket.wait()
+		if not sync:
+			# Killing Websockets
+			websocket.terminate()
+			websocket.wait()
 
 		# Kill docker container
 		for dock in docker_containers:
