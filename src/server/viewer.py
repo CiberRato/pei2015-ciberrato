@@ -47,17 +47,13 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id):
-		time.sleep(1)
+	def main(self, sim_id, remote, starter_c, robotsRegistered_event):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
 		SIMULATOR_HOST = settings["settings"]["simulator_host"]
 		SIMULATOR_PORT = settings["settings"]["simulator_port"]
-
-		STARTER_HOST = settings["settings"]["starter_viewer_host"]
-		STARTER_PORT = settings["settings"]["starter_viewer_port"]
 
 		WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 		WEBSOCKET_PORT = settings["settings"]["websocket_port"]
@@ -117,18 +113,14 @@ class Viewer:
 
 		log_file.write(json_data[1:-1]+",")
 
-
-		starter_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		starter_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		starter_s.connect((STARTER_HOST, STARTER_PORT))
-
 		# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
-		data = starter_s.recv(4096)
+		data = None
+		data = starter_c.recv()
 		robotsXML = minidom.parseString(data)
 		robots = robotsXML.getElementsByTagName('Robots')
 		robotsAmount = robots[0].attributes['Amount'].value
 
-		print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
+		print "[VIEWER] Robots Amount:" + robotsAmount
 
 		checkedRobots = []
 		prevlen = 0
@@ -142,26 +134,29 @@ class Viewer:
 					checkedRobots += [robotID]
 					checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 					if len(checkedRobots) != prevlen:
+						# Só fazer post se existirem remotos
 						data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
 						response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
 					prevlen = len(checkedRobots)
 					print "[VIEWER] Robots Registered: " + str(checkedRobots)
 
-		starter_s.send("<RobotsRegistered/>")
+		# Robots have registered signal starter
+		robotsRegistered_event.set()
 
 		print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 
-		data = starter_s.recv(4096)
-		while data != "<StartedAgents/>":
-			data = starter_s.recv(4096)
+		data = starter_c.recv()
+		# while data != "<StartedAgents/>":
+		# 	data = starter_c.recv()
 
 		# Sending simulator msg to start the simulation
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
-		# Connect to websockets
-		websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
+		if remote:
+			# Connect to websockets
+			websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
 
 		robotTime = 0
 		firstTime = True
@@ -183,32 +178,33 @@ class Viewer:
 				if int(robotTime) != 0:
 					log_file.write(",")
 					log_file.write(json_data)
-					# Send data to the websockets
-					websocket_tcp.send(json_data)
+					if remote:
+						# Send data to the websockets
+						websocket_tcp.send(json_data)
 			else:
 				firstTime = False
 				log_file.write(json_data)
-				# Send data to the websockets
-				websocket_tcp.send(json_data)
-
-
+				if remote:
+					# Send data to the websockets
+					websocket_tcp.send(json_data)
 
 		log_file.write("]}")
 
-		# Wait 0.1 seconds to assure the END msg goes on a separate packet
-		time.sleep(0.1)
-		# Send websocket msg telling it's over
-		websocket_tcp.send("END")
+		if remote:
+			# Wait 0.1 seconds to assure the END msg goes on a separate packet
+			time.sleep(0.1)
+			# Send websocket msg telling it's over
+			websocket_tcp.send("END")
 
-		starter_s.send('<EndedSimulation/>')
+		starter_c.send('<EndedSimulation/>')
 
 		# Close all connections
-		websocket_tcp.close()
-		starter_s.close()
+		if remote:
+			websocket_tcp.close()
+		starter_c.close()
 		simulator_s.close()
 
 		# Close all open files
 		log_file.close()
 
-# if __name__ == "__main__":
-# 	main()
+

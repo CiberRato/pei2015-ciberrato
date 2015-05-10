@@ -7,10 +7,13 @@ import socket
 import time
 import json
 import os
+import gzip
 import sys
 import tarfile
 import re
 import zipfile
+import bz2
+import multiprocessing
 from threading import Thread
 from xml.dom import minidom
 from viewer import *
@@ -57,9 +60,6 @@ class Starter:
 
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
-
-		VIEWER_HOST = settings["settings"]["starter_viewer_host"]
-		VIEWER_PORT = settings["settings"]["starter_viewer_port"]
 
 		SERVICES_HOST = settings["settings"]["services_end_point_host"]
 		SERVICES_PORT = settings["settings"]["services_end_point_port"]
@@ -129,21 +129,18 @@ class Starter:
 		time.sleep(1)
 
 		print "[STARTER] Creating process for viewer"
+		viewer_c, starter_c = multiprocessing.Pipe(True)
+		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = Thread(target=viewer.main, args=(sim_id,))
+		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, starter_c,timeout_event,))
 		viewer_thread.start()
+		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
 
-		# Establish connection with viewer
-		viewer_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		viewer_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-		viewer_tcp.bind((VIEWER_HOST, VIEWER_PORT))
-		viewer_tcp.listen(1)
-		viewer_c, viewer_c_addr = viewer_tcp.accept()
 
 		print "[STARTER] Viewer ready, sending message to viewer about the number of agents\n"
-		viewer_c.send('<Robots Amount="' +str(n_agents)+'" />')
+		data = '<Robots Amount="' +str(n_agents)+'" />'
+		viewer_c.send(data)
 
 		# Launching agents
 		docker_containers = []
@@ -166,18 +163,19 @@ class Starter:
 
 		# Waiting for viewer to send robots registry confirmation
 		if allow_remote:
-			viewer_c.settimeout(TIMEOUT)
-		try:
-			data = viewer_c.recv(4096)
-		except socket.timeout:
+			# Use events to create Timeout
+			# This is for copetitions
+			timeout_event.wait(TIMEOUT)
+		else:
+			# This is for private trials
+			timeout_event.wait(30)
+
+		if not timeout_event.is_set():
 			print "[STARTER] Failed to register all robots in the timeout established"
 			# Canceling everything regarding this simulation
 			# Shuting down connections to viewer
 			print "[STARTER] Killing Sockets"
-			viewer_c.shutdown(socket.SHUT_RDWR)
 			viewer_c.close()
-			viewer_tcp.shutdown(socket.SHUT_RDWR)
-			viewer_tcp.close()
 
 			# Waiting for viewer to die
 			print "[STARTER] Killing Viewer"
@@ -212,9 +210,9 @@ class Starter:
 				tempFilesList[key].close()
 			raise Exception("[STARTER] ERROR: Agents weren't all registered")
 
+		timeout_event.clear()
+		# Stuff for start
 		if allow_remote:
-			viewer_c.settimeout(None)
-
 			services_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			services_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -235,10 +233,7 @@ class Starter:
 				# Canceling everything regarding this simulation
 				# Shuting down connections to viewer
 				print "[STARTER] Killing Sockets"
-				viewer_c.shutdown(socket.SHUT_RDWR)
 				viewer_c.close()
-				viewer_tcp.shutdown(socket.SHUT_RDWR)
-				viewer_tcp.close()
 
 				services_c.shutdown(socket.SHUT_RDWR)
 				services_c.close()
@@ -284,18 +279,15 @@ class Starter:
 		viewer_c.send("<StartedAgents/>")
 
 		print "[STARTER] Waiting for simulation to end.."
-		data = viewer_c.recv(4096)
+		data = viewer_c.recv()
 		while data != "<EndedSimulation/>":
-			data = viewer_c.recv(4096)
+			data = viewer_c.recv()
 
 		print "[STARTER] Simulation ended, killing simulator and running agents"
-		print "[STARTER] Posting log to the database.."
 
 		# Shuting down connections to viewer
-		viewer_c.shutdown(socket.SHUT_RDWR)
 		viewer_c.close()
-		viewer_tcp.shutdown(socket.SHUT_RDWR)
-		viewer_tcp.close()
+
 		if allow_remote:
 			services_c.shutdown(socket.SHUT_RDWR)
 			services_c.close()
@@ -320,10 +312,18 @@ class Starter:
 		simulator.terminate()
 		simulator.wait()
 
+		print "[STARTER] Posting log to the database.."
+		# save file with name = trial.identifier + '.json.gz' em gz
+		temp = tempfile.NamedTemporaryFile(delete=True)
+		temp.name = sim_id + '.json.bz2'
+		output = open(temp.name, "wb")
+		output.write(bz2.compress(open(LOG_FILE, "r").read()))
+		output.close()
 		# Save log to the end-point
 		data = {'trial_identifier': sim_id}
-		files = {'log_json': open(LOG_FILE, "r")}
+		files = {'log_json': open(temp.name, "r").read()}
 		response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + POST_SIM_URL, data=data, files=files)
+		temp.close()
 
 		if response.status_code != 201:
 			raise Exception("[STARTER] ERROR: error posting log file to end point")
