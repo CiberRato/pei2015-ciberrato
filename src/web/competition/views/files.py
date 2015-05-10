@@ -19,9 +19,6 @@ import json
 class GetRoundFile(views.APIView):
     renderer_classes = (PlainTextRenderer,)
 
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
     @staticmethod
     def get(request, competition_name, round_name, param):
         """
