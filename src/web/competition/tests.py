@@ -53,18 +53,23 @@ class AuthenticationTestCase(TestCase):
         # retrieve type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
         response = client.get(url)
-        self.assertEqual(response.data, {'name': u'IIA', 'allow_remote_agents': False, 'number_agents_by_grid': 1, 'number_teams_for_trial': 2, 'single_position': False, 'timeout': 5})
+        self.assertEqual(response.data, {"name": "IIA", "number_teams_for_trial": 2, "number_agents_by_grid": 1,
+                                         "allow_remote_agents": False, "synchronous_simulation": False,
+                                         "single_position": False, "timeout": 5})
 
         # list type of competition
         url = "/api/v1/competitions/type_of_competition/"
         response = client.get(url)
         self.assertEqual(response.data, OrderedDict([(u'count', 3), (u'next', None), (u'previous', None), (u'results', [
             OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1),
-                         ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)]), OrderedDict(
+                         ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+                         ('timeout', 5)]), OrderedDict(
                 [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
-                 ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)]), OrderedDict(
+                 ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+                 ('timeout', 5)]), OrderedDict(
                 [('name', u'IIA'), ('number_teams_for_trial', 2), ('number_agents_by_grid', 1),
-                 ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])])]))
+                 ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+                 ('timeout', 5)])])]))
 
         # delete type of competition
         url = "/api/v1/competitions/type_of_competition/IIA/"
@@ -83,12 +88,26 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/get/Register/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')]), OrderedDict([('name', u'C2'), ('type_of_competition', OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')]), OrderedDict([('name', u'C2'), (
+        'type_of_competition', OrderedDict(
+            [('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')])])
         # get all competitions
         url = "/api/v1/competitions/get/All/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')]), OrderedDict([('name', u'C2'), ('type_of_competition', OrderedDict([('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')]), OrderedDict([('name', u'C2'), (
+        'type_of_competition', OrderedDict(
+            [('name', u'Competitive'), ('number_teams_for_trial', 3), ('number_agents_by_grid', 1),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')])])
 
 
         # enroll one team in the competition, the team stays with the inscription valid=False
@@ -104,7 +123,11 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)])])
+        self.assertEqual(response.data, [OrderedDict([('competition', OrderedDict([('name', u'C1'), (
+        'type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)])])
 
         # the team can't enroll twice
         url = "/api/v1/competitions/enroll/"
@@ -134,7 +157,57 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO2'), ('valid', False)]), OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO3'), ('valid', False)])])
+        self.assertEqual(response.data, [OrderedDict([('competition', OrderedDict([('name', u'C1'), (
+        'type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)]),
+                                         OrderedDict([('competition', OrderedDict([('name', u'C1'), (
+                                         'type_of_competition', OrderedDict(
+                                             [('name', u'Collaborative'), ('number_teams_for_trial', 1),
+                                              ('number_agents_by_grid', 5), ('allow_remote_agents', False),
+                                              ('synchronous_simulation', False), ('single_position', False),
+                                              ('timeout', 5)])), ('state_of_competition', 'Register')])),
+                                                      ('team_name', u'XPTO2'), ('valid', False)]), OrderedDict([(
+                                                                                                                'competition',
+                                                                                                                OrderedDict(
+                                                                                                                    [(
+                                                                                                                     'name',
+                                                                                                                     u'C1'),
+                                                                                                                     (
+                                                                                                                     'type_of_competition',
+                                                                                                                     OrderedDict(
+                                                                                                                         [
+                                                                                                                             (
+                                                                                                                             'name',
+                                                                                                                             u'Collaborative'),
+                                                                                                                             (
+                                                                                                                             'number_teams_for_trial',
+                                                                                                                             1),
+                                                                                                                             (
+                                                                                                                             'number_agents_by_grid',
+                                                                                                                             5),
+                                                                                                                             (
+                                                                                                                             'allow_remote_agents',
+                                                                                                                             False),
+                                                                                                                             (
+                                                                                                                             'synchronous_simulation',
+                                                                                                                             False),
+                                                                                                                             (
+                                                                                                                             'single_position',
+                                                                                                                             False),
+                                                                                                                             (
+                                                                                                                             'timeout',
+                                                                                                                             5)])),
+                                                                                                                     (
+                                                                                                                     'state_of_competition',
+                                                                                                                     'Register')])),
+                                                                                                                (
+                                                                                                                'team_name',
+                                                                                                                u'XPTO3'),
+                                                                                                                (
+                                                                                                                'valid',
+                                                                                                                False)])])
 
         # only admin
         url = "/api/v1/competitions/toggle_team_inscription/"
@@ -222,7 +295,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', True), ('is_superuser', False)])), ('team_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
+             ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
+                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', True), ('is_superuser', False)])),
+             ('team_name', u'XPTO3')]))
 
         # get agents by user
         url = "/api/v1/agents/agents_by_user/gipmon/"
@@ -234,7 +312,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['user']['updated_at']
         del rsp['user']['created_at']
 
-        self.assertEqual(rsp, OrderedDict([('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False), ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict([('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'), ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', True), ('is_superuser', False)])), ('team_name', u'XPTO3')]))
+        self.assertEqual(rsp, OrderedDict(
+            [('agent_name', u'KAMIKAZE'), ('is_remote', False), ('rounds', []), ('code_valid', False),
+             ('validation_result', u''), ('language', 'Python'), ('competitions', []), ('user', OrderedDict(
+                [('email', u'rf@rf.pt'), ('username', u'gipmon'), ('teaching_institution', u'Universidade de Aveiro'),
+                 ('first_name', u'Rafael'), ('last_name', u'Ferreira'), ('is_staff', True), ('is_superuser', False)])),
+             ('team_name', u'XPTO3')]))
 
         # get the agent information about the agent
         url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
@@ -354,13 +437,21 @@ class AuthenticationTestCase(TestCase):
         data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
         response = client.post(path=url, data=data)
         identifier = response.data["identifier"]
-        self.assertEqual(response.data, {'team_name': u'XPTO3', 'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])})
+        self.assertEqual(response.data, {'team_name': u'XPTO3', 'identifier': identifier, 'competition': OrderedDict(
+            [('name', u'C1'), ('type_of_competition', OrderedDict(
+                [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+                 ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+                 ('timeout', 5)])), ('state_of_competition', 'Register')])})
         self.assertEqual(response.status_code, 201)
 
         # retrieve the grid position
         url = "/api/v1/competitions/grid_position/C1/?team_name=XPTO3"
         response = client.get(path=url, data=data)
-        self.assertEqual(response.data, {'team_name': u'XPTO3', 'identifier': identifier, 'competition': OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])})
+        self.assertEqual(response.data, {'team_name': u'XPTO3', 'identifier': identifier, 'competition': OrderedDict(
+            [('name', u'C1'), ('type_of_competition', OrderedDict(
+                [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+                 ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+                 ('timeout', 5)])), ('state_of_competition', 'Register')])})
         self.assertEqual(response.status_code, 200)
 
         # list user grids
@@ -378,7 +469,11 @@ class AuthenticationTestCase(TestCase):
         # ADMIN retrieve the grids by competition
         url = "/api/v1/competitions/grid_positions_competition/C1/"
         response = client.get(path=url, data=data)
-        self.assertEqual(response.data, [OrderedDict([('identifier', identifier), ('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO3')])])
+        self.assertEqual(response.data, [OrderedDict([('identifier', identifier), ('competition', OrderedDict(
+            [('name', u'C1'), ('type_of_competition', OrderedDict(
+                [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+                 ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+                 ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO3')])])
         self.assertEqual(response.status_code, 200)
 
         # associate agent to the grid
@@ -613,9 +708,10 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {'param_list': u'/api/v1/competitions/round_file/C1/R1/param_list/',
                                'lab': u'/api/v1/competitions/round_file/C1/R1/lab/',
                                'grid': u'/api/v1/competitions/round_file/C1/R1/grid/',
-                               'type_of_competition': {'timeout': 5, 'single_position': False, 'name': u'Collaborative',
-                                                       'number_agents_by_grid': 5, 'number_teams_for_trial': 1,
-                                                       'allow_remote_agents': False}})
+                               'type_of_competition': {'timeout': 5, 'name': u'Collaborative',
+                                                       'allow_remote_agents': False, 'synchronous_simulation': False,
+                                                       'number_teams_for_trial': 1, 'single_position': False,
+                                                       'number_agents_by_grid': 5}})
         # try to send a message
         trial = Trial.objects.get(identifier=trial_identifier)
         trial.started = True
@@ -920,13 +1016,117 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO2'), ('valid', False)]), OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO3'), ('valid', True)])])
+        self.assertEqual(response.data, [OrderedDict([('competition', OrderedDict([('name', u'C1'), (
+        'type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)]),
+                                         OrderedDict([('competition', OrderedDict([('name', u'C1'), (
+                                         'type_of_competition', OrderedDict(
+                                             [('name', u'Collaborative'), ('number_teams_for_trial', 1),
+                                              ('number_agents_by_grid', 5), ('allow_remote_agents', False),
+                                              ('synchronous_simulation', False), ('single_position', False),
+                                              ('timeout', 5)])), ('state_of_competition', 'Register')])),
+                                                      ('team_name', u'XPTO2'), ('valid', False)]), OrderedDict([(
+                                                                                                                'competition',
+                                                                                                                OrderedDict(
+                                                                                                                    [(
+                                                                                                                     'name',
+                                                                                                                     u'C1'),
+                                                                                                                     (
+                                                                                                                     'type_of_competition',
+                                                                                                                     OrderedDict(
+                                                                                                                         [
+                                                                                                                             (
+                                                                                                                             'name',
+                                                                                                                             u'Collaborative'),
+                                                                                                                             (
+                                                                                                                             'number_teams_for_trial',
+                                                                                                                             1),
+                                                                                                                             (
+                                                                                                                             'number_agents_by_grid',
+                                                                                                                             5),
+                                                                                                                             (
+                                                                                                                             'allow_remote_agents',
+                                                                                                                             False),
+                                                                                                                             (
+                                                                                                                             'synchronous_simulation',
+                                                                                                                             False),
+                                                                                                                             (
+                                                                                                                             'single_position',
+                                                                                                                             False),
+                                                                                                                             (
+                                                                                                                             'timeout',
+                                                                                                                             5)])),
+                                                                                                                     (
+                                                                                                                     'state_of_competition',
+                                                                                                                     'Register')])),
+                                                                                                                (
+                                                                                                                'team_name',
+                                                                                                                u'XPTO3'),
+                                                                                                                (
+                                                                                                                'valid',
+                                                                                                                True)])])
 
         # get my enrolled teams
         url = "/api/v1/competitions/my_enrolled_teams_competition/gipmon/?competition_name=C1"
         response = client.get(path=url)
-        self.assertEqual([OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO2'), ('valid', False)]), OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])), ('team_name', u'XPTO3'), ('valid', True)])],
-                         response.data)
+        self.assertEqual([OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
+                                                                                      OrderedDict(
+                                                                                          [('name', u'Collaborative'), (
+                                                                                          'number_teams_for_trial', 1),
+                                                                                           ('number_agents_by_grid', 5),
+                                                                                           ('allow_remote_agents',
+                                                                                            False), (
+                                                                                           'synchronous_simulation',
+                                                                                           False),
+                                                                                           ('single_position', False),
+                                                                                           ('timeout', 5)])),
+                                                                    ('state_of_competition', 'Register')])),
+                                       ('team_name', u'XPTO1'), ('valid', False)]), OrderedDict([('competition',
+                                                                                                  OrderedDict(
+                                                                                                      [('name', u'C1'),
+                                                                                                       (
+                                                                                                       'type_of_competition',
+                                                                                                       OrderedDict([(
+                                                                                                                    'name',
+                                                                                                                    u'Collaborative'),
+                                                                                                                    (
+                                                                                                                    'number_teams_for_trial',
+                                                                                                                    1),
+                                                                                                                    (
+                                                                                                                    'number_agents_by_grid',
+                                                                                                                    5),
+                                                                                                                    (
+                                                                                                                    'allow_remote_agents',
+                                                                                                                    False),
+                                                                                                                    (
+                                                                                                                    'synchronous_simulation',
+                                                                                                                    False),
+                                                                                                                    (
+                                                                                                                    'single_position',
+                                                                                                                    False),
+                                                                                                                    (
+                                                                                                                    'timeout',
+                                                                                                                    5)])),
+                                                                                                       (
+                                                                                                       'state_of_competition',
+                                                                                                       'Register')])), (
+                                                                                                 'team_name', u'XPTO2'),
+                                                                                                 ('valid', False)]),
+                          OrderedDict([('competition', OrderedDict([('name', u'C1'), ('type_of_competition',
+                                                                                      OrderedDict(
+                                                                                          [('name', u'Collaborative'), (
+                                                                                          'number_teams_for_trial', 1),
+                                                                                           ('number_agents_by_grid', 5),
+                                                                                           ('allow_remote_agents',
+                                                                                            False), (
+                                                                                           'synchronous_simulation',
+                                                                                           False),
+                                                                                           ('single_position', False),
+                                                                                           ('timeout', 5)])),
+                                                                    ('state_of_competition', 'Register')])),
+                                       ('team_name', u'XPTO3'), ('valid', True)])], response.data)
         self.assertEqual(response.status_code, 200)
 
         c = Competition.objects.get(name="C1")
@@ -945,7 +1145,10 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/team_enrolled_competitions/XPTO3/"
         response = client.get(url)
 
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Register')])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Register')])])
         self.assertEqual(response.status_code, 200)
 
         # verify get the first competition round
@@ -971,7 +1174,10 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/get/Competition/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict([('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5), ('allow_remote_agents', False), ('single_position', False), ('timeout', 5)])), ('state_of_competition', 'Competition')])])
+        self.assertEqual(response.data, [OrderedDict([('name', u'C1'), ('type_of_competition', OrderedDict(
+            [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
+             ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
+             ('timeout', 5)])), ('state_of_competition', 'Competition')])])
 
         r3 = Round.objects.get(name="R3")
         r3.delete()
@@ -1037,7 +1243,13 @@ class AuthenticationTestCase(TestCase):
         rsp = response.data
         competition_name = rsp[0]['competition']['name']
         del rsp[0]['competition']['name']
-        self.assertEqual(rsp, [{'number_of_trials': 0, 'number_of_rounds': 0, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('allow_remote_agents', False), ('single_position', False), ('timeout', 1)])}, 'team': u'TestTeam'}])
+        self.assertEqual(rsp, [{'number_of_trials': 0, 'number_of_rounds': 0,
+                                'competition': {'state_of_competition': 'Competition',
+                                                'type_of_competition': OrderedDict(
+                                                    [('name', u'Private Competition'), ('number_teams_for_trial', 1),
+                                                     ('number_agents_by_grid', 50), ('allow_remote_agents', False),
+                                                     ('synchronous_simulation', False), ('single_position', False),
+                                                     ('timeout', 1)])}, 'team': u'TestTeam'}])
 
         # this round must have no rounds
         url = "/api/v1/competitions/private/rounds/" + competition_name + "/"
@@ -1130,7 +1342,13 @@ class AuthenticationTestCase(TestCase):
         response = client.get(path=url)
         rsp = response.data
         del rsp[0]['competition']['name']
-        self.assertEqual(rsp, [{'number_of_trials': 1, 'number_of_rounds': 1, 'competition': {'state_of_competition': 'Competition', 'type_of_competition': OrderedDict([('name', u'Private Competition'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 50), ('allow_remote_agents', False), ('single_position', False), ('timeout', 1)])}, 'team': u'TestTeam'}])
+        self.assertEqual(rsp, [{'number_of_trials': 1, 'number_of_rounds': 1,
+                                'competition': {'state_of_competition': 'Competition',
+                                                'type_of_competition': OrderedDict(
+                                                    [('name', u'Private Competition'), ('number_teams_for_trial', 1),
+                                                     ('number_agents_by_grid', 50), ('allow_remote_agents', False),
+                                                     ('synchronous_simulation', False), ('single_position', False),
+                                                     ('timeout', 1)])}, 'team': u'TestTeam'}])
 
         trial = Trial.objects.all()
         trial_identifier = trial[0].identifier
