@@ -79,13 +79,14 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            sticky_notes = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
+            sticky_notes = get_object_or_404(self.queryset, identifier=kwargs.get('pk', ''))
 
             sticky_notes.time = serializer.data.get('time', 5)
             sticky_notes.note = serializer.data.get('note', '')
             sticky_notes.save()
 
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+            serializer = self.serializer_class(sticky_notes)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
@@ -107,7 +108,7 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
 
 
 class StickyNotesToggle(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = StickyNote.objects.filter()
+    queryset = StickyNote.objects.all()
     serializer_class = StickyNoteToggleSerializer
 
     def get_permissions(self):
@@ -129,7 +130,7 @@ class StickyNotesToggle(mixins.CreateModelMixin, viewsets.GenericViewSet):
             sticky_note.save()
 
             return Response({'status': 'OK',
-                             'message': 'The sticky note is now ' + sticky_note.active + "!"},
+                             'message': 'The sticky note is now ' + str(sticky_note.active) + "!"},
                             status=status.HTTP_200_OK)
 
         return Response({'status': 'Bad Request',
