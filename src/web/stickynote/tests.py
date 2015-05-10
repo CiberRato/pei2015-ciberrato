@@ -75,7 +75,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/sticky_notes/crud/" + identifier + "/"
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"status":"Deleted","message":"The sticky note has been deleted"})
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The sticky note has been deleted"})
 
         url = "/api/v1/sticky_notes/crud/"
         response = client.get(url)
