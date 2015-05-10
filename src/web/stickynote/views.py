@@ -1,15 +1,11 @@
-import uuid
-
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
-from django.conf import settings
-from django.core.files.storage import default_storage
 from rest_framework import permissions
-from rest_framework import viewsets, status, mixins, views
+from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 from .models import StickyNote
-from .serializers import StickyNoteSerializer
+from .serializers import StickyNoteSerializer, StickyNoteToggleSerializer
 from competition.permissions import IsStaff
 
 
@@ -110,3 +106,32 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
                         status=status.HTTP_200_OK)
 
 
+class StickyNotesToggle(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = StickyNote.objects.filter()
+    serializer_class = StickyNoteToggleSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(), IsStaff(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Toggle} a sticky note
+        B{URL:} ../api/v1/sticky_notes/toggle/
+
+        :type  identifier: str
+        :param identifier: The sticky note identifier
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            sticky_note = get_object_or_404(self.queryset, identifier=serializer.validated_data['identifier'])
+            sticky_note.active = not sticky_note.active
+            sticky_note.save()
+
+            return Response({'status': 'OK',
+                             'message': 'The sticky note is now ' + sticky_note.active + "!"},
+                            status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
