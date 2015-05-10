@@ -15,7 +15,7 @@ class TypeOfCompetitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypeOfCompetition
         fields = ('name', 'number_teams_for_trial', 'number_agents_by_grid', 'allow_remote_agents',
-                  'single_position', 'timeout')
+                  'synchronous_simulation', 'single_position', 'timeout')
         read_only_fields = ()
 
 

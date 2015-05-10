@@ -65,6 +65,7 @@ class TypeOfCompetition(models.Model):
 
     allow_remote_agents = models.BooleanField(default=False, blank=False)
 
+    synchronous_simulation = models.BooleanField(default=False, blank=False)
     single_position = models.BooleanField(default=False)
     timeout = models.IntegerField(validators=[MinValueValidator(0)], default=5)
 
