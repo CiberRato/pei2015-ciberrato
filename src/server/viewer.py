@@ -114,12 +114,13 @@ class Viewer:
 		log_file.write(json_data[1:-1]+",")
 
 		# Viewer continua a ouvir enquanto o Starter não lhe mandar começar a simulação
+		data = None
 		data = starter_c.recv()
 		robotsXML = minidom.parseString(data)
 		robots = robotsXML.getElementsByTagName('Robots')
 		robotsAmount = robots[0].attributes['Amount'].value
 
-		print "[VIEWER] Robots Amount:" + robotsAmount + "\n"
+		print "[VIEWER] Robots Amount:" + robotsAmount
 
 		checkedRobots = []
 		prevlen = 0
@@ -133,6 +134,7 @@ class Viewer:
 					checkedRobots += [robotID]
 					checkedRobots = list(OrderedDict.fromkeys(checkedRobots))
 					if len(checkedRobots) != prevlen:
+						# Só fazer post se existirem remotos
 						data = {'trial_identifier': sim_id,'message': "The robot " + r.attributes['Name'].value + " has registered"}
 						response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + REGISTER_ROBOTS_URL, data=data)
 					prevlen = len(checkedRobots)
@@ -144,8 +146,8 @@ class Viewer:
 		print "[VIEWER] Robots Registered: " + str(len(checkedRobots))
 
 		data = starter_c.recv()
-		while data != "<StartedAgents/>":
-			data = starter_c.recv()
+		# while data != "<StartedAgents/>":
+		# 	data = starter_c.recv()
 
 		# Sending simulator msg to start the simulation
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
@@ -188,20 +190,20 @@ class Viewer:
 
 		log_file.write("]}")
 
-		# Wait 0.1 seconds to assure the END msg goes on a separate packet
-		time.sleep(0.1)
-		# Send websocket msg telling it's over
-		websocket_tcp.send("END")
+		if remote:
+			# Wait 0.1 seconds to assure the END msg goes on a separate packet
+			time.sleep(0.1)
+			# Send websocket msg telling it's over
+			websocket_tcp.send("END")
 
 		starter_c.send('<EndedSimulation/>')
 
 		# Close all connections
-		websocket_tcp.close()
+		if remote:
+			websocket_tcp.close()
 		starter_c.close()
 		simulator_s.close()
 
 		# Close all open files
 		log_file.close()
 
-# if __name__ == "__main__":
-# 	main()
