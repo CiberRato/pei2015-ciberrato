@@ -20,18 +20,21 @@ class AuthenticationTestCase(TestCase):
 
     def test_create_account(self):
         user = Account.objects.get(email='test@test.com')
-        client = APIClient()
+        user.is_staff = True
+        user.save()
 
+        client = APIClient()
         client.force_authenticate(user=user)
 
         url = "/api/v1/accounts/"
         response = client.get(url)
-        rsp = response.data['results']
+        rsp = response.data["results"]
         del rsp[0]['updated_at']
         del rsp[0]['created_at']
-        self.assertEqual(rsp, [OrderedDict(
-            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
-             ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
+        self.assertEqual(rsp, [OrderedDict([('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'), ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', True), ('is_superuser', False)])])
+
+        user.is_staff = False
+        user.save()
 
         url = "/api/v1/account_by_first_name/unit/"
         response = client.get(url)
@@ -86,7 +89,7 @@ class AuthenticationTestCase(TestCase):
         # get informations
         url = "/api/v1/accounts/"
         response = client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
 
         url = "/api/v1/accounts/test1/"
         response = client.get(url)
@@ -209,6 +212,12 @@ class AuthenticationTestCase(TestCase):
                 'teaching_institution': ''}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 400)
+
+        # see the users list
+        url = "/api/v1/accounts/"
+        response = client.get(path=url)
+        self.assertEqual(response.data,
+                         {"status": "Bad Request", "message": "You don't have permissions to see this list!"})
 
         # the fields can not be blank
         url = "/api/v1/accounts/test/"
