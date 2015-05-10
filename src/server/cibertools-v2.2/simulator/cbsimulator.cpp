@@ -199,7 +199,7 @@ cbSimulator::~cbSimulator()
 	}
 }
 
-void cbSimulator::activateSyncMode(int timeout) {
+void cbSimulator::activateSyncMode(unsigned int timeout) {
 	syncmode = true;
 	param->sync = true;
 
@@ -557,6 +557,11 @@ unsigned int cbSimulator::keyTime()
 	return param->keyTime;
 }
 
+unsigned int cbSimulator::syncTimeout() 
+{
+	return syncmode_timeout;
+}
+
 const char *cbSimulator::curStateAsString()
 {
     static const char *sas[] = { "Ready", "Stopped", "Running", "Finished" };
@@ -611,6 +616,9 @@ void cbSimulator::start()
         if (!syncmode) {
 			timer.start(cycleTime());
 	   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
+		} else if (syncmode_timeout > 0) {
+			timer.start(syncTimeout());
+			QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
 		}
     }
 }

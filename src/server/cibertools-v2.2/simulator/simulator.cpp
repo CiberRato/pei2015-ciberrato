@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
 	char *paramFilename = 0;
 	char *logFilename = 0;
 	int port = 6000;
-    int timeout = 0;
+    unsigned int timeout = 0;
 	bool nogui = false;
 
 	bool showGraph=false;
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[p], "-sync") == 0) {
             // wait until second pass of command line parsing
             if (p+1 < argc) {
-                sscanf(argv[p+1], "%d", &timeout);
+                sscanf(argv[p+1], "%u", &timeout);
                 p+=2;
             }
             else CommandLineError();
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[p], "-sync") == 0) {
             if (p+1 < argc) {
                 // It will read 0 when receives bad input
-                sscanf(argv[p+1], "%d", &timeout);
+                sscanf(argv[p+1], "%u", &timeout);
                 p+=2;
 
                 simulator.activateSyncMode(timeout);

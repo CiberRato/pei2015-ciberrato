@@ -105,6 +105,7 @@ public:
 	unsigned int simTime();
     unsigned int cycleTime();
     unsigned int keyTime();
+    unsigned int syncTimeout();
 
     const char *curStateAsString();
     inline State state() const { return (curState);}
@@ -134,7 +135,7 @@ public:
 	void setDefaultGrid(void);
 	void setDefaultParameters(void);
 
-    void activateSyncMode(int timeout=0);
+    void activateSyncMode(unsigned int timeout=0);
 
 public:
 	//DEBUG
@@ -218,8 +219,8 @@ protected: // data members
 
     bool logging;
     bool syncmode;
-    int syncmode_timeout;
-    
+    unsigned int syncmode_timeout;
+
     ostream *logStream;
 	QString logFilename;
 	
