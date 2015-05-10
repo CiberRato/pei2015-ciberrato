@@ -94,11 +94,10 @@ class Starter:
 				TIMEOUT = details["timeout"] * 60
 				if TIMEOUT < 1:
 					raise Exception("[STARTER] ERROR: Timeout invalid")
+				allow_remote = details["allow_remote_agents"]
+				if allow_remote != True or allow_remote != False
+					raise Exception("[STARTER] ERROR: Allow Remote Field invalid")
 				continue
-			if key == "allow_remote_agents":
-				allow_remote = simJson[key]
-				continue
-
 
 			fp = tempfile.NamedTemporaryFile()
 			r = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + simJson[key])
