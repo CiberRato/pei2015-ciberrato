@@ -36,7 +36,7 @@
                                             <p align="center">You're Inscription is already validated. <strong>To cancel, please contact the administration</strong></p>
                                         </div>
                                         <div class="modal-footer">
-                                            <a data-dismiss="modal" class="btn btn-alt btn-success">OK</a>
+                                            <a data-dismiss="modal" class="btn btn-flat btn-success">OK</a>
                                         </div>
                                     </div>
                                 </td>
@@ -46,12 +46,12 @@
                             </tbody>
                         </table>
 
-                            <a href="javascript:history.go(-1)" class="btn btn-alt btn-large btn-primary">Back</a>
+                            <a href="javascript:history.go(-1)" class="btn btn-flat btn-large btn-primary">Back</a>
 
-                        <a ng-if="(vm.competitionTeamsInfo.length == 0 && vm.teamsToShow.length == 0)" data-toggle="modal"  href="#confirmJoinError" class="btn btn-alt btn-large btn-success" >Be the First to join this Competition</a>
-                        <a ng-if="(vm.competitionTeamsInfo.length == 0 && vm.teamsToShow.length != 0)" data-toggle="modal" href="#confirmJoin" class="btn btn-alt btn-large btn-success" >Be the First to join this Competition</a>
-                        <a ng-if="(vm.competitionTeamsInfo.length != 0 && vm.teamsToShow.length == 0)" data-toggle="modal" href="#confirmJoinError" class="btn btn-alt btn-large btn-success" >Join this Competition</a>
-                        <a ng-if="(vm.competitionTeamsInfo.length != 0 && vm.teamsToShow.length != 0)" data-toggle="modal" href="#confirmJoin" class="btn btn-alt btn-large btn-success" >Join this Competition</a>
+                        <a ng-if="(vm.competitionTeamsInfo.length == 0 && vm.teamsToShow.length == 0)" data-toggle="modal"  href="#confirmJoinError" class="btn btn-flat btn-large btn-success" >Be the First to join this Competition</a>
+                        <a ng-if="(vm.competitionTeamsInfo.length == 0 && vm.teamsToShow.length != 0)" data-toggle="modal" href="#confirmJoin" class="btn btn-flat btn-large btn-success" >Be the First to join this Competition</a>
+                        <a ng-if="(vm.competitionTeamsInfo.length != 0 && vm.teamsToShow.length == 0)" data-toggle="modal" href="#confirmJoinError" class="btn btn-flat btn-large btn-success" >Join this Competition</a>
+                        <a ng-if="(vm.competitionTeamsInfo.length != 0 && vm.teamsToShow.length != 0)" data-toggle="modal" href="#confirmJoin" class="btn btn-flat btn-large btn-success" >Join this Competition</a>
 
                         <div class="modal fade"  id="confirmJoin">
                             <div class="modal-header">
@@ -70,7 +70,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a ng-click="vm.enroll()" class="btn btn-alt btn-success" data-dismiss="modal">Join</a>
+                                <a ng-click="vm.enroll()" class="btn btn-flat btn-success" data-dismiss="modal">Join</a>
 
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                                 <p align="center">You don't have any created team able to join this competition! Please Create one!<p>
                             </div>
                             <div class="modal-footer">
-                                <a data-dismiss="modal" class="btn btn-alt btn-success">OK</a>
+                                <a data-dismiss="modal" class="btn btn-flat btn-success">OK</a>
                             </div>
                         </div>
                     </div>

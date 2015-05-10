@@ -418,3 +418,22 @@ class TeamsModelsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         client.force_authenticate(user=None)
+    """
+    def testDates(self):
+        user = Account.objects.get(username="gipmon")
+        client = APIClient()
+        client.force_authenticate(user=user)
+
+
+        # create a team slug
+        url = "/api/v1/teams/crud/"
+        data = {'name': 'TestTeam', 'max_members': 10}
+        response = client.post(path=url, data=data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+        for team in Team.objects.all():
+            print team.created_at
+            print team.updated_at
+
+        client.force_authenticate(user=None)
+    """

@@ -26,6 +26,9 @@ class AccountViewSet(viewsets.ModelViewSet):
         :return:
         :rtype:
         """
+        if self.request.method == 'POST':
+            return permissions.AllowAny(),
+
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.AllowAny(),
 
@@ -33,6 +36,18 @@ class AccountViewSet(viewsets.ModelViewSet):
             return permissions.AllowAny(),
 
         return permissions.IsAuthenticated(), IsAccountOwner(),
+
+    def list(self, request, *args, **kwargs):
+        """
+        B{List} users
+        B{URL:} ../api/v1/accounts/
+        """
+        if request.user.is_staff is False:
+            return Response({'status': 'Bad Request',
+                             'message': 'You don\'t have permissions to see this list!'
+                             }, status=status.HTTP_400_BAD_REQUEST)
+
+        return super(AccountViewSet, self).list(self, request, *args, **kwargs)
 
     def create(self, request):
         """

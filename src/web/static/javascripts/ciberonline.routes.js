@@ -225,6 +225,9 @@
         }).when('/panel/:identifier/liveStream',{
             templateUrl: '/static/templates/viewer/streamViewer.html',
             title: 'Live Stream'
+        }).when('/panel/apps/desktopSoftware',{
+            templateUrl: '/static/templates/panel/desktopSoftware.html',
+            title: 'Desktop Software'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

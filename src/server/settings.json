@@ -5,15 +5,8 @@
 {
 	///general settings to be used by starter, viewer and other programs that may require so
 	"settings": {
-		///default timeout for remote hosts to register (in seconds)
-		"timeout": 30,
-
 		///default tmp file name for log info
 		"log_info_file": "./tmp/ciberOnline_log.json",
-
-		///host and port for communications between starter and viewer
-		"starter_viewer_host": "127.0.0.1",
-		"starter_viewer_port": 7000,
 
 		///host and port for both starter and GetSimId connection
 		"starter_end_point_host": "127.0.0.1",
