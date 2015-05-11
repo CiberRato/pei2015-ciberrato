@@ -35,6 +35,11 @@
                         </table>
 
                         <a ng-if="vm.team.length == 0" class="btn btn-flat btn-large btn-success" href="panel/{{ vm.team.username }}/createTeam">Create your First Team</a>
+                        <div ng-if="vm.team.length == 0" class="alert alert-info" style="margin-top: 20px">
+                            <strong>What you can do with one Team?</strong> One team allow you to develop in a collaborative way. One team can have
+                            multiple agents and only the admin members can create and delete agents. When you enroll in one competition you enroll
+                            as a Team and not as a User.
+                        </div>
                     </div>
 
                 </section>
