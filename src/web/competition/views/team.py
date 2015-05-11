@@ -50,14 +50,14 @@ class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericView
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class MyEnrolledTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class MyEnrolledTeamsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Competition.objects.all()
     serializer_class = TeamEnrolledSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
-    def retrieve(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         """
         B{Retrieve} the list of a Teams enrolled
         B{URL:} ../api/v1/competitions/my_enrolled_teams/
