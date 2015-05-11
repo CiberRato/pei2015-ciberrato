@@ -118,7 +118,7 @@ ALLOWED_UPLOAD_LANGUAGES = (
     ('C++', 'cplusplus'),
     ('Java', 'Java')
 )
-ALLOWED_UPLOAD_SIZE = 5000000  # bytes
+ALLOWED_UPLOAD_SIZE = 50000000  # bytes
 
 START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trials/start/"
 PREPARE_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trial_id/"
