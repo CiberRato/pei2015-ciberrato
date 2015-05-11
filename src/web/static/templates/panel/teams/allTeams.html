@@ -11,10 +11,10 @@
                     <div class="tab-pane active" id="static">
 
                         <h2>All teams</h2>
-                        <p ng-if="vm.team.results.length != 0">Here is shown in table the list of all teams registered. You may able to see their information.</p>
-                        <p ng-if="vm.team.results.length == 0">There are no teams registered.</p>
+                        <p ng-if="vm.team.length != 0">Here is shown in table the list of all teams registered. You may able to see their information.</p>
+                        <p ng-if="vm.team.length == 0">There are no teams registered.</p>
 
-                        <table ng-if="vm.team.results.length != 0" class="table table-striped table-hover">
+                        <table ng-if="vm.team.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>Team Name</th>

@@ -26,28 +26,29 @@
             }
 
             Competition.getAll().then(getAllSuccessFn, getAllErrorFn);
-            Competition.getMyCompetitions(username).then(getMyCompetitionsSuccessFn, getMyCompetitionsErrorFn);
 
-            function getMyCompetitionsSuccessFn(data){
-                vm.myCompetitions = data.data;
-                for(var i = 0; i<vm.myCompetitions.length; i++){
-                    for(var j = 0; j<vm.competitions.length; j++){
-                        if(vm.myCompetitions[i].competition_name === vm.competitions[j].name){
-                            vm.myCompetitions[i].state = vm.competitions[j].state_of_competition;
-                            vm.myCompetitions[i].type = vm.competitions[j].type_of_competition;
-                        }
-                    }
-                }
-                console.log(vm.myCompetitions);
-            }
-
-            function getMyCompetitionsErrorFn(data){
-                console.error(data.data);
-                $location.url('/panel/');
-            }
 
             function getAllSuccessFn(data) {
                 vm.competitions = data.data;
+                Competition.getMyCompetitions(username).then(getMyCompetitionsSuccessFn, getMyCompetitionsErrorFn);
+
+                function getMyCompetitionsSuccessFn(data){
+                    vm.myCompetitions = data.data;
+                    for(var i = 0; i<vm.myCompetitions.length; i++){
+                        for(var j = 0; j<vm.competitions.length; j++){
+                            if(vm.myCompetitions[i].competition_name === vm.competitions[j].name){
+                                vm.myCompetitions[i].state = vm.competitions[j].state_of_competition;
+                                vm.myCompetitions[i].type = vm.competitions[j].type_of_competition;
+                            }
+                        }
+                    }
+                    console.log(vm.myCompetitions);
+                }
+
+                function getMyCompetitionsErrorFn(data){
+                    console.error(data.data);
+                    $location.url('/panel/');
+                }
             }
 
             function getAllErrorFn(data) {
