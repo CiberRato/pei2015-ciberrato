@@ -13322,3 +13322,8 @@ div.jGrowl div.success a:hover {
     top: -30px;
     height: 500px;
 }
+
+.ng-cloak
+{
+    display: none;
+}
