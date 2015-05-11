@@ -11,6 +11,12 @@
                     <div class="tab-pane active" id="static">
                         <h2>List of Teams to Create Solo Trials</h2>
                         <p ng-if="vm.solos.length == 0">You don't have solo trial created.</p>
+                        <div ng-if="vm.solos.length == 0" class="alert alert-info" style="margin-top: 20px">
+                            <strong>What is a Solo Trial?</strong> When you create one Team, one private competition for your
+                            Team is created. One private competitions is a competition, where only team members can view those simulations.
+                            These simulations are executed in sync mode, which mean, there is no live stream only the result (log) is presented to you.
+                            For these simulations you can choose from a variety of maps that are already present on the platform.
+                        </div>
                         <p ng-if="vm.solos.length != 0">Here is shown in table the list of all solo trials created.</p>
                         <table  ng-if="vm.solos.length != 0" class="table table-striped table-hover">
                             <thead>
