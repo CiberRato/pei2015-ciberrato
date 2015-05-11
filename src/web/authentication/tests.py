@@ -225,9 +225,5 @@ class AuthenticationTestCase(TestCase):
                 'teaching_institution': ''}
         response = client.put(url, data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(dict(response.data), {'status': 'Bad Request',
-                                               'message': {'first_name': [u'This field may not be blank.'],
-                                                           'last_name': [u'This field may not be blank.'],
-                                                           'email': [u'This field may not be blank.'],
-                                                           'teaching_institution': [u'This field may not be blank.']}})
+        self.assertEqual(dict(response.data), {"status":"Bad Request","message":{"username":["This field may not be blank."],"first_name":["This field may not be blank."],"last_name":["This field may not be blank."],"email":["This field may not be blank."],"teaching_institution":["This field may not be blank."]}})
 

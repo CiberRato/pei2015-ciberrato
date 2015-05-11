@@ -76,11 +76,10 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
         :type  note: str
         :type  note: The sticky note
         """
+        sticky_notes = get_object_or_404(self.queryset, identifier=kwargs.get('pk', ''))
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            sticky_notes = get_object_or_404(self.queryset, identifier=kwargs.get('pk', ''))
-
             sticky_notes.time = serializer.data.get('time', 5)
             sticky_notes.note = serializer.data.get('note', '')
             sticky_notes.save()

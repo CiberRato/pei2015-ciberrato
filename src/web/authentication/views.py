@@ -5,8 +5,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
 from authentication.models import Account, TeamMember
-from authentication.serializers import AccountSerializer, AccountSerializerUpdate, PasswordSerializer, \
-    AccountSerializerLogin
+from authentication.serializers import AccountSerializer, PasswordSerializer, AccountSerializerLogin
 from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 from tokens.models import UserToken
@@ -85,7 +84,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
-        serializer = AccountSerializerUpdate(data=request.data)
+        serializer = self.serializer_class(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
             instance.email = request.data.get('email', instance.email)
