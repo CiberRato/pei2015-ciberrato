@@ -12,8 +12,6 @@
 
         vm.create = create;
         vm.typesToShow = [];
-        vm.allowed = false;
-
 
         activate();
 
@@ -72,8 +70,7 @@
             }else {
                 x = undefined;
             }
-            console.log(vm.allowed);
-            Competition.create(vm.competitionName, x, vm.allowed).then(createSuccessFn, createErrorFn);
+            Competition.create(vm.competitionName, x).then(createSuccessFn, createErrorFn);
 
 
             function createSuccessFn(){
