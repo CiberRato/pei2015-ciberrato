@@ -30,10 +30,12 @@
 
             function getAllSuccessFn(data) {
                 vm.competitions = data.data;
-                Competition.getMyCompetitions(username).then(getMyCompetitionsSuccessFn, getMyCompetitionsErrorFn);
+                console.log(vm.competitions);
+                Competition.getMyCompetitions().then(getMyCompetitionsSuccessFn, getMyCompetitionsErrorFn);
 
                 function getMyCompetitionsSuccessFn(data){
                     vm.myCompetitions = data.data;
+                    console.log(data.data);
                     for(var i = 0; i<vm.myCompetitions.length; i++){
                         for(var j = 0; j<vm.competitions.length; j++){
                             if(vm.myCompetitions[i].competition_name === vm.competitions[j].name){
