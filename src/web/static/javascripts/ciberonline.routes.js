@@ -179,11 +179,6 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/createCompetition.html',
             title: 'Create Competition'
-        }).when('/admin/allCompetitions',{
-            controller:'AllTogetherCompetitionsController',
-            controllerAs: 'vm',
-            templateUrl: '/static/templates/admin/competition/allCompetitions.html',
-            title: 'All Competitions'
         }).when('/admin/allUsers',{
             controller:'ChangePermissionsController',
             controllerAs: 'vm',
