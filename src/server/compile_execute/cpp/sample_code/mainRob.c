@@ -130,8 +130,7 @@ int main(int argc, char *argv[])
         else {
             RequestSensors(2, "IRSensor1", "IRSensor2");
         }
-        Sync();
-
+        SyncRobot();
     }
     return 1;
 }
