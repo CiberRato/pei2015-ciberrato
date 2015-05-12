@@ -37,11 +37,18 @@
 
         function loginError(data){
             if(data){
-                vm.error = data.data.error;
-                $.jGrowl("Username and/or password is wrong. ", {
-                    life: 2500,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-                });
+                if(typeof data.data.detail !== 'undefined'){
+                    $.jGrowl(data.data.detail, {
+                        life: 2500,
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
+                    });
+                }else{
+                    vm.error = data.data.error;
+                    $.jGrowl("Username and/or password is wrong. ", {
+                        life: 2500,
+                        theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
+                    });
+                }
             }
             Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
 
