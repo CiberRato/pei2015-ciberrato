@@ -43,6 +43,8 @@
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
             }
+            Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+
         }
     }
 })();
