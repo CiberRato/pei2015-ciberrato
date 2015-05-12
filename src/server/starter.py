@@ -65,6 +65,8 @@ class Starter:
 		SERVICES_PORT = settings["settings"]["services_end_point_port"]
 
 		LOG_FILE = settings["settings"]["log_info_file"]
+
+		SYNC_TIMEOUT = settings["settings"]["sync_timeout"]
 		#end loading settings
 
 		# Get simulation
@@ -120,7 +122,16 @@ class Starter:
 		print "[STARTER] Creating process for simulator"
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
-		simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+		if sync:
+			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+						"-nogui", \
+						"-sync",	SYNC_TIMEOUT, \
+						"-param", 	tempFilesList["param_list"].name, \
+						"-lab", 	tempFilesList["lab"].name, \
+						"-grid", 	tempFilesList["grid"].name], \
+						stdout = subprocess.PIPE)
+		else:
+			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
@@ -139,8 +150,7 @@ class Starter:
 		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
 
-
-		print "[STARTER] Viewer ready, sending message to viewer about the number of agents\n"
+		print "[STARTER] Viewer ready, sending message to viewer about the number of agents"
 		data = '<Robots Amount="' +str(n_agents)+'" />'
 		viewer_c.send(data)
 
@@ -161,7 +171,7 @@ class Starter:
 				docker_container = docker.stdout.readline().strip()
 				docker_containers += [  ]
 				docker.wait()
-				print "[STARTER] Successfully opened container: %s\n" % (docker_container, )
+				print "[STARTER] Successfully opened container: %s" % (docker_container, )
 
 		# Waiting for viewer to send robots registry confirmation
 		# Use events to create timeouts
@@ -270,7 +280,7 @@ class Starter:
 				print "[STARTER] Closing tmp files"
 				for key in tempFilesList:
 					tempFilesList[key].close()
-				raise Exception("[STARTER] ERROR: Agents weren't all registered")
+				raise Exception("[STARTER] Start received not the same as the current trial")
 
 		else:
 			time.sleep(0.1)
