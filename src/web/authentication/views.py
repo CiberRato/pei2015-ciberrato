@@ -394,9 +394,6 @@ class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class GetCaptcha(views.APIView):
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
     def get(self, request):
         """
         Get Captcha details
