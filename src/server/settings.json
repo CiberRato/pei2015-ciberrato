@@ -11,6 +11,9 @@
 		///default value for sync mode timeout (in ms)
 		"sync_timeout": 50,
 
+		///simulator ip, localhost by default
+		"simulator_host": "127.0.0.1",
+
 		///host and port for both starter and GetSimId connection
 		"starter_end_point_host": "127.0.0.1",
 		"starter_end_point_port": 7500,
