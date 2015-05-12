@@ -23,10 +23,6 @@
 		"services_end_point_host": "127.0.0.1",
 		"services_end_point_port": 7501,
 
-		///simulator host and port for viewer to send required commands
-		"simulator_host": "127.0.0.1",
-		"simulator_port": 6000,
-
 		///websocket host and port for viewer to send robots data stream
 		"websocket_host": "127.0.0.1",
 		"websocket_port": 10000,
