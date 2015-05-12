@@ -112,25 +112,26 @@ class Starter:
 		print "[STARTER] Process ID: ", os.getpid()
 
 		# Hardcode sync mode to be false while not given by get simulation
-		sync = False
+		sync = True
 		if not sync:
 			print "[STARTER] Creating process for Websocket end-point.."
 			websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout = subprocess.PIPE)
 			print "[STARTER] Successfully opened process with process id: ", websocket.pid
 			time.sleep(0.5)
 
-		print "[STARTER] Creating process for simulator"
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
 		if sync:
+			print "[STARTER] Creating process for simulator in sync mode"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
-						"-sync",	SYNC_TIMEOUT, \
+						"-sync",	str(SYNC_TIMEOUT), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
 						"-grid", 	tempFilesList["grid"].name], \
 						stdout = subprocess.PIPE)
 		else:
+			print "[STARTER] Creating process for simulator"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
 						"-param", 	tempFilesList["param_list"].name, \
