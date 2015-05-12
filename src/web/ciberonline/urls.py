@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
 
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
-    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails
+    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha
 
 from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, MakeMemberAdminViewSet, \
     MemberInTeamViewSet, AccountTeamsAdminViewSet
@@ -198,6 +198,10 @@ urlpatterns = patterns('',
                        url(r'^api/v1/agents/agent_all_files/(?P<team_name>.+)/(?P<agent_name>.+)/$',
                            GetAllAgentFiles.as_view(),
                            name="Get all agent files"),
+
+                       # captcha
+                       url(r'^captcha/', include('captcha.urls')),
+                       url(r'^api/v1/get_captcha/', GetCaptcha.as_view(), name="Captcha get"),
 
                        # url(r'^api/v1/', include(router.urls)),
                        url(r"api/v1/auth/login/$", LoginView.as_view(), name="login"),

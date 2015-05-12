@@ -10,6 +10,9 @@ from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 from tokens.models import UserToken
 from notifications.models import NotificationTeam, NotificationUser
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
+from .validation import test_captcha
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -73,6 +76,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
+            test_captcha(hashkey=serializer.validated_data['hashkey'], response=serializer.validated_data['response'])
             instance = Account.objects.create_user(**serializer.validated_data)
             UserToken.get_or_set(account=instance)
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
@@ -218,6 +222,11 @@ class LoginView(views.APIView):
         data = json.loads(request.body)
         email = data.get('email', None)
         password = data.get('password', None)
+
+        # captcha
+        hashkey = data.get('hashkey', None)
+        response = data.get('response', None)
+        test_captcha(hashkey=hashkey, response=response)
 
         account = authenticate(email=email, password=password)
 
@@ -382,3 +391,19 @@ class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         serialized = self.serializer_class(account)
         return Response(serialized.data)
+
+
+class GetCaptcha(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def get(self, request):
+        """
+        Get Captcha details
+        B{URL:} ..api/v1/get_captcha/
+        """
+        response = dict()
+        response["new_cptch_key"] = CaptchaStore.generate_key()
+        response["new_cptch_image"] = captcha_image_url(response['new_cptch_key'])
+
+        return Response(response)
