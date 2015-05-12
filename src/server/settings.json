@@ -14,6 +14,9 @@
 		///simulator ip, localhost by default
 		"simulator_host": "127.0.0.1",
 
+		///maximum number of simulations running in parallel
+		"max_simulations": 5,
+
 		///host and port for both starter and GetSimId connection
 		"starter_end_point_host": "127.0.0.1",
 		"starter_end_point_port": 7500,
