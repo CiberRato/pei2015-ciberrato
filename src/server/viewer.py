@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_host):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
@@ -60,18 +60,16 @@ class Viewer:
 
 		REGISTER_ROBOTS_URL = settings["urls"]["register_robots"]
 
+		SIMULATOR_HOST = settings["settings"]["simulator_host"]
+
 		LOG_FILE = settings["settings"]["log_info_file"]
 		# End of loading settings
-
-		simulator_host = simulator_host.split(":")
-		SIMULATOR_HOST = simulator_host[0]
-		SIMULATOR_PORT = simulator_host[1]
 
 		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 		# Register as PanelViewer in the simulator
-		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
+		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, simulator_port))
 
 		# Get sim time, and ports
 		# params, grid e lab comes in this packet as well
