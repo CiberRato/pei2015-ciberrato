@@ -20,7 +20,7 @@ from viewer import *
 
 
 class Starter:
-	def main(self,sim_id, simulator_port, running_ports):
+	def main(self,sim_id, simulator_port, running_ports, semaphore):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
@@ -37,6 +37,9 @@ class Starter:
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, data=data)
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
+
+		running_ports.remove(simulator_port)
+		semaphore.release()
 
 	def run(self,sim_id, simulator_port):
 		# Find docker ip
