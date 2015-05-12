@@ -12,6 +12,7 @@ from tokens.models import UserToken
 from notifications.models import NotificationTeam, NotificationUser
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
+from .validation import test_captcha
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -75,6 +76,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
+            test_captcha(hashkey=serializer.validated_data['hashkey'], response=serializer.validated_data['response'])
             instance = Account.objects.create_user(**serializer.validated_data)
             UserToken.get_or_set(account=instance)
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
@@ -220,6 +222,11 @@ class LoginView(views.APIView):
         data = json.loads(request.body)
         email = data.get('email', None)
         password = data.get('password', None)
+
+        # captcha
+        hashkey = data.get('hashkey', None)
+        response = data.get('response', None)
+        test_captcha(hashkey=hashkey, response=response)
 
         account = authenticate(email=email, password=password)
 

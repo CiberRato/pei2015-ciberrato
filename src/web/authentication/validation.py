@@ -1,4 +1,4 @@
-from validation.models import CaptchaStore
+from captcha.models import CaptchaStore
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
