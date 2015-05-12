@@ -10,6 +10,8 @@ from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 from tokens.models import UserToken
 from notifications.models import NotificationTeam, NotificationUser
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -382,3 +384,19 @@ class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         serialized = self.serializer_class(account)
         return Response(serialized.data)
+
+
+class GetCaptcha(views.APIView):
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def get(self, request):
+        """
+        Get Captcha details
+        B{URL:} ..api/v1/get_captcha/
+        """
+        response = dict()
+        response["new_cptch_key"] = CaptchaStore.generate_key()
+        response["new_cptch_image"] = captcha_image_url(response['new_cptch_key'])
+
+        return Response(response)

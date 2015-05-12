@@ -17,3 +17,4 @@ swampdragon
 swampdragon-auth
 django-redis
 xmltodict
+django-simple-captcha

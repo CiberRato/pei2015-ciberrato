@@ -46,7 +46,8 @@ INSTALLED_APPS = (
     'competition',
     'notifications',
     'tokens',
-    'stickynote'
+    'stickynote',
+    'captcha'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -159,3 +160,7 @@ REST_FRAMEWORK = {
 # SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 DRAGON_URL = 'http://localhost:9999/'
 SWAMP_DRAGON_CONNECTION = ('notifications.socketconnection.HttpDataConnection', '/data')
+
+# Catpcha
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)
