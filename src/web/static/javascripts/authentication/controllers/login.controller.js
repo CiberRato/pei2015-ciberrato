@@ -18,6 +18,16 @@
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }
+            Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+        }
+
+        function getCaptchaSuccessFn(data){
+            vm.captcha = data.data;
+            console.log(vm.captcha);
+        }
+
+        function getCaptchaErrorFn(data){
+            console.log(data.data);
         }
 
         function login(){

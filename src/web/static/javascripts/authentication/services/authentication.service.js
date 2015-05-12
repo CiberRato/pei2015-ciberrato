@@ -15,7 +15,8 @@
             login: login,
             logout: logout,
             setAuthenticatedAccount: setAuthenticatedAccount,
-            unauthenticate: unauthenticate
+            unauthenticate: unauthenticate,
+            getCaptcha: getCaptcha
         };
 
         return Authentication;
@@ -107,6 +108,10 @@
 
         function logoutErrorFn(){
             console.error("Logout Failure!");
+        }
+
+        function getCaptcha(){
+            return $http.get("api/v1/get_captcha/");
         }
     }
 })();
