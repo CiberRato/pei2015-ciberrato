@@ -20,7 +20,7 @@ from viewer import *
 
 
 class Starter:
-	def main(self,sim_id):
+	def main(self,sim_id, simulator_host):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
@@ -30,7 +30,7 @@ class Starter:
 		URL = settings["urls"]["error_msg"]
 
 		try:
-			self.run(sim_id)
+			self.run(sim_id, simulator_host)
 		except Exception as e:
 			print e.args[0]
 			data = {'trial_identifier': sim_id,'msg': e.args[0]}
@@ -38,7 +38,7 @@ class Starter:
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
 
-	def run(self,sim_id):
+	def run(self,sim_id, simulator_host):
 		# Find docker ip
 		DOCKERIP = None
 		for interface in netifaces.interfaces():
@@ -67,7 +67,10 @@ class Starter:
 		LOG_FILE = settings["settings"]["log_info_file"]
 
 		SYNC_TIMEOUT = settings["settings"]["sync_timeout"]
-		#end loading settings
+		# End loading settings
+
+		# Get simulator port simulator_host
+		SIMULATOR_PORT = simulator_host.split(":")[1]
 
 		# Get simulation
 		url = "http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/"
@@ -126,6 +129,7 @@ class Starter:
 			print "[STARTER] Creating process for simulator in sync mode"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
+						"-port",	str(SIMULATOR_PORT), \
 						"-sync",	str(SYNC_TIMEOUT), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
@@ -135,6 +139,7 @@ class Starter:
 			print "[STARTER] Creating process for simulator"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
+						"-port",	str(SIMULATOR_PORT), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
 						"-grid", 	tempFilesList["grid"].name], \
@@ -147,7 +152,7 @@ class Starter:
 		viewer_c, starter_c = multiprocessing.Pipe(True)
 		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,))
+		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,simulator_host))
 		viewer_thread.start()
 		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
