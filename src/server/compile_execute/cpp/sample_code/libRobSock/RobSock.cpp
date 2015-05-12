@@ -72,6 +72,11 @@ int ReadSensors(void)
     return robLink->ReadSensors();
 }
 
+void SyncRobot(void)
+{
+    assert(robLink!=0);
+    return robLink->SyncRobot();
+}
 /* Time */
 unsigned int GetTime(void)
 {

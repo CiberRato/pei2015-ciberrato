@@ -685,7 +685,7 @@ public class ciberIF {
 	    return values.gpsData.dir;
     }
 
-    public void Sync() {
+    public void SyncRobot() {
     	send(new String("<Actions> <Sync/> </Actions>"));
     }
     public void RequestCompassSensor() {

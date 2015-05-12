@@ -618,11 +618,15 @@ void cbSimulator::start()
 	   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
 		} else if (syncmode_timeout > 0) {
 			timer.start(syncTimeout());
-			QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
+			QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(forcedStep()));
 		}
     }
 }
 
+void cbSimulator::forcedStep() {
+	cerr << "Robots didn't send a syncronization message before the timeout.\n";
+	step();
+}
 void cbSimulator::stop()
 {
 	if(curState==RUNNING)

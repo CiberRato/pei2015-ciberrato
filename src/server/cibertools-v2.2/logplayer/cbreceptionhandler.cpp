@@ -49,7 +49,7 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 {
 	/* process begin tag */
 	const QString &tag = qName;
-	if (tag == "View")
+	if (tag == "View" || tag == "PanelView")
 	{
 		type = VIEW;
 		view = new cbView;
@@ -66,7 +66,7 @@ bool cbReceptionHandler::endElement( const QString&, const QString&, const QStri
 {
 	/* process end tag */
 	const QString &tag = qName;
-	if (tag == "View")
+	if (tag == "View" || tag == "PanelView")
 	{
 		if (view == 0)
 		{

@@ -207,6 +207,8 @@ extern void           Finish(void);
 /* Broadcast message */
 extern void           Say(char * msg);
 
+/* Used to end the cycle */
+extern void           SyncRobot(void);
 /* Requests */
 void RequestCompassSensor(void);
 void RequestGroundSensor(void);

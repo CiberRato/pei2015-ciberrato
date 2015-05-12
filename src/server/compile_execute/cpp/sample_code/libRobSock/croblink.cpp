@@ -253,7 +253,7 @@ int CRobLink::ReadSensors()
     return n;
 }
 
-void CRobLink::sync() 
+void CRobLink::SyncRobot() 
 {
     char xml[128];
     const char fmt[] = "<Actions> <Sync/> </Actions>\n";
