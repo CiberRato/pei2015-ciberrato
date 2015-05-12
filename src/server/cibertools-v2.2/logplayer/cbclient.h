@@ -22,10 +22,12 @@
 #define CBCLIENT_H
 
 #include <QUdpSocket>
-#include <qhostaddress.h>
+#include <QHostAddress>
 #include <qxml.h>
 
 #include "cbparameters.h"
+#include "cbgrid.h"
+#include "cblab.h"
 
 /**
   *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
@@ -37,7 +39,7 @@ public:
 	cbClient();
 	virtual ~cbClient();
 
-	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param);
+    virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param = NULL, cbGrid *grid = NULL, cbLab *lab = NULL);
 	virtual bool Refuse(QHostAddress &addr, unsigned short &port);
 
 	bool send(char *, unsigned int);

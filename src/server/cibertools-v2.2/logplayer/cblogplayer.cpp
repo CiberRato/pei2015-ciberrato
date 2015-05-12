@@ -142,8 +142,8 @@ void cbLogplayer::CheckIn()
 				cnt = views.size();
 				views.resize(cnt+1);
 				views[cnt] = form.client.view;
-				views[cnt]->Reply(form.addr, form.port, param);
-				cout << "viewer has been registered\n";
+				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+				cout << "Viewer has been registered\n";
 				//gui->messages->insertLine("viewer has been registered");
 				break;
 			case cbClientForm::UNKNOWN:
