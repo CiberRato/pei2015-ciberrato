@@ -47,13 +47,10 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_host):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
-
-		SIMULATOR_HOST = settings["settings"]["simulator_host"]
-		SIMULATOR_PORT = settings["settings"]["simulator_port"]
 
 		WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 		WEBSOCKET_PORT = settings["settings"]["websocket_port"]
@@ -65,6 +62,10 @@ class Viewer:
 
 		LOG_FILE = settings["settings"]["log_info_file"]
 		# End of loading settings
+
+		simulator_host = simulator_host.split(":")
+		SIMULATOR_HOST = simulator_host[0]
+		SIMULATOR_PORT = simulator_host[1]
 
 		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
