@@ -99,6 +99,9 @@ class Starter:
 				allow_remote = details["allow_remote_agents"]
 				if not isinstance(allow_remote, bool):
 					raise Exception("[STARTER] ERROR: Allow Remote Field invalid")
+				sync = details["synchronous_simulation"]
+				if not isinstance(sync, bool):
+					raise Exception("[STARTER] ERROR: Synchronous Simulation Field invalid")
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
@@ -111,8 +114,6 @@ class Starter:
 
 		print "[STARTER] Process ID: ", os.getpid()
 
-		# Hardcode sync mode to be false while not given by get simulation
-		sync = True
 		if not sync:
 			print "[STARTER] Creating process for Websocket end-point.."
 			websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout = subprocess.PIPE)
