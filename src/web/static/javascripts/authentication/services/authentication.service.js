@@ -21,10 +21,12 @@
 
         return Authentication;
 
-        function login(email, password){
+        function login(email, password, hashkey, response){
             return $http.post("/api/v1/auth/login/", {
                 email: email,
-                password: password
+                password: password,
+                hashkey: hashkey,
+                response: response
             }).then(loginSuccessFn, loginErrorFn);
         }
 

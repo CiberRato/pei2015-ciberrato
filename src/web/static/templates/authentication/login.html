@@ -20,7 +20,16 @@
                     </label>-->
                 </div>
             </div>
-            <div class="form-actions">
+
+            <div  class="form-actions">
+
+                <img style="horiz-align: left" src="{{vm.captcha.new_cptch_image}}">
+                <input style="horiz-align: right; width: 50%" id="captcha" type="text"  name="captcha" ng-model="vm.captcha_text">
+
+
+            </div>
+
+            <div id="login" class="form-actions">
                 <button class="btn btn-large btn-inverse btn-flat" type="submit"><span class="awe-signin"></span> Log in</button>
             </div>
 

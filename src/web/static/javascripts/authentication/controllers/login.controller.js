@@ -31,7 +31,7 @@
         }
 
         function login(){
-            Authentication.login(vm.email, vm.password)
+            Authentication.login(vm.email, vm.password, vm.captcha.new_cptch_key, vm.captcha_text)
                 .then(loginError);
         }
 
