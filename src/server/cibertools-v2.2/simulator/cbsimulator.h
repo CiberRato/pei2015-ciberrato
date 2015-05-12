@@ -150,6 +150,7 @@ public:
 
 public slots:
 	void step();
+    void forcedStep();
 	void reset();
 	void start();
 	void stop();
