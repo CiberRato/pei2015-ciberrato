@@ -8,6 +8,9 @@
 		///default tmp file name for log info
 		"log_info_file": "./tmp/ciberOnline_log.json",
 
+		///default value for sync mode timeout (in ms)
+		"sync_timeout": 50,
+
 		///host and port for both starter and GetSimId connection
 		"starter_end_point_host": "127.0.0.1",
 		"starter_end_point_port": 7500,
