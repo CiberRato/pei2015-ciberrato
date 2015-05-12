@@ -110,6 +110,7 @@ public class jClient {
 	while(true) {
 		cif.ReadSensors();
 		decide();
+        cif.Sync();
 	}
     }
 
