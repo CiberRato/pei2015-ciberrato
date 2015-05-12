@@ -1,12 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
-from django.core.servers.basehttp import FileWrapper
 from django.conf import settings
 
-import os
-import gzip
-import tempfile
+import json
+import bz2
 
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
@@ -47,17 +44,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
                                  'message': 'The trial should be started first!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            temp = tempfile.NamedTemporaryFile()
-            output = gzip.open(temp.name, 'wb')
-
-            try:
-                output.write(serializer.validated_data['log_json'].read())
-            finally:
-                output.close()
-
-            serializer.validated_data['log_json'].name = trial.identifier + '.json.gz'
-            serializer.validated_data['log_json'].file = temp
-
+            serializer.validated_data['log_json'].name = trial.identifier + '.json.bz2'
             trial.log_json = serializer.validated_data['log_json']
             trial.save()
 
@@ -164,19 +151,13 @@ class GetTrialLog(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            f = gzip.open(default_storage.path(trial.log_json), 'rb')
+            json_text = bz2.decompress(default_storage.open(trial.log_json).read())
         except Exception:
             return Response({'status': 'Bad request',
                              'message': 'The file doesn\'t exists'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        wrapper = FileWrapper(f)
-        response = HttpResponse(wrapper, content_type="application/json")
-        response['Content-Disposition'] = 'attachment; filename=' + trial_id + '.json'
-        response['Content-Length'] = os.path.getsize(f.name)
-        f.seek(0)
-        f.close()
-        return response
+        return Response(json.loads(json_text))
 
 
 class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

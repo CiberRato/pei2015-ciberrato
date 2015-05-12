@@ -43,6 +43,20 @@
                         </table>
 
                         <a ng-if="vm.agents.length == 0" class="btn btn-flat btn-large btn-success" href="panel/createAgent">Create your First Agent</a>
+                        <div ng-if="vm.agents.length == 0" class="alert alert-info" style="margin-top: 20px">
+                            <strong>What is a Agent?</strong> A agent is a Robot. The robots have the goal of reaching a defined target area on a maze.
+                            To do so they have access to a range of sensors like distance sensors that inform him how far from the walls in front of him he is,
+                            there’s also a beacon sensor that informs the robot if he can see the target area from his current position.
+                            The main objective for the robot is to reach the target area as fast as possible being that he may be asked
+                            to return to the original position as well.
+                            <br/>
+                            <strong>Who owns the Agent?</strong> The agent belongs to the Team.
+                            <br/>
+                            <strong>What you can do with an Agent?</strong> You can launch private competitions, where only team members can view those simulations.
+                            These simulations are executed in sync mode, which mean, there is no live stream only the result (log) is presented to you.
+                            For these simulations you can choose from a variety of maps that are already present on the platform.
+                            You can register your agents in any Competition that you enrolled.
+                        </div>
                     </div>
 
                 </section>

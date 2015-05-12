@@ -50,6 +50,7 @@
                 x = undefined;
             }
             var language = document.getElementById("selector_language").value;
+            console.log(language);
 
             Agent.create(vm.name, x, language).then(createSuccessFn, createErrorFn);;
         }

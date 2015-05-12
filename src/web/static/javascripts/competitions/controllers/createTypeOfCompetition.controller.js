@@ -12,6 +12,8 @@
 
         vm.create = create;
         vm.single = false;
+        vm.sync = false;
+        vm.allowed = false;
 
         activate();
 
@@ -20,7 +22,7 @@
         }
 
         function create(){
-            Competition.createTypeOfCompetition(vm.typeOfCompetitionName, vm.teamsForTrial, vm.agentsByGrid, vm.single, vm.timeout).then(createSuccessFn, createErrorFn);
+            Competition.createTypeOfCompetition(vm.typeOfCompetitionName, vm.teamsForTrial, vm.agentsByGrid, vm.single, vm.sync, vm.allowed, vm.timeout).then(createSuccessFn, createErrorFn);
 
             function createSuccessFn(){
                 $.jGrowl("Type Of Competition has been created successfully.", {

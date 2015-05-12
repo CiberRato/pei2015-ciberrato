@@ -46,6 +46,8 @@ INSTALLED_APPS = (
     'competition',
     'notifications',
     'tokens',
+    'stickynote',
+    'captcha'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,7 +119,7 @@ ALLOWED_UPLOAD_LANGUAGES = (
     ('C++', 'cplusplus'),
     ('Java', 'Java')
 )
-ALLOWED_UPLOAD_SIZE = 5000000  # bytes
+ALLOWED_UPLOAD_SIZE = 50000000  # bytes
 
 START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trials/start/"
 PREPARE_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trial_id/"
@@ -158,3 +160,7 @@ REST_FRAMEWORK = {
 # SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 DRAGON_URL = 'http://localhost:9999/'
 SWAMP_DRAGON_CONNECTION = ('notifications.socketconnection.HttpDataConnection', '/data')
+
+# Catpcha
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_dots',)

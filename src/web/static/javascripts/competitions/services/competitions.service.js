@@ -125,12 +125,14 @@
             return $http.get("/api/v1/competitions/agents_by_competition_team/" + teamName+ "/?competition_name=" + competitionName)
         }
 
-        function createTypeOfCompetition(typeName, teamsForTrial, agentsByGrid, single, timeout){
+        function createTypeOfCompetition(typeName, teamsForTrial, agentsByGrid, single, sync, allowed, timeout){
             return $http.post("/api/v1/competitions/type_of_competition/", {
                 name: typeName,
                 number_teams_for_trial: teamsForTrial,
                 number_agents_by_grid: agentsByGrid,
                 single_position: single,
+                synchronous_simulation: sync,
+                allow_remote_agents: allowed,
                 timeout: timeout
             });
         }

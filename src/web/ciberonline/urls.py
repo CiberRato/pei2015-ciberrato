@@ -2,7 +2,7 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
 
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
-    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails
+    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha
 
 from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, MakeMemberAdminViewSet, \
     MemberInTeamViewSet, AccountTeamsAdminViewSet
@@ -31,6 +31,8 @@ from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserVi
     SubmitCodeForValidation, AgentsByTeamValidViewSet
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
+
+from stickynote.views import StickyNotesViewSet, StickyNotesToggle
 
 from rest_framework import routers
 
@@ -120,12 +122,18 @@ router_private_competitions.register(r'rounds', PrivateCompetitionsRounds)
 router_private_competitions.register(r'round', PrivateCompetitionRound)
 router_private_competitions.register(r'trial', SoloTrial)
 
+# sticky note
+router_sticky_note = routers.SimpleRouter()
+router_sticky_note.register(r'crud', StickyNotesViewSet)
+router_sticky_note.register(r'toggle', StickyNotesToggle)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/me/$', MyDetails.as_view(), name="ME"),
                        url(r'^api/v1/teams/', include(router_teams.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
+                       url(r'^api/v1/sticky_notes/', include(router_sticky_note.urls)),
                        url(r'^api/v1/competitions/private/', include(router_private_competitions.urls)),
                        url(r'^api/v1/competitions/private/launch_trial/$', RunPrivateTrial.as_view(),
                            name="Launch private trial"),
@@ -165,8 +173,7 @@ urlpatterns = patterns('',
                            GetRoundFile.as_view(),
                            name="Get round file"),
                        # get json round file
-                       url(
-                           r'^api/v1/competitions/round_json_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
+                       url(r'^api/v1/competitions/round_json_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
                            GetRoundJsonFile.as_view(),
                            name="Get json round file"),
                        # set round file
@@ -191,6 +198,10 @@ urlpatterns = patterns('',
                        url(r'^api/v1/agents/agent_all_files/(?P<team_name>.+)/(?P<agent_name>.+)/$',
                            GetAllAgentFiles.as_view(),
                            name="Get all agent files"),
+
+                       # captcha
+                       url(r'^captcha/', include('captcha.urls')),
+                       url(r'^api/v1/get_captcha/', GetCaptcha.as_view(), name="Captcha get"),
 
                        # url(r'^api/v1/', include(router.urls)),
                        url(r"api/v1/auth/login/$", LoginView.as_view(), name="login"),

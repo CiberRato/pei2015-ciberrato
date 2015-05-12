@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('TeamController', TeamController);
 
-    TeamController.$inject = ['$location', '$routeParams', '$timeout', 'Team', 'Authentication', 'Profile', 'Agent'];
+    TeamController.$inject = ['$location', '$routeParams', '$timeout', 'Team', 'Authentication', 'Profile', 'Agent', '$scope'];
 
-    function TeamController($location, $routeParams, $timeout, Team, Authentication, Profile, Agent){
+    function TeamController($location, $routeParams, $timeout, Team, Authentication, Profile, Agent, $scope){
         var vm = this;
 
         vm.addMember = addMember;
@@ -20,20 +20,24 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
+
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             username = authenticatedAccount.username;
             teamName = $routeParams.name;
 
             Team.getMembers(teamName).then(getMembersSuccessFn, getMembersErrorFn);
-            Team.getTeamInformation(teamName, username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
-            Profile.get(username).then(getUserSuccessFn, getUserErrorFn);
-            Agent.getByTeam(teamName).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             function getMembersSuccessFn(data){
                 vm.members = data.data;
                 for(var i = 0; i<vm.members.length; i++){
                     Team.getTeamInformation(teamName,vm.members[i].username).then(getTeamInformationSuccessFn, getTeamInformationErrorFn);
                 }
+
+                Profile.get(username).then(getUserSuccessFn, getUserErrorFn);
+
 
             }
 
@@ -42,19 +46,18 @@
                 $location.path('/panel/');
             }
 
-            function getUserSuccessFn(data){
-                vm.member = data.data;
-                Team.getTeamInformation(teamName, username).then(getTeamInformationUserSuccessFn, getTeamInformationUserErrorFn);
-            }
 
-            function getUserErrorFn(data){
-                console.error(data.data);
-                $location.path('/panel/');
-            }
+        }
+
+        function getUserSuccessFn(data){
+            vm.member = data.data;
+            Team.getTeamInformation(teamName, username).then(getTeamInformationUserSuccessFn, getTeamInformationUserErrorFn);
 
             function getTeamInformationUserSuccessFn(data){
                 vm.memberInfo = data.data;
                 vm.member.is_admin = vm.memberInfo.is_admin;
+                $scope.loader.loading=true;
+
 
             }
 
@@ -62,15 +65,11 @@
                 console.error(data.data);
                 $location.path('/panel/');
             }
+        }
 
-            function getByTeamSuccessFn(data){
-                vm.agents = data.data;
-            }
-
-            function getByTeamErrorFn(data){
-                console.error(data.data);
-                $location.path('/panel/');
-            }
+        function getUserErrorFn(data){
+            console.error(data.data);
+            $location.path('/panel/');
         }
 
         function getTeamInformationSuccessFn(data){
@@ -80,6 +79,12 @@
                     vm.members[i].is_admin = vm.team.is_admin;
                 }
             }
+
+
+
+
+
+
 
         }
 

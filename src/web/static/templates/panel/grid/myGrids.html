@@ -94,6 +94,10 @@
                         </table>
 
                         <a ng-if="vm.grids.length == 0" class="btn btn-flat btn-large btn-success" href="panel/createGridPosition">Create your First Grid Position</a>
+                        <div ng-if="vm.grids.length == 0" class="alert alert-info" style="margin-top: 20px">
+                            <strong>What is a Grid Position?</strong> A grid position allow you to register your team agents to the Competitions or Solo Trials of your Teams.
+                            You can choose the relative positions where your agents will be started. A grid position belongs to one Team only.
+                        </div>
                     </div>
 
                 </section>

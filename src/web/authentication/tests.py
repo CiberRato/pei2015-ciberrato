@@ -3,6 +3,7 @@ from collections import OrderedDict
 from django.test import TestCase
 from authentication.models import Account
 from rest_framework.test import APIClient
+from captcha.models import CaptchaStore
 
 
 class AuthenticationTestCase(TestCase):
@@ -56,10 +57,16 @@ class AuthenticationTestCase(TestCase):
              ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
         self.assertEqual(response.status_code, 200)
 
+        # get captcha
+        url = "/api/v1/get_captcha/"
+        response = client.get(path=url)
+        captcha = CaptchaStore.objects.get(hashkey=response.data["new_cptch_key"])
+
         url = "/api/v1/accounts/"
-        data = {'email': 'test1@test.com', 'username': 'test1', 'password': 'rei12345678',
+        data = {'email': 'test1@test.com', 'username': 'logintest1', 'password': 'rei12345678',
                 'confirm_password': 'rei12345678', 'first_name': 'unit', 'last_name': 'test',
-                'teaching_institution': 'testUA'}
+                'teaching_institution': 'testUA', 'hashkey': response.data["new_cptch_key"],
+                'response': captcha.response}
         response = client.post(path=url, data=data, format='json')
         self.assertEqual(response.status_code, 201)
 
@@ -225,9 +232,4 @@ class AuthenticationTestCase(TestCase):
                 'teaching_institution': ''}
         response = client.put(url, data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(dict(response.data), {'status': 'Bad Request',
-                                               'message': {'first_name': [u'This field may not be blank.'],
-                                                           'last_name': [u'This field may not be blank.'],
-                                                           'email': [u'This field may not be blank.'],
-                                                           'teaching_institution': [u'This field may not be blank.']}})
-
+        self.assertEqual(dict(response.data), {"status":"Bad Request","message":{"username":["This field may not be blank."],"first_name":["This field may not be blank."],"last_name":["This field may not be blank."],"email":["This field may not be blank."],"teaching_institution":["This field may not be blank."]}})

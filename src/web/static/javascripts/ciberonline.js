@@ -19,12 +19,15 @@
             'SwampDragonServices',
             'ui.ace',
             'ciberonline.users',
-            'ciberonline.soloTrials'
+            'ciberonline.soloTrials',
+            'angular-loading-bar',
+            'cfp.loadingBar',
+            'ngAnimate'
         ])
         .run(run);
 
     angular
-        .module('ciberonline.config', []);
+        .module('ciberonline.config', ['angular-loading-bar']);
 
     angular
         .module('ciberonline.routes', ['ngRoute']);

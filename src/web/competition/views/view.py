@@ -161,7 +161,7 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
         except TypeOfCompetition.DoesNotExist:
             toc = TypeOfCompetition.objects.create(name=settings.PRIVATE_COMPETITIONS_NAME, number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
-                                                   timeout=1)
+                                                   timeout=1, synchronous_simulation=True)
         if kwargs.get('pk', '') in state:
             queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', '')).exclude(type_of_competition=toc)
         elif kwargs.get('pk', '') == 'All':

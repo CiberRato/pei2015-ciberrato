@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, starter_c, robotsRegistered_event):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
@@ -152,7 +152,7 @@ class Viewer:
 		# Sending simulator msg to start the simulation
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
-		if remote:
+		if not sync:
 			# Connect to websockets
 			websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -178,19 +178,19 @@ class Viewer:
 				if int(robotTime) != 0:
 					log_file.write(",")
 					log_file.write(json_data)
-					if remote:
+					if not sync:
 						# Send data to the websockets
 						websocket_tcp.send(json_data)
 			else:
 				firstTime = False
 				log_file.write(json_data)
-				if remote:
+				if not sync:
 					# Send data to the websockets
 					websocket_tcp.send(json_data)
 
 		log_file.write("]}")
 
-		if remote:
+		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet
 			time.sleep(0.1)
 			# Send websocket msg telling it's over
@@ -199,7 +199,7 @@ class Viewer:
 		starter_c.send('<EndedSimulation/>')
 
 		# Close all connections
-		if remote:
+		if not sync:
 			websocket_tcp.close()
 		starter_c.close()
 		simulator_s.close()

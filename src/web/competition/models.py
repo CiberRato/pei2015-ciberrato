@@ -35,7 +35,7 @@ class Competition(models.Model):
         except TypeOfCompetition.DoesNotExist:
             toc = TypeOfCompetition.objects.create(name=settings.PRIVATE_COMPETITIONS_NAME, number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
-                                                   timeout=1)
+                                                   timeout=1, synchronous_simulation=True)
 
         with transaction.atomic():
             # create a Private Competition to the team
@@ -65,6 +65,7 @@ class TypeOfCompetition(models.Model):
 
     allow_remote_agents = models.BooleanField(default=False, blank=False)
 
+    synchronous_simulation = models.BooleanField(default=False, blank=False)
     single_position = models.BooleanField(default=False)
     timeout = models.IntegerField(validators=[MinValueValidator(0)], default=5)
 

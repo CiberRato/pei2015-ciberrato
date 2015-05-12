@@ -12,11 +12,14 @@ class AccountSerializer(serializers.ModelSerializer):
     """
     password = serializers.CharField(write_only=True, required=True, validators=[MinLengthValidator(8)])
     confirm_password = serializers.CharField(write_only=True, required=True, validators=[MinLengthValidator(8)])
+    hashkey = serializers.CharField(write_only=True, max_length=40)
+    response = serializers.CharField(write_only=True, max_length=32)
 
     class Meta:
         model = Account
         fields = ('email', 'username', 'teaching_institution', 'first_name', 'last_name', 'password',
-                  'confirm_password', 'is_staff', 'is_superuser', 'created_at', 'updated_at')
+                  'confirm_password', 'is_staff', 'is_superuser', 'created_at', 'updated_at', 'hashkey',
+                  'response',)
         read_only_fields = ('created_at', 'updated_at')
 
 
@@ -31,15 +34,6 @@ class AccountSerializerLogin(serializers.BaseSerializer):
             'last_name': instance.user.first_name,
             'u_stream': instance.token
         }
-
-
-class AccountSerializerUpdate(serializers.ModelSerializer):
-    username = serializers.CharField(read_only=True, required=False)
-
-    class Meta:
-        model = Account
-        fields = ('email', 'username', 'teaching_institution', 'first_name', 'last_name', 'created_at', 'updated_at')
-        read_only_fields = ('created_at', 'updated_at')
 
 
 class PasswordSerializer(serializers.ModelSerializer):
