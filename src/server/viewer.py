@@ -163,6 +163,7 @@ class Viewer:
 		while simTime != robotTime:
 			# Update Robot time
 			data = simulator_s.recv(4096)
+			print data
 			data = data.replace("\x00", "")
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('LogInfo')

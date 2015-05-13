@@ -38,10 +38,12 @@ class Starter:
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
 
-		for i in range(0,len(running_ports)):
+		for i in range(0,len(running_ports[:])):
+			print i
 			if running_ports[i] == simulator_port:
 				running_ports[i] = 0
 				print running_ports[:]
+				break
 		semaphore.release()
 
 	def run(self,sim_id, simulator_port):
@@ -129,7 +131,7 @@ class Starter:
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
 		if sync:
-			print "[STARTER] Creating process for simulator in sync mode"
+			print "[STARTER] Creating process for simulator in sync mode on port " + str(simulator_port)
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
 						"-port",	str(simulator_port), \
@@ -188,7 +190,7 @@ class Starter:
 		timeout_event.wait(TIMEOUT)
 
 		if not timeout_event.is_set():
-			print "[STARTER] Failed to register all robots in the timeout established"
+			print "[STARTER] Failed to register all robots in the timeout established. Port: " + str(simulator_port)
 			# Canceling everything regarding this simulation
 			# Shuting down connections to viewer
 			print "[STARTER] Killing Sockets"
@@ -247,7 +249,7 @@ class Starter:
 				data = data.split("=")
 
 			if data[1] != sim_id:
-				print "[STARTER] Start received not the same as the current trial"
+				print "[STARTER] Start received not the same as the current trial. Port: " + str(simulator_port)
 				# Canceling everything regarding this simulation
 				# Shuting down connections to viewer
 				print "[STARTER] Killing Sockets"
@@ -302,7 +304,7 @@ class Starter:
 		while data != "<EndedSimulation/>":
 			data = viewer_c.recv()
 
-		print "[STARTER] Simulation ended, killing simulator and running agents"
+		print "[STARTER] Simulation ended, killing simulator and running agents, port: " + str(simulator_port)
 
 		# Shuting down connections to viewer
 		viewer_c.close()
@@ -314,7 +316,6 @@ class Starter:
 			services_tcp.close()
 
 		# Waiting for viewer to die
-		viewer_thread.terminate()
 		viewer_thread.join()
 
 		if not sync:
@@ -333,7 +334,7 @@ class Starter:
 		simulator.terminate()
 		simulator.wait()
 
-		print "[STARTER] Posting log to the database.."
+		print "[STARTER] Posting log to the database.. Port: " + str(simulator_port)
 		# save file with name = trial.identifier + '.json.gz' em gz
 		temp = tempfile.NamedTemporaryFile(delete=True)
 		temp.name = sim_id + '.json.bz2'
@@ -349,7 +350,7 @@ class Starter:
 		if response.status_code != 201:
 			raise Exception("[STARTER] ERROR: error posting log file to end point")
 
-		print "[STARTER] Log successfully posted, starter closing now.."
+		print "[STARTER] Log successfully posted, starter closing now.. Port: " + str(simulator_port)
 
 		# Remove log file from system
 		os.remove(LOG_FILE)
@@ -358,8 +359,8 @@ class Starter:
 		for key in tempFilesList:
 			tempFilesList[key].close()
 
-		print "[STARTER] Simulation " + sim_id + " finished successfully..\n"
-		sys.exit(0)
+		print "[STARTER] Simulation " + sim_id + " on port " + str(simulator_port) + " finished successfully..\n"
+		return
 
 if __name__ == "__main__":
 	main()
