@@ -55,7 +55,7 @@ CRQComm::CRQComm()
 CRQComm::CRQComm(CRQLabView *lb, CRQScene *commScene, CRLab *commLab,
   QString h, unsigned short port_, const char c , const char autoC,
   const char autoS)
-    : QUdpSocket(), timer(this)
+    : QTcpSocket(), timer(this)
 {
     scoreLayout = lb->findChild<QVBoxLayout *>("scoreLayout");
 	autoConnect = autoC;
@@ -69,6 +69,8 @@ CRQComm::CRQComm(CRQLabView *lb, CRQScene *commScene, CRLab *commLab,
 	host = h;
 	skinFName = "skins/default/default.skin";
     isConnected = false;
+
+    connectToHost(host, port);
 
     QObject::connect (this, SIGNAL(readyRead()), SLOT(dataControler()));
 
@@ -96,11 +98,11 @@ CRQComm::CRQComm(CRQLabView *lb, CRQScene *commScene, CRLab *commLab,
 	QHostAddress localAddress;			//Local Address
     localAddress.setAddress( QString( "127.0.0.1" ));
 
-    if( bind( localAddress, 0 ) == FALSE )	//Bind for local address
+    /*if( bind( localAddress, 0 ) == FALSE )	//Bind for local address
     {
 		cerr << "Failed to assign address" << endl;
         exit (-1);
-    }
+    }*/
 
 	if(autoConnect == 'y')
 		this->connect();
@@ -124,7 +126,7 @@ void CRQComm::connect(void)
     QObject::connect(this, SIGNAL(readyRead()), SLOT(replyControler()));
 
 	port=6000;
-    if( writeDatagram("<PanelView/>\n", 14, serverAddress, port ) == -1 )
+    if( write("<PanelView/>\n", 14) == -1 )
     {
 		cerr << "Failure when writting <PanelView/>" << endl;
         exit (-1);
@@ -145,15 +147,16 @@ void CRQComm::replyControler()
 	
     //cerr << "reply controller \n";
 
-    while (hasPendingDatagrams())
-    {
-        QByteArray datagram;
-        datagram.resize(pendingDatagramSize());
-        if( readDatagram( datagram.data(), datagram.size(), &serverAddress, &port ) == -1 )
+    //while (hasPendingDatagrams())
+    //{
+        //QByteArray datagram;
+        //datagram.resize(pendingDatagramSize());
+        QByteArray datagram = readAll();
+        /*if( readDatagram( datagram.data(), datagram.size(), &serverAddress, &port ) == -1 )
         {
             cerr << "Failure to read confirmation from the socket " << endl;
             exit (-1);
-        }
+        }*/
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
 
@@ -220,7 +223,7 @@ void CRQComm::replyControler()
         {
             cerr << "Invalid Reply message\n";
         }
-    }
+    //}
 
 
     isConnected = false;
@@ -252,14 +255,14 @@ void CRQComm::dataControler() //Called when the socket receive something
 {
     //char data[16384];
 
-    while (hasPendingDatagrams())
-    {
-        QByteArray datagram;
-        datagram.resize(pendingDatagramSize());
-        if (readDatagram( datagram.data(), datagram.size(), &serverAddress, &port) == -1 ) //Read from socket
+    //while (hasPendingDatagrams())
+    //{
+        QByteArray datagram = readAll();
+        //datagram.resize(pendingDatagramSize());
+        /*if (readDatagram( datagram.data(), datagram.size(), &serverAddress, &port) == -1 ) //Read from socket
         {
             cerr << "Failure to read socket " << endl;
-        }
+        }*/
 
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
@@ -283,13 +286,13 @@ void CRQComm::dataControler() //Called when the socket receive something
         } else {
             cerr << "Invalid message\n";
         }
-    }
+    //}
 }
 
 //=============================================================================
 void CRQComm::sendMessage( const char *mensagem )
 {
-    if( writeDatagram( mensagem, strlen(mensagem) + 1, serverAddress, port ) == -1 )
+    if( write( mensagem, strlen(mensagem) + 1) == -1 )
     {
 		cerr << "Failure writting msg" << endl;
         exit (-1);

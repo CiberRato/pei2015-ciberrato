@@ -266,7 +266,7 @@ void cbRobot::changeActiveState()
 bool cbRobot::readAction(cbRobotAction *action)
 {
 	/* look for an incoming message */
-    char xmlBuff[1024];
+    /*char xmlBuff[1024];
     int xmlSize;
 
     if (!hasPendingDatagrams())
@@ -282,7 +282,8 @@ bool cbRobot::readAction(cbRobotAction *action)
 		return false;
 	}
 	else xmlBuff[xmlSize]='\0';
-
+*/
+	QByteArray xmlBuff = readAll();
 #ifdef DEBUG_ROBOT
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
@@ -293,12 +294,12 @@ bool cbRobot::readAction(cbRobotAction *action)
 
 	/* parse xml message */
     parser.setContentHandler(&handler);
-    source.setData(QByteArray(xmlBuff));
+    source.setData(xmlBuff);
 	if (!parser.parse(source))
 	{
-        cerr << "cbRobot::Fail parsing xml action message: \"" << xmlBuff << "\"\n";
+        cerr << "cbRobot::Fail parsing xml action message: \"" << xmlBuff.constData() << "\"\n";
         simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
-        simulator->GUI()->appendMessage( QString(" \"")+xmlBuff+"\"" , true);
+        simulator->GUI()->appendMessage( QString(" \"")+xmlBuff.constData()+"\"" , true);
 
 		return false;
 	}
@@ -1062,27 +1063,27 @@ bool cbRobotBin::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
 	port = p;
 
 	/* constructing reply message */
-   CommMessage commMsg;
+    CommMessage commMsg;
 
-   commMsg.comm=htons(OK_COMM);
+    commMsg.comm=htons(OK_COMM);
 
-   commMsg.u.params.cycle_time= htons(param->cycleTime);
-   //commMsg.u.params.sim_time_final  =htons(sim_time);
-   //commMsg.u.params.noise_obstacles =htons( (unsigned short) (noise_obstacles*10.0+0.5) );
-   //commMsg.u.params.noise_beacon    =htons( (unsigned short) (noise_beacon+0.5));
-   //commMsg.u.params.noise_compass   =htons( (unsigned short) (noise_compass+0.5));
-   //commMsg.u.params.noise_motors    =htons( (unsigned short) (noise_motors*10.0+0.5));
+    commMsg.u.params.cycle_time= htons(param->cycleTime);
+    //commMsg.u.params.sim_time_final  =htons(sim_time);
+    //commMsg.u.params.noise_obstacles =htons( (unsigned short) (noise_obstacles*10.0+0.5) );
+    //commMsg.u.params.noise_beacon    =htons( (unsigned short) (noise_beacon+0.5));
+    //commMsg.u.params.noise_compass   =htons( (unsigned short) (noise_compass+0.5));
+    //commMsg.u.params.noise_motors    =htons( (unsigned short) (noise_motors*10.0+0.5));
    
 
     /* send reply to client */
-   if (writeDatagram((char *)&commMsg, sizeof(CommMessage), address, port) != sizeof(CommMessage))
+    if (write((char *)&commMsg, sizeof(CommMessage)) != sizeof(CommMessage))
 	{
         cerr << "Fail replying to client\n";
         simulator->GUI()->appendMessage( "Fail replying to client", true);
 		return false;
 	}
 
-   //cout << "Reply sent\n" << reply;
+    //cout << "Reply sent\n" << reply;
 	return true;
 }
 
@@ -1090,38 +1091,41 @@ bool cbRobotBin::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
 bool cbRobotBin::readAction(cbRobotAction *action)
 {
 	/* look for an incoming message */
-   ActMessage msg;
+    ActMessage msg;
 
-   int ret;
+    //int ret;
 
-   if (!hasPendingDatagrams())
-       return false;
+    //if (!hasPendingDatagrams())
+    //   return false;
 
-	if ((ret=readDatagram((char *)&msg, sizeof(msg))) < 0)
+    // CHECK THIS
+	/*if ((ret=readDatagram((char *)&msg, sizeof(msg))) < 0)
     {
         cerr << "Error reading from robot socket - " << errorString().toStdString();
         //cerr << "Error no. " << error() << " reading from robot socket\n";
 		return false;
 	}
+	QByteArray msg_out = readAll();
+	msg = &msg_out.constData();*/
 
-   // check message size
-   if(ret!=sizeof(ActMessage)) {
-       cerr << "Received bad ActMessage from " << Name() << "\n";
-       simulator->GUI()->appendMessage( QString("Received bad ActMessage from ") + Name(), true );
-   }
+    // check message size
+    /*if(ret!=sizeof(ActMessage)) {
+        cerr << "Received bad ActMessage from " << Name() << "\n";
+        simulator->GUI()->appendMessage( QString("Received bad ActMessage from ") + Name(), true );
+    }*/
 
-   action->leftMotor=((short)ntohs(msg.lPow))/1000.0-2.0;
-   action->rightMotor=((short)ntohs(msg.rPow))/1000.0-2.0;
-   action->endLed =(bool)ntohs(msg.end);
-   action->leftMotorChanged=true;
-   action->rightMotorChanged=true;
-   action->endLedChanged =true;
+    action->leftMotor=((short)ntohs(msg.lPow))/1000.0-2.0;
+    action->rightMotor=((short)ntohs(msg.rPow))/1000.0-2.0;
+    action->endLed =(bool)ntohs(msg.end);
+    action->leftMotorChanged=true;
+    action->rightMotorChanged=true;
+    action->endLedChanged =true;
 
 #ifdef DEBUG_ROBOT
-   cerr << "actions received from robot\n";
+    cerr << "actions received from robot\n";
 #endif
 
-   return true;
+    return true;
 }
 
 void cbRobotBin::sendSensors()
