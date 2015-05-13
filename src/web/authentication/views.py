@@ -15,6 +15,7 @@ from captcha.helpers import captcha_image_url
 from .validation import test_captcha
 
 
+
 class AccountViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     queryset = Account.objects.all()
@@ -25,6 +26,13 @@ class AccountViewSet(viewsets.ModelViewSet):
         Any operation is permitted only if the user is Authenticated.
         The create method is permitted only too if the user is Authenticated.
         Note: The create method isn't a SAFE_METHOD
+
+        -> Permissions
+        # list
+            Must be staff user
+        # create, update, destroy
+            Allow any
+
         :return:
         :rtype:
         """
