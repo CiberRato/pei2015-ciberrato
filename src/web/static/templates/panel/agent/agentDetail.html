@@ -39,7 +39,8 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
-                                <td><a href="/panel/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/agentDetail/{{value.file}}/">{{value.file}}</a></td>
+                                <td ng-if="value.language == 'other'"><a href="/panel/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/agentDetail/{{value.file}}/">{{value.file}}</a></td>
+                                <td ng-if="value.language == 'zip'">{{value.file}}</td>
                                 <td>{{value.size}}</td>
                                 <td>{{value.last_modification}}</td>
                                 <td><a class = "awe-download-alt" href="/api/v1/agents/file/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank"></a></td>

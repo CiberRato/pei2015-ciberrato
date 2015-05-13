@@ -27,8 +27,6 @@
                 vm.agents = data.data;
                 console.log(vm.agents);
                 $scope.loader.loading=true;
-
-
             }
 
             function getByUserErrorFn(data) {
