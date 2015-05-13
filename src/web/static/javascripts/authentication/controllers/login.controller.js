@@ -11,6 +11,7 @@
         var vm = this;
 
         vm.login = login;
+        vm.count = 0;
 
         activate();
 
@@ -50,7 +51,10 @@
                     });
                 }
             }
-            Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+            vm.count++;
+            //if(vm.count >= 3){
+                Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+            //}
 
         }
     }
