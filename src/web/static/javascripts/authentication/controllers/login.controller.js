@@ -11,7 +11,7 @@
         var vm = this;
 
         vm.login = login;
-        vm.count = 0;
+        vm.show_captcha = false;
 
         activate();
 
@@ -19,12 +19,13 @@
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }
-            Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
         }
 
         function getCaptchaSuccessFn(data){
             vm.captcha = data.data;
             console.log(vm.captcha);
+            vm.count++;
+
         }
 
         function getCaptchaErrorFn(data){
@@ -32,8 +33,19 @@
         }
 
         function login(){
-            Authentication.login(vm.email, vm.password, vm.captcha.new_cptch_key, vm.captcha_text)
-                .then(loginError);
+            if(vm.count >= 1){
+                Authentication.loginWithCaptcha(vm.email, vm.password, vm.captcha.new_cptch_key, vm.captcha_text)
+                    .then(loginSuccess, loginError);
+            }else{
+                Authentication.login(vm.email, vm.password)
+                    .then(loginSuccess, loginError);
+            }
+
+        }
+
+        function loginSuccess(data){
+            Authentication.setAuthenticatedAccount(data.data);
+            window.location.assign('/panel/');
         }
 
         function loginError(data){
@@ -51,10 +63,10 @@
                     });
                 }
             }
-            vm.count++;
-            //if(vm.count >= 3){
-                Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
-            //}
+            vm.show_captcha = true;
+
+            Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+
 
         }
     }
