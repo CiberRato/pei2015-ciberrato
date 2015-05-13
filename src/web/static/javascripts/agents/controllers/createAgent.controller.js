@@ -33,6 +33,7 @@
 
             function getLanguagesSuccessFn(data){
                 vm.languages = data.data;
+                console.log(vm.languages);
             }
 
             function getLanguagesErrorFn(data){

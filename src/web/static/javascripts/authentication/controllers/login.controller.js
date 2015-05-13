@@ -52,9 +52,9 @@
                 }
             }
             vm.count++;
-            if(vm.count >= 3){
+            //if(vm.count >= 3){
                 Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
-            }
+            //}
 
         }
     }
