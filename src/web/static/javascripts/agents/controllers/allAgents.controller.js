@@ -5,15 +5,18 @@
         .module('ciberonline.agents.controllers')
         .controller('AllAgentController', AllAgentController);
 
-    AllAgentController.$inject = ['$location', '$routeParams', 'Authentication', 'Agent', 'Team'];
+    AllAgentController.$inject = ['$location', '$routeParams', 'Authentication', 'Agent', 'Team', '$scope'];
 
-    function AllAgentController($location, $routeParams, Authentication, Agent, Team){
+    function AllAgentController($location, $routeParams, Authentication, Agent, Team, $scope){
         var vm = this;
         vm.destroyAgent = destroyAgent;
 
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = authenticatedAccount.username;
             vm.teamName = $routeParams.name;
@@ -32,6 +35,8 @@
 
             function getTeamInfoSuccessFn(data){
                 vm.member = data;
+                $scope.loader.loading=true;
+
             }
             function getTeamInfoErrorFn(data){
                 console.error(data.data);
