@@ -20,7 +20,7 @@
 
 #include "cbclient.h"
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 
 #include <iostream>
@@ -30,9 +30,9 @@ using std::cerr;
 
 #define REPLYMAXSIZE 8192
 
-cbClient::cbClient() : QUdpSocket()
+cbClient::cbClient() : QTcpSocket()
 {
-    bind();
+    //bind();
 }
 
 cbClient::~cbClient()
@@ -48,6 +48,7 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
     /* set peer address and peer port */
     address = a;
 	port = p;
+	connectToHost(address, port);
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
 	int cnt;
@@ -60,7 +61,7 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
 	cnt += sprintf(reply+cnt, "</Reply>\n");
 
     /* send reply to client */
-    if (writeDatagram(reply, cnt+1, address, port) != cnt+1)
+    if (write(reply) != cnt+1)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
@@ -78,6 +79,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 	/* set peer address and peer port */
 	address = a;
 	port = p;
+	connectToHost(address, port);
 
 	/* constructing reply message */
 	char reply[256];
@@ -85,7 +87,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 	cnt = sprintf(reply, "<Reply Status=\"Refused\"></Reply>\n");
 
     /* send reply to client */
-    if (writeDatagram(reply, cnt+1, address, port) != cnt+1)
+    if (write(reply) != cnt+1)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
@@ -100,7 +102,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 */
 bool cbClient::send(const char *xml, unsigned int cnt)
 {
-    if (writeDatagram(xml, cnt, address, port) != (int)cnt)
+    if (write(xml) != (int)cnt)
     {
         //cerr << "Fail sending xml message to client\n";
 		//cerr << xml;

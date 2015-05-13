@@ -21,7 +21,7 @@
 #ifndef CBCLIENT_H
 #define CBCLIENT_H
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 #include <qxml.h>
 
@@ -35,7 +35,7 @@
  *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
  */
 
-class cbClient : public QUdpSocket
+class cbClient : public QTcpSocket
 {
 public:
 	cbClient();
