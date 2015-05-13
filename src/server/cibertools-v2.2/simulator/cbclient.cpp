@@ -42,17 +42,6 @@ cbClient::~cbClient()
 /*!
 	Send the OK reply message to client.
 */
-bool cbClient::AcceptWithoutReply(QHostAddress &a, unsigned short &p)
-{
-    /* set peer address and peer port */
-    address = a;
-	port = p;
-
-	return true;
-}
-/*!
-	Send the OK reply message to client.
-*/
 bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cbGrid *grid, cbLab *lab)
 {
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
