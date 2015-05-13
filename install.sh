@@ -14,7 +14,10 @@ apt-get update && apt-get install -y	python \
 			python-dev \
 			python-virtualenv \
 			docker.io \
-			redis-server
+			redis-server \
+			libfreetype6-dev \
+			libxft-dev  \
+			libjpeg62
 (cd src/web;
 echo "	>> Installing python dependencies"
 pip install cherrypy \
@@ -24,7 +27,13 @@ pip install cherrypy \
 pip install -r requirements.txt;
 
 echo "	>> Migrating Django applications"
-sudo -u $user python manage.py migrate;)
+sudo -u $user python manage.py migrate;
+
+echo "	>> Django Simple Captcha"
+if ! python manage.py test captcha; then
+	/usr/bin/yes | sudo pip uninstall pillow;
+	pip install pillow;
+fi)
 
 # This should disappear from here after not needed
 (cd src/server/;

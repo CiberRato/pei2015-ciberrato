@@ -214,6 +214,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    std::cout << logplayer.simTime() << std::endl;
+
 	/* preparing the receptionist */
 	//cout << "Launching the receptionist...";
 	cbReceptionist *receptionist = new cbReceptionist(port);

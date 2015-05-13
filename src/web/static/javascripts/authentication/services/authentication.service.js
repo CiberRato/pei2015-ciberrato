@@ -15,15 +15,18 @@
             login: login,
             logout: logout,
             setAuthenticatedAccount: setAuthenticatedAccount,
-            unauthenticate: unauthenticate
+            unauthenticate: unauthenticate,
+            getCaptcha: getCaptcha
         };
 
         return Authentication;
 
-        function login(email, password){
+        function login(email, password, hashkey, response){
             return $http.post("/api/v1/auth/login/", {
                 email: email,
-                password: password
+                password: password,
+                hashkey: hashkey,
+                response: response
             }).then(loginSuccessFn, loginErrorFn);
         }
 
@@ -38,7 +41,7 @@
             return data;
         }
 
-        function register(email,username, first_name, last_name, password, confirm_password, teaching_institution){
+        function register(email,username, first_name, last_name, password, confirm_password, teaching_institution, hashkey, response){
             return $http.post("api/v1/accounts/",{
                 email: email,
                 password: password,
@@ -46,33 +49,14 @@
                 username: username,
                 first_name: first_name,
                 last_name: last_name,
-                teaching_institution: teaching_institution
-            }).then(registerSuccessFn, registerErrorFn);
-        }
+                teaching_institution: teaching_institution,
+                hashkey: hashkey,
+                response: response
 
-        function registerSuccessFn(){
-            $.jGrowl("You have been successfully registered", {
-                life: 2500,
-                theme: 'btn-success'
             });
-            $location.path('/idp/login/');
         }
 
-        function registerErrorFn(data){
-            var errors = "";
-            for (var value in data.data.message) {
-                errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
-                for (var error in data.data.message[value]){
-                    errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
-                }
-            }
-            $.jGrowl(errors, {
-                life: 5000,
-                theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-            });
 
-
-        }
 
         function setAuthenticatedAccount(account){
             $cookies.authenticatedAccount = JSON.stringify(account);
@@ -107,6 +91,10 @@
 
         function logoutErrorFn(){
             console.error("Logout Failure!");
+        }
+
+        function getCaptcha(){
+            return $http.get("api/v1/get_captcha/");
         }
     }
 })();
