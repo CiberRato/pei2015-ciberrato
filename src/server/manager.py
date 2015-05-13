@@ -1,4 +1,5 @@
 import socket
+from threading import Semaphore
 from threading import Thread
 from multiprocessing import Queue
 from multiprocessing import Process
@@ -88,18 +89,27 @@ class Sims:
 		MAX_SIMULATIONS = settings["settings"]["max_simulations"]
 
 		# Creating Shared Semaphore
-		semaphore = threading.Semaphore(value=MAX_SIMULATIONS)
+		semaphore = Semaphore(value=MAX_SIMULATIONS)
 
 		# Creating shared array to store ports being used
 		ports = Array("i", MAX_SIMULATIONS)
+		for i in range(0,MAX_SIMULATIONS):
+			ports[i] = 0
+
+
 
 		while 1:
+			print ports[:]
 			sim_id = self.simulations.get(block=True)
 			semaphore.acquire()
 			port = 0
 			for i in range(6000, 6000+MAX_SIMULATIONS):
-				if not i in ports:
+				if not i in ports[:]:
 					port = i
+					for j in range(0, MAX_SIMULATIONS):
+						if ports[j] == 0:
+							ports[j] = port
+							break
 					break
 				else:
 					continue

@@ -30,7 +30,7 @@ class Starter:
 		URL = settings["urls"]["error_msg"]
 
 		try:
-			self.run(sim_id, simulator_host)
+			self.run(sim_id, simulator_port)
 		except Exception as e:
 			print e.args[0]
 			data = {'trial_identifier': sim_id,'msg': e.args[0]}
@@ -38,7 +38,10 @@ class Starter:
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
 
-		running_ports.remove(simulator_port)
+		for i in range(0,len(running_ports)):
+			if running_ports[i] == simulator_port:
+				running_ports[i] = 0
+				print running_ports[:]
 		semaphore.release()
 
 	def run(self,sim_id, simulator_port):
@@ -193,8 +196,8 @@ class Starter:
 
 			# Waiting for viewer to die
 			print "[STARTER] Killing Viewer"
-			viewer.terminate()
-			viewer.wait()
+			viewer_thread.terminate()
+			viewer_thread.join()
 
 			# Kill simulator
 			print "[STARTER] Killing Simulator"
@@ -257,8 +260,8 @@ class Starter:
 
 				# Waiting for viewer to die
 				print "[STARTER] Killing Viewer"
-				viewer.terminate()
-				viewer.wait()
+				viewer_thread.terminate()
+				viewer_thread.join()
 
 				# Kill simulator
 				print "[STARTER] Killing Simulator"
@@ -311,6 +314,7 @@ class Starter:
 			services_tcp.close()
 
 		# Waiting for viewer to die
+		viewer_thread.terminate()
 		viewer_thread.join()
 
 		if not sync:
