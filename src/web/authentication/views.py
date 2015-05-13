@@ -13,6 +13,7 @@ from notifications.models import NotificationTeam, NotificationUser
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 from .validation import test_captcha
+from .permissions import MustBeStaffUser, UserIsUser
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -51,10 +52,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         B{List} users
         B{URL:} ../api/v1/accounts/
         """
-        if request.user.is_staff is False:
-            return Response({'status': 'Bad Request',
-                             'message': 'You don\'t have permissions to see this list!'
-                             }, status=status.HTTP_400_BAD_REQUEST)
+        MustBeStaffUser(request.user, 'You don\'t have permissions to see this list!')
 
         return super(AccountViewSet, self).list(self, request, *args, **kwargs)
 
@@ -156,10 +154,7 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         """
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
-        if instance != request.user:
-            return Response({'status': 'Forbidden!',
-                             'message': 'Ups, what?'
-                             }, status=status.HTTP_403_FORBIDDEN)
+        UserIsUser(user=request.user, instance=instance, message="Ups, what?")
 
         serializer = self.serializer_class(data=request.data)
 
