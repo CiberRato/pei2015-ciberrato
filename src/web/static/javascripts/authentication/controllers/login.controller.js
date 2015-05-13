@@ -5,9 +5,9 @@
         .module('ciberonline.authentication.controllers')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['$location', '$dragon', 'Authentication'];
+    LoginController.$inject = ['$location', '$dragon', 'Authentication', '$scope'];
 
-    function LoginController($location, $dragon, Authentication){
+    function LoginController($location, $dragon, Authentication, $scope){
         var vm = this;
 
         vm.login = login;
@@ -16,9 +16,15 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }
+            $scope.loader = {
+                loading: true
+            };
         }
 
         function getCaptchaSuccessFn(data){
