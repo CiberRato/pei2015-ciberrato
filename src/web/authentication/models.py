@@ -60,6 +60,8 @@ class Account(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False, blank=False)
     teams = models.ManyToManyField('Team', through='TeamMember', related_name="account")
 
+    login_error = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

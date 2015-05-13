@@ -63,7 +63,7 @@ class AuthenticationTestCase(TestCase):
         captcha = CaptchaStore.objects.get(hashkey=response.data["new_cptch_key"])
 
         url = "/api/v1/accounts/"
-        data = {'email': 'test1@test.com', 'username': 'logintest1', 'password': 'rei12345678',
+        data = {'email': 'test1@test.com', 'username': 'test1', 'password': 'rei12345678',
                 'confirm_password': 'rei12345678', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA', 'hashkey': response.data["new_cptch_key"],
                 'response': captcha.response}

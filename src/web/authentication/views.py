@@ -25,6 +25,13 @@ class AccountViewSet(viewsets.ModelViewSet):
         Any operation is permitted only if the user is Authenticated.
         The create method is permitted only too if the user is Authenticated.
         Note: The create method isn't a SAFE_METHOD
+
+        -> Permissions
+        # list
+            Must be staff user
+        # create, update, destroy
+            Allow any
+
         :return:
         :rtype:
         """
@@ -223,10 +230,21 @@ class LoginView(views.APIView):
         email = data.get('email', None)
         password = data.get('password', None)
 
+        # get user
+        accounts = Account.objects.filter(email=email)
+        if len(accounts) == 0:
+            return Response({'status': 'Unauthorized',
+                             'message': 'Username and/or password is wrong.'
+                             }, status=status.HTTP_401_UNAUTHORIZED)
+
         # captcha
-        hashkey = data.get('hashkey', None)
-        response = data.get('response', None)
-        test_captcha(hashkey=hashkey, response=response)
+        if accounts[0].login_error:
+            hashkey = data.get('hashkey', None)
+            response = data.get('response', None)
+            test_captcha(hashkey=hashkey, response=response)
+
+            accounts[0].login_error = False
+            accounts[0].save()
 
         account = authenticate(email=email, password=password)
 
@@ -256,6 +274,9 @@ class LoginView(views.APIView):
                                  }, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
+            account.login_error = True
+            account.save()
+
             return Response({'status': 'Unauthorized',
                              'message': 'Username and/or password is wrong.'
                              }, status=status.HTTP_401_UNAUTHORIZED)

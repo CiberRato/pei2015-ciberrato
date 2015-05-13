@@ -5,25 +5,33 @@
         .module('ciberonline.authentication.controllers')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['$location', '$dragon', 'Authentication'];
+    LoginController.$inject = ['$location', '$dragon', 'Authentication', '$scope'];
 
-    function LoginController($location, $dragon, Authentication){
+    function LoginController($location, $dragon, Authentication, $scope){
         var vm = this;
 
         vm.login = login;
+        vm.show_captcha = false;
 
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }
-            Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+            $scope.loader = {
+                loading: true
+            };
         }
 
         function getCaptchaSuccessFn(data){
             vm.captcha = data.data;
             console.log(vm.captcha);
+            vm.count++;
+
         }
 
         function getCaptchaErrorFn(data){
@@ -31,8 +39,19 @@
         }
 
         function login(){
-            Authentication.login(vm.email, vm.password, vm.captcha.new_cptch_key, vm.captcha_text)
-                .then(loginError);
+            if(vm.count >= 1){
+                Authentication.loginWithCaptcha(vm.email, vm.password, vm.captcha.new_cptch_key, vm.captcha_text)
+                    .then(loginSuccess, loginError);
+            }else{
+                Authentication.login(vm.email, vm.password)
+                    .then(loginSuccess, loginError);
+            }
+
+        }
+
+        function loginSuccess(data){
+            Authentication.setAuthenticatedAccount(data.data);
+            window.location.assign('/panel/');
         }
 
         function loginError(data){
@@ -50,7 +69,10 @@
                     });
                 }
             }
+            vm.show_captcha = true;
+
             Authentication.getCaptcha().then(getCaptchaSuccessFn, getCaptchaErrorFn);
+
 
         }
     }

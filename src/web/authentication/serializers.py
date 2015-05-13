@@ -6,7 +6,7 @@ from django.core.validators import MinLengthValidator
 
 class AccountSerializer(serializers.ModelSerializer):
     """
-    This Account Serializer allow to CRUD the fields: id, email, username, teaching instituition, first name, 
+    This Account Serializer allow to CRUD the fields: id, email, username, teaching instituition, first name,
     last name, password, confirm_password.
     Create a new user and update user information.
     """

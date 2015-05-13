@@ -13,6 +13,7 @@
             isAuthenticated: isAuthenticated,
             register: register,
             login: login,
+            loginWithCaptcha: loginWithCaptcha,
             logout: logout,
             setAuthenticatedAccount: setAuthenticatedAccount,
             unauthenticate: unauthenticate,
@@ -21,24 +22,19 @@
 
         return Authentication;
 
-        function login(email, password, hashkey, response){
+        function loginWithCaptcha(email, password, hashkey, response){
             return $http.post("/api/v1/auth/login/", {
                 email: email,
                 password: password,
                 hashkey: hashkey,
                 response: response
-            }).then(loginSuccessFn, loginErrorFn);
+            });
         }
-
-        function loginSuccessFn(data){
-            Authentication.setAuthenticatedAccount(data.data);
-            window.location.assign('/panel/');
-        }
-
-        function loginErrorFn(data){
-            console.error("Login Failure!");
-            console.error(data.data);
-            return data;
+        function login(email, password){
+            return $http.post("/api/v1/auth/login/", {
+                email: email,
+                password: password
+            });
         }
 
         function register(email,username, first_name, last_name, password, confirm_password, teaching_institution, hashkey, response){
