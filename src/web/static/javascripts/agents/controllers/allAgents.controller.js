@@ -22,10 +22,11 @@
             vm.teamName = $routeParams.name;
 
             Agent.getByTeam(vm.teamName).then(getByTeamSuccessFn, getByTeamErrorFn);
-            Team.getTeamInformation(vm.teamName, username).then(getTeamInfoSuccessFn, getTeamInfoErrorFn);
 
             function getByTeamSuccessFn(data){
                 vm.agents = data.data;
+                Team.getTeamInformation(vm.teamName, username).then(getTeamInfoSuccessFn, getTeamInfoErrorFn);
+
             }
 
             function getByTeamErrorFn(data){

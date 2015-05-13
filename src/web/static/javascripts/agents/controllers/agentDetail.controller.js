@@ -24,11 +24,12 @@
                 loading: false
             };
             Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
-            Agent.getFiles(agentName, teamName).then(getFilesSuccessFn, getFilesErrorFn);
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
                 console.log(vm.agent);
+                Agent.getFiles(agentName, teamName).then(getFilesSuccessFn, getFilesErrorFn);
+
 
             }
 

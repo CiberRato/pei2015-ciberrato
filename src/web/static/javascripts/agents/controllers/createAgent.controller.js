@@ -5,9 +5,9 @@
         .module('ciberonline.agents.controllers')
         .controller('CreateAgentController', CreateAgentController);
 
-    CreateAgentController.$inject = ['$location', '$timeout', 'Authentication', 'Agent', 'Team'];
+    CreateAgentController.$inject = ['$location', '$timeout', 'Authentication', 'Agent', 'Team', '$scope'];
 
-    function CreateAgentController($location, $timeout, Authentication, Agent, Team){
+    function CreateAgentController($location, $timeout, Authentication, Agent, Team, $scope){
         var vm = this;
 
         vm.create = create;
@@ -17,15 +17,19 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             console.log(authenticatedAccount);
             vm.username = authenticatedAccount.username;
 
             Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
-            Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
 
             function getUserAdminSuccessFn(data){
                 vm.teams = data.data;
+                Agent.getLanguages().then(getLanguagesSuccessFn, getLanguagesErrorFn);
+
             }
             function getUserAdminErrorFn(data){
                 console.error(data.data);
@@ -34,6 +38,8 @@
             function getLanguagesSuccessFn(data){
                 vm.languages = data.data;
                 console.log(vm.languages);
+                $scope.loader.loading=true;
+
             }
 
             function getLanguagesErrorFn(data){
