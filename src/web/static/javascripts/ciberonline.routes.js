@@ -170,7 +170,7 @@
             templateUrl: '/static/templates/admin/competition/competitionScores.html',
             title: 'Competition Score'
         }).when('/admin/allCompetitions',{
-            controller:'AllCompetitionsController',
+            controller:'AllTogetherCompetitionsController',
             controllerAs:'vm',
             templateUrl: '/static/templates/admin/competition/allCompetitions.html',
             title: 'All Competitions'
