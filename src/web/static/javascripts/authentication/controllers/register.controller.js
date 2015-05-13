@@ -5,9 +5,8 @@
         .module('ciberonline.authentication.controllers')
         .controller('RegisterController', RegisterController);
 
-    RegisterController.$inject = ['$location', 'Authentication'];
-
-    function RegisterController($location, Authentication){
+    RegisterController.$inject = ['$location', 'Authentication', '$scope'];
+    function RegisterController($location, Authentication, $scope){
         var vm = this;
 
         vm.register = register;
@@ -15,6 +14,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             if(Authentication.isAuthenticated()){
                 $location.url("/idp/register/");
             }
@@ -26,6 +28,9 @@
         function getCaptchaSuccessFn(data){
             vm.captcha = data.data;
             console.log(vm.captcha);
+            $scope.loader = {
+                loading: true
+            };
         }
 
         function getCaptchaErrorFn(data){
