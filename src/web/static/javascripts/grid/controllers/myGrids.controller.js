@@ -5,9 +5,9 @@
         .module('ciberonline.grid.controllers')
         .controller('MyGridsController', MyGridsController);
 
-    MyGridsController.$inject = ['$location', '$timeout', 'Authentication', 'Grid', 'Agent', 'Competition'];
+    MyGridsController.$inject = ['$location', '$timeout', 'Authentication', 'Grid', 'Agent', 'Competition', '$scope'];
 
-    function MyGridsController($location, $timeout, Authentication, Grid, Agent, Competition){
+    function MyGridsController($location, $timeout, Authentication, Grid, Agent, Competition, $scope){
         var vm = this;
         vm.username;
         vm.models = {
@@ -26,6 +26,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             vm.username = authenticatedAccount.username;
             Grid.getMyGrids().then(getSuccessFn, getErrorFn);
@@ -33,6 +36,9 @@
             function getSuccessFn(data){
                 vm.grids = data.data;
                 console.log(vm.grids);
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getErrorFn(data){
