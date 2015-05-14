@@ -5,18 +5,20 @@
         .module('ciberonline.search.controllers')
         .controller('SearchController', SearchController);
 
-    SearchController.$inject = ['$location', '$routeParams','Team', 'Profile', 'Competition'];
+    SearchController.$inject = ['$location', '$routeParams','Team', 'Profile', 'Competition', '$scope'];
 
-    function SearchController($location, $routeParams, Team, Profile, Competition){
+    function SearchController($location, $routeParams, Team, Profile, Competition, $scope){
         var vm = this;
         var search = $routeParams.search;
 
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Team.getAll().then(getAllSuccessFn, getAllErrorFn);
-            Profile.getAll().then(getAllMembersSuccessFn, getAllMembersErrorFn);
-            Competition.getAll().then(getAllCompetitionsSuccessFn, getAllCompetitionsErrorFn);
+
 
             function getAllSuccessFn(data){
                 vm.team = data.data;
@@ -29,6 +31,7 @@
                         j++;
                     }
                 }
+                Profile.getAll().then(getAllMembersSuccessFn, getAllMembersErrorFn);
             }
 
             function getAllErrorFn(data){
@@ -47,6 +50,8 @@
                         j++;
                     }
                 }
+                Competition.getAll().then(getAllCompetitionsSuccessFn, getAllCompetitionsErrorFn);
+
             }
 
             function getAllMembersErrorFn(data){
@@ -64,6 +69,9 @@
                         j++;
                     }
                 }
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getAllCompetitionsErrorFn(data){
