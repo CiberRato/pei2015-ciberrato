@@ -6,14 +6,17 @@
         .module('ciberonline.competitions.controllers')
         .controller('AllCompetitionsController', AllCompetitionsController);
 
-    AllCompetitionsController.$inject = ['$location', 'Competition'];
+    AllCompetitionsController.$inject = ['$location', 'Competition', '$scope'];
 
-    function AllCompetitionsController($location, Competition){
+    function AllCompetitionsController($location, Competition, $scope){
         var vm = this;
         vm.getScoresByCompetition = getScoresByCompetition;
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Competition.getAllAble().then(getAllSuccessFn, getAllErrorFn);
 
             function getAllSuccessFn(data){
@@ -21,6 +24,9 @@
                 for(var i = 0; i<vm.competitions.length; i++){
                     getTeams(vm.competitions[i].name, i);
                 }
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getAllErrorFn(data){
