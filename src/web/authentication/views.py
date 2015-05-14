@@ -147,6 +147,10 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the password
         B{URL:} ..api/v1/change_password/<username>/
 
+        -> Permissions
+        # update
+            UserIsUser
+
         :type  password: str
         :param password: The password
         :type  confirm_password: str
