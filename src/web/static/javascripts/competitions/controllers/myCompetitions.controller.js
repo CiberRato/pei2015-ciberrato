@@ -6,16 +6,17 @@
         .module('ciberonline.competitions.controllers')
         .controller('MyCompetitionsController', MyCompetitionsController);
 
-    MyCompetitionsController.$inject = ['$location', '$routeParams', 'Competition', 'Authentication', 'cfpLoadingBar'];
+    MyCompetitionsController.$inject = ['$location', '$routeParams', 'Competition', 'Authentication', '$scope'];
 
-    function MyCompetitionsController($location, $routeParams, Competition, Authentication, cfpLoadingBar){
+    function MyCompetitionsController($location, $routeParams, Competition, Authentication, $scope){
         var vm = this;
         vm.getScoresByCompetition = getScoresByCompetition;
         activate();
 
         function activate(){
-            cfpLoadingBar.start();
-
+            $scope.loader = {
+                loading: false
+            };
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 
@@ -47,6 +48,9 @@
                         }
                     }
                     console.log(vm.myCompetitions);
+                    $scope.loader = {
+                        loading: true
+                    };
                 }
 
                 function getMyCompetitionsErrorFn(data){
@@ -59,8 +63,6 @@
                 console.error(data.data);
                 $location.path('/panel/')
             }
-
-            cfpLoadingBar.complete();
 
 
         }
