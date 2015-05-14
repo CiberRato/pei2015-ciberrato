@@ -5,9 +5,9 @@
         .module('ciberonline.grid.controllers')
         .controller('CreateGridPositionController', CreateGridPositionController);
 
-    CreateGridPositionController.$inject = ['$location', '$route', 'Authentication', 'Grid', 'Competition', 'Team'];
+    CreateGridPositionController.$inject = ['$location', '$scope', 'Authentication', 'Grid', 'Competition', 'Team'];
 
-    function CreateGridPositionController($location, $route, Authentication, Grid, Competition, Team){
+    function CreateGridPositionController($location, $scope, Authentication, Grid, Competition, Team){
         var vm = this;
 
         vm.change = change;
@@ -17,6 +17,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             username = authenticatedAccount.username;
             Team.getByUser(username).then(getSuccessFn, getErrorFn);
@@ -24,6 +27,9 @@
             function getSuccessFn(data){
                 vm.teams = data.data;
                 console.log(vm.teams);
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getErrorFn(data){
