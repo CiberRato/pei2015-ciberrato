@@ -12,8 +12,9 @@ import requests
 from ..models import Agent
 from ..serializers import AgentSerializer, AgentCodeValidationSerializer, SubmitCodeAgentSerializer
 from ..simplex import AgentSimplex
+from ..permissions import MustBeTeamMember
 
-from authentication.models import Team, Account, TeamMember
+from authentication.models import Team, Account
 from teams.permissions import IsAdminOfTeam
 from competition.serializers import CompetitionSerializer
 
@@ -43,7 +44,6 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            user = request.user
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             agent_name = serializer.validated_data['agent_name']
 
@@ -52,9 +52,10 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'Remote is a reserved name for the Agent, that agents are \
                                  automatically created for competitions that allow remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 with transaction.atomic():
-                    Agent.objects.create(agent_name=agent_name, user=user, team=team,
+                    Agent.objects.create(agent_name=agent_name, user=request.user, team=team,
                                          language=serializer.validated_data['language'])
             except IntegrityError:
                 return Response({'status': 'Bad request',
@@ -76,6 +77,10 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Get} information of the agent
         B{URL:} ../api/v1/agents/agent/<agent_name>/?team_name=<team_name>
 
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
+
         :type  agent_name: str
         :param agent_name: The agent name
         :type  team_name: str
@@ -88,6 +93,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
+        MustBeTeamMember(user=request.user, team=team)
+
         serializer = AgentSerializer(AgentSimplex(agent))
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -96,6 +103,10 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         B{Destroy} an agent
         B{URL:} ../api/v1/agents/agent/<agent_name>/?team_name=<team_name>
+
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
 
         :type  agent_name: str
         :param agent_name: The agent name
@@ -108,6 +119,8 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                             status=status.HTTP_400_BAD_REQUEST)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+        MustBeTeamMember(user=request.user, team=team)
+
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
 
         if agent.is_remote:
@@ -231,6 +244,10 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
         B{POST} validate code
         B{URL:} ../api/v1/agents/validate_code/
 
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
+
         :type  team_name: str
         :param team_name: The team name
         :type  agent_name: str
@@ -240,13 +257,9 @@ class SubmitCodeForValidation(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         if serializer.is_valid():
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+            MustBeTeamMember(team=team, user=request.user)
             agent = get_object_or_404(Agent.objects.all(), team=team,
                                       agent_name=serializer.validated_data['agent_name'])
-
-            if len(TeamMember.objects.filter(team=team, account=request.user)) == 0:
-                return Response({'status': 'Permission denied',
-                                 'message': 'You must be part of the team.'},
-                                status=status.HTTP_403_FORBIDDEN)
 
             # call code validations
             try:
@@ -277,6 +290,8 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         """
         B{Update} the code validation attributes
         B{URL:} ../api/v1/agents/code_validation/<agent_name>/
+
+        SERVER-TO-SERVER
 
         :type  agent_name: str
         :param agent_name: The agent name

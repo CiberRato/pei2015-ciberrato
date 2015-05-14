@@ -5,9 +5,9 @@
         .module('ciberonline.profile.controllers')
         .controller('ProfileController', ProfileController);
 
-    ProfileController.$inject = ['$location', '$routeParams', 'Authentication', 'Profile'];
+    ProfileController.$inject = ['$location', '$routeParams', 'Authentication', 'Profile', '$scope'];
 
-    function ProfileController($location, $routeParams, Authentication, Profile){
+    function ProfileController($location, $routeParams, Authentication, Profile, $scope){
         var vm = this;
 
         vm.update = update;
@@ -17,6 +17,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 
@@ -32,6 +35,9 @@
 
             function profileSuccessFn(data){
                 vm.profile = data.data;
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function profileErrorFn(data){

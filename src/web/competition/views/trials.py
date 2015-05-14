@@ -2,11 +2,11 @@ from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.conf import settings
 
-import json
 import bz2
 
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
+from rest_framework import renderers
 
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
@@ -133,7 +133,17 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
+class PlainTextRenderer(renderers.BaseRenderer):
+    media_type = 'text/plain'
+    format = 'txt'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return data.encode(self.charset)
+
+
 class GetTrialLog(views.APIView):
+    renderer_classes = (PlainTextRenderer, )
+
     @staticmethod
     def get(request, trial_id):
         """
@@ -157,7 +167,7 @@ class GetTrialLog(views.APIView):
                              'message': 'The file doesn\'t exists'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(json.loads(json_text))
+        return Response(json_text)
 
 
 class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

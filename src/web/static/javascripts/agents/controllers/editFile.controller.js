@@ -13,6 +13,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             vm.teamName = $routeParams.teamName;
             vm.agentName = $routeParams.name;
             vm.file = $routeParams.fileName;
@@ -44,6 +47,8 @@
 
             function getFileSuccessFn(data){
                 $scope.code = data.data;
+                $scope.loader.loading=true;
+
 
             }
 

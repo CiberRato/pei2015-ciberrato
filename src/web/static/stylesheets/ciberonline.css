@@ -11392,11 +11392,11 @@ form .alert {
 }
 /* Loading */
 .loading {
-  display: inline-block;
+  /* display: inline-block; */
   background-image: url("../img/icons/loading_red.gif");
   background-repeat: no-repeat;
   background-position: center;
-  font: 0/0 a;
+  /* font: 0/0 a; */
   color: transparent;
   text-shadow: none;
   background-color: transparent;

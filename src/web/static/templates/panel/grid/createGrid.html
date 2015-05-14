@@ -1,7 +1,7 @@
 <div class="content-block" role="main">
 
     <!-- Grid row -->
-    <div class="row">
+    <div class="row" ng-show="loader.loading">
 
         <!-- Data block -->
         <article class="span12 data-block">
@@ -41,13 +41,10 @@
                                         <div class="control-group" >
                                             <label class="control-label" for="select">Competition of the Grid Position</label>
                                             <div class="controls">
-                                                <select ng-if="vm.competitions.length != 0" id="select" name="option">
+                                                <select id="select" name="option">
                                                     <option value="" disabled>--Please select one competition</option>
-                                                    <option value="{{value.competition.name}}" ng-repeat="(key, value) in vm.competitions" ng-if="value.competition.state_of_competition != 'Past'">{{value.competition.name}} (Agents by Grid: {{value.competition.type_of_competition.number_agents_by_grid}})</option>
+                                                    <option value="{{value.competition.name}}" ng-repeat="(key, value) in vm.competitions" ng-if="(value.competition.state_of_competition != 'Past' && value.competition.type_of_competition.name != 'Private Competition') || value.competition.type_of_competition.name != 'Private Competition'">{{value.competition.name}} (Agents by Grid: {{value.competition.type_of_competition.number_agents_by_grid}})</option>
                                                 </select>
-
-                                                <p ng-if="vm.competitions.length == 0">This Team doesn't have any competitions</p>
-
 
                                             </div>
                                         </div>

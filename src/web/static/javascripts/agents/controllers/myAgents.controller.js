@@ -5,16 +5,21 @@
         .module('ciberonline.agents.controllers')
         .controller('MyAgentsController', MyAgentsController);
 
-    MyAgentsController.$inject = ['$location', '$timeout', '$dragon', 'Authentication', 'Agent', 'Team'];
+    MyAgentsController.$inject = ['$location', '$timeout', '$dragon', 'Authentication', 'Agent', '$scope'];
 
-    function MyAgentsController($location, $timeout, $dragon, Authentication, Agent) {
+    function MyAgentsController($location, $timeout, $dragon, Authentication, Agent, $scope) {
         var vm = this;
 
         vm.deleteAgent = deleteAgent;
 
+
         activate();
 
         function activate() {
+            $scope.loader = {
+                loading: false
+            };
+            console.log($scope.loader.loading);
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             vm.username = authenticatedAccount.username;
 
@@ -23,12 +28,17 @@
             function getByUserSuccessFn(data) {
                 vm.agents = data.data;
                 console.log(vm.agents);
+                $scope.loader = {
+                    loading: true
+                };
+                console.log($scope.loader.loading);
 
             }
 
             function getByUserErrorFn(data) {
                 console.error(data.data);
                 $location.path("/panel/")
+
             }
 
         }

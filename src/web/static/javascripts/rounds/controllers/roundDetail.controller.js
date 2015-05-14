@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition'];
+    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition', '$scope'];
 
-    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition){
+    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition, $scope){
         var vm = this;
 
         vm.saveScores = saveScores;
@@ -40,9 +40,10 @@
         activate();
 
         function activate() {
+            $scope.loader = {
+                loading: false
+            };
             Round.getTrials(vm.roundName, vm.competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
-            Round.getRound(vm.roundName, vm.competitionName).then(getRoundSuccessFn, getRoundErrorFn);
-            Round.getFiles(vm.roundName, vm.competitionName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
 
 
             function getTrialsSuccessFn(data) {
@@ -51,6 +52,8 @@
                 for (var i= 0; i<vm.trials.length; i++){
                     getTrialGridsFirst(vm.trials[i], i);
                 }
+                Round.getRound(vm.roundName, vm.competitionName).then(getRoundSuccessFn, getRoundErrorFn);
+
             }
 
             function getTrialGridsFirst(trial, i){
@@ -89,6 +92,8 @@
                     function getCompetitionSuccessFn(data){
                         vm.competition = data.data;
                         console.log(vm.competition);
+                        Round.getFiles(vm.roundName, vm.competitionName).then(getRoundFilesSuccessFn, getRoundFilesErrorFn);
+
                     }
 
                     function getCompetitionErrorFn(data){
@@ -114,6 +119,9 @@
                 console.log(vm.grid);
                 vm.lab = vm.files.lab;
                 vm.param_list = vm.files.param_list;
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getRoundFilesErrorFn(data){

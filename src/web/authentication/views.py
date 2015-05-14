@@ -13,6 +13,7 @@ from notifications.models import NotificationTeam, NotificationUser
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 from .validation import test_captcha
+from .permissions import MustBeStaffUser, UserIsUser
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -25,6 +26,13 @@ class AccountViewSet(viewsets.ModelViewSet):
         Any operation is permitted only if the user is Authenticated.
         The create method is permitted only too if the user is Authenticated.
         Note: The create method isn't a SAFE_METHOD
+
+        -> Permissions
+        # list
+            Must be staff user
+        # create, update, destroy
+            Allow any
+
         :return:
         :rtype:
         """
@@ -44,10 +52,7 @@ class AccountViewSet(viewsets.ModelViewSet):
         B{List} users
         B{URL:} ../api/v1/accounts/
         """
-        if request.user.is_staff is False:
-            return Response({'status': 'Bad Request',
-                             'message': 'You don\'t have permissions to see this list!'
-                             }, status=status.HTTP_400_BAD_REQUEST)
+        MustBeStaffUser(request.user, 'You don\'t have permissions to see this list!')
 
         return super(AccountViewSet, self).list(self, request, *args, **kwargs)
 
@@ -142,6 +147,10 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         B{Update} the password
         B{URL:} ..api/v1/change_password/<username>/
 
+        -> Permissions
+        # update
+            UserIsUser
+
         :type  password: str
         :param password: The password
         :type  confirm_password: str
@@ -149,10 +158,7 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         """
         instance = get_object_or_404(Account.objects.all(), username=kwargs.get('username', ''))
 
-        if instance != request.user:
-            return Response({'status': 'Forbidden!',
-                             'message': 'Ups, what?'
-                             }, status=status.HTTP_403_FORBIDDEN)
+        UserIsUser(user=request.user, instance=instance, message="Ups, what?")
 
         serializer = self.serializer_class(data=request.data)
 
@@ -223,10 +229,21 @@ class LoginView(views.APIView):
         email = data.get('email', None)
         password = data.get('password', None)
 
+        # get user
+        accounts = Account.objects.filter(email=email)
+        if len(accounts) == 0:
+            return Response({'status': 'Unauthorized',
+                             'message': 'Username and/or password is wrong.'
+                             }, status=status.HTTP_401_UNAUTHORIZED)
+
         # captcha
-        hashkey = data.get('hashkey', None)
-        response = data.get('response', None)
-        test_captcha(hashkey=hashkey, response=response)
+        if accounts[0].login_error:
+            hashkey = data.get('hashkey', None)
+            response = data.get('response', None)
+            test_captcha(hashkey=hashkey, response=response)
+
+            accounts[0].login_error = False
+            accounts[0].save()
 
         account = authenticate(email=email, password=password)
 
@@ -256,6 +273,9 @@ class LoginView(views.APIView):
                                  }, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
+            account.login_error = True
+            account.save()
+
             return Response({'status': 'Unauthorized',
                              'message': 'Username and/or password is wrong.'
                              }, status=status.HTTP_401_UNAUTHORIZED)

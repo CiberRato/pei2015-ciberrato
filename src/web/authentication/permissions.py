@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from ciberonline.exceptions import Forbidden
 
 
 class IsAccountOwner(permissions.BasePermission):
@@ -11,3 +12,15 @@ class IsAccountOwner(permissions.BasePermission):
             return obj == request.user
 
         return False
+
+
+class MustBeStaffUser:
+    def __init__(self, user, message):
+        if user.is_staff is False:
+            raise Forbidden(message)
+
+
+class UserIsUser:
+    def __init__(self, user, instance, message):
+        if instance != user:
+            raise Forbidden(message)

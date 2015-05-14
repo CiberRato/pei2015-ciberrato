@@ -63,7 +63,7 @@ class AuthenticationTestCase(TestCase):
         captcha = CaptchaStore.objects.get(hashkey=response.data["new_cptch_key"])
 
         url = "/api/v1/accounts/"
-        data = {'email': 'test1@test.com', 'username': 'logintest1', 'password': 'rei12345678',
+        data = {'email': 'test1@test.com', 'username': 'test1', 'password': 'rei12345678',
                 'confirm_password': 'rei12345678', 'first_name': 'unit', 'last_name': 'test',
                 'teaching_institution': 'testUA', 'hashkey': response.data["new_cptch_key"],
                 'response': captcha.response}
@@ -74,7 +74,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/change_password/test1/"
         data = {'password': '1234', 'confirm_password': '1234'}
         response = client.put(url, data)
-        self.assertEqual(response.data, {'status': 'Forbidden!', 'message': 'Ups, what?'})
+        self.assertEqual(response.data, {u'detail': u'Ups, what?'})
         self.assertEqual(response.status_code, 403)
 
         # change password with the user
@@ -96,7 +96,7 @@ class AuthenticationTestCase(TestCase):
         # get informations
         url = "/api/v1/accounts/"
         response = client.get(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
         url = "/api/v1/accounts/test1/"
         response = client.get(url)
@@ -223,8 +223,7 @@ class AuthenticationTestCase(TestCase):
         # see the users list
         url = "/api/v1/accounts/"
         response = client.get(path=url)
-        self.assertEqual(response.data,
-                         {"status": "Bad Request", "message": "You don't have permissions to see this list!"})
+        self.assertEqual(response.data, {u'detail': u"You don't have permissions to see this list!"})
 
         # the fields can not be blank
         url = "/api/v1/accounts/test/"

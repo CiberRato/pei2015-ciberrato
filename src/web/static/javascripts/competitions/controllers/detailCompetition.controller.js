@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('DetailCompetitionController', DetailCompetitionController);
 
-    DetailCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Team', 'Authentication', 'Round'];
+    DetailCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Team', 'Authentication', 'Round', '$scope'];
 
-    function DetailCompetitionController($location, $timeout, $routeParams, Competition, Team, Authentication, Round){
+    function DetailCompetitionController($location, $timeout, $routeParams, Competition, Team, Authentication, Round, $scope){
         var vm = this;
         var competitionName = $routeParams.name;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
@@ -23,12 +23,16 @@
 
         function activate(){
 
+            $scope.loader = {
+                loading: false
+            };
+
             Competition.getCompetition(competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
-            Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
-            Competition.getAllRounds(competitionName).then(getAllRoundsSuccessFn, getAllRoundsErrorFn);
 
             function getCompetitionSuccessFn(data){
                 vm.competition = data.data;
+                Team.getUserAdmin(vm.username).then(getUserAdminSuccessFn, getUserAdminErrorFn);
+
             }
 
             function getCompetitionErrorFn(data){
@@ -87,6 +91,7 @@
                 }
 
                 console.log(vm.competitionTeamsInfo);
+                Competition.getAllRounds(competitionName).then(getAllRoundsSuccessFn, getAllRoundsErrorFn);
 
             }
 
@@ -101,6 +106,9 @@
                 for(var i = 0; i<vm.rounds.length; i++){
                     getTrials(vm.rounds[i].name, i);
                 }
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getTrials(roundName, i){

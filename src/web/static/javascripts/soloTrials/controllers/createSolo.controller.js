@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('CreateSoloController', CreateSoloController);
 
-    CreateSoloController.$inject = ['SoloTrials', '$routeParams', 'Round', '$location'];
+    CreateSoloController.$inject = ['SoloTrials', '$routeParams', 'Round', '$location', '$scope'];
 
-    function CreateSoloController(SoloTrials, $routeParams, Round, $location){
+    function CreateSoloController(SoloTrials, $routeParams, Round, $location, $scope){
         var vm = this;
         vm.competitionName = $routeParams.identifier;
         vm.teamName = $routeParams.teamName;
@@ -18,11 +18,17 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Round.getResources().then(getResourcesSuccessFn, getResourcesErrorFn);
 
             function getResourcesSuccessFn(data){
                 vm.resources = data.data;
                 console.log(vm.resources);
+                $scope.loader = {
+                    loading: true
+                };
             }
 
 

@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('ListCompetitionController', ListCompetitionController);
 
-    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round'];
+    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round', '$scope'];
 
-    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round){
+    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round, $scope){
         var vm = this;
         vm.competitionName = $routeParams.name;
         vm.validateInscription = validateInscription;
@@ -22,8 +22,10 @@
         activate();
 
         function activate() {
+            $scope.loader = {
+                loading: false
+            };
             Competition.getCompetition(vm.competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
-            Competition.getAllRounds(vm.competitionName).then(getAllRoundsSuccessFn, getAllRoundsErrorFn);
 
             function getCompetitionSuccessFn(data){
                 vm.competition = data.data;
@@ -32,6 +34,8 @@
 
                 function getTeamsSuccessFn(data) {
                     vm.competitionTeamsInfo = data.data;
+                    Competition.getAllRounds(vm.competitionName).then(getAllRoundsSuccessFn, getAllRoundsErrorFn);
+
                 }
 
                 function getTeamsErrorFn(data) {
@@ -50,6 +54,9 @@
                 for(var i = 0; i<vm.rounds.length; i++){
                     getTrials(vm.rounds[i].name, i);
                 }
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getTrials(roundName, i){

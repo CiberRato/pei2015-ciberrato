@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('AllTogetherCompetitionsController', AllTogetherCompetitionsController);
 
-    AllTogetherCompetitionsController.$inject = ['$location', '$timeout', 'Competition'];
+    AllTogetherCompetitionsController.$inject = ['$location', '$timeout', 'Competition', '$scope'];
 
-    function AllTogetherCompetitionsController($location, $timeout, Competition){
+    function AllTogetherCompetitionsController($location, $timeout, Competition, $scope){
         var vm = this;
         vm.deleteCompetition = deleteCompetition;
         vm.changeState = changeState;
@@ -17,10 +17,16 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Competition.getAll().then(getAllSuccessFn, getAllErrorFn);
 
             function getAllSuccessFn(data){
                 vm.competitions = data.data;
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getAllErrorFn(data){

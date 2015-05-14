@@ -5,9 +5,9 @@
 		.module('ciberonline.teams.controllers')
 		.controller('MyTeamsController', MyTeamsController);
 
-	MyTeamsController.$inject = ['$location', '$routeParams','$timeout','Team', 'Authentication', 'Agent'];
+	MyTeamsController.$inject = ['$location', '$routeParams','$timeout','Team', 'Authentication', 'Agent', '$scope'];
 
-	function MyTeamsController($location, $routeParams, $timeout, Team, Authentication, Agent){
+	function MyTeamsController($location, $routeParams, $timeout, Team, Authentication, Agent, $scope){
 		var vm = this;
         vm.destroy = destroy;
         var username = $routeParams.username;
@@ -15,6 +15,9 @@
 		activate();
 
 		function activate(){
+            $scope.loader = {
+                loading: false
+            };
 			var authenticatedAccount = Authentication.getAuthenticatedAccount();
 
             if(!authenticatedAccount){
@@ -60,6 +63,9 @@
                 getNumberOfMembers(vm.team[i].name, i);
                 getNumberOfAgents(vm.team[i].name, i);
             }
+            $scope.loader = {
+                loading: true
+            };
         }
 
         function getByUserErrorFn(data){

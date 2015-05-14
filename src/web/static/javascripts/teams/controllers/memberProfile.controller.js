@@ -6,20 +6,24 @@
         .module('ciberonline.teams.controllers')
         .controller('MemberProfile', MemberProfile);
 
-    MemberProfile.$inject = ['$location', '$routeParams', 'Team', 'Profile'];
+    MemberProfile.$inject = ['$location', '$routeParams', 'Team', 'Profile', '$scope'];
 
-    function MemberProfile($location,$routeParams, Team, Profile){
+    function MemberProfile($location,$routeParams, Team, Profile, $scope){
         var vm = this;
         var username = $routeParams.username;
         
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Team.getByUser(username).then(getByUserSuccessFn, getByUserErrorFn);
-            Profile.get(username).then(getProfileSuccessFn, getProfileErrorFn);
 
             function getByUserSuccessFn(data){
                 vm.teams = data.data;
+                Profile.get(username).then(getProfileSuccessFn, getProfileErrorFn);
+
             }
 
             function getByUserErrorFn(){
@@ -29,6 +33,9 @@
             function getProfileSuccessFn(data) {
                 vm.accountInfo = data.data;
                 vm.gravatar = get_gravatar(vm.accountInfo.email, 60);
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getProfileErrorFn(data){

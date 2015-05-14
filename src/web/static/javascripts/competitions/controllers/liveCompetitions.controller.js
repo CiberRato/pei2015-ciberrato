@@ -6,13 +6,16 @@
         .module('ciberonline.competitions.controllers')
         .controller('LiveCompetitionsController', LiveCompetitionsController);
 
-    LiveCompetitionsController.$inject = ['$location', 'Competition'];
+    LiveCompetitionsController.$inject = ['$location', 'Competition', '$scope'];
 
-    function LiveCompetitionsController($location, Competition){
+    function LiveCompetitionsController($location, Competition, $scope){
         var vm = this;
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Competition.getLive().then(getLiveSuccessFn, getLiveErrorFn);
 
             function getLiveSuccessFn(data){
@@ -20,6 +23,9 @@
                 for(var i = 0; i<vm.competitions.length; i++){
                     getTeams(vm.competitions[i].name, i);
                 }
+                $scope.loader = {
+                    loading: true
+                };
             }
 
             function getLiveErrorFn(data){

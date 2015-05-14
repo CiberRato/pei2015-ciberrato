@@ -44,6 +44,13 @@
                                             </div>
                                         </div>
 
+                                        <div class="control-group">
+                                            <label class="control-label" for="timeout">Timeout (minutes)</label>
+                                            <div class="controls">
+                                                <input id="timeout" type="number" placeholder="Timeout" name="timeout" ng-model="vm.timeout">
+                                            </div>
+                                        </div>
+
                                         <div  class="control-group">
                                             <label class="control-label" >Single Position? &nbsp;&nbsp;&nbsp;&nbsp;<input ng-if="vm.single == false" type="checkbox" name="option1" ng-model="vm.single" ng-change="vm.single = true">
                                                 <input ng-if="vm.single == true" type="checkbox" name="option1" ng-model="vm.single" ng-change="vm.single = false">
@@ -60,13 +67,6 @@
                                             <label class="control-label">Synchronous Simulation? &nbsp;&nbsp;&nbsp;&nbsp;<input ng-if="vm.sync == false" type="checkbox" name="option1" ng-model="vm.sync" ng-change="vm.sync = true">
                                                 <input ng-if="vm.sync == true" type="checkbox" name="option1" ng-model="vm.sync" ng-change="vm.sync = false">
                                             </label>
-                                        </div>
-
-                                        <div class="control-group">
-                                            <label class="control-label" for="timeout">Timeout (minutes)</label>
-                                            <div class="controls">
-                                                <input id="timeout" type="number" placeholder="Timeout" name="timeout" ng-model="vm.timeout">
-                                            </div>
                                         </div>
 
                                         <div class="form-actions">

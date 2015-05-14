@@ -6,13 +6,16 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('SoloByUserController', SoloByUserController);
 
-    SoloByUserController.$inject = ['SoloTrials', '$routeParams', 'Round'];
+    SoloByUserController.$inject = ['SoloTrials', '$scope', 'Round'];
 
-    function SoloByUserController(SoloTrials, $routeParams, Round){
+    function SoloByUserController(SoloTrials, $scope, Round){
         var vm = this;
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             SoloTrials.getAll().then(getAllSuccessFn, getAllErrorFn);
 
             function getAllSuccessFn(data){
@@ -23,6 +26,9 @@
                 function success(data){
                     vm.resources = data.data;
                     console.log(vm.resources);
+                    $scope.loader = {
+                        loading: true
+                    };
                 }
 
                 function error(data){

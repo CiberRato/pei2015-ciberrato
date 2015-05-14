@@ -6,9 +6,9 @@
         .module('ciberonline.agents.controllers')
         .controller('AgentDetailController', AgentDetailController);
 
-    AgentDetailController.$inject = ['$location', '$timeout', '$dragon', '$routeParams', '$route', 'Agent'];
+    AgentDetailController.$inject = ['$location', '$timeout', '$dragon', '$routeParams', '$scope', 'Agent'];
 
-    function AgentDetailController($location, $timeout, $dragon, $routeParams, $route,  Agent) {
+    function AgentDetailController($location, $timeout, $dragon, $routeParams, $scope,  Agent) {
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
@@ -20,12 +20,16 @@
         activate();
 
         function activate() {
+            $scope.loader = {
+                loading: false
+            };
             Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
-            Agent.getFiles(agentName, teamName).then(getFilesSuccessFn, getFilesErrorFn);
 
             function getAgentSuccessFn(data) {
                 vm.agent = data.data;
                 console.log(vm.agent);
+                Agent.getFiles(agentName, teamName).then(getFilesSuccessFn, getFilesErrorFn);
+
 
             }
 
@@ -36,7 +40,18 @@
 
             function getFilesSuccessFn(data) {
                 vm.files = data.data;
+                for(var i = 0; i<vm.files.length; i++){
+                    console.log(vm.files[i]);
+                    console.log(vm.files[i].file.substr(vm.files[i].file.indexOf('.')));
+                    if(vm.files[i].file.substr(vm.files[i].file.indexOf('.')) === '.zip') {
+                        vm.files[i].language = "zip";
+                    }else{
+                        vm.files[i].language = "other";
+                    }
+                }
                 console.log(vm.files);
+                $scope.loader.loading=true;
+
 
             }
 
