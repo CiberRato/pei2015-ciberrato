@@ -14,7 +14,7 @@ from ..serializers import AgentSerializer, AgentCodeValidationSerializer, Submit
 from ..simplex import AgentSimplex
 from ..permissions import MustBeTeamMember
 
-from authentication.models import Team, Account, TeamMember
+from authentication.models import Team, Account
 from teams.permissions import IsAdminOfTeam
 from competition.serializers import CompetitionSerializer
 

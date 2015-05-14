@@ -7,6 +7,7 @@ from hurry.filesize import size
 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from os.path import getsize
+
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
@@ -14,10 +15,14 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
+
 from authentication.models import TeamMember, Team
+
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent, AgentFile
 from ..simplex import AgentFileSimplex
+from ..permissions import MustBeTeamMember
+
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
 from rest_framework.parsers import FileUploadParser
@@ -36,6 +41,10 @@ class UploadAgent(views.APIView):
         B{Upload} an agent file
         B{URL:} ../api/v1/agents/upload/agent/?<agent_name>&team_name=<team_name>
 
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
+
         :type  agent_name: str
         :param agent_name: The agent name
         :type  team_name: str
@@ -52,6 +61,7 @@ class UploadAgent(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
+
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=request.GET.get('agent_name', ''))
 
         if agent.is_remote:
@@ -59,12 +69,7 @@ class UploadAgent(views.APIView):
                              'message': 'You can\'t upload code to a virtual agent!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        team_member = TeamMember.objects.filter(team=team, account=request.user)
-
-        if len(team_member) == 0:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(user=request.user, team=team)
 
         file_obj = request.data.get('file', '')
 
