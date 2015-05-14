@@ -117,6 +117,10 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         B{Destroy} an agent file
         B{URL:} ../api/v1/agents/delete_agent_file/<agent_name>/?file_name=<file_name>&team_name=<team_name>
 
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
+
         :type  agent_name: str
         :param agent_name: The agent name
         :type  team_name: str
@@ -132,10 +136,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk', ''))
 
-        if len(TeamMember.objects.filter(team=team, account=request.user)) == 0:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(user=request.user, team=team)
 
         if 'file_name' not in request.GET:
             return Response({'status': 'Bad request',
@@ -164,6 +165,10 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/agents/agent_files/<agent_name>/?team_name=<team_name>
         Must be part of the team owner of the agent
 
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
+
         :type  agent_name: str
         :param agent_name: The agent name
         """
@@ -175,10 +180,7 @@ class ListAgentsFiles(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), agent_name=kwargs.get('pk'), team=team)
 
-        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(user=request.user, team=team)
 
         files = []
         for file_obj in AgentFile.objects.filter(agent=agent):
@@ -202,6 +204,10 @@ class GetAllAgentFiles(views.APIView):
 
         Client only
 
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
+
         :type  agent_name: str
         :param agent_name: The agent name
         :type  team_name: str
@@ -212,10 +218,7 @@ class GetAllAgentFiles(views.APIView):
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
         # see if user owns the agent
-        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(user=request.user, team=team)
 
         if len(AgentFile.objects.filter(agent=agent)) == 0:
             return Response({'status': 'Bad request',
@@ -285,6 +288,10 @@ class GetAgentFile(views.APIView):
         Must be part of the team owner of the agent
 
         Client only
+
+        -> Permissions
+        # TeamMember
+            The current logged user must be one team member
 
         :type  agent_name: str
         :param agent_name: The agent name

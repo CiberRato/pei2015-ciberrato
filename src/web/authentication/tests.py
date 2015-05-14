@@ -74,7 +74,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/change_password/test1/"
         data = {'password': '1234', 'confirm_password': '1234'}
         response = client.put(url, data)
-        self.assertEqual(response.data, {'status': 'Forbidden!', 'message': 'Ups, what?'})
+        self.assertEqual(response.data, {u'detail': u'Ups, what?'})
         self.assertEqual(response.status_code, 403)
 
         # change password with the user

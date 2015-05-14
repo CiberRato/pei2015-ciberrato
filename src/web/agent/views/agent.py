@@ -36,10 +36,6 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Create} an agent
         B{URL:} ../api/v1/agents/agent/
 
-        -> Permissions
-        # TeamMember
-            The current logged user must be one team member
-
         :type  agent_name: str
         :param agent_name: The agent name
         :type  team_name: str
@@ -56,8 +52,6 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'Remote is a reserved name for the Agent, that agents are \
                                  automatically created for competitions that allow remote agents!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
-            MustBeTeamMember(user=request.user, team=team)
 
             try:
                 with transaction.atomic():
@@ -99,7 +93,6 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
-
         MustBeTeamMember(user=request.user, team=team)
 
         serializer = AgentSerializer(AgentSimplex(agent))
