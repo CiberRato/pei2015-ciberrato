@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('SoloByTeamController', SoloByTeamController);
 
-    SoloByTeamController.$inject = ['SoloTrials', '$routeParams', '$timeout'];
+    SoloByTeamController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$scope'];
 
-    function SoloByTeamController(SoloTrials, $routeParams, $timeout){
+    function SoloByTeamController(SoloTrials, $routeParams, $timeout, $scope){
         var vm = this;
         vm.competitionName = $routeParams.identifier;
         vm.teamName = $routeParams.teamName;
@@ -16,11 +16,17 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             SoloTrials.getByTeam(vm.competitionName).then(getByTeamSuccessFn, getByTeamErrorFn);
 
             function getByTeamSuccessFn(data){
                 vm.solos = data.data;
                 console.log(vm.solos);
+                $scope.loader = {
+                    loading: true
+                };
             }
 
 
