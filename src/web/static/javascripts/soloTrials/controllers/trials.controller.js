@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('TrialsController', TrialsController);
 
-    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon'];
+    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope'];
 
-    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon){
+    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope){
         var vm = this;
         vm.roundName = $routeParams.identifier;
         vm.launchTrial = launchTrial;
@@ -16,6 +16,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             getTrials();
 
         }
@@ -80,6 +83,7 @@
 
                     console.log(vm.trials.trials[i].hour);
                 }
+
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
                         $dragon.onChannelMessage(function(channels, data) {
@@ -109,6 +113,9 @@
                     });
                 });
                 console.log(vm.trials);
+                $scope.loader = {
+                    loading: true
+                };
             }
 
 
