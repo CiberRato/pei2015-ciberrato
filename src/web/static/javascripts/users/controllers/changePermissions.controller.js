@@ -6,9 +6,9 @@
         .module('ciberonline.users.controllers')
         .controller('ChangePermissionsController', ChangePermissionsController);
 
-    ChangePermissionsController.$inject = ['$location', 'Users', '$route'];
+    ChangePermissionsController.$inject = ['$location', 'Users', '$scope'];
 
-    function ChangePermissionsController($location, Users){
+    function ChangePermissionsController($location, Users, $scope){
         var vm = this;
         vm.change = change;
         vm.removeStaff = removeStaff;
@@ -19,6 +19,9 @@
         activate();
 
         function activate(){
+            $scope.loader = {
+                loading: false
+            };
             Users.getAll().then(getAllSuccessFn, getAllErrorFn);
 
             function getAllSuccessFn(data){
@@ -28,6 +31,9 @@
                 function getSuccessFn(data){
                     vm.user = data.data;
                     console.log(vm.user);
+                    $scope.loader = {
+                        loading: true
+                    };
                 }
                 function getErrorFn(data){
                     console.error(data.data);
