@@ -15,7 +15,8 @@
             updatePassword: updatePassword,
             destroy: destroy,
             getByFirstName: getByFirstName,
-            getByLastName: getByLastName
+            getByLastName: getByLastName,
+            change: change
         };
 
         return Profile;
@@ -49,6 +50,10 @@
 
         function getByLastName(name){
             return $http.get('/api/v1/account_by_last_name/' + name + '/');
+        }
+
+        function change(url){
+            return $http.get(url);
         }
 
     }

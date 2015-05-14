@@ -24,6 +24,12 @@
                             </tr>
                             </tbody>
                         </table>
+                        <nav>
+                            <ul class="pager">
+                                <li ng-if="vm.members.previous != null" ng-click="vm.changeUsers(vm.members.previous)"><a href="#">Previous</a></li>
+                                <li ng-if="vm.members.next!=null" ng-click="vm.changeUsers(vm.members.next)"><a href="#">Next</a></li>
+                            </ul>
+                        </nav>
                         <h2>Teams</h2>
                         <p ng-if="vm.teamsFound.length != 0">Here is shown in table the list of all teams founded.</p>
                         <p ng-if="vm.teamsFound.length == 0">Can't found any team!</p>
@@ -39,6 +45,12 @@
                             </tr>
                             </tbody>
                         </table>
+                        <nav>
+                            <ul class="pager">
+                                <li ng-if="vm.team.previous != null" ng-click="vm.change(vm.team.previous)"><a href="#">Previous</a></li>
+                                <li ng-if="vm.team.next!=null" ng-click="vm.change(vm.team.next)"><a href="#">Next</a></li>
+                            </ul>
+                        </nav>
 
                         <h2>Competitions</h2>
                         <p ng-if="vm.competitionsFound.length != 0">Here is shown in table the list of all competitions founded.</p>
