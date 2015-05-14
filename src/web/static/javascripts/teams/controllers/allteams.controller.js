@@ -6,14 +6,17 @@
 		.module('ciberonline.teams.controllers')
 		.controller('AllTeamsController', AllTeamsController);
 
-	AllTeamsController.$inject = ['$location', 'Team', '$route'];
+	AllTeamsController.$inject = ['$location', 'Team', '$scope'];
 
-	function AllTeamsController($location, Team, $route){
+	function AllTeamsController($location, Team, $scope){
 		var vm = this;
         vm.change = change;
 		activate();
 
 		function activate(){
+            $scope.loader = {
+                loading: false
+            };
 			Team.getAll().then(getAllSuccessFn, getAllErrorFn);
 
         	function getAllSuccessFn(data){
@@ -23,6 +26,9 @@
                     console.log(vm.team[i]);
                     getNumberOfMembers(vm.team[i].name, i);
                 }
+                $scope.loader = {
+                    loading: true
+                };
 
         	}
 
