@@ -2,10 +2,10 @@
 #include <iostream>
 using namespace std;
 
-cbServer::cbServer(int port, QObject* parent): QObject(parent)
+cbServer::cbServer(int port, void (*onAccept)(), QObject* parent): QObject(parent)
 {
     connect(&server, SIGNAL(newConnection()),
-            this, SLOT(acceptConnection()));
+            this, SLOT(onAccept()));
 
     server.listen(QHostAddress::Any, port);
 }

@@ -1,3 +1,6 @@
+#ifndef _CB_SERVER_
+#define _CB_SERVER_
+
 #include <QtNetwork>
 #include <QObject>
 #include <QTcpServer>
@@ -7,7 +10,7 @@ class cbServer: public QObject
 {
 	Q_OBJECT
 public:
-	cbServer(int port, QObject * parent = 0);
+	cbServer(int port, void (*onAccept)(), QObject * parent = 0);
 	~cbServer();
 public slots:
 	void acceptConnection();
@@ -16,3 +19,5 @@ protected:
 	QTcpServer server;
 	QTcpSocket* client;
 };
+
+#endif

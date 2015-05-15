@@ -34,6 +34,8 @@
 #include <QThread>
 #include <iostream>
 #include <vector>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 using std::vector;
 using std::ostream;
@@ -170,6 +172,8 @@ public slots:
     void processPanelCommands(const QString&);
     void processReceptionMessages();
 
+    void newConnectionEvent();
+
 signals:
     void toggleGPS(bool);
     void toggleScoreSensor(bool);
@@ -234,6 +238,9 @@ protected: // data members
     bool showPositions;
 
     vector<QSignalMapper*> robotMappers;
+
+    QTcpServer server;
+    QTcpSocket* client;
 
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);

@@ -315,9 +315,10 @@ void cbSimulator::setReceptionist(cbReceptionist *r)
 {
 	receptionist = r;
 }
+
 void cbSimulator::setReceptionistAt(int port)
 {
-	cbReceptionist *receptionist = new cbReceptionist(port);
+	cbReceptionist *receptionist = new cbReceptionist();
 	if (receptionist == 0 || receptionist->bad()) {
         cerr << "Could not initialize receptionist\n";
         QMessageBox::critical(0,"Error",
@@ -327,8 +328,15 @@ void cbSimulator::setReceptionistAt(int port)
 		assert(0);
 	}
 	setReceptionist(receptionist);
+
+	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
+
+    server.listen(QHostAddress::Any, port);
 }
 
+void cbSimulator::newConnectionEvent() {
+
+}
 void cbSimulator::setGPS(bool g)
 {
     if (g == param->GPSOn) return;
@@ -1412,7 +1420,7 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-	connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+	//connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 
 void cbSimulator::processRobotActions(const QString &id)

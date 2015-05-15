@@ -36,7 +36,6 @@
 #include <qxml.h>
 #include <iostream>
 #include "cbpanelview.h"
-#include "cbserver.h"
 
 class QXmlSimpleReader;
 
@@ -61,14 +60,15 @@ struct cbClientForm
 	unsigned short port;
 };
 
-class cbReceptionist : public cbServer
+class cbReceptionist
 {
 public:
 	/* constructor and destructor */
-	cbReceptionist(unsigned int port);
+	cbReceptionist();
 	~cbReceptionist();
 
 	/* added functionality */
+	void acceptConnection();
 	bool CheckIn(void);
 	cbClientForm &Form();
 	bool bad();

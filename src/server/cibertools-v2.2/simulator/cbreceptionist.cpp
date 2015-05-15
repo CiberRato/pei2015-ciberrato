@@ -26,6 +26,7 @@
 
 #include "cbreceptionform.h"
 #include "cbreceptionhandler.h"
+#include "cbserver.h"
 
 #include <QHostAddress>
 #include <QString>
@@ -42,10 +43,7 @@ using std::cout;
 	Create socket and bind it with machine address and given port.
 	Set the socket non-blocking.
 */
-cbReceptionist::cbReceptionist(unsigned int port)
-{
-	connect(&server, SIGNAL(newConnection()),
-            this, SLOT(acceptConnection()));
+cbReceptionist::cbReceptionist() {
     /*QHostAddress address;
     address.setAddress(QString("0.0.0.0"));     // this way any address is accepted
 	*//* bind local address */
@@ -122,8 +120,7 @@ bool cbReceptionist::CheckIn()
     //if (!hasPendingDatagrams())
     //    return false;
 
-	datasize = client->bytesAvailable();
-    client->read(xmlBuff, client->bytesAvailable());
+    //client->read(xmlBuff, client->bytesAvailable());
 
     /*if ((datasize=readDatagram(xmlBuff, XMLMAX-1, &form.addr, &form.port)) < 0)
     {
