@@ -6,7 +6,7 @@ import bz2
 
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
-from rest_framework import renderers
+from rest_framework import renderers, permissions
 
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
@@ -143,6 +143,9 @@ class PlainTextRenderer(renderers.BaseRenderer):
 
 class GetTrialLog(views.APIView):
     renderer_classes = (PlainTextRenderer, )
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
 
     @staticmethod
     def get(request, trial_id):
