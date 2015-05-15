@@ -19,7 +19,7 @@ HEADERS = \
     cbutils.h cbparamdialog.h cbsimulatorGUI.h cbcontrolpanel.h \
     cbmanagerobots.h cbpanelhandler.h cbpanelcommand.h \
     cbrobotinfo.h cbpanelview.h \
-    cblabdialog.h
+    cblabdialog.h cbserver.h
 
 SOURCES = \
     cbactionhandler.cpp cbbeacon.cpp cbbutton.cpp cbclient.cpp\
@@ -32,7 +32,7 @@ SOURCES = \
     cbutils.cpp cbparamdialog.cpp cbsimulatorGUI.cpp cbcontrolpanel.cpp \
     cbmanagerobots.cpp cbpanelhandler.cpp \
     cbrobotinfo.cpp cbpanelview.cpp \
-    cblabdialog.cpp
+    cblabdialog.cpp cbserver.cpp
 
 TARGET  = simulator
 QT      += network  xml

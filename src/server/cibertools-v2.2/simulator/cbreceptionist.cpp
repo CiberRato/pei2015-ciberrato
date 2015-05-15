@@ -42,18 +42,20 @@ using std::cout;
 	Create socket and bind it with machine address and given port.
 	Set the socket non-blocking.
 */
-cbReceptionist::cbReceptionist(unsigned int port) : QUdpSocket()
+cbReceptionist::cbReceptionist(unsigned int port)
 {
-    QHostAddress address;
+	connect(&server, SIGNAL(newConnection()),
+            this, SLOT(acceptConnection()));
+    /*QHostAddress address;
     address.setAddress(QString("0.0.0.0"));     // this way any address is accepted
-	/* bind local address */
+	*//* bind local address */
 	//cout.form(" binding to address %s and port %hd...\n", "0.0.0.0", port);
-    if (!bind(address, port, QUdpSocket::ShareAddress))
+    /*if (!bind(address, port, QUdpSocket::ShareAddress))
     {
         cerr << " Couldn't open socket at port " << port << "\n";
         status = false;
         return;
-    }
+    }*/
 
 	/* make initialization */
 	xmlParser = new QXmlSimpleReader;
@@ -117,10 +119,13 @@ bool cbReceptionist::CheckIn()
 	}
 	
 	/* look for an incoming message */
-    if (!hasPendingDatagrams())
-        return false;
+    //if (!hasPendingDatagrams())
+    //    return false;
 
-    if ((datasize=readDatagram(xmlBuff, XMLMAX-1, &form.addr, &form.port)) < 0)
+	datasize = client->bytesAvailable();
+    client->read(xmlBuff, client->bytesAvailable());
+
+    /*if ((datasize=readDatagram(xmlBuff, XMLMAX-1, &form.addr, &form.port)) < 0)
     {
         cerr << "Error no. " << error() << " reading from the socket!\n";
         QMessageBox::critical(0,"Error",
@@ -128,7 +133,7 @@ bool cbReceptionist::CheckIn()
                               QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
 		return false;
 	}
-	else xmlBuff[datasize]='\0';
+	else xmlBuff[datasize]='\0';*/
 
     //cout << xmlBuff << endl;
 
