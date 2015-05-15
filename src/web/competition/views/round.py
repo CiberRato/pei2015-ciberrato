@@ -3,7 +3,6 @@ from os.path import basename, getsize, getmtime
 from django.core.files.storage import default_storage
 from django.db import IntegrityError
 from django.db import transaction
-from django.conf import settings
 from hurry.filesize import size
 
 from rest_framework import permissions
@@ -15,7 +14,7 @@ from teams.serializers import TeamSerializer
 from ..models import Competition, Round, CompetitionAgent
 from ..serializers import RoundSerializer, RoundFilesSerializer, RFileSerializer, \
     FolderSerializer
-from ..permissions import IsStaff
+from ..permissions import IsStaff, NotPrivateCompetition
 from .simplex import RoundSimplex, RFile, FolderSimplex
 
 
@@ -77,10 +76,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition, message='This grid can\'t be seen!')
 
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class(RoundSimplex(r))
@@ -103,10 +99,7 @@ class RoundViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition, message='This grid can\'t be seen!')
 
         r = get_object_or_404(self.queryset, name=kwargs.get('pk'), parent_competition=competition)
         r.delete()
@@ -132,10 +125,7 @@ class RoundTeams(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition, message='This grid can\'t be seen!')
 
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         competition_agents = CompetitionAgent.objects.filter(round=r)
