@@ -16,12 +16,12 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
 
-from authentication.models import TeamMember, Team
+from authentication.models import Team
 
 from ..serializers import AgentSerializer, FileAgentSerializer, LanguagesSerializer
 from ..models import Agent, AgentFile
 from ..simplex import AgentFileSimplex
-from ..permissions import MustBeTeamMember
+from teams.permissions import MustBeTeamMember
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, views, status
@@ -308,11 +308,7 @@ class GetAgentFile(views.APIView):
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # see if user owns the agent
-        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(user=request.user, team=team)
 
         file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent, original_name=file_name)
 

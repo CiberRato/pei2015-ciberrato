@@ -12,10 +12,9 @@ import requests
 from ..models import Agent
 from ..serializers import AgentSerializer, AgentCodeValidationSerializer, SubmitCodeAgentSerializer
 from ..simplex import AgentSimplex
-from ..permissions import MustBeTeamMember
 
 from authentication.models import Team, Account
-from teams.permissions import IsAdminOfTeam
+from teams.permissions import IsAdminOfTeam, MustBeTeamMember
 from competition.serializers import CompetitionSerializer
 
 from notifications.models import NotificationTeam

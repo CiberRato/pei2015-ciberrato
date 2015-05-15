@@ -2,7 +2,7 @@
 from rest_framework import permissions
 
 from authentication.models import Team, TeamMember
-from competition.models import Agent
+from ciberonline.exceptions import Forbidden
 
 
 class IsAdminOfTeam(permissions.BasePermission):
@@ -58,3 +58,11 @@ class IsAdminOfTeam(permissions.BasePermission):
         if len(team_member) >= 1:
             return team_member[0].is_admin
         return False
+
+
+class MustBeTeamMember:
+    def __init__(self, user, team, message="You must be part of the team."):
+        team_member = TeamMember.objects.filter(team=team, account=user)
+
+        if len(team_member) == 0:
+            raise Forbidden(message)

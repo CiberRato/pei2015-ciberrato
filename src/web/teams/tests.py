@@ -388,6 +388,71 @@ class TeamsModelsTestCase(TestCase):
 
         client.force_authenticate(user=None)
 
+    def test_modify_and_delete(self):
+        user = Account.objects.get(username="gipmon")
+
+        bad_user = Account.objects.get(username="eypo")
+        client = APIClient()
+        client.force_authenticate(user=bad_user)
+
+        # modify
+        url = "/api/v1/teams/crud/XPTO/"
+        data = {'max_members': 4, 'name': 'XPTO1'}
+        response = client.put(path=url, data=data)
+        self.assertEqual(response.data, {"detail":"You do not have permission to perform this action."})
+
+        # delete
+        url = "/api/v1/teams/crud/XPTO/"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, {"detail": "You do not have permission to perform this action."})
+
+        # now the god one
+        t = TeamMember.objects.get(account=user)
+        t.is_admin = True
+        t.save()
+
+        client.force_authenticate(user=user)
+        # modify
+        url = "/api/v1/teams/crud/XPTO/"
+        data = {'max_members': 4, 'name': 'XPTO1'}
+        response = client.put(path=url, data=data)
+        self.assertEqual(response.data, {"status":"Updated","message":"The team has been updated."})
+
+        # delete
+        url = "/api/v1/teams/crud/XPTO1/"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, {"status":"Deleted","message":"The team has been deleted and the team members too."})
+
+    def test_update__admin_member_of_team(self):
+        user = Account.objects.get(username="gipmon")
+
+        bad_user = Account.objects.get(username="eypo")
+        client = APIClient()
+        client.force_authenticate(user=bad_user)
+
+        # modify
+        url = "/api/v1/teams/admin/XPTO/?username=gipmon"
+        response = client.put(path=url)
+        self.assertEqual(response.data, {"detail": "You do not have permission to perform this action."})
+
+    def test_add_and_remove_member_to_team(self):
+        user = Account.objects.get(username="gipmon")
+
+        bad_user = Account.objects.get(username="eypo")
+        client = APIClient()
+        client.force_authenticate(user=bad_user)
+
+        # add new member
+        url = "/api/v1/teams/member/"
+        data = {'user_name': 'gipmon', 'name': 'XPTO'}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {"detail":"You do not have permission to perform this action."})
+
+        # delete new member
+        url = "/api/v1/teams/member/XPTO/?username=gipmon"
+        response = client.delete(path=url)
+        self.assertEqual(response.data, {"detail": "You do not have permission to perform this action."})
+
     def test_url_slug(self):
         user = Account.objects.get(username="gipmon")
         client = APIClient()
@@ -418,22 +483,3 @@ class TeamsModelsTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
         client.force_authenticate(user=None)
-    """
-    def testDates(self):
-        user = Account.objects.get(username="gipmon")
-        client = APIClient()
-        client.force_authenticate(user=user)
-
-
-        # create a team slug
-        url = "/api/v1/teams/crud/"
-        data = {'name': 'TestTeam', 'max_members': 10}
-        response = client.post(path=url, data=data, format='json')
-        self.assertEqual(response.status_code, 201)
-
-        for team in Team.objects.all():
-            print team.created_at
-            print team.updated_at
-
-        client.force_authenticate(user=None)
-    """

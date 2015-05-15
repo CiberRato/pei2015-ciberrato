@@ -113,7 +113,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 
 class AccountTeamsViewSet(mixins.RetrieveModelMixin,
-                           viewsets.GenericViewSet):
+                          viewsets.GenericViewSet):
     queryset = Account.objects.all()
     serializer_class = TeamSerializer
 
@@ -136,7 +136,7 @@ class AccountTeamsViewSet(mixins.RetrieveModelMixin,
 
 
 class AccountTeamsAdminViewSet(mixins.RetrieveModelMixin,
-                                viewsets.GenericViewSet):
+                               viewsets.GenericViewSet):
     queryset = Account.objects.all()
     serializer_class = TeamSerializer
 
@@ -165,7 +165,7 @@ class AccountTeamsAdminViewSet(mixins.RetrieveModelMixin,
 
 
 class TeamMembersViewSet(mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
+                         viewsets.GenericViewSet):
     queryset = TeamMember.objects.all()
     serializer_class = AccountSerializer
 
@@ -189,7 +189,7 @@ class TeamMembersViewSet(mixins.RetrieveModelMixin,
 
 
 class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                           mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+                          mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Team.objects.all()
     serializer_class = Member2TeamSerializer
 
