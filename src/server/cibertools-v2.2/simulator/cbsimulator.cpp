@@ -335,7 +335,6 @@ void cbSimulator::setReceptionistAt(int port)
 
 void cbSimulator::newConnectionEvent() {
 	client = server.nextPendingConnection();
-
     connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 void cbSimulator::setGPS(bool g)
@@ -1560,6 +1559,8 @@ void cbSimulator::processReceptionMessages()
 			cout << "Viewer has been registered\n";
 			gui->appendMessage( "Viewer has been registered\n" );
 			UpdateViews();
+
+			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::PANEL:
 			//cout << "Panel form is going to be processed\n";
@@ -1575,6 +1576,8 @@ void cbSimulator::processReceptionMessages()
 
 			cout << "Panel has been registered\n";
 			gui->appendMessage( "Panel has been registered\n" );
+
+			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::PANELVIEW:
 			cout << "0\n";
@@ -1603,6 +1606,8 @@ void cbSimulator::processReceptionMessages()
 			cout << "PanelView has been registered\n";
 			gui->appendMessage( "PanelView has been registered\n" );
 			UpdateViews();
+
+			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::ROBOT:
 		case cbClientForm::ROBOTBEACON:
@@ -1625,6 +1630,9 @@ void cbSimulator::processReceptionMessages()
 
 				UpdateState();
 				UpdateViews();
+
+				disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+	
 			}
 			else // robot was refused
 			{

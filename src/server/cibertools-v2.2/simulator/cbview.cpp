@@ -27,7 +27,7 @@
 
 using std::cerr;
 
-cbView::cbView(QTcpSocket *client) : cbClient(client), cbViewInterface()
+cbView::cbView() : cbClient(), cbViewInterface()
 {
 }
 

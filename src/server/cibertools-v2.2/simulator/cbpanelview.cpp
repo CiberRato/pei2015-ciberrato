@@ -24,7 +24,7 @@
 
 using namespace std;
 
-cbPanelView::cbPanelView(QTcpSocket * client) : cbClient(client), cbPanelInterface(), cbViewInterface()
+cbPanelView::cbPanelView() : cbClient(), cbPanelInterface(), cbViewInterface()
 {
 }
 

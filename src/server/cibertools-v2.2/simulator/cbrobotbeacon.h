@@ -42,7 +42,7 @@ public:
 	cbRobotBeacon(const double irSensorAngles[NUM_IR_SENSORS]);
 	virtual ~cbRobotBeacon();
 
-        cbPoint &Center();
+    cbPoint &Center();
 
 	void Log(ostream &Log, bool withactions=true);
 

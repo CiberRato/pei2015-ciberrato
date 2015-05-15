@@ -28,9 +28,8 @@ using std::cerr;
 
 #define REPLYMAXSIZE 8192
 
-cbClient::cbClient(QTcpSocket * client)
+cbClient::cbClient() : QTcpSocket()
 {
-    this->client = client;
 }
 
 cbClient::~cbClient()
@@ -60,7 +59,7 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
 	cnt += sprintf(reply+cnt, "</Reply>\n");
 
     /* send reply to client */
-    if (client->write(reply) != cnt+1)
+    if (write(reply) != cnt+1)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
@@ -87,7 +86,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 	cnt = sprintf(reply, "<Reply Status=\"Refused\"></Reply>\n");
 
     /* send reply to client */
-    if (client->write(reply) != cnt+1)
+    if (write(reply) != cnt+1)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
@@ -102,7 +101,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 */
 bool cbClient::send(const char *xml, unsigned int cnt)
 {
-    if (client->write(xml) != (int)cnt)
+    if (write(xml) != (int)cnt)
     {
         //cerr << "Fail sending xml message to client\n";
 		//cerr << xml;

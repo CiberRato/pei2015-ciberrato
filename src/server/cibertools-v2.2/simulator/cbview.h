@@ -22,7 +22,6 @@
 #define CBVIEW_H
 
 #include "cbclient.h"
-#include <QTcpSocket>
 
 /**
   *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
@@ -36,7 +35,7 @@ class cbViewInterface {};
 class cbView : public cbClient, public cbViewInterface
 {
 public:
-	cbView(QTcpSocket *);
+	cbView();
 	~cbView();
 };
 #endif

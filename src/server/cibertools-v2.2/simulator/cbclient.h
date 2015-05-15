@@ -35,10 +35,10 @@
  *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
  */
 
-class cbClient
+class cbClient : public QTcpSocket
 {
 public:
-	cbClient(QTcpSocket *);
+	cbClient();
 	virtual ~cbClient();
 
 	virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param = NULL, cbGrid *grid = NULL, cbLab *lab = NULL);
@@ -51,8 +51,6 @@ protected:
 	unsigned short port;
 	QXmlSimpleReader parser;
 	QXmlInputSource source;
-
-    QTcpSocket * client;
 };
 
 #endif
