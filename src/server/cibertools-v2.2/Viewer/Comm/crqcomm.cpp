@@ -104,8 +104,9 @@ CRQComm::CRQComm(CRQLabView *lb, CRQScene *commScene, CRLab *commLab,
         exit (-1);
     }*/
 
-	if(autoConnect == 'y')
+	if(autoConnect == 'y') {
 		this->connect();
+    }
 
    	// Connect Alarm event
     QObject::connect(&timer, SIGNAL(timeout()), SLOT(SendRequests()));
@@ -118,14 +119,10 @@ void CRQComm::connect(void)
     if (isConnected)
         return;
 
-    QObject::connect(this, SIGNAL(connected()), SLOT(requestJoin()));
-
 #ifdef DEBUG
     cout << "CRQComm::connect\n";
 #endif
-}
-
-void CRQComm::requestJoin() {
+    
     QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(dataControler()));
     QObject::connect(this, SIGNAL(readyRead()), SLOT(replyControler()));
 
