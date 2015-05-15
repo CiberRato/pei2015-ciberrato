@@ -13,7 +13,7 @@ from teams.permissions import MustBeTeamMember
 from agent.permissions import AgentMustHaveValidCode
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
-from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid
+from ..models import Competition, GridPositions, AgentGrid, Agent, TrialGrid
 from ..serializers import GridPositionsSerializer, AgentGridSerializer
 from ..permissions import IsStaff, CompetitionMustBeNotInPast, TeamEnrolledWithValidInscription, \
     NotPrivateCompetition, MustBePartOfAgentTeam, NotAcceptingRemoteAgents

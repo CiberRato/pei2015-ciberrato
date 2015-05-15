@@ -50,3 +50,16 @@ class NotAcceptingRemoteAgents:
     def __init__(self, competition, agent, message='The competition is not accepting remote agents!'):
         if not competition.type_of_competition.allow_remote_agents and agent.is_remote:
             raise BadRequest(message)
+
+
+class MustBePrivateCompetition:
+    def __init__(self, competition, message='You can only see this for private competitions!'):
+        if competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+            raise BadRequest(message)
+
+
+class UserCanAccessToThePrivateCompetition:
+    def __init__(self, user, competition, message='You can not see the rounds for this competition!'):
+        team_enrolled = TeamEnrolled.objects.filter(competition=competition).first()
+        if team_enrolled.team not in user.teams.all():
+            BadRequest(message)

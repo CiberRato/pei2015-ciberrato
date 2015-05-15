@@ -14,6 +14,7 @@ from ..models import Competition, TeamEnrolled, AgentGrid, Round, Trial, \
 from ..serializers import PrivateCompetitionSerializer, PrivateRoundSerializer, \
     InputPrivateRoundSerializer, TrialSerializer, PrivateRoundTrialsSerializer
 from .simplex import TrialSimplex
+from ..permissions import MustBePrivateCompetition, UserCanAccessToThePrivateCompetition
 
 
 class PrivateCompetitionsUser(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -50,21 +51,18 @@ class PrivateCompetitionsRounds(mixins.RetrieveModelMixin, viewsets.GenericViewS
         """
         B{List} private competition rounds
         B{URL:} ../api/v1/competitions/private/rounds/<competition_name>/
+
+        > Permissions
+        # The competition must be one private competition
+        # The team must be enrolled in the competition, if yes the team can be in the competition
         """
         private_competition = Competition.objects.get(name=kwargs.get('pk'))
 
         # this competition must be a private competition
-        if private_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad request',
-                             'message': 'You can only see this for private competitions!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        MustBePrivateCompetition(competition=private_competition)
 
         # verify if the team is enrolled in the competition
-        team_enrolled = TeamEnrolled.objects.filter(competition=private_competition).first()
-        if team_enrolled.team not in request.user.teams.all():
-            return Response({'status': 'Bad request',
-                             'message': 'You can not see the rounds for this competition!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        UserCanAccessToThePrivateCompetition(competition=private_competition, user=request.user)
 
         # get round for this competition
         rounds = Round.objects.filter(parent_competition=private_competition)
@@ -102,17 +100,10 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
                                                     name=serializer.validated_data['competition_name'])
 
             # this competition must be a private competition
-            if private_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
-                return Response({'status': 'Bad request',
-                                 'message': 'You can only see this for private competitions!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            MustBePrivateCompetition(competition=private_competition)
 
             # verify if the team is enrolled in the competition
-            team_enrolled = TeamEnrolled.objects.filter(competition=private_competition).first()
-            if team_enrolled.team not in request.user.teams.all():
-                return Response({'status': 'Bad request',
-                                 'message': 'You can not see the rounds for this competition!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            UserCanAccessToThePrivateCompetition(competition=private_competition, user=request.user)
 
             # create a round for this competition
             try:
@@ -166,17 +157,10 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         r = Round.objects.get(name=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
-        if r.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad request',
-                             'message': 'You can only see this for private competitions!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        MustBePrivateCompetition(competition=r.parent_competition)
 
         # the team must be enrolled in the parent competition
-        team_enrolled = TeamEnrolled.objects.filter(competition=r.parent_competition).first()
-        if team_enrolled.team not in request.user.teams.all():
-            return Response({'status': 'Bad request',
-                             'message': 'You can not see the rounds for this competition!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        UserCanAccessToThePrivateCompetition(competition=r.parent_competition, user=request.user)
 
         # get the trials
         trials = Trial.objects.filter(round=r)
@@ -206,17 +190,10 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         r = Round.objects.get(name=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
-        if r.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad request',
-                             'message': 'You can only see this for private competitions!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        MustBePrivateCompetition(competition=r.parent_competition)
 
         # the team must be enrolled in the parent competition
-        team_enrolled = TeamEnrolled.objects.filter(competition=r.parent_competition).first()
-        if team_enrolled.team not in request.user.teams.all():
-            return Response({'status': 'Bad request',
-                             'message': 'You can not see the rounds for this competition!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        UserCanAccessToThePrivateCompetition(competition=r.parent_competition, user=request.user)
 
         r.delete()
 
@@ -239,17 +216,10 @@ class RunPrivateTrial(views.APIView):
         r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
 
         # verify if the round is from a private competition
-        if r.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad request',
-                             'message': 'You can only see this for private competitions!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        MustBePrivateCompetition(competition=r.parent_competition)
 
         # verify if the teams owns it
-        team_enrolled = TeamEnrolled.objects.filter(competition=r.parent_competition).first()
-        if team_enrolled.team not in request.user.teams.all():
-            return Response({'status': 'Bad request',
-                             'message': 'You can not see the rounds for this competition!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        UserCanAccessToThePrivateCompetition(competition=r.parent_competition, user=request.user)
 
         # get team grid position for this competition
         grid_position = r.parent_competition.gridpositions_set.first()
@@ -334,17 +304,10 @@ class SoloTrial(mixins.DestroyModelMixin, viewsets.GenericViewSet):
         trial = Trial.objects.get(identifier=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
-        if trial.round.parent_competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad request',
-                             'message': 'You can only see this for private competitions!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        MustBePrivateCompetition(competition=trial.round.parent_competition)
 
         # the team must be enrolled in the parent competition
-        team_enrolled = TeamEnrolled.objects.filter(competition=trial.round.parent_competition).first()
-        if team_enrolled.team not in request.user.teams.all():
-            return Response({'status': 'Bad request',
-                             'message': 'You can not see the rounds for this competition!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        UserCanAccessToThePrivateCompetition(competition=trial.round.parent_competition, user=request.user)
 
         trial.delete()
 
