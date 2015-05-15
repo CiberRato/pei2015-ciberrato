@@ -6,15 +6,16 @@
         .module('ciberonline.users.controllers')
         .controller('ChangePermissionsController', ChangePermissionsController);
 
-    ChangePermissionsController.$inject = ['$location', 'Users', '$scope'];
+    ChangePermissionsController.$inject = ['$location', 'Users', '$scope', 'Authentication'];
 
-    function ChangePermissionsController($location, Users, $scope){
+    function ChangePermissionsController($location, Users, $scope, Authentication){
         var vm = this;
         vm.change = change;
         vm.removeStaff = removeStaff;
         vm.addStaff = addStaff;
         vm.removeSuperUser = removeSuperUser;
         vm.addSuperUser = addSuperUser;
+        vm.login = login;
 
         activate();
 
@@ -135,6 +136,23 @@
                 console.error(data.data);
             }
 
+        }
+
+        function login(username){
+            Users.login(username).then(loginSuccessFn, loginErrorFn);
+
+            function loginSuccessFn(data){
+                $.jGrowl("User "+ username + " has been logged by you successfully.", {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                });
+                Authentication.setAuthenticatedAccount(data.data);
+                window.location.assign("/panel/")
+            }
+
+            function loginErrorFn(data){
+                console.error(data.data);
+            }
         }
 
     }

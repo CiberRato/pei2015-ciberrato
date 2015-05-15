@@ -13,7 +13,8 @@
             getMe: getMe,
             change: change,
             toggleStaff: toggleStaff,
-            toggleSuperUser: toggleSuperUser
+            toggleSuperUser: toggleSuperUser,
+            login: login
         };
 
         return Users;
@@ -36,6 +37,10 @@
 
         function toggleSuperUser(username){
             return $http.put("api/v1/toggle_super_user/" + username + "/");
+        }
+
+        function login(username){
+            return $http.get("/api/v1/login_to/" + username + "/");
         }
     }
 

@@ -20,6 +20,7 @@
                                 <th>Name</th>
                                 <th>Username</th>
                                 <th>Teaching Institution</th>
+                                <th>Login</th>
                                 <th>is_staff</th>
                                 <th ng-if="vm.user.is_superuser == true">is_superuser</th>
                             </tr>
@@ -29,7 +30,7 @@
                                 <td>{{value.first_name}} {{value.last_name}}</td>
                                 <td><a href="panel/{{ value.username }}/memberProfile">{{value.username}}</a></td>
                                 <td>{{value.teaching_institution}}</td>
-
+                                <td><a href="#" class="fam-door-in" ng-click="vm.login(value.username)"></a></td>
                                 <td ng-if="value.is_staff==true"><input type="checkbox" name="option1" checked ng-model="value.is_staff" ng-change="vm.removeStaff(value.username, $index)"></td>
                                 <td ng-if="value.is_staff==false"><input type="checkbox" name="option1" ng-model="value.is_staff" ng-change="vm.addStaff(value.username, $index)"></td>
 
