@@ -1,18 +1,22 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
-from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from authentication.models import Team, TeamMember
+from authentication.models import Team
+
+from teams.permissions import MustBeTeamMember
+
+from agent.permissions import AgentMustHaveValidCode
 
 from .simplex import GridPositionsSimplex, AgentGridSimplex
 from ..models import Competition, GridPositions, TeamEnrolled, AgentGrid, Agent, TrialGrid
-from ..serializers import GridPositionsSerializer, AgentGridSerializer, AgentRemoteGridSerializer
-from ..permissions import IsStaff
+from ..serializers import GridPositionsSerializer, AgentGridSerializer
+from ..permissions import IsStaff, CompetitionMustBeNotInPast, TeamEnrolledWithValidInscription, \
+    NotPrivateCompetition, MustBePartOfAgentTeam, NotAcceptingRemoteAgents
 
 
 class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
@@ -41,6 +45,12 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{Create} a grid positions
         B{URL:} ../api/v1/competitions/grid_positions/
 
+        > Permissions
+        # Must be part of the team
+        # The competition must be not in past state
+        # The team must be enrolled in the competition
+        # The team must have a valid inscription
+
         :type  competition_name: str
         :param competition_name: The type of competition name
         :type  team_name: str
@@ -52,28 +62,13 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
             competition = get_object_or_404(Competition.objects.all(),
                                             name=serializer.validated_data['competition_name'])
 
-            if competition.state_of_competition == 'Past':
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is in \'Past\' state.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            CompetitionMustBeNotInPast(competition=competition)
 
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'You must be part of the team.'},
-                                status=status.HTTP_403_FORBIDDEN)
+            MustBeTeamMember(team=team, user=request.user)
 
-            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=competition)
-            if len(team_enrolled) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'Your team must be enrolled in the competition.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            if not team_enrolled[0].valid:
-                return Response({'status': 'Permission denied',
-                                 'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                                status=status.HTTP_403_FORBIDDEN)
+            TeamEnrolledWithValidInscription(team=team, competition=competition)
 
             try:
                 with transaction.atomic():
@@ -94,6 +89,12 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{Retrieve} the grid positions details
         B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?team_name=<team_name>
 
+        > Permissions
+        # Must be part of the team
+        # The competition must be not in past state
+        # The team must be enrolled in the competition
+        # The team must have a valid inscription
+
         :type  competition_name: str
         :param competition_name: The type of competition name
         :type  team_name: str
@@ -101,28 +102,13 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
 
-        if competition.state_of_competition == 'Past':
-            return Response({'status': 'Bad Request',
-                             'message': 'The competition is in \'Past\' state.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        CompetitionMustBeNotInPast(competition=competition)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
-        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(team=team, user=request.user)
 
-        team_enrolled = TeamEnrolled.objects.filter(team=team, competition=competition)
-        if len(team_enrolled) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        if not team_enrolled[0].valid:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        TeamEnrolledWithValidInscription(team=team, competition=competition)
 
         grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
 
@@ -135,6 +121,12 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         B{Destroy} the grid positions
         B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?team_name=<team_name>
 
+        > Permissions
+        # Must be part of the team
+        # The competition must be not in past state
+        # The team must be enrolled in the competition
+        # The team must have a valid inscription
+
         :type  competition_name: str
         :param competition_name: The type of competition name
         :type  team_name: str
@@ -142,35 +134,17 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
 
-        if competition.state_of_competition == 'Past':
-            return Response({'status': 'Bad Request',
-                             'message': 'The competition is in \'Past\' state.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        CompetitionMustBeNotInPast(competition=competition)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
-        if len(TeamMember.objects.filter(team=team, account=request.user)) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'You must be part of the team.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBeTeamMember(team=team, user=request.user)
 
-        team_enrolled = TeamEnrolled.objects.filter(team=team, competition=competition)
-        if len(team_enrolled) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        if not team_enrolled[0].valid:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        TeamEnrolledWithValidInscription(team=team, competition=competition)
 
         grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
 
-        if grid.competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be deleted!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=grid.competition, message='This grid can\'t be deleted!')
 
         grid.delete()
 
@@ -192,6 +166,15 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Associate} agent to the grid position
         B{URL:} ../api/v1/competitions/agent_grid/
 
+        > Permissions
+        # Must be part of the team
+        # The competition must be not in past state
+        # The team must be enrolled in the competition
+        # The team must have a valid inscription
+        # The user must be enrolled in the team of the agent
+        # The competition is NotAcceptingRemoteAgents
+        # Agent must have the code valid
+
         :type  grid_identifier: str
         :param grid_identifier: The grid identifier
         :type  agent_name: str
@@ -208,20 +191,11 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             agent = get_object_or_404(Agent.objects.all(), team=team,
                                       agent_name=serializer.validated_data['agent_name'])
 
-            if team not in request.user.teams.all():
-                return Response({'status': 'Bad Request',
-                                 'message': 'You must be part of the agent team.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            MustBeTeamMember(user=request.user, team=team)
 
-            if agent.team not in request.user.teams.all():
-                return Response({'status': 'Bad Request',
-                                 'message': 'You must be part of the agent team.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            MustBePartOfAgentTeam(user=request.user, agent=agent)
 
-            if not agent.code_valid:
-                return Response({'status': 'Bad Request',
-                                 'message': 'The agent must have the code valid!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            AgentMustHaveValidCode(agent=agent)
 
             grid = get_object_or_404(GridPositions.objects.all(),
                                      identifier=serializer.validated_data['grid_identifier'])
@@ -233,27 +207,11 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You can not add more agents to the grid.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            if grid.competition.state_of_competition == 'Past':
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is in \'Past\' state.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            CompetitionMustBeNotInPast(competition=grid.competition)
 
-            if not grid.competition.type_of_competition.allow_remote_agents and agent.is_remote:
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is not accepting remote agents!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            NotAcceptingRemoteAgents(competition=grid.competition, agent=agent)
 
-            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=grid.competition)
-
-            if len(team_enrolled) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'Your team must be enrolled in the competition.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            if not team_enrolled[0].valid:
-                return Response({'status': 'Permission denied',
-                                 'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                                status=status.HTTP_403_FORBIDDEN)
+            TeamEnrolledWithValidInscription(team=team, competition=grid.competition)
 
             if serializer.validated_data['position'] > grid.competition.type_of_competition.number_agents_by_grid:
                 return Response({'status': 'Bad Request',
@@ -298,6 +256,12 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         B{Delete} the agent in the grid
         B{URL:} ../api/v1/competitions/agent_grid/<grid_identifier>/?position=<position>
 
+         > Permissions
+        # The competition must be not in past state
+        # The team must be enrolled in the competition
+        # The team must have a valid inscription
+        # The user must be enrolled in the team of the agent
+
         :type  grid_identifier: str
         :param grid_identifier: The grid identifier
         :type  position: str
@@ -307,29 +271,9 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         agent_grid = get_object_or_404(AgentGrid.objects.all(), grid_position=grid,
                                        position=request.GET.get('position', ''))
 
-        agent = agent_grid.agent
-
-        if agent.team not in request.user.teams.all():
-            return Response({'status': 'Bad Request',
-                             'message': 'You must be part of the agent team.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if grid.competition.state_of_competition == 'Past':
-            return Response({'status': 'Bad Request',
-                             'message': 'The competition is in \'Past\' state.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        team_enrolled = TeamEnrolled.objects.filter(team=agent.team, competition=grid.competition)
-
-        if len(team_enrolled) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        if not team_enrolled[0].valid:
-            return Response({'status': 'Permission denied',
-                             'message': 'Your team must be enrolled in the competition with valid inscription.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        MustBePartOfAgentTeam(agent=agent_grid.agent, user=request.user)
+        CompetitionMustBeNotInPast(competition=grid.competition)
+        TeamEnrolledWithValidInscription(team=agent_grid.agent.team, competition=grid.competition)
 
         # if has no robots and there is a TrialGrid it must be deleted
         if grid.agentgrid_set.count() == 0:
