@@ -27,6 +27,8 @@ class GetRoundFile(views.APIView):
 
         Get Round Files
 
+        SERVER-TO-SERVER ONLY
+
         :type  competition_name: str
         :param competition_name: The agent name
         :type  round_name: str
@@ -69,6 +71,9 @@ class GetRoundResourcesFile(views.APIView):
         """
         B{Retrieve} the round resources files
         B{URL:} ../api/v1/competitions/resources_file/
+
+        Permissions:
+        - Must be authenticated
 
         POST
         Get resource Files in json
@@ -113,40 +118,6 @@ class GetRoundResourcesFile(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         return Response(json_data)
-
-
-class JsonListElements:
-    def __init__(self):
-        self.prevPath = None
-        self.count = 0
-        self.list = None
-        self.lab = {'Corner': None, 'Wall': None, 'Beacon': None, 'Target': None}
-        self.grid = {'Position': None}
-        self.params = {}
-        self.data = {'Robot': None, 'IRSensor': None}
-
-    def postprocessorGrid(self, path, key, value):
-        self.list = self.grid
-        return self.postprocessor(path, key, value)
-
-    def postprocessorLab(self, path, key, value):
-        self.list = self.lab
-        return self.postprocessor(path, key, value)
-
-    def postprocessorParams(self, path, key, value):
-        self.list = self.params
-        return self.postprocessor(path, key, value)
-
-    def postprocessor(self, path, key, value):
-        if key in self.list.keys() and self.list[key] == None:
-            self.list[key] = len(path)
-            tupl = key, [value]
-        else:
-            tupl = key, value
-        for key in self.list.keys():
-            if self.list[key] != None and self.list[key] > len(path):
-                self.list[key] = None
-        return tupl
 
 
 class GetRoundJsonFile(views.APIView):
@@ -362,3 +333,37 @@ class UploadResourceFile(views.APIView):
         return Response({'status': 'Uploaded',
                          'message': 'The file has been associated!'},
                         status=status.HTTP_201_CREATED)
+
+
+class JsonListElements:
+    def __init__(self):
+        self.prevPath = None
+        self.count = 0
+        self.list = None
+        self.lab = {'Corner': None, 'Wall': None, 'Beacon': None, 'Target': None}
+        self.grid = {'Position': None}
+        self.params = {}
+        self.data = {'Robot': None, 'IRSensor': None}
+
+    def postprocessorGrid(self, path, key, value):
+        self.list = self.grid
+        return self.postprocessor(path, key, value)
+
+    def postprocessorLab(self, path, key, value):
+        self.list = self.lab
+        return self.postprocessor(path, key, value)
+
+    def postprocessorParams(self, path, key, value):
+        self.list = self.params
+        return self.postprocessor(path, key, value)
+
+    def postprocessor(self, path, key, value):
+        if key in self.list.keys() and self.list[key] == None:
+            self.list[key] = len(path)
+            tupl = key, [value]
+        else:
+            tupl = key, value
+        for key in self.list.keys():
+            if self.list[key] != None and self.list[key] > len(path):
+                self.list[key] = None
+        return tupl
