@@ -330,12 +330,13 @@ void cbSimulator::setReceptionistAt(int port)
 	setReceptionist(receptionist);
 
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
-
     server.listen(QHostAddress::Any, port);
 }
 
 void cbSimulator::newConnectionEvent() {
+	client = server.nextPendingConnection();
 
+    connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 void cbSimulator::setGPS(bool g)
 {
@@ -1534,7 +1535,7 @@ void cbSimulator::processPanelCommands(const QString &panelId)
 }
 void cbSimulator::processReceptionMessages()
 {
-	while (receptionist->CheckIn())
+	while (receptionist->CheckIn(client))
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;

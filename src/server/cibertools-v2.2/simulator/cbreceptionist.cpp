@@ -102,7 +102,7 @@ void cbReceptionist::setXmlParser(QXmlSimpleReader *parser)
 	If one, parse it, fill in the check-in form and return true;
 	Otherwise returns false.
 */
-bool cbReceptionist::CheckIn()
+bool cbReceptionist::CheckIn(QTcpSocket* client)
 {
     //cout << "Entering checkIn\n";
 	/* check if parser is set */
@@ -120,7 +120,8 @@ bool cbReceptionist::CheckIn()
     //if (!hasPendingDatagrams())
     //    return false;
 
-    //client->read(xmlBuff, client->bytesAvailable());
+	datasize = client->bytesAvailable();
+    client->read(xmlBuff, client->bytesAvailable());
 
     /*if ((datasize=readDatagram(xmlBuff, XMLMAX-1, &form.addr, &form.port)) < 0)
     {

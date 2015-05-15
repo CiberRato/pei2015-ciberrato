@@ -69,7 +69,7 @@ public:
 
 	/* added functionality */
 	void acceptConnection();
-	bool CheckIn(void);
+	bool CheckIn(QTcpSocket*);
 	cbClientForm &Form();
 	bool bad();
 	//void setXmlParser(QXmlSimpleReader *);
