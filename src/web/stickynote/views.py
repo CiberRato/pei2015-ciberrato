@@ -15,6 +15,8 @@ class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixi
     serializer_class = StickyNoteSerializer
 
     def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
         return permissions.IsAuthenticated(), IsStaff(),
 
     def list(self, request, *args, **kwargs):
