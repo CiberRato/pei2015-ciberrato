@@ -54,24 +54,53 @@
 
             <!-- Instituição de ensino -->
             <div class="control-group">
-                <label class="control-label" for="education"> Educational Institution </label>
-                <div class="controls">
-                    <input id="education" type="text" placeholder="Teaching Institution" name="institution" ng-model="vm.teaching_institution">
-                </div>
-            </div>
-            <!-- <div class="control-group">
                 <label class="control-label" for="select">Educacional Institution</label>
                 <div class="controls">
-                    <select id="select">
-                        <option>Universidade de Aveiro</option>
-                        <option>Universidade de Coimbra</option>
-                        <option>Intituto Politécnico de Leiria</option>
-                        <option>Universidade do Minho</option>
-                        <option>Universidade de Trás-os-Montes e Alto Douro</option>
+                    <select name="select" id="select" ng-model="vm.teaching_institution" ng-change="vm.myFunction()">
+                        <option value="" disabled>--Please select one Educational Institution</option>
+                        <optgroup label="--ENSINO SUPERIOR PÚBLICO UNIVERSITÁRIO"></optgroup>
+                        <option>ISCTE - Instituto Universitário de Lisboa</option>
+                        <option>Universidade Aberta</option>
+                        <option>Universidade dos Açores</option>
+                        <option>Universidade do Algarve</option>
+                        <option selected="selected">Universidade de Aveiro </option>
                         <option>Universidade da Beira Interior</option>
+                        <option>Universidade de Coimbra</option>
+                        <option>Universidade de Évora</option>
+                        <option>Universidade de Lisboa</option>
+                        <option>Universidade da Madeira</option>
+                        <option>Universidade do Minho</option>
+                        <option>Universidade Nova de Lisboa</option>
+                        <option>Universidade do Porto</option>
+                        <option>Universidade Técnica de Lisboa</option>
+                        <option>Universidade de Trás-os-Montes e Alto Douro</option>
+                        <optgroup label="--ENSINO SUPERIOR PÚBLICO POLITÉCNICO"></optgroup>
+                        <option>Escola Superior de Enfermagem de Coimbra</option>
+                        <option>Escola Superior de Enfermagem de Lisboa</option>
+                        <option>Escola Superior de Enfermagem do Porto</option>
+                        <option>Escola Superior de Hotelaria e Turismo do Estoril</option>
+                        <option>Escola Superior Náutica Infante D. Henrique</option>
+                        <option>Instituto Politécnico de Beja</option>
+                        <option>Instituto Politécnico de Bragança</option>
+                        <option>Instituto Politécnico de Castelo Branco</option>
+                        <option>Instituto Politécnico do Cávado e do Ave</option>
+                        <option>Instituto Politécnico de Coimbra</option>
+                        <option>Instituto Politécnico da Guarda</option>
+                        <option>Instituto Politécnico de Leiria</option>
+                        <option>Instituto Politécnico de Lisboa</option>
+                        <option>Instituto Politécnico de Portalegre</option>
+                        <option>Instituto Politécnico do Porto</option>
+                        <option>Instituto Politécnico de Santarém</option>
+                        <option>Instituto Politécnico de Setúbal</option>
+                        <option>Instituto Politécnico de Tomar</option>
+                        <option>Instituto Politécnico de Viana do Castelo</option>
+                        <option>Instituto Politécnico de Viseu
+                        <option>Other...</option>
+
                     </select>
+                    <input ng-show="input" type="text" placeholder="Educational Institution" ng-model="vm.teaching_institution"/>
                 </div>
-            </div> -->
+            </div>
 
             <div  class="form-actions">
 
