@@ -35,7 +35,7 @@ class TeamEnrolledWithValidInscription:
 
 
 class NotPrivateCompetition:
-    def __init__(self, competition, message):
+    def __init__(self, competition, message='This competition can\'t be seen!'):
         if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
             raise BadRequest(message)
 

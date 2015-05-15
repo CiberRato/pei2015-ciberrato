@@ -298,6 +298,9 @@ class SoloTrial(mixins.DestroyModelMixin, viewsets.GenericViewSet):
     queryset = Trial.objects.all()
     serializer_class = TrialSerializer
 
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
     def destroy(self, request, *args, **kwargs):
         """
         B{Destroy} the trial

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from teams.serializers import TeamSerializer
 from teams.permissions import IsAdminOfTeam
 
-from ..permissions import IsStaff
+from ..permissions import IsStaff, NotPrivateCompetition
 from .simplex import RoundSimplex, TeamEnrolledSimplex
 from ..models import Competition, Round, TeamEnrolled, Agent
 from ..serializers import RoundSerializer, TeamEnrolledSerializer, TeamEnrolledOutputSerializer, \
@@ -39,11 +39,7 @@ class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericView
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            if competition.teamenrolled_set.first().team not in request.user.teams.all():
-                return Response({'status': 'Bad request',
-                                 'message': 'You can not see the rounds for this competition!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition)
 
         serializer = self.serializer_class(competition.teamenrolled_set.all(), many=True)
 
@@ -90,10 +86,7 @@ class CompetitionGetNotValidTeamsViewSet(mixins.RetrieveModelMixin, viewsets.Gen
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This competition can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition)
 
         not_valid = TeamEnrolled.objects.filter(valid=False, competition=competition)
         not_valid_teams = [g.team for g in not_valid]
@@ -119,10 +112,7 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This competition can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition)
 
         if len(competition.round_set.all()) == 0:
             return Response({'status': 'Bad request',
@@ -151,10 +141,7 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This competition can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition)
 
         if len(competition.round_set.all()) == 0:
             return Response({'status': 'Bad request',
@@ -189,10 +176,7 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
             competition = get_object_or_404(Competition.objects.all(),
                                             name=serializer.validated_data['competition_name'])
 
-            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-                return Response({'status': 'Bad Request',
-                                 'message': 'This competition can\'t be seen!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            NotPrivateCompetition(competition=competition)
 
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             team_enrolled = get_object_or_404(TeamEnrolled.objects.all(), competition=competition, team=team)
