@@ -136,7 +136,7 @@ bool cbReceptionist::CheckIn(QTcpSocket* client)
     //cout << xmlBuff << endl;
 
 	/* parse xml message */
-	cbReceptionHandler handler(xmlParser);
+	cbReceptionHandler handler(xmlParser, client);
 
 	if (!handler.parse(xmlBuff,datasize))
 	{
@@ -158,27 +158,27 @@ bool cbReceptionist::CheckIn(QTcpSocket* client)
 	{
 		case cbReceptionHandler::ROBOT:
 			form.type = cbClientForm::ROBOT;
-			form.client.robot = handler.robotObject();
+			//form.client.robot = (cbRobot*) client; 
 			cout << "Robot is requesting registration\n";
 			break;
 		case cbReceptionHandler::ROBOTBEACON:
 			form.type = cbClientForm::ROBOTBEACON;
-			form.client.robotBeacon = handler.robotBeaconObject();
+			//form.client.robotBeacon = (cbRobotBeacon*) client; 
 			cout << "RobotBeacon is requesting registration\n";
 			break;
 		case cbReceptionHandler::VIEW:
 			form.type = cbClientForm::VIEW;
-			form.client.view = handler.viewObject();
+			//form.client.view = (cbView*) client; //handler.viewObject();
             cout << "Viewer is requesting registration\n";
 			break;
 		case cbReceptionHandler::PANEL:
 			form.type = cbClientForm::PANEL;
-			form.client.panel = handler.panelObject();
+			//form.client.panel = (cbPanel*) client; 
 			cout << "Panel is requesting registration\n";
 			break;
 		case cbReceptionHandler::PANELVIEW:
 			form.type = cbClientForm::PANELVIEW;
-			form.client.panelview = handler.panelViewObject();
+			//form.client.panelview = (cbPanelView*) client; 
 			cout << "PanelView is requesting registration\n";
 			break;
 		default:

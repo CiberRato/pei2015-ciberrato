@@ -23,11 +23,12 @@
 
 #include "cbpanel.h"
 #include "cbview.h"
+#include <QTcpSocket>
 
 class cbPanelView : public cbClient, public cbPanelInterface, public cbViewInterface
 {
 public:
-	cbPanelView();
+	cbPanelView(QTcpSocket*);
 	~cbPanelView();
 
     virtual bool readCommand(cbPanelCommand *command);

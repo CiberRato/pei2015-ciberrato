@@ -23,6 +23,7 @@
 
 #include "cbclient.h"
 #include "cbpanelcommand.h"
+#include <QTcpSocket>
 
 class cbPanelInterface {
     virtual bool readCommand(cbPanelCommand *command) = 0;
@@ -31,7 +32,7 @@ class cbPanelInterface {
 class cbPanel : public cbClient, public cbPanelInterface
 {
 public:
-	cbPanel();
+	cbPanel(QTcpSocket *);
 	~cbPanel();
 
     virtual bool readCommand(cbPanelCommand *command);

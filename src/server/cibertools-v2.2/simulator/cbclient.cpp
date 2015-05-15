@@ -20,9 +20,7 @@
 
 #include "cbclient.h"
 
-#include <QTcpSocket>
 #include <QHostAddress>
-
 #include <iostream>
 #include <stdio.h>
 
@@ -30,9 +28,9 @@ using std::cerr;
 
 #define REPLYMAXSIZE 8192
 
-cbClient::cbClient() : QTcpSocket()
+cbClient::cbClient(QTcpSocket * client)
 {
-    //bind();
+    this->client = client;
 }
 
 cbClient::~cbClient()
@@ -48,24 +46,26 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
     /* set peer address and peer port */
     address = a;
 	port = p;
-	connectToHost(address, port);
+	//connectToHost(address, port);
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Ok\">\n\t");
-
+	std::cout << "here??\n";
+	cerr << "here?\n";
 	if (param != NULL) cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (lab != NULL) cnt += lab->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
-
+	cerr << "here?2\n";
 	cnt += sprintf(reply+cnt, "</Reply>\n");
 
     /* send reply to client */
-    if (write(reply) != cnt+1)
+    if (client->write(reply) != cnt+1)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
     }
+    cerr << "here3\n";
     //cout << "Reply sent\n" << reply;
 	return true;
 }
@@ -79,7 +79,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 	/* set peer address and peer port */
 	address = a;
 	port = p;
-	connectToHost(address, port);
+	//connectToHost(address, port);
 
 	/* constructing reply message */
 	char reply[256];
@@ -87,7 +87,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 	cnt = sprintf(reply, "<Reply Status=\"Refused\"></Reply>\n");
 
     /* send reply to client */
-    if (write(reply) != cnt+1)
+    if (client->write(reply) != cnt+1)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
@@ -102,7 +102,7 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 */
 bool cbClient::send(const char *xml, unsigned int cnt)
 {
-    if (write(xml) != (int)cnt)
+    if (client->write(xml) != (int)cnt)
     {
         //cerr << "Fail sending xml message to client\n";
 		//cerr << xml;

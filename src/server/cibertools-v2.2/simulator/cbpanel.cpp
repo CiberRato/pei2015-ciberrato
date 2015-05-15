@@ -20,7 +20,7 @@
 
 #include "cbpanel.h"
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 
 #include <iostream>
@@ -28,7 +28,7 @@
 
 using namespace std;
 
-cbPanel::cbPanel()
+cbPanel::cbPanel(QTcpSocket * client) : cbClient(client)
 {
 }
 
@@ -45,7 +45,7 @@ bool cbPanel::readCommand(cbPanelCommand *command)
     //if (!hasPendingDatagrams())
     //    return false;
 
-    QByteArray xmlBuff = readAll();
+    QByteArray xmlBuff = client->readAll();
     /*if ((xmlSize=readDatagram(xmlBuff, 1024*32-1)) < 0)
     {
         cerr << "Error reading from Viewer Socket - " << errorString().toStdString();

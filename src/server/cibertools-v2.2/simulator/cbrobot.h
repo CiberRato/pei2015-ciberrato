@@ -28,6 +28,7 @@
 #include "cbposition.h"
 #include "cbmotor.h"
 #include "cbsensor.h"
+#include <QTcpSocket>
 
 using std::ostream;
 
@@ -53,7 +54,7 @@ public:
 	// enum State and StrState (in cbrobot.cpp) must be compatible!!!
 	enum State {STOPPED=0, RUNNING, WAITOTHERS, RETURNING, FINISHED, REMOVED};
 
-	cbRobot(const double irSensorAngles[NUM_IR_SENSORS]);
+	cbRobot(const double irSensorAngles[NUM_IR_SENSORS], QTcpSocket * client);
 	virtual ~cbRobot();
 
 	void setName(const char *name);
@@ -254,7 +255,7 @@ protected:  // class data members
 class cbRobotBin : public cbRobot
 {
 public:
-    cbRobotBin() : cbRobot(irSensorDefaultAngles) {}
+    cbRobotBin() : cbRobot(irSensorDefaultAngles, client) {}
     virtual ~cbRobotBin() {}
 	virtual bool readAction(cbRobotAction *);
 	virtual void sendSensors();

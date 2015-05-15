@@ -1537,7 +1537,9 @@ void cbSimulator::processReceptionMessages()
 {
 	while (receptionist->CheckIn(client))
 	{
+		cout << "19\n";
 		cbClientForm &form = receptionist->Form();
+		cout << "20\n";
 		int cnt;
 		QSignalMapper* mapper;
 		switch (form.type)
@@ -1575,17 +1577,17 @@ void cbSimulator::processReceptionMessages()
 			gui->appendMessage( "Panel has been registered\n" );
 			break;
 		case cbClientForm::PANELVIEW:
-
+			cout << "0\n";
 			form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
-
+			cout << "1\n";
 			cnt = panels.size();
-			panels.resize(cnt + 1);
+			panels.resize(cnt + 1);cout << "2\n";
 			panels[cnt] = form.client.panelview;
-
+			cout << "3\n";
 			cnt = views.size();
 			views.resize(cnt + 1);
 			views[cnt] = form.client.panelview;
-
+			cout << "4\n";
 			if (curState == INIT) {
 				nextState = STOPPED;
 				if (logging)

@@ -43,7 +43,7 @@ static const char *StrState[] =
     "Stopped", "Running", "Waiting", "Returning", "Finished", "Removed"
 };
 
-cbRobot::cbRobot(const double irSensorAngle[]) : cbClient()
+cbRobot::cbRobot(const double irSensorAngle[], QTcpSocket * client) : cbClient(client)
 {
 	int i;
 
@@ -283,7 +283,7 @@ bool cbRobot::readAction(cbRobotAction *action)
 	}
 	else xmlBuff[xmlSize]='\0';
 */
-	QByteArray xmlBuff = readAll();
+	QByteArray xmlBuff = client->readAll();
 #ifdef DEBUG_ROBOT
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
@@ -1076,7 +1076,7 @@ bool cbRobotBin::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
    
 
     /* send reply to client */
-    if (write((char *)&commMsg, sizeof(CommMessage)) != sizeof(CommMessage))
+    if (client->write((char *)&commMsg, sizeof(CommMessage)) != sizeof(CommMessage))
 	{
         cerr << "Fail replying to client\n";
         simulator->GUI()->appendMessage( "Fail replying to client", true);
