@@ -118,20 +118,23 @@ void CRQComm::connect(void)
     if (isConnected)
         return;
 
+    QObject::connect(this, SIGNAL(connected()), SLOT(requestJoin()));
+
 #ifdef DEBUG
     cout << "CRQComm::connect\n";
 #endif
+}
 
+void CRQComm::requestJoin() {
     QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(dataControler()));
     QObject::connect(this, SIGNAL(readyRead()), SLOT(replyControler()));
 
-	port=6000;
+    port=6000;
     if( write("<PanelView/>\n", 14) == -1 )
     {
-		cerr << "Failure when writting <PanelView/>" << endl;
+        cerr << "Failure when writting <PanelView/>" << endl;
         exit (-1);
     }
-
 }
 
 /*============================================================================*/

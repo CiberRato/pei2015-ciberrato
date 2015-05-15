@@ -79,6 +79,7 @@ public:
 	 * \sa replyControler
 	 */
 	void connect(void);
+	void requestJoin();
 
 	/*! Close the score and control windows.
 	 */
