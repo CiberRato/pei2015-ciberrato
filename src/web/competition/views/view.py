@@ -7,7 +7,7 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from ..permissions import IsStaff
+from ..permissions import IsStaff, NotPrivateCompetition
 from .simplex import RoundSimplex
 from ..models import Competition, TypeOfCompetition
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
@@ -87,10 +87,7 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be deleted!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition, message='This grid can\'t be deleted!')
 
         for r in competition.round_set.all():
             r.delete()
@@ -124,10 +121,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         if serializer.is_valid():
             competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
 
-            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-                return Response({'status': 'Bad Request',
-                                 'message': 'This competition can\'t be changed!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            NotPrivateCompetition(competition=competition, message='This competition can\'t be changed!')
 
             competition.state_of_competition = serializer.data.get('state_of_competition', '')
             competition.save()
@@ -192,11 +186,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            if competition.teamenrolled_set.first().team not in request.user.teams.all():
-                return Response({'status': 'Bad request',
-                                 'message': 'You can not see the rounds for this competition!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition, message='You can not see the rounds for this competition!')
 
         serializer = self.serializer_class([RoundSimplex(r) for r in competition.round_set.all()], many=True)
         return Response(serializer.data)
