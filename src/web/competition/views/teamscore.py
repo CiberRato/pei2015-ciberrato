@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
 from django.db import transaction
-from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
@@ -12,7 +11,8 @@ from authentication.models import Team
 from .simplex import TeamScoreSimplex
 from ..models import Competition, TeamScore, TeamEnrolled, Trial, Round
 from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
-from ..permissions import IsStaff
+from ..permissions import IsStaff, CompetitionMustBeNotInPast, NotPrivateCompetition,\
+    TeamEnrolledWithValidInscription
 
 
 class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
@@ -59,29 +59,13 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         if serializer.is_valid():
             trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
 
-            if trial.round.parent_competition.state_of_competition == 'Past':
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is in \'Past\' state.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            CompetitionMustBeNotInPast(competition=trial.round.parent_competition)
 
-            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-                return Response({'status': 'Bad Request',
-                                 'message': 'This grid can\'t be seen!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            NotPrivateCompetition(competition=trial.round.parent_competition)
 
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
-
-            if len(team_enrolled) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'The team must be enrolled in the competition.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            if not team_enrolled[0].valid:
-                return Response({'status': 'Permission denied',
-                                 'message': 'The team must be enrolled in the competition with valid inscription.'},
-                                status=status.HTTP_403_FORBIDDEN)
+            TeamEnrolledWithValidInscription(team=team, competition=trial.round.parent_competition)
 
             try:
                 with transaction.atomic():
@@ -123,24 +107,11 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         if serializer.is_valid():
             trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
 
-            if trial.round.parent_competition.state_of_competition == 'Past':
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is in \'Past\' state.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            CompetitionMustBeNotInPast(competition=trial.round.parent_competition)
 
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
 
-            team_enrolled = TeamEnrolled.objects.filter(team=team, competition=trial.round.parent_competition)
-
-            if len(team_enrolled) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'The team must be enrolled in the competition.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            if not team_enrolled[0].valid:
-                return Response({'status': 'Permission denied',
-                                 'message': 'The team must be enrolled in the competition with valid inscription.'},
-                                status=status.HTTP_403_FORBIDDEN)
+            TeamEnrolledWithValidInscription(team=team, competition=trial.round.parent_competition)
 
             team_score = get_object_or_404(TeamScore.objects.all(), trial=trial, team=team)
 
@@ -172,10 +143,7 @@ class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk', ''))
 
-        if trial.round.parent_competition.state_of_competition == 'Past':
-            return Response({'status': 'Bad Request',
-                             'message': 'The competition is in \'Past\' state.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        CompetitionMustBeNotInPast(competition=trial.round.parent_competition)
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
