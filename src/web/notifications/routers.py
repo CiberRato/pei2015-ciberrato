@@ -1,5 +1,5 @@
 from swampdragon import route_handler
-from swampdragon.route_handler import ModelPubRouter, ModelRouter
+from swampdragon.route_handler import ModelPubRouter
 from .models import NotificationUser, NotificationTeam, NotificationBroadcast
 from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationBroadcastSerializer
 from authentication.models import Team, TeamMember
@@ -15,7 +15,10 @@ class NotificationBroadcastRouter(ModelPubRouter):
     serializer_class = NotificationBroadcastSerializer
 
     def get_subscription_contexts(self, **kwargs):
-        user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        try:
+            user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        except AttributeError:
+            return self.send_login_required()
 
         if user_obj is None:
             return self.send_login_required()
@@ -37,7 +40,10 @@ class NotificationUserRouter(ModelPubRouter):
     serializer_class = NotificationUserSerializer
 
     def get_subscription_contexts(self, **kwargs):
-        user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        try:
+            user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        except AttributeError:
+            return self.send_login_required()
 
         if user_obj is None:
             return self.send_login_required()
@@ -56,7 +62,10 @@ class NotificationTeamRouter(ModelPubRouter):
     serializer_class = NotificationTeamSerializer
 
     def get_subscription_contexts(self, **kwargs):
-        user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        try:
+            user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        except AttributeError:
+            return self.send_login_required()
 
         if user_obj is None:
             return self.send_login_required()
