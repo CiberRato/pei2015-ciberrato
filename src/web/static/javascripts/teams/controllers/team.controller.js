@@ -123,6 +123,9 @@
                     errors+= data.data.message + '<br/>'
                 }
             }
+            if(typeof data.data.detail !== 'undefined'){
+                errors += " &nbsp; "+ data.data.detail + '<br/>';
+            }
             $.jGrowl(errors, {
                 life: 5000,
                 theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
@@ -160,6 +163,9 @@
                         errors+= data.data.message + '<br/>'
                     }
                 }
+                if(typeof data.data.detail !== 'undefined'){
+                    errors += " &nbsp; "+ data.data.detail + '<br/>';
+                }
                 $.jGrowl(errors, {
                     life: 5000,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
@@ -185,8 +191,8 @@
             function addAdminErrorFn(data){
 
                 var errors = "";
-                if(typeof data.data.detail != "undefined"){
-                    errors += data.data.detail;
+                if(typeof data.data.detail !== 'undefined'){
+                    errors += " &nbsp; "+ data.data.detail + '<br/>';
                 }
 
                 $.jGrowl(errors, {
