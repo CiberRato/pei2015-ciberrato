@@ -819,6 +819,7 @@ void cbSimulator::SendSensors()
 */
 void cbSimulator::UpdateViews()
 {
+	std::cout << "UpdatingViews\n";
 	std::ostringstream xmlStream;
 	RobotsToXml(xmlStream, false, true, showPositions);
 
@@ -828,9 +829,10 @@ void cbSimulator::UpdateViews()
 
 		for (unsigned int j = 0; j < views.size(); j++) {
 			cbView *view = (cbView *) views[j];
-			view->send(xmlCharA, xmlString.length()+1);
+			view->send(xmlCharA, xmlString.length());
 		}
 	}
+	std::cout << "UpdatedViews\n";
 }
 
 
@@ -1585,7 +1587,7 @@ void cbSimulator::processReceptionMessages()
 
 			cnt = views.size();
 			views.resize(cnt + 1);
-			views[cnt] = form.client.panelview;
+			views[cnt] = (cbView*) client;
 			if (curState == INIT) {
 				nextState = STOPPED;
 				if (logging)

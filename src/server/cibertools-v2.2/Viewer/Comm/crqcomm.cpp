@@ -141,7 +141,7 @@ void CRQComm::replyControler()
 #ifdef DEBUG
     cout << "CRQComm::replyControler\n";
 #endif
-
+    std::cout << "message\n";
     //char data[16384];
 	//Read confirmation <REPLY STATUS="ok/refuse".../>
 	
@@ -162,7 +162,7 @@ void CRQComm::replyControler()
 
         /* set replyHandler */
         CRQReplyHandler replyHandler;
-
+        std::cout << datagram.data();
         /* parse reply message with replyHandler */
         QXmlSimpleReader reader;
         reader.setContentHandler(&replyHandler);
