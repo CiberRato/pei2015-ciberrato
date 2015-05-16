@@ -71,6 +71,12 @@ class NotHallOfFameCompetition:
             raise BadRequest(message)
 
 
+class MustBeHallOfFameCompetition:
+    def __init__(self, competition, message='You can only start the simulation for the Hall of fame!'):
+        if not competition.type_of_competition.name.startswith(settings.HALL_OF_FAME_START_STR):
+            raise BadRequest(message)
+
+
 class ReservedName:
     def __init__(self, name, reserved, message='This type of competition name is reserved!', starts=False):
         if not starts:
