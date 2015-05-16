@@ -51,6 +51,21 @@ class Competition(models.Model):
             # now let's create a Grid Position for the team
             GridPositions.objects.create(competition=competition, team=team)
 
+    @staticmethod
+    def get_hall_fame(name="Hall of fame - Single"):
+        try:
+            return Competition.objects.get(name=name)
+        except Competition.DoesNotExist:
+            tp = TypeOfCompetition.objects.create(name=name, number_teams_for_trial=1,
+                                                  number_agents_by_grid=1, allow_remote_agents=False,
+                                                  synchronous_simulation=True, timeout=1)
+            return Competition.objects.create(name=name, type_of_competition=tp,
+                                              state_of_competition='Competition')
+
+    @staticmethod
+    def enroll_team_in_hall_of_fame(competition, team):
+        pass
+
     class Meta:
         ordering = ['created_at']
 

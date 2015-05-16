@@ -11,7 +11,7 @@ from authentication.serializers import AccountSerializer
 from teams.permissions import IsAdminOfTeam
 from teams.serializers import TeamSerializer, EditTeamSerializer, Member2TeamSerializer, MemberSerializer
 
-from competition.models import Competition
+from competition.models import Competition, TeamEnrolled
 
 
 class TeamViewSet(viewsets.ModelViewSet):
@@ -49,8 +49,14 @@ class TeamViewSet(viewsets.ModelViewSet):
             try:
                 with transaction.atomic():
                     g = Team.objects.create(**serializer.validated_data)
+
+                    # private competition
                     Competition.create_private_competition(team=g)
                     TeamMember.objects.create(team=g, account=self.request.user, is_admin=True)
+
+                    # hall of fame - single
+                    hall_of_fame = Competition.get_hall_fame()
+                    TeamEnrolled.objects.create(competition=hall_of_fame, team=g, valid=True)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'There is a team with that name already!'},
