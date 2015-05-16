@@ -22,7 +22,8 @@
             'ciberonline.soloTrials',
             'angular-loading-bar',
             'cfp.loadingBar',
-            'ngAnimate'
+            'ngAnimate',
+            'ciberonline.stickyNotes'
         ])
         .run(run);
 

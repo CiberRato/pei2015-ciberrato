@@ -1,0 +1,55 @@
+<div class="content-block" role="main">
+
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>Create Sticky Note</h2>
+                </header>
+                <section class="tab-content">
+                    <br></br>
+                    <!-- Tab #basic -->
+                    <div class="tab-pane active" id="basic">
+
+                        <!-- Example vertical forms -->
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <p>In this page you can create your sticky notes.</p>
+                                <br></br>
+                                <p> When you complete your editions, please click on button <strong>Save changes</strong>.</p>
+
+                            </div>
+                            <div class="span8">
+                                <form role="form" ng-submit="vm.create()">
+                                    <fieldset>
+                                        <div class="control-group">
+                                            <label class="control-label" for="note">Note</label>
+                                            <div class="controls">
+                                                <textarea id="note" rows="4" name="comment" ng-model="vm.text">Enter text here...</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="control-group">
+                                            <label class="control-label" for="time">Time (seconds)</label>
+                                            <div class="controls">
+                                                <input id="time" type="number" placeholder="Time" name="time" ng-model="vm.time">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button class="btn btn-flat btn-large btn-success" type="submit">Create Type Of Competition</button>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
+    </div>
+</div>

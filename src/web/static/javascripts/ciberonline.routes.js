@@ -199,6 +199,16 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/competition/editType.html',
             title: 'Edit Type of Competition'
+        }).when('/admin/createStickyNote',{
+            controller:'CreateStickyNotesController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/stickyNotes/createStickyNote.html',
+            title: 'Create Sticky Notes'
+        }).when('/admin/stickyNotes',{
+            controller:'AllStickyNotesController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/stickyNotes/stickyNotes.html',
+            title: 'Sticky Notes'
         }).when('/admin/:name/',{
             controller:'ListCompetitionController',
             controllerAs: 'vm',
