@@ -231,7 +231,7 @@ class LoginView(views.APIView):
 
         # get user
         accounts = Account.objects.filter(email=email)
-        if len(accounts) == 0:
+        if accounts.count() == 0:
             return Response({'status': 'Unauthorized',
                              'message': 'Username and/or password is wrong.'
                              }, status=status.HTTP_401_UNAUTHORIZED)

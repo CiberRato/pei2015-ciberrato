@@ -12,8 +12,8 @@ from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, Compe
     MyEnrolledTeamsInCompetitionViewSet, GetEnrolledTeamCompetitionsViewSet, AdminEnrollTeam
 from competition.views.round import RoundTeams, RoundViewSet, RoundFile, GetResourcesFiles
 
-from competition.views.trial import TrialViewSet, TrialByAgent, TrialByRound, \
-    TrialByCompetition, GetTrialAgents, StartTrial, TrialGridViewSet, PrepareTrial
+from competition.views.trial import TrialViewSet, TrialByRound, TrialByCompetition, GetTrialAgents, \
+    StartTrial, TrialGridViewSet, PrepareTrial
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile, \
@@ -23,7 +23,7 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
     RankingByTeamInCompetition
 
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
-
+from competition.views.hall_of_fame import RunHallOfFameTrial
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
     PrivateCompetitionRound, RunPrivateTrial, SoloTrial
 
@@ -88,7 +88,6 @@ router_competitions.register(r'round_teams', RoundTeams)
 router_competitions.register(r'round_files', RoundFile)
 # Trial
 router_competitions.register(r'trial', TrialViewSet)
-router_competitions.register(r'trials_by_agent', TrialByAgent)
 router_competitions.register(r'trials_by_round', TrialByRound)
 router_competitions.register(r'trials_by_competition', TrialByCompetition)
 router_competitions.register(r'trial_agents', GetTrialAgents)
@@ -137,7 +136,8 @@ urlpatterns = patterns('',
                        url(r'^api/v1/competitions/private/', include(router_private_competitions.urls)),
                        url(r'^api/v1/competitions/private/launch_trial/$', RunPrivateTrial.as_view(),
                            name="Launch private trial"),
-
+                       url(r'^api/v1/competitions/hall_of_fame/launch_trial/$', RunHallOfFameTrial.as_view(),
+                           name="Launch private hall of fame trial"),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
                        url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),

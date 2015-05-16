@@ -651,16 +651,6 @@ class AuthenticationTestCase(TestCase):
         competition_agent.eligible = False
         competition_agent.save()
 
-        # get the trials by agent
-        url = "/api/v1/competitions/trials_by_agent/KAMIKAZE/?team_name=XPTO3"
-        response = client.get(url)
-        rsp = response.data[0]
-        del rsp['created_at']
-        del rsp['updated_at']
-        del rsp['identifier']
-        self.assertEqual(rsp, {'round_name': u'R1', 'competition_name': 'C1', 'state': u'STARTED', 'errors': u''})
-        self.assertEqual(response.status_code, 200)
-
         # get the trials by round
         url = "/api/v1/competitions/trials_by_round/R1/?competition_name=C1"
         response = client.get(url)

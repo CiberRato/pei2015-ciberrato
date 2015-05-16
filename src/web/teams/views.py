@@ -11,7 +11,7 @@ from authentication.serializers import AccountSerializer
 from teams.permissions import IsAdminOfTeam
 from teams.serializers import TeamSerializer, EditTeamSerializer, Member2TeamSerializer, MemberSerializer
 
-from competition.models import Competition
+from competition.models import Competition, TeamEnrolled
 
 
 class TeamViewSet(viewsets.ModelViewSet):
@@ -49,8 +49,14 @@ class TeamViewSet(viewsets.ModelViewSet):
             try:
                 with transaction.atomic():
                     g = Team.objects.create(**serializer.validated_data)
+
+                    # private competition
                     Competition.create_private_competition(team=g)
                     TeamMember.objects.create(team=g, account=self.request.user, is_admin=True)
+
+                    # hall of fame - single
+                    hall_of_fame = Competition.get_hall_fame()
+                    TeamEnrolled.objects.create(competition=hall_of_fame, team=g, valid=True)
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'There is a team with that name already!'},
@@ -219,7 +225,7 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
             user = get_object_or_404(Account.objects.all(), username=serializer.validated_data['user_name'])
 
-            number_of_members = len(team.teammember_set.all())
+            number_of_members = team.teammember_set.all().count()
             if number_of_members >= team.max_members:
                 return Response({'status': 'Bad request',
                                  'message': 'The team reached the max number of members: ' + str(number_of_members)},
@@ -256,9 +262,7 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
-        member_not_in_team = (len(TeamMember.objects.filter(team=team, account=user)) == 0)
-
-        if member_not_in_team:
+        if TeamMember.objects.filter(team=team, account=user).count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'The user is not in the team'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -266,7 +270,7 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         team_member = TeamMember.objects.get(team=team, account=user)
         team_member.delete()
 
-        if len(team.teammember_set.all()) == 0:
+        if team.teammember_set.all().count() == 0:
             team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
             team.delete()
 
@@ -290,9 +294,7 @@ class MemberInTeamViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
-        member_not_in_team = (len(TeamMember.objects.filter(team=team, account=user)) == 0)
-
-        if member_not_in_team:
+        if TeamMember.objects.filter(team=team, account=user).count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'The user is not in the team'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -334,9 +336,7 @@ class MakeMemberAdminViewSet(mixins.UpdateModelMixin,
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
         user = get_object_or_404(Account.objects.all(), username=request.GET.get('username', ''))
 
-        member_not_in_team = (len(TeamMember.objects.filter(team=team, account=user)) == 0)
-
-        if member_not_in_team:
+        if TeamMember.objects.filter(team=team, account=user).count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'The user is not in the team'},
                             status=status.HTTP_400_BAD_REQUEST)
