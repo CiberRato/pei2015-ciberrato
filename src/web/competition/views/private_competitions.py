@@ -256,10 +256,12 @@ class RunPrivateTrial(views.APIView):
                             competition=trial.round.parent_competition,
                             agent=agent_grid.agent,
                             round=trial.round)
-
-                    LogTrialAgent.objects.create(competition_agent=competition_agent,
-                                                 trial=trial,
-                                                 pos=pos)
+                    try:
+                        LogTrialAgent.objects.create(competition_agent=competition_agent,
+                                                     trial=trial,
+                                                     pos=pos)
+                    except IntegrityError:
+                        pass
 
                     pos += 1
 

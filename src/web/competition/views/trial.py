@@ -222,7 +222,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             trial = get_object_or_404(Trial.objects.all(),
                                       identifier=serializer.validated_data['trial_identifier'])
 
-            teams_in_grid = len(TrialGrid.objects.filter(trial=trial))
+            teams_in_grid = TrialGrid.objects.filter(trial=trial).count()
 
             if teams_in_grid >= grid_positions.competition.type_of_competition.number_teams_for_trial:
                 return Response({'status': 'Bad Request',
@@ -240,8 +240,7 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The position can\'t be higher than the number of teams allowed by trial.'},
                                 status=status.HTTP_403_FORBIDDEN)
 
-            if len(TrialGrid.objects.filter(trial=trial,
-                                            position=serializer.validated_data['position'])) != 0:
+            if TrialGrid.objects.filter(trial=trial, position=serializer.validated_data['position']).count() != 0:
                 return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_403_FORBIDDEN)
@@ -333,7 +332,7 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                              'message': 'Is missing files to the Round take place!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if len(trial_grids) == 0:
+        if trial_grids.count() == 0:
             return Response({'status': 'Bad Request',
                              'message': 'Please select teams to go to the Trial!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -352,32 +351,23 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                                                            competition=trial.round.parent_competition)
                     if team_enroll.valid:
                         # competition agent
-                        competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
-                            competition=trial.round.parent_competition,
-                            agent=agent_grid.agent,
-                            round=trial.round)) == 0)
-
-                        if competition_agent_not_exists:
-                            competition_agent = CompetitionAgent.objects.create(
-                                competition=trial.round.parent_competition,
-                                agent=agent_grid.agent,
-                                round=trial.round)
-                        else:
+                        try:
                             competition_agent = CompetitionAgent.objects.get(
                                 competition=trial.round.parent_competition,
                                 agent=agent_grid.agent,
                                 round=trial.round)
+                        except CompetitionAgent.DoesNotExist:
+                            competition_agent = CompetitionAgent.objects.create(
+                                competition=trial.round.parent_competition,
+                                agent=agent_grid.agent,
+                                round=trial.round)
 
-                        log_sim_agent_not_exists = (len(LogTrialAgent.objects.filter(
-                            competition_agent=competition_agent,
-                            trial=trial,
-                            pos=pos)) == 0)
-
-                        # log trial agent
-                        if log_sim_agent_not_exists:
+                        try:
                             LogTrialAgent.objects.create(competition_agent=competition_agent,
                                                          trial=trial,
                                                          pos=pos)
+                        except IntegrityError:
+                            pass
 
                         pos += 1
 
@@ -430,7 +420,7 @@ class StartTrial(views.APIView):
 
         trial_grids = TrialGrid.objects.filter(trial=trial)
 
-        if len(trial_grids) == 0:
+        if trial_grids.count() == 0:
             return Response({'status': 'Bad Request',
                              'message': 'Please select teams to go to the Trial!'},
                             status=status.HTTP_400_BAD_REQUEST)

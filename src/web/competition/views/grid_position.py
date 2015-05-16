@@ -200,7 +200,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             grid = get_object_or_404(GridPositions.objects.all(),
                                      identifier=serializer.validated_data['grid_identifier'])
 
-            agents_in_grid = len(AgentGrid.objects.filter(grid_position=grid))
+            agents_in_grid = AgentGrid.objects.filter(grid_position=grid).count()
 
             if agents_in_grid >= grid.competition.type_of_competition.number_agents_by_grid:
                 return Response({'status': 'Bad Request',
@@ -218,7 +218,7 @@ class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'The position can\'t be higher than the number agents allowed by grid.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            if len(AgentGrid.objects.filter(grid_position=grid, position=serializer.validated_data['position'])) != 0:
+            if AgentGrid.objects.filter(grid_position=grid, position=serializer.validated_data['position']).count() != 0:
                 return Response({'status': 'Bad Request',
                                  'message': 'The position has already been taken.'},
                                 status=status.HTTP_400_BAD_REQUEST)
