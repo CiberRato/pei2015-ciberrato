@@ -39,12 +39,12 @@ cbClient::~cbClient()
 /*!
 	Send the OK reply message to client.
 */
-bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cbGrid *grid, cbLab *lab)
+bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 {
+	std::cout << "here??\n";
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
     /* set peer address and peer port */
-    address = a;
-	port = p;
+
 	//connectToHost(address, port);
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
@@ -72,12 +72,10 @@ bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cb
 /*!
 	Send the Refused reply message to client.
 */
-bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
+bool cbClient::Refuse()
 {
 	//cout.form("Sending refuse for client to %s:%hd\n", a.toString().latin1(), p);
 	/* set peer address and peer port */
-	address = a;
-	port = p;
 	//connectToHost(address, port);
 
 	/* constructing reply message */

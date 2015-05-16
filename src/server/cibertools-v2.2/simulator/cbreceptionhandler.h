@@ -40,7 +40,7 @@ class cbReceptionHandler : public QXmlDefaultHandler
 {
 public:
 	enum Type { UNKNOWN, VIEW, PANEL, PANELVIEW, ROBOT, ROBOTBEACON};
-	cbReceptionHandler(QXmlSimpleReader *xmlParser, QTcpSocket*);
+	cbReceptionHandler(QXmlSimpleReader *xmlParser);
 
     bool parse(void *data, int datasize);
     
@@ -58,15 +58,14 @@ public:
 	Type objectType();
 
 private:
-        QXmlInputSource xmlSource;
-        QXmlSimpleReader *xmlParser;
+    QXmlInputSource xmlSource;
+    QXmlSimpleReader *xmlParser;
 
 	cbView *view;
 	cbPanel *panel;
     cbPanelView *panelview;
 	cbRobot *robot;
 	cbRobotBeacon *robotBeacon;
-    QTcpSocket *client;
 	Type type;
 };                   
 

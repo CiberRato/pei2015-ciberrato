@@ -31,7 +31,7 @@
 
 using std::cerr;
 
-cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser, QTcpSocket *rclient)
+cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
 {
 	robot = 0;
 	robotBeacon = 0;
@@ -39,7 +39,6 @@ cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser, QTcpSocket *rcl
 	view = 0;
 	panelview = 0;
 	xmlParser=parser;
-	client = rclient;
 }
  
 bool cbReceptionHandler::startDocument()
@@ -64,23 +63,23 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	if (tag == "View")
 	{
 		type = VIEW;
-		view = new cbView(client);
+		view = new cbView();
 	}
 	else if (tag == "Panel")
 	{
 		type = PANEL;
-		panel = new cbPanel(client);
+		panel = new cbPanel();
 	}
 	else if (tag == "PanelView")
 	{
 		type = PANELVIEW;
-		panelview = new cbPanelView(client);
+		panelview = new cbPanelView();
 	}
 	else if (tag == "Robot")
 	{
 		type = ROBOT;
 
-		robot = new cbRobot(irSensorDefaultAngles, client);
+		robot = new cbRobot(irSensorDefaultAngles);
 
 		/* process attributes */
         const QString &name = attr.value(QString("Name"));

@@ -110,7 +110,7 @@ static const char *SIMPARAM =
         "\t\tTargetReward=\"100\" HomeReward=\"100\"/>\n";
 
 
-cbSimulator::cbSimulator()
+cbSimulator::cbSimulator(QObject* parent): QObject(parent)
 {
 	lab = 0;
 	curCycle = 0;
@@ -1547,9 +1547,9 @@ void cbSimulator::processReceptionMessages()
 			//cout << "View form is going to be processed\n";
 			cnt = views.size();
 			views.resize(cnt + 1);
-			views[cnt] = form.client.view;
+			views[cnt] = (cbView*) client; //form.client.view;
 
-			views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+			views[cnt]->Reply(param, grid, lab);
 
 			if (curState == INIT) {
 				nextState = STOPPED;
@@ -1567,7 +1567,7 @@ void cbSimulator::processReceptionMessages()
 			cnt = panels.size();
 			panels.resize(cnt + 1);
 			panels[cnt] = form.client.panel;
-			panels[cnt]->Reply(form.addr, form.port, param);
+			panels[cnt]->Reply(param);
 
 			mapper = new QSignalMapper(this);
 			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
@@ -1580,17 +1580,14 @@ void cbSimulator::processReceptionMessages()
 			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::PANELVIEW:
-			cout << "0\n";
-			form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
-			cout << "1\n";
 			cnt = panels.size();
-			panels.resize(cnt + 1);cout << "2\n";
-			panels[cnt] = form.client.panelview;
-			cout << "3\n";
+			panels.resize(cnt + 1);
+			panels[cnt] = (cbPanelView*) client;
+			panels[cnt]->Reply(param, grid, lab);
+
 			cnt = views.size();
 			views.resize(cnt + 1);
 			views[cnt] = form.client.panelview;
-			cout << "4\n";
 			if (curState == INIT) {
 				nextState = STOPPED;
 				if (logging)
@@ -1616,7 +1613,7 @@ void cbSimulator::processReceptionMessages()
 			cbRobot *robot = form.client.robot;
 			if (registerRobot(robot))
 			{
-				robot->Reply(form.addr, form.port, param);
+				robot->Reply(param);
 				cout << robot->Name() << " has been registered\n";
 				gui->appendMessage( QString(robot->Name()) + " has been registered" );
 
@@ -1636,7 +1633,7 @@ void cbSimulator::processReceptionMessages()
 			}
 			else // robot was refused
 			{
-				robot->Refuse(form.addr, form.port);
+				robot->Refuse();
 				cout << robot->Name() << " has been refused\n";
 				gui->appendMessage( QString(robot->Name()) + " has been refused", true);
 				delete robot;

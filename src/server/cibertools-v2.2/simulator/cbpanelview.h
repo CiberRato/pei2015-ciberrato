@@ -30,7 +30,7 @@ public:
 	cbPanelView();
 	~cbPanelView();
 
-    virtual bool readCommand(cbPanelCommand *command);
+    bool readCommand(cbPanelCommand *command);
 };
 
 #endif

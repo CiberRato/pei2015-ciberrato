@@ -124,7 +124,7 @@ void CRQComm::connect(void)
 #endif
     
     QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(dataControler()));
-    QObject::connect(this, SIGNAL(readyRead()), SLOT(replyControler()));
+    QObject::connect(this, SIGNAL(readyRead()), this, SLOT(replyControler()));
 
     port=6000;
     if( write("<PanelView/>\n", 14) == -1 )

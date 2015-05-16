@@ -34,7 +34,7 @@ public:
 	cbPanel();
 	~cbPanel();
 
-    virtual bool readCommand(cbPanelCommand *command);
+    bool readCommand(cbPanelCommand *command);
 };
 
 #endif

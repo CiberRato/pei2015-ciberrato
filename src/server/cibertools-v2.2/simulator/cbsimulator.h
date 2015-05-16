@@ -34,8 +34,10 @@
 #include <QThread>
 #include <iostream>
 #include <vector>
+#include <QtNetwork>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include "cbclient.h"
 
 using std::vector;
 using std::ostream;
@@ -50,7 +52,6 @@ class cbGrid;
 class cbRobot;
 class cbView;
 class cbPanel;
-class cbClient;
 class cbViewInterface;
 class cbPanelInterface;
 class cbPanelView;
@@ -68,7 +69,7 @@ class cbSimulator : public QObject
 {
 Q_OBJECT
 public:
-	cbSimulator();
+	cbSimulator(QObject* parent = 0);
 	~cbSimulator();
 
 	enum State {INIT, STOPPED, RUNNING, FINISHED};
@@ -241,6 +242,7 @@ protected: // data members
 
     QTcpServer server;
     QTcpSocket* client;
+    cbClient *y;
 
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
