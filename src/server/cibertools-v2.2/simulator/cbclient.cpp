@@ -50,6 +50,7 @@ bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 	if (lab != NULL) cnt += lab->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	cnt += sprintf(reply+cnt, "</Reply>\n");
+	cnt += sprintf(reply+cnt, "\x04");
 
     /* send reply to client */
     if (write(reply) != cnt)
@@ -73,6 +74,7 @@ bool cbClient::Refuse()
 	char reply[256];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Refused\"></Reply>\n");
+	cnt += sprintf(reply+cnt, "\x04");
 
     /* send reply to client */
     if (write(reply) != cnt)
@@ -90,7 +92,11 @@ bool cbClient::Refuse()
 */
 bool cbClient::send(const char *xml, unsigned int cnt)
 {
-    if (write(xml) != (int)cnt)
+	char reply[cnt+1];
+	strcpy(reply, xml);
+	
+	cnt += sprintf(reply+cnt, "\x04");
+    if (write(reply) != (int)cnt)
     {
         cerr << "Fail sending xml message to client\n";
 		return false;

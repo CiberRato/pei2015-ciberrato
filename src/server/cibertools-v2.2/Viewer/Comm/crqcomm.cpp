@@ -152,6 +152,8 @@ void CRQComm::replyControler()
         //QByteArray datagram;
         //datagram.resize(pendingDatagramSize());
         QByteArray datagram = readAll();
+
+        std::cout << datagram.toHex().data();
         /*if( readDatagram( datagram.data(), datagram.size(), &serverAddress, &port ) == -1 )
         {
             cerr << "Failure to read confirmation from the socket " << endl;
