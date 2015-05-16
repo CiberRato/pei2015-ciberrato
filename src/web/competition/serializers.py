@@ -194,6 +194,16 @@ class RoundFilesSerializer(serializers.BaseSerializer):
         }
 
 
+class TeamScoreAutomaticSerializer(serializers.ModelSerializer):
+    score = serializers.IntegerField(write_only=True)
+    trial_id = serializers.CharField(max_length=128, write_only=True)
+
+    class Meta:
+        model = TeamScore
+        fields = ('trial_id', 'score', 'number_of_agents', 'time',)
+        read_only_fields = ()
+
+
 class TeamScoreInSerializer(serializers.ModelSerializer):
     trial_id = serializers.CharField(max_length=128, write_only=True)
     team_name = serializers.CharField(max_length=128, write_only=True)

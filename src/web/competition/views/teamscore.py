@@ -9,10 +9,10 @@ from rest_framework.response import Response
 from authentication.models import Team
 
 from .simplex import TeamScoreSimplex
-from ..models import Competition, TeamScore, TeamEnrolled, Trial, Round
-from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
+from ..models import Competition, TeamScore, Trial, Round
+from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer, TeamScoreAutomaticSerializer
 from ..permissions import IsStaff, CompetitionMustBeNotInPast, NotPrivateCompetition,\
-    TeamEnrolledWithValidInscription
+    TeamEnrolledWithValidInscription, MustBeHallOfFameCompetition
 
 
 class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
@@ -254,3 +254,57 @@ class RankingByTeamInCompetition(mixins.RetrieveModelMixin, viewsets.GenericView
 
         serializer = self.serializer_class([TeamScoreSimplex(team_score) for team_score in team_scores], many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AutomaticTeamScore(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = TeamScore.objects.all()
+    serializer_class = TeamScoreAutomaticSerializer
+
+    def get_permissions(self):
+        return permissions.AllowAny(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Create} an automatic team score
+        B{URL:} ../api/v1/competitions/automatic_score/
+
+        SERVER - TO - SERVER ONLY
+
+        :type  trial_id: str
+        :param trial_id: The trial identifier
+        :type  score: Integer
+        :param score: The score
+        :type  number_of_agents: Integer
+        :param number_of_agents: The number of agents
+        :type  time: Integer
+        :param time: The time
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_id'])
+
+            CompetitionMustBeNotInPast(competition=trial.round.parent_competition)
+
+            MustBeHallOfFameCompetition(competition=trial.round.parent_competition)
+
+            team = trial.teamscore_set.first()
+
+            try:
+                with transaction.atomic():
+                    team_score = TeamScore.objects.create(trial=trial, team=team,
+                                                          score=serializer.validated_data['score'],
+                                                          number_of_agents=serializer.validated_data[
+                                                              'number_of_agents'],
+                                                          time=serializer.validated_data['time'])
+            except IntegrityError:
+                return Response({'status': 'Bad request',
+                                 'message': 'There is already a score for that team in the trial!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = self.serializer_class(TeamScoreSimplex(team_score))
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
