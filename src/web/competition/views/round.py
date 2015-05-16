@@ -140,7 +140,7 @@ class RoundFile(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = RoundFilesSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated()
+        return permissions.IsAuthenticated(),
 
     def retrieve(self, request, *args, **kwargs):
         """

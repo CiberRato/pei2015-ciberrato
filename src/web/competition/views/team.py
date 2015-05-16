@@ -39,7 +39,11 @@ class CompetitionGetTeamsViewSet(mixins.RetrieveModelMixin, viewsets.GenericView
         """
         competition = get_object_or_404(self.queryset, name=kwargs.get('pk'))
 
-        NotPrivateCompetition(competition=competition)
+        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.serializer_class(competition.teamenrolled_set.all(), many=True)
 
