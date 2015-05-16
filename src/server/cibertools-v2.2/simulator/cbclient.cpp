@@ -42,9 +42,6 @@ cbClient::~cbClient()
 bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 {
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
-    /* set peer address and peer port */
-
-	//connectToHost(address, port);
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
 	int cnt;
@@ -60,7 +57,6 @@ bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    //cout << "Reply sent\n" << reply;
 	return true;
 }
 
@@ -71,7 +67,6 @@ bool cbClient::Refuse()
 {
 	//cout.form("Sending refuse for client to %s:%hd\n", a.toString().latin1(), p);
 	/* set peer address and peer port */
-	//connectToHost(address, port);
 
 	/* constructing reply message */
 	char reply[256];
@@ -79,12 +74,11 @@ bool cbClient::Refuse()
 	cnt = sprintf(reply, "<Reply Status=\"Refused\"></Reply>\n");
 
     /* send reply to client */
-    if (write(reply) != cnt+1)
+    if (write(reply) != cnt)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    //cout << "Reply sent\n" << reply;
 	return true;
 }
 
@@ -96,8 +90,7 @@ bool cbClient::send(const char *xml, unsigned int cnt)
 {
     if (write(xml) != (int)cnt)
     {
-        //cerr << "Fail sending xml message to client\n";
-		//cerr << xml;
+        cerr << "Fail sending xml message to client\n";
 		return false;
     }
 

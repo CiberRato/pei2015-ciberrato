@@ -1536,9 +1536,7 @@ void cbSimulator::processReceptionMessages()
 {
 	while (receptionist->CheckIn(client))
 	{
-		cout << "19\n";
 		cbClientForm &form = receptionist->Form();
-		cout << "20\n";
 		int cnt;
 		QSignalMapper* mapper;
 		switch (form.type)
