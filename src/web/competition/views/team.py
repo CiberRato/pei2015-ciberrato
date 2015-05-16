@@ -65,7 +65,8 @@ class MyEnrolledTeamsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         enrolled_teams = []
         for team in request.user.teams.all():
             for eg in team.teamenrolled_set.all():
-                if eg.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+                if eg.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME \
+                        and not eg.competition.type_of_competition.name.startswith(settings.HALL_OF_FAME_START_STR):
                     enrolled_teams += [TeamEnrolledSimplex(eg)]
 
         serializer = self.serializer_class(enrolled_teams, many=True)
