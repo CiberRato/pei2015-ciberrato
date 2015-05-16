@@ -1534,7 +1534,7 @@ void cbSimulator::processPanelCommands(const QString &panelId)
 }
 void cbSimulator::processReceptionMessages()
 {
-	while (receptionist->CheckIn(client))
+	if (receptionist->CheckIn(client))
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;
