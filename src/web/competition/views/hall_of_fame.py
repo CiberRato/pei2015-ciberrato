@@ -1,27 +1,18 @@
-import uuid
-
 from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
-from django.db import transaction
 from django.conf import settings
 
-from django.core.files.storage import default_storage
 from rest_framework import permissions
-from rest_framework import viewsets, status, mixins, views
+from rest_framework import status, views
 from rest_framework.response import Response
 
 import requests
 
-from .simplex import TrialSimplex
-from ..permissions import MustBePrivateCompetition, UserCanAccessToThePrivateCompetition, \
-    MustBeHallOfFameCompetition, MustBePartOfAgentTeam
-from ..serializers import PrivateCompetitionSerializer, PrivateRoundSerializer, \
-    InputPrivateRoundSerializer, TrialSerializer, PrivateRoundTrialsSerializer
-from ..models import Competition, TeamEnrolled, AgentGrid, Round, Trial, \
+from ..permissions import MustBeHallOfFameCompetition, MustBePartOfAgentTeam
+from ..models import Round, Trial, \
     CompetitionAgent, LogTrialAgent, Agent
 
 
-class RunPrivateTrial(views.APIView):
+class RunHallOfFameTrial(views.APIView):
     def get_permissions(self):
         return permissions.IsAuthenticated(),
 
