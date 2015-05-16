@@ -286,7 +286,8 @@ class AutomaticTeamScore(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             CompetitionMustBeNotInPast(competition=trial.round.parent_competition)
 
-            MustBeHallOfFameCompetition(competition=trial.round.parent_competition)
+            MustBeHallOfFameCompetition(competition=trial.round.parent_competition,
+                                        message="This is not a Hall of fame competition")
 
             team = trial.teamscore_set.first()
 

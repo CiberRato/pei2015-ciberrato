@@ -20,7 +20,7 @@ from competition.views.files import UploadParamListView, UploadGridView, UploadL
     UploadResourceFile, GetRoundJsonFile, GetRoundResourcesFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition, \
-    RankingByTeamInCompetition
+    RankingByTeamInCompetition, AutomaticTeamScore
 
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
 from competition.views.hall_of_fame import RunHallOfFameTrial
@@ -67,6 +67,7 @@ router_competitions.register(r'grid_position', GridPositionsViewSet)
 router_competitions.register(r'grid_positions_competition', GridPositionsByCompetition)
 router_competitions.register(r'agent_grid', AgentGridViewSet)
 router_competitions.register(r'team_score', TeamScoreViewSet)
+router_competitions.register(r'automatic_score', AutomaticTeamScore)
 router_competitions.register(r'ranking_trial', RankingByTrial)
 router_competitions.register(r'ranking_round', RankingByRound)
 router_competitions.register(r'ranking_competition', RankingByCompetition)

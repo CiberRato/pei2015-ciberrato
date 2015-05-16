@@ -906,6 +906,12 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The team score has been deleted!"})
 
+        # create automatic team score
+        url = "/api/v1/competitions/automatic_score/"
+        data = {'trial_id': trial_identifier, 'score': 10, 'number_of_agents': 5, 'time': 10}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {"detail":"You can only start the simulation for the Hall of fame!"})
+
         # toggle inscription again
         url = "/api/v1/competitions/toggle_team_inscription/"
         data = {'competition_name': 'C1', 'team_name': 'XPTO2'}
