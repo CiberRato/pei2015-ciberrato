@@ -41,7 +41,6 @@ cbClient::~cbClient()
 */
 bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 {
-	std::cout << "here??\n";
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
     /* set peer address and peer port */
 
@@ -50,21 +49,17 @@ bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 	char reply[REPLYMAXSIZE];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Ok\">\n\t");
-	std::cout << "here??\n";
-	cerr << "here?\n";
 	if (param != NULL) cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (lab != NULL) cnt += lab->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
-	cerr << "here?2\n";
 	cnt += sprintf(reply+cnt, "</Reply>\n");
 
     /* send reply to client */
-    if (write(reply) != cnt+1)
+    if (write(reply) != cnt)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    cerr << "here3\n";
     //cout << "Reply sent\n" << reply;
 	return true;
 }
