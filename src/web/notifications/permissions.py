@@ -9,8 +9,10 @@ class LoginRequired(RoutePermission):
     def test_permission(self, handler, verb, **kwargs):
         if 'user' not in kwargs or 'u_stream' not in kwargs['user']:
             return False
-
-        return handler.connection.authenticate(kwargs['user']['u_stream'])
+        try:
+            return handler.connection.authenticate(kwargs['user']['u_stream'])
+        except AttributeError:
+            return False
 
     def permission_failed(self, handler):
         handler.send_login_required()
@@ -24,10 +26,13 @@ class IsTeamMember(RoutePermission):
         if 'user' not in kwargs or 'team' not in kwargs:
             return False
 
-        user_obj = handler.connection.get_user(kwargs['user']['u_stream'])
+        try:
+            user_obj = handler.connection.get_user(kwargs['user']['u_stream'])
+        except AttributeError:
+            return False
 
         if user_obj is None:
-            return False
+                return False
 
         if Team.objects.filter(name=kwargs['team']).count() == 1:
             team_obj = Team.objects.get(name=kwargs['team'])
