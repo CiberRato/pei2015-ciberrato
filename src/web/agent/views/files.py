@@ -84,7 +84,7 @@ class UploadAgent(views.APIView):
                                  settings.ALLOWED_UPLOAD_SIZE)},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        if len(AgentFile.objects.filter(agent=agent, original_name=file_obj.name)) == 1:
+        if AgentFile.objects.filter(agent=agent, original_name=file_obj.name).count() == 1:
             file_agent = AgentFile.objects.get(agent=agent, original_name=file_obj.name)
             file_agent.delete()
 
@@ -220,7 +220,7 @@ class GetAllAgentFiles(views.APIView):
         # see if user owns the agent
         MustBeTeamMember(user=request.user, team=team)
 
-        if len(AgentFile.objects.filter(agent=agent)) == 0:
+        if AgentFile.objects.filter(agent=agent).count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -257,7 +257,7 @@ class GetAgentFilesSERVER(views.APIView):
         team = get_object_or_404(Team.objects.all(), name=team_name)
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
-        if len(AgentFile.objects.filter(agent=agent)) == 0:
+        if AgentFile.objects.filter(agent=agent).count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -303,7 +303,7 @@ class GetAgentFile(views.APIView):
         team = get_object_or_404(Team.objects.all(), name=team_name)
         agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=agent_name)
 
-        if len(AgentFile.objects.filter(agent=agent)) == 0:
+        if AgentFile.objects.filter(agent=agent).count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'The agent doesn\'t have files.'},
                             status=status.HTTP_400_BAD_REQUEST)

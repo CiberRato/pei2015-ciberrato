@@ -7,7 +7,7 @@ from rest_framework import permissions
 from rest_framework import viewsets, status, mixins
 from rest_framework.response import Response
 
-from ..permissions import IsStaff, NotPrivateCompetition
+from ..permissions import IsStaff, NotPrivateCompetition, ReservedName, NotHallOfFameCompetition
 from .simplex import RoundSimplex
 from ..models import Competition, TypeOfCompetition
 from ..serializers import CompetitionSerializer, CompetitionInputSerializer, RoundSerializer, \
@@ -37,6 +37,12 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
+            ReservedName(name=serializer.validated_data['type_of_competition'],
+                         reserved=settings.PRIVATE_COMPETITIONS_NAME)
+            ReservedName(name=serializer.validated_data['type_of_competition'],
+                         reserved=settings.HALL_OF_FAME_START_STR,
+                         starts=True)
+
             type_of_competition = get_object_or_404(TypeOfCompetition.objects.all(),
                                                     name=serializer.validated_data['type_of_competition'])
 
@@ -87,7 +93,8 @@ class CompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         queryset = Competition.objects.all()
         competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 
-        NotPrivateCompetition(competition=competition, message='This grid can\'t be deleted!')
+        NotPrivateCompetition(competition=competition, message='This competition be deleted!')
+        NotHallOfFameCompetition(competition=competition)
 
         for r in competition.round_set.all():
             r.delete()
@@ -122,6 +129,7 @@ class CompetitionChangeState(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             competition = get_object_or_404(self.queryset, name=kwargs.get('pk', ''))
 
             NotPrivateCompetition(competition=competition, message='This competition can\'t be changed!')
+            NotHallOfFameCompetition(competition=competition)
 
             competition.state_of_competition = serializer.data.get('state_of_competition', '')
             competition.save()
@@ -156,10 +164,14 @@ class CompetitionStateViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin
             toc = TypeOfCompetition.objects.create(name=settings.PRIVATE_COMPETITIONS_NAME, number_teams_for_trial=1,
                                                    number_agents_by_grid=50, single_position=False,
                                                    timeout=1, synchronous_simulation=True)
+
         if kwargs.get('pk', '') in state:
-            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', '')).exclude(type_of_competition=toc)
+            queryset = Competition.objects.filter(state_of_competition=kwargs.get('pk', ''))
+            queryset = queryset.exclude(type_of_competition=toc)
+            queryset = queryset.exclude(type_of_competition=Competition.get_hall_fame_type())
         elif kwargs.get('pk', '') == 'All':
             queryset = Competition.objects.all().exclude(type_of_competition=toc)
+            queryset = queryset.exclude(type_of_competition=Competition.get_hall_fame_type())
         else:
             return Response({'status': 'Bad Request',
                              'message': 'The state must mach: {\'Past\', \'Register\', \'Competition\', \'All\'}'},
@@ -199,6 +211,7 @@ class CompetitionRounds(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                                mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = TypeOfCompetition.objects.all().exclude(name=settings.PRIVATE_COMPETITIONS_NAME)
+    queryset = queryset.exclude(name=settings.HALL_OF_FAME_START_STR + "Single")
     serializer_class = TypeOfCompetitionSerializer
 
     def get_permissions(self):
@@ -221,10 +234,11 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            if serializer.validated_data['name'] == settings.PRIVATE_COMPETITIONS_NAME:
-                return Response({'status': 'Bad request',
-                                 'message': 'This type of competition name is reserved!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            ReservedName(name=serializer.validated_data['name'],
+                         reserved=settings.PRIVATE_COMPETITIONS_NAME)
+            ReservedName(name=serializer.validated_data['name'],
+                         reserved=settings.HALL_OF_FAME_START_STR,
+                         starts=True)
 
             try:
                 with transaction.atomic():
@@ -264,10 +278,11 @@ class TypeOfCompetitionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixi
         """
         queryset = TypeOfCompetition.objects.all()
 
-        if kwargs.get('pk', '') == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad request',
-                             'message': 'This type of competition is reserved!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        ReservedName(name=kwargs.get('pk', ''),
+                     reserved=settings.PRIVATE_COMPETITIONS_NAME)
+        ReservedName(name=kwargs.get('pk', ''),
+                     reserved=settings.HALL_OF_FAME_START_STR,
+                     starts=True)
 
         type_of_competition = get_object_or_404(queryset, name=kwargs.get('pk', ''))
 

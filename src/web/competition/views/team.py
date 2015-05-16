@@ -65,7 +65,8 @@ class MyEnrolledTeamsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         enrolled_teams = []
         for team in request.user.teams.all():
             for eg in team.teamenrolled_set.all():
-                if eg.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME:
+                if eg.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME \
+                        and not eg.competition.type_of_competition.name.startswith(settings.HALL_OF_FAME_START_STR):
                     enrolled_teams += [TeamEnrolledSimplex(eg)]
 
         serializer = self.serializer_class(enrolled_teams, many=True)
@@ -118,7 +119,7 @@ class CompetitionOldestRoundViewSet(mixins.RetrieveModelMixin, viewsets.GenericV
 
         NotPrivateCompetition(competition=competition)
 
-        if len(competition.round_set.all()) == 0:
+        if competition.round_set.all().count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'Not found '},
                             status=status.HTTP_404_NOT_FOUND)
@@ -147,7 +148,7 @@ class CompetitionEarliestRoundViewSet(mixins.RetrieveModelMixin, viewsets.Generi
 
         NotPrivateCompetition(competition=competition)
 
-        if len(competition.round_set.all()) == 0:
+        if competition.round_set.all().count() == 0:
             return Response({'status': 'Bad request',
                              'message': 'Not found '},
                             status=status.HTTP_404_NOT_FOUND)
@@ -230,7 +231,7 @@ class MyEnrolledTeamsInCompetitionViewSet(mixins.RetrieveModelMixin, viewsets.Ge
         enrolled_teams = []
         for team in user.teams.all():
             enrolled_team = TeamEnrolled.objects.filter(team=team, competition=competition)
-            if len(enrolled_team) == 1:
+            if enrolled_team.count() == 1:
                 enrolled_teams += [TeamEnrolledSimplex(enrolled_team[0])]
 
         serializer = self.serializer_class(enrolled_teams, many=True)
@@ -386,7 +387,7 @@ class AdminEnrollTeam(mixins.DestroyModelMixin, viewsets.GenericViewSet):
 
         team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
 
-        team_not_enrolled = (len(TeamEnrolled.objects.filter(competition=competition, team=team)) == 0)
+        team_not_enrolled = (TeamEnrolled.objects.filter(competition=competition, team=team).count() == 0)
 
         if team_not_enrolled:
             return Response({'status': 'Bad request',

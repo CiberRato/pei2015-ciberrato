@@ -128,6 +128,8 @@ TEST_CODE_ENDPOINT = "http://127.0.0.1:9000/api/v1/test_agent/?agent_name=<agent
 
 PRIVATE_COMPETITIONS_NAME = "Private Competition"
 
+HALL_OF_FAME_START_STR = "Hall of fame - "
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )

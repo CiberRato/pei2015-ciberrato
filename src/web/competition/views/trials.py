@@ -11,6 +11,7 @@ from rest_framework import renderers, permissions
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
 from ..models import Trial
+from ..permissions import NotPrivateCompetition, NotHallOfFameCompetition
 
 from competition.shortcuts import *
 from notifications.models import NotificationBroadcast, NotificationTeam
@@ -157,6 +158,9 @@ class GetTrialLog(views.APIView):
         :param trial_id: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=trial_id)
+
+        # can not be private competition
+        NotPrivateCompetition(competition=trial.round.parent_competition)
 
         if not trial_done(trial):
             return Response({'status': 'Bad request',

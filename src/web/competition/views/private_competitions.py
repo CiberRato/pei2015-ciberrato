@@ -246,32 +246,22 @@ class RunPrivateTrial(views.APIView):
                                                        competition=trial.round.parent_competition)
                 if team_enroll.valid:
                     # competition agent
-                    competition_agent_not_exists = (len(CompetitionAgent.objects.filter(
-                        competition=trial.round.parent_competition,
-                        agent=agent_grid.agent,
-                        round=trial.round)) == 0)
-
-                    if competition_agent_not_exists:
-                        competition_agent = CompetitionAgent.objects.create(
-                            competition=trial.round.parent_competition,
-                            agent=agent_grid.agent,
-                            round=trial.round)
-                    else:
+                    try:
                         competition_agent = CompetitionAgent.objects.get(
                             competition=trial.round.parent_competition,
                             agent=agent_grid.agent,
                             round=trial.round)
-
-                    log_sim_agent_not_exists = (len(LogTrialAgent.objects.filter(
-                        competition_agent=competition_agent,
-                        trial=trial,
-                        pos=pos)) == 0)
-
-                    # log trial agent
-                    if log_sim_agent_not_exists:
+                    except CompetitionAgent.DoesNotExist:
+                        competition_agent = CompetitionAgent.objects.create(
+                            competition=trial.round.parent_competition,
+                            agent=agent_grid.agent,
+                            round=trial.round)
+                    try:
                         LogTrialAgent.objects.create(competition_agent=competition_agent,
                                                      trial=trial,
                                                      pos=pos)
+                    except IntegrityError:
+                        pass
 
                     pos += 1
 
