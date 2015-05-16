@@ -9,17 +9,15 @@ from rest_framework import permissions
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
 
-from agent.models import Agent
-
 from .simplex import TrialSimplex, TrialAgentSimplex, TrialGridSimplex
 from ..serializers import TrialSerializer, TrialAgentSerializer, TrialGridsSerializer, \
     TrialGridInputSerializer
 from ..models import Competition, Round, Trial, CompetitionAgent, LogTrialAgent, TrialGrid, \
     GridPositions, TeamEnrolled, AgentGrid
 from ..shortcuts import *
-from ..permissions import IsStaff
+from ..permissions import IsStaff, NotPrivateCompetition, NotHallOfFameCompetition, \
+    TeamEnrolledWithValidInscription, CompetitionMustBeNotInPast
 
-from authentication.models import Team
 from notifications.models import NotificationBroadcast
 
 
@@ -48,10 +46,8 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         if serializer.is_valid():
             competition = get_object_or_404(Competition.objects.all(), name=serializer.validated_data['competition_name'])
 
-            if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-                return Response({'status': 'Bad Request',
-                                 'message': 'You can not create for that competition!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            NotPrivateCompetition(competition=competition)
+            NotHallOfFameCompetition(competition=competition)
 
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
                                   parent_competition=competition)
@@ -105,10 +101,8 @@ class TrialViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
 
-        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This trial can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=trial.round.parent_competition)
+        NotHallOfFameCompetition(competition=trial.round.parent_competition)
 
         trial.delete()
 
@@ -133,46 +127,14 @@ class GetTrialAgents(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :param identifier: The trial identifier
         """
         trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
+        NotPrivateCompetition(competition=trial.round.parent_competition)
+
         trials = []
 
         for lga in trial.logtrialagent_set.all():
             trials += [TrialAgentSimplex(lga)]
 
         # Competition Agents name
-        serializer = self.serializer_class(trials, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class TrialByAgent(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Trial.objects.all()
-    serializer_class = TrialSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Get} the agent trials
-        B{URL:} ../api/v1/competitions/trials_by_agent/<agent_name>/?team_name=<team_name>
-
-        :type  agent_name: str
-        :param agent_name: The agent name
-        :type  team_name: str
-        :param team_name: The team name
-        """
-        if 'team_name' not in request.GET:
-            return Response({'status': 'Bad request',
-                             'message': 'Please provide the ?team_name=<team_name>'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
-        agent = get_object_or_404(Agent.objects.all(), team=team, agent_name=kwargs.get('pk'))
-        trials = []
-
-        for lga in LogTrialAgent.objects.filter(competition_agent=agent.competitionagent_set.all()):
-            trials += [TrialSimplex(lga.trial)]
-
         serializer = self.serializer_class(trials, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -197,10 +159,7 @@ class TrialByRound(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(Competition.objects.all(), name=request.GET.get('competition_name', ''))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition)
 
         r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'), parent_competition=competition)
         serializer = self.serializer_class([TrialSimplex(sim) for sim in r.trial_set.all()], many=True)
@@ -225,10 +184,7 @@ class TrialByCompetition(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         """
         competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
-        if competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
-            return Response({'status': 'Bad Request',
-                             'message': 'This grid can\'t be seen!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        NotPrivateCompetition(competition=competition)
 
         trials = []
 
@@ -273,23 +229,10 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
                                  'message': 'You can not add more teams to the grid.'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            if grid_positions.competition.state_of_competition == 'Past':
-                return Response({'status': 'Bad Request',
-                                 'message': 'The competition is in \'Past\' state.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            CompetitionMustBeNotInPast(competition=grid_positions.competition)
 
-            team_enrolled = TeamEnrolled.objects.filter(team=grid_positions.team,
-                                                        competition=grid_positions.competition)
-
-            if len(team_enrolled) != 1:
-                return Response({'status': 'Permission denied',
-                                 'message': 'The team must be enrolled in the competition.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            if not team_enrolled[0].valid:
-                return Response({'status': 'Permission denied',
-                                 'message': 'The team must be enrolled in the competition with valid inscription.'},
-                                status=status.HTTP_403_FORBIDDEN)
+            TeamEnrolledWithValidInscription(competition=grid_positions.competition,
+                                             team=grid_positions.team)
 
             if serializer.validated_data['position'] > \
                     grid_positions.competition.type_of_competition.number_teams_for_trial:
@@ -346,23 +289,10 @@ class TrialGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         sim_grid = get_object_or_404(TrialGrid.objects.all(), trial=sim,
                                      position=request.GET.get('position', ''))
 
-        if sim_grid.grid_positions.competition.state_of_competition == 'Past':
-            return Response({'status': 'Bad Request',
-                             'message': 'The competition is in \'Past\' state.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        CompetitionMustBeNotInPast(competition=sim_grid.grid_positions.competition)
 
-        team_enrolled = TeamEnrolled.objects.filter(team=sim_grid.grid_positions.team,
-                                                    competition=sim_grid.grid_positions.competition)
-
-        if len(team_enrolled) != 1:
-            return Response({'status': 'Permission denied',
-                             'message': 'The team must be enrolled in the competition.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
-        if not team_enrolled[0].valid:
-            return Response({'status': 'Permission denied',
-                             'message': 'The team must be enrolled in the competition with valid inscription.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        TeamEnrolledWithValidInscription(competition=sim_grid.grid_positions.competition,
+                                         team=sim_grid.grid_positions.team)
 
         sim = get_object_or_404(TrialGrid.objects.all(), trial=sim, position=request.GET.get('position', ''))
         sim.delete()
