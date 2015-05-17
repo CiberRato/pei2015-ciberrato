@@ -31,7 +31,7 @@
 
 using std::cerr;
 
-cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
+cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser, QTcpSocket *client)
 {
 	robot = 0;
 	robotBeacon = 0;
@@ -39,6 +39,7 @@ cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
 	view = 0;
 	panelview = 0;
 	xmlParser=parser;
+	this->client = client;
 }
  
 bool cbReceptionHandler::startDocument()

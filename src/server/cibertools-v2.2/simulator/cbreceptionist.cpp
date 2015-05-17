@@ -90,7 +90,7 @@ bool cbReceptionist::CheckIn(QTcpSocket* client)
     }
 
 	/* parse xml message */
-	cbReceptionHandler handler(xmlParser);
+	cbReceptionHandler handler(xmlParser, client);
 	if (!handler.parse(datagram.data(), datagram.size()))
 	{
 		cerr << "Fail parsing xml message\n" << datagram.data() << "\n";
