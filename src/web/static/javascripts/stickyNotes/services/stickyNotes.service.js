@@ -11,7 +11,9 @@
         var StickyNotes = {
             getAll: getAll,
             create: create,
-            edit: edit
+            edit: edit,
+            remove: remove,
+            toggle: toggle
         };
 
         return StickyNotes;
@@ -32,6 +34,16 @@
                 note: text,
                 time: time
             })
+        }
+
+        function remove(identifier){
+            return $http.delete("/api/v1/sticky_notes/crud/" + identifier + "/");
+        }
+
+        function toggle(identifier){
+            return $http.post('/api/v1/sticky_notes/toggle/', {
+                identifier: identifier
+            });
         }
 
     }

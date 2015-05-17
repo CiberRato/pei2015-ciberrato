@@ -18,6 +18,7 @@
                             <tr>
                                 <th>Message</th>
                                 <th>Time (sec)</th>
+                                <th>Turn On/Off</th>
                                 <th>Edit</th>
                                 <th>Remove</th>
                             </tr>
@@ -26,6 +27,8 @@
                             <tr ng-repeat="(key, value) in vm.stickyNotes">
                                 <td>{{value.note}}</td>
                                 <td>{{value.time}}</td>
+                                <td ng-if="value.active==true"><input type="checkbox" name="option1" checked ng-model="value.active" ng-change="vm.turnOff(value.identifier)"></td>
+                                <td ng-if="value.active==false"><input type="checkbox" name="option1" ng-model="value.active" ng-change="vm.turnOn(value.identifier)"></td></td>
                                 <td><a data-toggle="modal" href="#editNote{{key}}" class="fam-page-white-edit"></a>
                                     <div  class="modal fade hide"  id="editNote{{key}}">
                                         <div class="modal-header">
@@ -60,7 +63,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><a href="#" class="btn btn-primary btn-flat">X</a>
+                                <td><a class="btn btn-primary btn-flat" ng-click="vm.remove(value.identifier)">X</a>
 
 
                             </tr>
