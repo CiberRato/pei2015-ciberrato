@@ -910,7 +910,7 @@ class AuthenticationTestCase(TestCase):
         url = "/api/v1/competitions/automatic_score/"
         data = {'trial_id': trial_identifier, 'score': 10, 'number_of_agents': 5, 'time': 10}
         response = client.post(path=url, data=data)
-        self.assertEqual(response.data, {"detail":"You can only start the simulation for the Hall of fame!"})
+        self.assertEqual(response.data, {"detail":"This is not a Hall of fame competition"})
 
         # toggle inscription again
         url = "/api/v1/competitions/toggle_team_inscription/"

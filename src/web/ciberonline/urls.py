@@ -34,6 +34,8 @@ from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFile
 
 from stickynote.views import StickyNotesViewSet, StickyNotesToggle
 
+from statistics.views import MediaStats
+
 from rest_framework import routers
 
 
@@ -127,6 +129,10 @@ router_sticky_note = routers.SimpleRouter()
 router_sticky_note.register(r'crud', StickyNotesViewSet)
 router_sticky_note.register(r'toggle', StickyNotesToggle)
 
+# statistics
+router_statistics = routers.SimpleRouter()
+router_statistics.register(r'media', MediaStats)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
@@ -143,6 +149,7 @@ urlpatterns = patterns('',
                        url(r'^api/v1/trials/', include(router_trials.urls)),
                        url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),
                            name="Trial message Upload"),
+                       url(r'^api/v1/statistics/', include(router_statistics.urls)),
 
                        # upload files to round
                        url(r'^api/v1/competitions/round/upload/param_list/$', UploadParamListView.as_view(),
