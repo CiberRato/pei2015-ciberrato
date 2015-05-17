@@ -20,20 +20,22 @@ $("#stop").click(function() {
     return false;
 });
 $(window).keypress(function(e) {
-    if (e.keyCode == 32 && angular.element('[ng-controller=LogViewer]').scope().playvar==1) {
-        angular.element('[ng-controller=LogViewer]').scope().pause();
-        $("#pause").attr("disabled", true);
-        $("#play").removeAttr("disabled");
-        $("#stop").removeAttr("disabled");
-        return false;
-    }
-    else if (e.keyCode == 32 && angular.element('[ng-controller=LogViewer]').scope().playvar==0) {
-        angular.element('[ng-controller=LogViewer]').scope().play();
-        $("#play").attr("disabled", true);
-        $("#pause").removeAttr("disabled");
-        $("#stop").removeAttr("disabled");
-        return false;
-    }
+    try{
+        if (e.keyCode == 32 && angular.element('[ng-controller=LogViewer]') !== 'undefined' && angular.element('[ng-controller=LogViewer]').scope().playvar==1) {
+            angular.element('[ng-controller=LogViewer]').scope().pause();
+            $("#pause").attr("disabled", true);
+            $("#play").removeAttr("disabled");
+            $("#stop").removeAttr("disabled");
+            return false;
+        }
+        else if (e.keyCode == 32 && angular.element('[ng-controller=LogViewer]').scope().playvar==0) {
+            angular.element('[ng-controller=LogViewer]').scope().play();
+            $("#play").attr("disabled", true);
+            $("#pause").removeAttr("disabled");
+            $("#stop").removeAttr("disabled");
+            return false;
+        }
+    }catch(Exception){}
 });
 $(document).keydown(function(e) {
     switch(e.which) {
