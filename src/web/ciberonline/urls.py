@@ -32,7 +32,7 @@ from agent.views.agent import AgentViewSets, AgentsByTeamViewSet, AgentsByUserVi
 from agent.views.files import UploadAgent, DeleteUploadedFileAgent, GetAgentFilesSERVER, ListAgentsFiles, \
     GetAllowedLanguages, GetAllAgentFiles, GetAgentFile
 
-from stickynote.views import StickyNotesViewSet, StickyNotesToggle
+from stickynote.views import StickyNotesViewSet, StickyNotesToggle, ActiveStickyNotes
 
 from statistics.views import MediaStats
 
@@ -128,6 +128,7 @@ router_private_competitions.register(r'trial', SoloTrial)
 router_sticky_note = routers.SimpleRouter()
 router_sticky_note.register(r'crud', StickyNotesViewSet)
 router_sticky_note.register(r'toggle', StickyNotesToggle)
+router_sticky_note.register(r'active', ActiveStickyNotes)
 
 # statistics
 router_statistics = routers.SimpleRouter()

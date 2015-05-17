@@ -11,7 +11,7 @@ from competition.permissions import IsStaff
 
 class StickyNotesViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
                          mixins.UpdateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = StickyNote.objects.filter(active=True)
+    queryset = StickyNote.objects.filter()
     serializer_class = StickyNoteSerializer
 
     def get_permissions(self):
@@ -137,3 +137,21 @@ class StickyNotesToggle(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActiveStickyNotes(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = StickyNote.objects.filter(active=True)
+    serializer_class = StickyNoteSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsStaff(),
+
+    def list(self, request, *args, **kwargs):
+        """
+        B{List} the active sticky notes
+        B{URL:} ../api/v1/sticky_notes/active/
+        """
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)
