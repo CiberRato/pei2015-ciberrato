@@ -1544,10 +1544,9 @@ void cbSimulator::processReceptionMessages()
 		switch (form.type)
 		{
 		case cbClientForm::VIEW:
-			//cout << "View form is going to be processed\n";
 			cnt = views.size();
 			views.resize(cnt + 1);
-			views[cnt] = (cbView*) client; //form.client.view;
+			views[cnt] = form.client.view;
 
 			views[cnt]->Reply(param, grid, lab);
 
@@ -1563,7 +1562,6 @@ void cbSimulator::processReceptionMessages()
 			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::PANEL:
-			//cout << "Panel form is going to be processed\n";
 			cnt = panels.size();
 			panels.resize(cnt + 1);
 			panels[cnt] = form.client.panel;
@@ -1582,12 +1580,12 @@ void cbSimulator::processReceptionMessages()
 		case cbClientForm::PANELVIEW:
 			cnt = panels.size();
 			panels.resize(cnt + 1);
-			panels[cnt] = (cbPanelView*) client;
+			panels[cnt] = form.client.panelview;
 			panels[cnt]->Reply(param, grid, lab);
 
 			cnt = views.size();
 			views.resize(cnt + 1);
-			views[cnt] = (cbView*) client;
+			views[cnt] = form.client.panelview;
 			if (curState == INIT) {
 				nextState = STOPPED;
 				if (logging)
@@ -1609,7 +1607,6 @@ void cbSimulator::processReceptionMessages()
 		case cbClientForm::ROBOT:
 		case cbClientForm::ROBOTBEACON:
 		{
-			//cout << "Robot form is going to be processed\n";
 			cbRobot *robot = form.client.robot;
 			if (registerRobot(robot))
 			{
@@ -1631,7 +1628,7 @@ void cbSimulator::processReceptionMessages()
 				disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 	
 			}
-			else // robot was refused
+			else
 			{
 				robot->Refuse();
 				cout << robot->Name() << " has been refused\n";
