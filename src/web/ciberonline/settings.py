@@ -47,7 +47,8 @@ INSTALLED_APPS = (
     'notifications',
     'tokens',
     'stickynote',
-    'captcha'
+    'captcha',
+    'statistics'
 )
 
 MIDDLEWARE_CLASSES = (
