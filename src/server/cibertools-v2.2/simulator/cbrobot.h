@@ -54,7 +54,7 @@ public:
 	// enum State and StrState (in cbrobot.cpp) must be compatible!!!
 	enum State {STOPPED=0, RUNNING, WAITOTHERS, RETURNING, FINISHED, REMOVED};
 
-	cbRobot(const double irSensorAngles[NUM_IR_SENSORS]);
+	cbRobot(const double irSensorAngles[NUM_IR_SENSORS]=irSensorDefaultAngles);
 	virtual ~cbRobot();
 
 	void setName(const char *name);
