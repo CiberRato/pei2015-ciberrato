@@ -242,7 +242,6 @@ protected: // data members
 
     QTcpServer server;
     QTcpSocket* client;
-    cbClient *y;
 
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);

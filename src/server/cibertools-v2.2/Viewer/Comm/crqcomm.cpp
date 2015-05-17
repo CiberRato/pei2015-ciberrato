@@ -53,28 +53,28 @@ CRQComm::CRQComm()
 /*============================================================================*/
 
 CRQComm::CRQComm(CRQLabView *lb, CRQScene *commScene, CRLab *commLab,
-  QString h, unsigned short port_, const char c , const char autoC,
-  const char autoS)
+                 QString h, unsigned short port_, const char c , const char autoC,
+                 const char autoS)
     : QTcpSocket(), timer(this)
 {
     scoreLayout = lb->findChild<QVBoxLayout *>("scoreLayout");
-	autoConnect = autoC;
-	autoStart = autoS;
+    autoConnect = autoC;
+    autoStart = autoS;
     control = c;
-	dataView = NULL;
-	port = port_;
-    scene = commScene;	// Scene passed by main
-    lab = commLab;		// Lab passed by main
-	cont = 0;
-	host = h;
-	skinFName = "skins/default/default.skin";
+    dataView = NULL;
+    port = port_;
+    scene = commScene;  // Scene passed by main
+    lab = commLab;      // Lab passed by main
+    cont = 0;
+    host = h;
+    skinFName = "skins/default/default.skin";
     isConnected = false;
 
     connectToHost(host, port);
 
     QObject::connect (this, SIGNAL(readyRead()), SLOT(dataControler()));
 
-	struct hostent *host_ent ;
+    struct hostent *host_ent ;
     struct in_addr *addr_ptr ;
 
     QByteArray hostLatin = host.toLatin1();
@@ -94,21 +94,21 @@ CRQComm::CRQComm(CRQLabView *lb, CRQScene *commScene, CRLab *commLab,
     }
 
     serverAddress.setAddress( host ); //Server address
-	
-	QHostAddress localAddress;			//Local Address
+
+    QHostAddress localAddress;          //Local Address
     localAddress.setAddress( QString( "127.0.0.1" ));
 
-    /*if( bind( localAddress, 0 ) == FALSE )	//Bind for local address
+    /*if( bind( localAddress, 0 ) == FALSE )    //Bind for local address
     {
-		cerr << "Failed to assign address" << endl;
+        cerr << "Failed to assign address" << endl;
         exit (-1);
     }*/
 
-	if(autoConnect == 'y') {
-		this->connect();
+    if (autoConnect == 'y') {
+        this->connect();
     }
 
-   	// Connect Alarm event
+    // Connect Alarm event
     QObject::connect(&timer, SIGNAL(timeout()), SLOT(SendRequests()));
 }
 
@@ -122,12 +122,12 @@ void CRQComm::connect(void)
 #ifdef DEBUG
     cout << "CRQComm::connect\n";
 #endif
-    
+
     QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(dataControler()));
     QObject::connect(this, SIGNAL(readyRead()), this, SLOT(replyControler()));
 
-    port=6000;
-    if( write("<PanelView/>\n", 14) == -1 )
+    port = 6000;
+    if (write("<PanelView/>\n", 14) == -1 )
     {
         cerr << "Failure when writting <PanelView/>" << endl;
         exit (-1);
@@ -142,89 +142,97 @@ void CRQComm::replyControler()
     cout << "CRQComm::replyControler\n";
 #endif
     std::cout << "message\n";
+
+    QByteArray datagram, readArr;
+    while (strcmp((readArr = read(1)).data(), "\x04") != 0) {
+        datagram += readArr;
+    }
+
     //char data[16384];
-	//Read confirmation <REPLY STATUS="ok/refuse".../>
-	
+    //Read confirmation <REPLY STATUS="ok/refuse".../>
+
     //cerr << "reply controller \n";
 
     //while (hasPendingDatagrams())
     //{
-        //QByteArray datagram;
-        //datagram.resize(pendingDatagramSize());
-        QByteArray datagram = readAll();
+    //QByteArray datagram;
+    //datagram.resize(pendingDatagramSize());
+    //QByteArray datagram = readAll();
 
-        std::cout << datagram.toHex().data();
-        /*if( readDatagram( datagram.data(), datagram.size(), &serverAddress, &port ) == -1 )
+    std::cout << datagram.toHex().data();
+    /*if( readDatagram( datagram.data(), datagram.size(), &serverAddress, &port ) == -1 )
+    {
+        cerr << "Failure to read confirmation from the socket " << endl;
+        exit (-1);
+    }*/
+    QXmlInputSource source;
+    source.setData( QString( datagram.data() ) );
+
+    /* set replyHandler */
+    CRQReplyHandler replyHandler;
+    std::cout << datagram.data();
+    /* parse reply message with replyHandler */
+    QXmlSimpleReader reader;
+    reader.setContentHandler(&replyHandler);
+    if (reader.parse(source))
+    {
+        reply = replyHandler.reply(); // The status of request
+        if ( reply->status )  // REPLY = "ok"
         {
-            cerr << "Failure to read confirmation from the socket " << endl;
-            exit (-1);
-        }*/
-        QXmlInputSource source;
-        source.setData( QString( datagram.data() ) );
+            QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(replyControler()));
+            QObject::connect(this, SIGNAL(readyRead()), SLOT(dataControler()));
 
-        /* set replyHandler */
-        CRQReplyHandler replyHandler;
-        std::cout << datagram.data();
-        /* parse reply message with replyHandler */
-        QXmlSimpleReader reader;
-        reader.setContentHandler(&replyHandler);
-        if(reader.parse(source))
-        {
-            reply = replyHandler.reply(); // The status of request
-            if( reply->status )   // REPLY = "ok"
-            {
-                QObject::disconnect(this, SIGNAL(readyRead()), this, SLOT(replyControler()));
-                QObject::connect(this, SIGNAL(readyRead()), SLOT(dataControler()));
-
-                // Initialize timer
-                timer.setSingleShot(true);
-                if(autoConnect == 'y')
-                    timer.start(500);
-                else
-                    timer.start(3000);
-
-                isConnected = true;
-                // emit signal
-                emit viewerConnected(true);
-
-                if (lab != NULL )   // With this we can replace the last
-                {               //lab received
-                    scene->clear();//function that delete all canvasItems
-                    closeWindows();
-                }
-                
-                lab = reply->lab; // Lab given by handler
-                scene->skin(skinFName);
-                scene->drawLab(lab);      // Draw lab in scene
-                //scene->update();
-                // the score window
-                
-                grid = reply->grid; // Grid given by handler
-                lab->addGrid(grid);         // Add grid to lab
-                scene->drawGrid(lab);   // Draw grid in scene
-                
-                dataView = new CRQDataView(reply, lab, skinFName, 0);
-                scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
-                dataView->show();
-                // the control window - not supported / no need
-                /*commControlPanel = new CRQControlPanel( scene, this,
-                                skinFName, mainWindow->soundStatus, mainWindow,
-                                "Control Panel");
-                if(control == 'y')
-                    commControlPanel->show();*/
-                //scene->update();
-                return;
-            }
+            // Initialize timer
+            timer.setSingleShot(true);
+            if (autoConnect == 'y')
+                timer.start(500);
             else
-            {
-                cerr << "Connection refused.\n";
-                exit(1);
+                timer.start(3000);
+
+            isConnected = true;
+            // emit signal
+            emit viewerConnected(true);
+
+            if (lab != NULL )   // With this we can replace the last
+            {   //lab received
+                scene->clear();//function that delete all canvasItems
+                closeWindows();
             }
+
+            lab = reply->lab; // Lab given by handler
+            scene->skin(skinFName);
+            scene->drawLab(lab);      // Draw lab in scene
+            //scene->update();
+            // the score window
+
+            grid = reply->grid; // Grid given by handler
+            lab->addGrid(grid);         // Add grid to lab
+            scene->drawGrid(lab);   // Draw grid in scene
+
+            dataView = new CRQDataView(reply, lab, skinFName, 0);
+            scoreLayout->addWidget(dataView, 1, Qt::AlignTop);
+            dataView->show();
+            // the control window - not supported / no need
+            /*commControlPanel = new CRQControlPanel( scene, this,
+                            skinFName, mainWindow->soundStatus, mainWindow,
+                            "Control Panel");
+            if(control == 'y')
+                commControlPanel->show();*/
+            //scene->update();
+            if (bytesAvailable())
+                emit readyRead();
+            return;
         }
         else
         {
-            cerr << "Invalid Reply message\n";
+            cerr << "Connection refused.\n";
+            exit(1);
         }
+    }
+    else
+    {
+        cerr << "Invalid Reply message\n";
+    }
     //}
 
 
@@ -240,7 +248,7 @@ void CRQComm::SendRequests()
     cout << "CRQComm::sendRequests\n";
 #endif
 
-	if(autoStart == 'y' && autoConnect == 'y')
+    if (autoStart == 'y' && autoConnect == 'y')
         this->sendMessage("<Start/>");
 }
 
@@ -255,16 +263,11 @@ CRQComm::~CRQComm()
 
 void CRQComm::dataControler() //Called when the socket receive something
 {
-    //char data[16384];
-
-    //while (hasPendingDatagrams())
-    //{
-        QByteArray datagram = readAll();
-        //datagram.resize(pendingDatagramSize());
-        /*if (readDatagram( datagram.data(), datagram.size(), &serverAddress, &port) == -1 ) //Read from socket
-        {
-            cerr << "Failure to read socket " << endl;
-        }*/
+    QByteArray datagram, readArr;
+    while (bytesAvailable()) {
+        while (strcmp((readArr = read(1)).data(), "\x04") != 0) {
+            datagram += readArr;
+        }
 
         QXmlInputSource source;
         source.setData( QString( datagram.data() ) );
@@ -275,28 +278,28 @@ void CRQComm::dataControler() //Called when the socket receive something
         reader.setContentHandler(&commHandler);
         if (reader.parse(source)) {
             objectReceived = commHandler.objectType(); //Object type received
-            
+
             vector<CRRobot *> vec = commHandler.getRobots(); // Robot given by handler
 
-            for(std::vector<CRRobot *>::iterator it = vec.begin(); it != vec.end(); ++it) {
-			    lab->addRobot(*it);
-	           	scene->drawRobot( lab );		// Draw a robot in scene
-	            //scene->update();
-	            if (dataView != NULL)
-	                dataView->update(*it);	// update the info about robot*/
-			}                    
+            for (std::vector<CRRobot *>::iterator it = vec.begin(); it != vec.end(); ++it) {
+                lab->addRobot(*it);
+                scene->drawRobot( lab );        // Draw a robot in scene
+                //scene->update();
+                if (dataView != NULL)
+                    dataView->update(*it);  // update the info about robot*/
+            }
         } else {
             cerr << "Invalid message\n";
         }
-    //}
+    }
 }
 
 //=============================================================================
 void CRQComm::sendMessage( const char *mensagem )
 {
-    if( write( mensagem, strlen(mensagem) + 1) == -1 )
+    if ( write( mensagem, strlen(mensagem) + 1) == -1 )
     {
-		cerr << "Failure writting msg" << endl;
+        cerr << "Failure writting msg" << endl;
         exit (-1);
     }
 }
