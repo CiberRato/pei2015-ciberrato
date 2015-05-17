@@ -127,9 +127,9 @@ void CRQComm::connect(void)
     QObject::connect(this, SIGNAL(readyRead()), this, SLOT(replyControler()));
 
     port = 6000;
-    if (write("<PanelView/>\n", 14) == -1 )
+    if (write("<PanelView/>\x04\n", 15) == -1 )
     {
-        cerr << "Failure when writting <PanelView/>" << endl;
+        cerr << "Failure when writing <PanelView/>" << endl;
         exit (-1);
     }
 }
