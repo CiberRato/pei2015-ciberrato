@@ -7,9 +7,11 @@ from competition.models import AgentFile
 from .serializers import MediaStatsSerializer
 from hurry.filesize import size
 
+import os
+
 
 class MediaStats(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = AgentFile.objects.filter(active=True)
+    queryset = AgentFile.objects.filter()
     serializer_class = MediaStatsSerializer
 
     def get_permissions(self):
@@ -28,13 +30,23 @@ class MediaStats(mixins.ListModelMixin, viewsets.GenericViewSet):
                 self.labs = labs
                 self.params = params
 
-        agents_size = size(default_storage('agents').size())
-        grids_size = size(default_storage('grids').size())
-        json_logs_size = size(default_storage('json_logs').size())
-        labs_size = size(default_storage('labs').size())
-        params_size = size(default_storage('params').size())
+        agents_size = size(self._total_size(default_storage.path('agents')))
+        grids_size = size(self._total_size(default_storage.path('grids')))
+        json_logs_size = size(self._total_size(default_storage.path('json_logs')))
+        labs_size = size(self._total_size(default_storage.path('labs')))
+        params_size = size(self._total_size(default_storage.path('params')))
 
         media_dir = MediaDir(agents_size, grids_size, json_logs_size, labs_size, params_size)
 
         serializer = self.serializer_class(media_dir)
         return Response(serializer.data)
+
+    def _total_size(self, source):
+        total_size = os.path.getsize(source)
+        for item in os.listdir(source):
+            itempath = os.path.join(source, item)
+            if os.path.isfile(itempath):
+                total_size += os.path.getsize(itempath)
+            elif os.path.isdir(itempath):
+                total_size += self._total_size(itempath)
+        return total_size

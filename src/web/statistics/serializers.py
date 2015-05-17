@@ -4,7 +4,7 @@ from rest_framework import serializers
 class MediaStatsSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         return {
-            'agents': instance.size,
+            'agents': instance.agents,
             'grids': instance.grids,
             'json_logs': instance.json_logs,
             'labs': instance.labs,
