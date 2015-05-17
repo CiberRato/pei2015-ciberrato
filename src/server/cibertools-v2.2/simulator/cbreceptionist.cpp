@@ -43,17 +43,6 @@ using std::cout;
 	Set the socket non-blocking.
 */
 cbReceptionist::cbReceptionist() {
-    /*QHostAddress address;
-    address.setAddress(QString("0.0.0.0"));     // this way any address is accepted
-	*//* bind local address */
-	//cout.form(" binding to address %s and port %hd...\n", "0.0.0.0", port);
-    /*if (!bind(address, port, QUdpSocket::ShareAddress))
-    {
-        cerr << " Couldn't open socket at port " << port << "\n";
-        status = false;
-        return;
-    }*/
-
 	/* make initialization */
 	xmlParser = new QXmlSimpleReader;
 	status = true;
@@ -74,28 +63,6 @@ bool cbReceptionist::bad(void)
 	return status == false;
 }
 
-
-/*!
-	Set the xml parser.
-*/
-/**
-void cbReceptionist::setXmlParser(QXmlSimpleReader *parser)
-{
-	xmlParser = parser;
-	
-}
-**/
-
-
-///*!
-//	Set the xml source.
-//*/
-//void cbReceptionist::setXmlSource(QXmlInputSource *source)
-//{
-//	xmlSource = source;
-//}
-//
-//
 /*!
 	Check input port for an incoming xml message.
 	If one, parse it, fill in the check-in form and return true;
@@ -126,7 +93,7 @@ bool cbReceptionist::CheckIn(QTcpSocket* client)
 	cbReceptionHandler handler(xmlParser);
 	if (!handler.parse(datagram.data(), datagram.size()))
 	{
-		cerr << "Fail parsing xml message\n" << xmlBuff << "\n";
+		cerr << "Fail parsing xml message\n" << datagram.data() << "\n";
 		return false;
 	}
 
