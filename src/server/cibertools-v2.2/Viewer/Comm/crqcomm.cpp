@@ -145,26 +145,12 @@ void CRQComm::replyControler()
 
     QByteArray datagram, readArr;
     while (strcmp((readArr = read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "Delimeter not found in the message, check the message sent.\n";
+            return;
+        }
         datagram += readArr;
     }
-
-    //char data[16384];
-    //Read confirmation <REPLY STATUS="ok/refuse".../>
-
-    //cerr << "reply controller \n";
-
-    //while (hasPendingDatagrams())
-    //{
-    //QByteArray datagram;
-    //datagram.resize(pendingDatagramSize());
-    //QByteArray datagram = readAll();
-
-    std::cout << datagram.toHex().data();
-    /*if( readDatagram( datagram.data(), datagram.size(), &serverAddress, &port ) == -1 )
-    {
-        cerr << "Failure to read confirmation from the socket " << endl;
-        exit (-1);
-    }*/
     QXmlInputSource source;
     source.setData( QString( datagram.data() ) );
 
@@ -266,6 +252,10 @@ void CRQComm::dataControler() //Called when the socket receive something
     QByteArray datagram, readArr;
     while (bytesAvailable()) {
         while (strcmp((readArr = read(1)).data(), "\x04") != 0) {
+            if (readArr.isEmpty()) {
+                cerr << "Delimeter not found in the message, check the message sent.\n";
+                return;
+            }
             datagram += readArr;
         }
 
