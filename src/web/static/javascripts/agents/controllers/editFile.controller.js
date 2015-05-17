@@ -5,9 +5,9 @@
         .module('ciberonline.agents.controllers')
         .controller('EditFileController', EditFileController);
 
-    EditFileController.$inject = ['$scope', '$routeParams', 'Authentication', 'Agent', 'Team'];
+    EditFileController.$inject = ['$scope', '$routeParams', 'Agent'];
 
-    function EditFileController($scope, $routeParams, Authentication, Agent, Team){
+    function EditFileController($scope, $routeParams, Agent){
         var vm = this;
         vm.getCode = getCode;
         activate();
@@ -23,11 +23,12 @@
 
             function getAgentSuccessFn(data){
                 vm.agent = data.data;
-                console.log(vm.file.substr(vm.file.indexOf('.')))
                 if(vm.file.substr(vm.file.indexOf('.')) === '.py'){
                     vm.language = "python";
-                }else if(vm.file.substr(vm.file.indexOf('.')) === '.java'){
+                }else if(vm.file.substr(vm.file.indexOf('.')) === '.java') {
                     vm.language = 'java';
+                }else if(vm.file.substr(vm.file.indexOf('.')) === '.xml') {
+                    vm.language = 'xml'
                 }else if(vm.file.substr(vm.file.indexOf('.')) === '.c' || vm.file.substr(vm.file.indexOf('.')) === '.cpp') {
                     vm.language = 'c_cpp';
                 }else if(vm.file.substr(vm.file.indexOf('.')) === '.sh'){
