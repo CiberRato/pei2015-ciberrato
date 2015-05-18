@@ -120,11 +120,14 @@
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tooltip.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-collapse.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-dropdown.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-button.js' %}"></script>
 
 <script type="text/javascript" src="{% static 'js/plugins/jGrowl/jquery.jgrowl.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-modal.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-popover.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tab.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-transition.js' %}"></script>
+
 
 <!--only needed if you support non HTML5 FormData browsers.-->
 <script type="text/javascript" src="{% static 'bower_components/ng-file-upload/angular-file-upload-shim.js' %}"></script>
@@ -137,11 +140,29 @@
 <script>
     $(document).ready(function(){
         // Tooltips
-        $('[title]').tooltip({
+        $('[title]:not(.demoPopover)').tooltip({
             placement: 'top'
         });
-    });
 
+        // Dropdowns
+        $('.dropdown-toggle').dropdown();
+
+        // Tabs
+        $('.demoTabs a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        })
+
+        // Radio buttons
+        $('.demoBtns').button();
+
+        // Popover
+        $('.demoPopover').popover({
+            trigger: 'hover'
+        });
+
+
+    });
 </script>
 
 
