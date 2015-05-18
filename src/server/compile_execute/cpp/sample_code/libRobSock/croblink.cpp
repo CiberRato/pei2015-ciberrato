@@ -41,7 +41,7 @@ void CRobLink::send_register_message(char *rob_name,int rob_id)
 {
     // register in server
 	char xml[MSGMAXSIZE];
-    const char fmt[] = "<Robot Name=\"%s\" Id=\"%d\"></Robot>";
+    const char fmt[] = "<Robot Name=\"%s\" Id=\"%d\"></Robot>\x04";
 	sprintf(xml, fmt, rob_name, rob_id);
 
     if(port.send_info(xml, strlen(xml)+1)!=true)
@@ -64,7 +64,7 @@ void CRobLink::send_register_message(char *rob_name,int rob_id, double irSensorA
         n += sprintf(xml+n,"<IRSensor Id=\"%d\" Angle=\"%g\"/>",
                      i, irSensorAngles[i]);
 
-	sprintf(xml+n,"</Robot>");
+	sprintf(xml+n,"</Robot>\x04");
 
     if(port.send_info(xml, strlen(xml)+1)!=true)
     {
