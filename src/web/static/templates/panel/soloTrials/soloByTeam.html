@@ -18,6 +18,7 @@
                                 <th>Grid</th>
                                 <th>Lab</th>
                                 <th>Param List</th>
+                                <th>Show Map</th>
                                 <th>Trials</th>
                                 <th>Remove</th>
                             </tr>
@@ -27,7 +28,16 @@
                                 <td>{{value.grid}}</td>
                                 <td>{{value.lab}}</td>
                                 <td>{{value.param_list}}</td>
+                                <td><a data-toggle="modal" href="#showMap{{key}}" ng-click="vm.getGrid(value.grid); vm.getLab(value.lab)">Preview</a>
+                                    <div  class="modal fade hide"  id="showMap{{key}}">
+                                        <div class="modal-body">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <p>{{vm.grid}}{{vm.lab}}</p>
+                                        </div>
+
+                                    </div></td>
                                 <td><a ng-if="vm.solos.length != 0" href="/panel/trials/{{value.name}}" class="btn awe-arrow-right"></a></td>
+
                                 <td><a data-toggle="modal" href="#confirmType{{key}}" class="btn btn-primary btn-flat">X</a>
                                     <div  class="modal fade hide"  id="confirmType{{key}}">
                                         <div class="modal-body">
@@ -53,3 +63,4 @@
         </article>
     </div>
 </div>
+
