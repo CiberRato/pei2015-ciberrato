@@ -50,6 +50,9 @@ class NotificationTeam(SelfPublishModel, models.Model):
         NotificationTeam.objects.create(team=team, message=handling_message(status, message, trigger))
 
 
+# Old notifications
+
+
 class OldAdminNotification(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -78,7 +81,7 @@ class OldBroadcastNotification(models.Model):
         OldBroadcastNotification.objects.create(message=message)
 
 
-class OldNoficationUser(models.Model):
+class OldNotificationUser(models.Model):
     message = models.TextField()
     user = models.ForeignKey(Account)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -86,11 +89,11 @@ class OldNoficationUser(models.Model):
     @staticmethod
     def sync(message, user):
         # clean old notifications
-        old = OldNoficationUser.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+        old = OldNotificationUser.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
         old.delete()
 
         # create a new message
-        OldNoficationUser.objects.create(message=message, user=user)
+        OldNotificationUser.objects.create(message=message, user=user)
 
 
 class OldNotificationTeam(models.Model):
