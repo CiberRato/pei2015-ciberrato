@@ -12,8 +12,6 @@
         var vm = this;
         var hasGrid = false;
         var hasMap = false;
-
-        var c1 = document.getElementById("layer1");
         var c3 = document.getElementById("layer3");
         var ctx = c3.getContext("2d");
         $scope.zoom = 50;
@@ -76,7 +74,6 @@
 
         function drawBeacon(){
             var i;
-
             for(i=0;i<$scope.map.Lab.Beacon.length;i++){
                 console.log($scope.map.Lab.Beacon[i]);
                 ctx.beginPath();
@@ -134,7 +131,6 @@
                 };
             }
 
-
             function getResourcesErrorFn(data){
                 console.error(data.data);
             }
@@ -172,11 +168,13 @@
             function getResourceSuccessFn(data){
                 vm.grid = data.data;
                 $scope.grid=data.data;
-                prepareParamters();
+
                 if (hasMap){
+                    prepareParamters();
                     drawMap();
+                    drawGrid();
                 }
-                drawGrid();
+
 
 
             }
@@ -186,18 +184,17 @@
             hasMap = true;
             var lab = document.getElementById("select2").value;
             SoloTrials.getResource(lab).then(getResourceSuccessFn, getResourceErrorFn);
-
             function getResourceSuccessFn(data){
                 vm.lab = data.data;
                 $scope.map=data.data;
-                prepareParamters();
-                drawMap();
+
                 if (hasGrid){
+                    prepareParamters();
+                    drawMap();
                     drawGrid();
                 }
             }
         }
-
         function getResourceErrorFn(data){
             console.error(data.data);
         }
