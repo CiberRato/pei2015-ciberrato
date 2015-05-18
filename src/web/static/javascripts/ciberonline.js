@@ -23,7 +23,8 @@
             'angular-loading-bar',
             'cfp.loadingBar',
             'ngAnimate',
-            'ciberonline.stickyNotes'
+            'ciberonline.stickyNotes',
+            'ciberonline.statistics'
         ])
         .run(run);
 
