@@ -73,13 +73,12 @@ class AuthenticationTestCase(TestCase):
         # get user notifications
         url = "/api/v1/notifications/teams/"
         response = client.get(path=url)
-        print response
 
-        # i = 0
-        # for response in response.data:
-            # print response
-            # self.assertEqual(response["message"],
-            # u"{'status': 200, 'content': 'ok" + str(28 + i) + "', 'trigger': ''}")
-            # i += 1
+        for team in response.data:
+            i = 0
+            for response in team["notifications"]:
+                self.assertEqual(response["message"],u"{'status': 200, 'content': 'ok" + str(39 + i)
+                                 + "', 'trigger': ''}")
+                i += 1
 
         client.force_authenticate(user=None)
