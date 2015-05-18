@@ -906,9 +906,8 @@ void cbRobot::sendSensors()
 	cerr << "Measures sent to robot " << id << "\n" << xml;
 #endif
 
-	// CHECK THIS...
-    //if (showMeasures)
-    //    simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
+    if (showMeasures)
+        simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
 
 }
 
