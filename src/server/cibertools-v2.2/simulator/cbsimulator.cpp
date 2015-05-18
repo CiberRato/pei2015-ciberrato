@@ -858,7 +858,7 @@ void cbSimulator::UpdateState()
         if (curState == FINISHED) {
         	for (unsigned int i= 0; i < robotMappers.size(); i++) {
         		if (robotMappers[i] == NULL) continue;
-        		disconnect(robots[i], SIGNAL(readyRead()), robotMappers[i], SLOT(map()));
+        		disconnect(robots[i]->socket, SIGNAL(readyRead()), robotMappers[i], SLOT(map()));
         	}
         }
     }
@@ -1609,13 +1609,13 @@ void cbSimulator::processReceptionMessages()
 			cbRobot *robot = form.client.robot;
 			if (registerRobot(robot))
 			{
-				robot->Reply(param);
+				robot->socket->Reply(param);
 				cout << robot->Name() << " has been registered\n";
 				gui->appendMessage( QString(robot->Name()) + " has been registered" );
 
 				mapper = new QSignalMapper(this);
-				connect(robot, SIGNAL(readyRead()), mapper, SLOT(map()));
-				mapper->setMapping(robot, QString::number(robot->Id()));
+				connect(robot->socket, SIGNAL(readyRead()), mapper, SLOT(map()));
+				mapper->setMapping(robot->socket, QString::number(robot->Id()));
 				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
 
 				robotMappers.resize(robots.size());
@@ -1629,7 +1629,7 @@ void cbSimulator::processReceptionMessages()
 			}
 			else
 			{
-				robot->Refuse();
+				robot->socket->Refuse();
 				cout << robot->Name() << " has been refused\n";
 				gui->appendMessage( QString(robot->Name()) + " has been refused", true);
 				delete robot;

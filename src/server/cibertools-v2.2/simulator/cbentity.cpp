@@ -1,7 +1,7 @@
 #include "cbentity.h"
 #include <iostream>
 
-cbEntity::cbEntity(QTcpSocket * socket) 
+cbEntity::cbEntity(cbClient * socket, QObject *parent) : QObject(parent)
 {
     this->socket = socket;
 }

@@ -43,7 +43,7 @@ static const char *StrState[] =
     "Stopped", "Running", "Waiting", "Returning", "Finished", "Removed"
 };
 
-cbRobot::cbRobot(const double irSensorAngle[]) : cbClient()
+cbRobot::cbRobot(cbClient *client, const double irSensorAngle[]) : cbEntity(client)
 {
 	int i;
 
@@ -283,7 +283,7 @@ bool cbRobot::readAction(cbRobotAction *action)
 	}
 	else xmlBuff[xmlSize]='\0';
 */
-	QByteArray xmlBuff = readAll();
+	QByteArray xmlBuff = socket->readAll();
 #ifdef DEBUG_ROBOT
 	cerr << "cbRobot: " << xmlBuff << "\n";
 #endif
@@ -893,7 +893,7 @@ void cbRobot::sendSensors()
 	n += sprintf(xml+n, "</Measures>\n");
 
 	/* send XML message to client */
-	send(xml, n+1);
+	socket->send(xml, n+1);
 	
 #ifdef DEBUG_ROBOT
 	cerr << "Measures sent to robot " << id << "\n" << xml;
@@ -1076,7 +1076,7 @@ bool cbRobotBin::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
    
 
     /* send reply to client */
-    if (write((char *)&commMsg, sizeof(CommMessage)) != sizeof(CommMessage))
+    if (socket->write((char *)&commMsg, sizeof(CommMessage)) != sizeof(CommMessage))
 	{
         cerr << "Fail replying to client\n";
         simulator->GUI()->appendMessage( "Fail replying to client", true);
@@ -1149,7 +1149,7 @@ void cbRobotBin::sendSensors()
 
 
 	/* send XML message to client */
-	send((char *)&msg, sizeof(msg));
+	socket->send((char *)&msg, sizeof(msg));
 #ifdef DEBUG_ROBOT
 	cerr << "Measures sent to robot (bin protocol)\n";
 #endif
@@ -1169,7 +1169,7 @@ bool cbRobotBin::Refuse(QHostAddress &a, unsigned short &p)
 
     commMsg.comm=htons(OK_COMM+1);
 
-    send((char *)&commMsg,sizeof(commMsg));
+    socket->send((char *)&commMsg,sizeof(commMsg));
 
 	return true;
 }

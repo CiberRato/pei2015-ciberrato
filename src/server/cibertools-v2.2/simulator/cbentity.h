@@ -21,9 +21,11 @@
 #ifndef CBENTITY_H
 #define CBENTITY_H
 
+#include <QObject>
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <qxml.h>
+#include "cbclient.h"
     
 /**
  * base class of all representations of clients in the simulator.
@@ -31,13 +33,13 @@
  *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
  */
 
-class cbEntity
+class cbEntity : public QObject
 {
 public:
-	cbEntity(QTcpSocket*);
+	cbEntity(cbClient*, QObject *parent = 0);
 	~cbEntity();
 
-    QTcpSocket* socket;
+    cbClient* socket;
 
 protected:
     QHostAddress address;

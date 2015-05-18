@@ -29,7 +29,7 @@ using std::cerr;
 using std::cout;
 
 
-cbRobotBeacon::cbRobotBeacon(const double irSensorAngle[]) : cbRobot(irSensorAngle)
+cbRobotBeacon::cbRobotBeacon(cbClient *client, const double irSensorAngle[]) : cbRobot(client, irSensorAngle)
 {
 }
 

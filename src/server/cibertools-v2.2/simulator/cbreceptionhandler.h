@@ -21,6 +21,7 @@
 #define _CB_RECEPTION_HANDLER_
 
 #include <qxml.h>
+#include "cbclient.h"
 #include <QTcpSocket>
 
 class QString;
@@ -68,7 +69,7 @@ private:
 	cbRobotBeacon *robotBeacon;
 	Type type;
 
-    QTcpSocket *client;
+    cbClient *client;
 };                   
 
 #endif

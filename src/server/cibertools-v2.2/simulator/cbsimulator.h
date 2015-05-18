@@ -240,7 +240,7 @@ protected: // data members
 
     vector<QSignalMapper*> robotMappers;
 
-    QTcpServer server;
+    QTcpServer  server;
     QTcpSocket* client;
 
 protected: // member functions
