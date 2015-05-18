@@ -68,14 +68,41 @@ class OldBroadcastNotification(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def sync(message):
+        # clean old notifications
+        old = OldBroadcastNotification.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+        old.delete()
+
+        # create a new message
+        OldBroadcastNotification.objects.create(message=message)
+
 
 class OldNoficationUser(models.Model):
     message = models.TextField()
     user = models.ForeignKey(Account)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def sync(message, user):
+        # clean old notifications
+        old = OldNoficationUser.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+        old.delete()
+
+        # create a new message
+        OldNoficationUser.objects.create(message=message, user=user)
+
 
 class OldNotificationTeam(models.Model):
     message = models.TextField()
     team = models.ForeignKey(Team)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @staticmethod
+    def sync(message, team):
+        # clean old notifications
+        old = OldNotificationTeam.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+        old.delete()
+
+        # create a new message
+        OldNotificationTeam.objects.create(message=message, team=team)
