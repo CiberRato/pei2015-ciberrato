@@ -109,9 +109,15 @@ void CRobLink::parse_server_reply(void)
     }
     //cerr << "XML=\"" << xml <<"\"\nXMLEND\n";
 
+    QString data = QString(xml);
+    if (data[data.length()-1] != '\x04') {
+        cerr << "Invalid message received" << endl;
+        return;
+    }
+    data = data.left(data.length()-2);
 	/* set source of xml document */
 	QXmlInputSource source;
-	source.setData(QString(xml));
+	source.setData(data);
 
 	/* set parser handler */
     StructureParser handler(simParam.nBeacons);
