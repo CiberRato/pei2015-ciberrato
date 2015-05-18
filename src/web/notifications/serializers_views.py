@@ -22,24 +22,24 @@ class OldNotificationUserSerializer(ModelSerializer):
 
     class Meta:
         model = OldNotificationUser
-        fields = ('message', 'user', 'created_at',)
-        read_only_fields = ('message', 'user', 'created_at',)
+        fields = ('message', 'created_at',)
+        read_only_fields = ('message', 'created_at',)
 
 
 class OldNotificationTeamSerializer(ModelSerializer):
 
     class Meta:
         model = OldNotificationTeam
-        fields = ('message', 'team', 'created_at',)
-        read_only_fields = ('message', 'team', 'created_at',)
+        fields = ('message', 'created_at',)
+        read_only_fields = ('message', 'created_at',)
 
 
 class OldNotificationByTeamSerializer(BaseSerializer):
 
     def to_representation(self, instance):
-        notifications = OldNotificationTeamSerializer(instance.notifications)
+        notifications = OldNotificationTeamSerializer(instance.notifications, many=True)
 
         return {
-            'team': instance.team,
+            'team': instance.team.name,
             'notifications': notifications.data
         }

@@ -3,7 +3,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from .models import OldAdminNotification, OldBroadcastNotification, OldNotificationUser, OldNotificationTeam
 from .serializers_views import OldAdminNotificationSerializer, OldBroadcastNotificationSerializer, \
-    OldNotificationUserSerializer, OldNotificationTeamSerializer
+    OldNotificationUserSerializer, OldNotificationByTeamSerializer
 from competition.permissions import IsStaff
 
 
@@ -57,7 +57,7 @@ class OldNotificationUserList(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class OldNotificationTeamList(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = OldNotificationTeam.objects.all()
-    serializer_class = OldNotificationTeamSerializer
+    serializer_class = OldNotificationByTeamSerializer
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -68,14 +68,15 @@ class OldNotificationTeamList(mixins.ListModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/notifications/teams/
         """
         class TeamNotifications:
-            def __init__(self, team, notifications):
-                self.team = team
-                self.notifications = notifications
+            def __init__(self, t, n):
+                self.team = t
+                self.notifications = n
 
         teams = []
 
         for team in request.user.teams.all():
-            teams += [TeamNotifications(team=team, notifications=OldNotificationTeam.objects.filter(team=team))]
+            teams += [TeamNotifications(t=team, n=OldNotificationTeam.objects.filter(team=team))]
 
         serializer = self.serializer_class(teams, many=True)
+
         return Response(serializer.data)

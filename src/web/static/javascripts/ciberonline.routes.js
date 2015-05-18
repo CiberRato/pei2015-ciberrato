@@ -204,6 +204,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/stickyNotes/createStickyNote.html',
             title: 'Create Sticky Notes'
+        }).when('/admin/statistics',{
+            controller:'StatisticsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/statistics/statistics.html',
+            title: 'Statistics'
         }).when('/admin/stickyNotes',{
             controller:'AllStickyNotesController',
             controllerAs: 'vm',
