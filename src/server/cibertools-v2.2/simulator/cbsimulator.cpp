@@ -217,7 +217,7 @@ void cbSimulator::reset()
 	// notify viewers
 	for (j=0; j<views.size(); j++)
 	{
-		views[j]->send("<Restart/>",11);
+		views[j]->socket->send("<Restart/>",11);
 	}
 
 	//delete Viewers
@@ -828,7 +828,7 @@ void cbSimulator::UpdateViews()
 
 		for (unsigned int j = 0; j < views.size(); j++) {
 			cbView *view = (cbView *) views[j];
-			view->send(xmlCharA, xmlString.length());
+			view->socket->send(xmlCharA, xmlString.length());
 		}
 	}
 	std::cout << "UpdatedViews\n";
@@ -1547,7 +1547,7 @@ void cbSimulator::processReceptionMessages()
 			views.resize(cnt + 1);
 			views[cnt] = form.client.view;
 
-			views[cnt]->Reply(param, grid, lab);
+			views[cnt]->socket->Reply(param, grid, lab);
 
 			if (curState == INIT) {
 				nextState = STOPPED;
@@ -1564,11 +1564,11 @@ void cbSimulator::processReceptionMessages()
 			cnt = panels.size();
 			panels.resize(cnt + 1);
 			panels[cnt] = form.client.panel;
-			panels[cnt]->Reply(param);
+			panels[cnt]->socket->Reply(param);
 
 			mapper = new QSignalMapper(this);
-			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
-			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(panels[cnt]->socket, SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt]->socket, QString::number(cnt));
 			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
 
 			cout << "Panel has been registered\n";
@@ -1580,7 +1580,7 @@ void cbSimulator::processReceptionMessages()
 			cnt = panels.size();
 			panels.resize(cnt + 1);
 			panels[cnt] = form.client.panelview;
-			panels[cnt]->Reply(param, grid, lab);
+			panels[cnt]->socket->Reply(param, grid, lab);
 
 			cnt = views.size();
 			views.resize(cnt + 1);
@@ -1593,8 +1593,8 @@ void cbSimulator::processReceptionMessages()
 
 
 			mapper = new QSignalMapper(this);
-			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
-			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(panels[cnt]->socket, SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt]->socket, QString::number(cnt));
 			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
 
 			cout << "PanelView has been registered\n";

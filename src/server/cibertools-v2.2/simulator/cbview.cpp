@@ -27,7 +27,7 @@
 
 using std::cerr;
 
-cbView::cbView() : cbClient(), cbViewInterface()
+cbView::cbView(cbClient * socket) : cbEntity(socket), cbViewInterface()
 {
 }
 

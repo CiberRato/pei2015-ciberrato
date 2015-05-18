@@ -283,9 +283,16 @@ bool cbRobot::readAction(cbRobotAction *action)
 	}
 	else xmlBuff[xmlSize]='\0';
 */
-	QByteArray xmlBuff = socket->readAll();
+	QByteArray xmlBuff, readArr;
+    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        xmlBuff += readArr;
+    }
 #ifdef DEBUG_ROBOT
-	cerr << "cbRobot: " << xmlBuff << "\n";
+	cerr << "cbRobot: " << xmlBuff.data() << "\n";
 #endif
 
 	
@@ -893,7 +900,7 @@ void cbRobot::sendSensors()
 	n += sprintf(xml+n, "</Measures>\n");
 
 	/* send XML message to client */
-	socket->send(xml, n+1);
+	socket->send(xml, n);
 	
 #ifdef DEBUG_ROBOT
 	cerr << "Measures sent to robot " << id << "\n" << xml;
@@ -1099,14 +1106,21 @@ bool cbRobotBin::readAction(cbRobotAction *action)
     //   return false;
 
     // CHECK THIS
-	/*if ((ret=readDatagram((char *)&msg, sizeof(msg))) < 0)
+    QByteArray datagram, readArr;
+    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        datagram += readArr;
+    }
+
+    /*if ((ret=readDatagram((char *)&msg, sizeof(msg))) < 0)
     {
         cerr << "Error reading from robot socket - " << errorString().toStdString();
         //cerr << "Error no. " << error() << " reading from robot socket\n";
 		return false;
-	}
-	QByteArray msg_out = readAll();
-	msg = &msg_out.constData();*/
+	}*/
 
     // check message size
     /*if(ret!=sizeof(ActMessage)) {

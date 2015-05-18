@@ -22,6 +22,7 @@
 #define CBVIEW_H
 
 #include "cbclient.h"
+#include "cbentity.h"
 
 /**
   *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
@@ -32,10 +33,10 @@
  */
 class cbViewInterface {};
 
-class cbView : public cbClient, public cbViewInterface
+class cbView : public cbEntity, public cbViewInterface
 {
 public:
-	cbView();
+	cbView(cbClient *);
 	~cbView();
 };
 #endif

@@ -22,16 +22,17 @@
 #define CBPANEL_H
 
 #include "cbclient.h"
+#include "cbentity.h"
 #include "cbpanelcommand.h"
 
 class cbPanelInterface {
     virtual bool readCommand(cbPanelCommand *command) = 0;
 };
 
-class cbPanel : public cbClient, public cbPanelInterface
+class cbPanel : public cbEntity, public cbPanelInterface
 {
 public:
-	cbPanel();
+	cbPanel(cbClient *);
 	~cbPanel();
 
     bool readCommand(cbPanelCommand *command);

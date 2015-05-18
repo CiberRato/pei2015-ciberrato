@@ -38,6 +38,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include "cbclient.h"
+#include "cbentity.h"
 
 using std::vector;
 using std::ostream;
@@ -217,8 +218,8 @@ protected: // data members
 
 	cbSimulatorGUI *gui;
 
-    vector<cbClient *> views;
-    vector<cbClient *> panels;
+    vector<cbEntity *> views;
+    vector<cbEntity *> panels;
     vector<cbRobot *> robots;
 
 	State curState, nextState;	// current and next states

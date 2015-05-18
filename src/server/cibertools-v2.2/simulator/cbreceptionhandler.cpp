@@ -64,17 +64,17 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	if (tag == "View")
 	{
 		type = VIEW;
-		view = new cbView();
+		view = new cbView(client);
 	}
 	else if (tag == "Panel")
 	{
 		type = PANEL;
-		panel = new cbPanel();;
+		panel = new cbPanel(client);
 	}
 	else if (tag == "PanelView")
 	{
 		type = PANELVIEW;
-		panelview = new cbPanelView();
+		panelview = new cbPanelView(client);
 	}
 	else if (tag == "Robot")
 	{
