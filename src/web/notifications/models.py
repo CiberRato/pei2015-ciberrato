@@ -102,7 +102,7 @@ class OldNotificationUser(models.Model):
     @staticmethod
     def sync(message, user):
         # clean old notifications
-        old = OldNotificationUser.objects.order_by('created_at').all()
+        old = OldNotificationUser.objects.order_by('created_at').filter(user=user)
 
         # create a new message
         OldNotificationUser.objects.create(message=message, user=user)
@@ -120,7 +120,7 @@ class OldNotificationTeam(models.Model):
     @staticmethod
     def sync(message, team):
         # clean old notifications
-        old = OldNotificationTeam.objects.order_by('created_at').all()
+        old = OldNotificationTeam.objects.order_by('created_at').filter(team=team)
 
         # create a new message
         OldNotificationTeam.objects.create(message=message, team=team)
