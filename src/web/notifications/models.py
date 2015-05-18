@@ -102,14 +102,14 @@ class OldNotificationUser(models.Model):
     @staticmethod
     def sync(message, user):
         # clean old notifications
-        old = OldNotificationUser.objects.order_by('-created_at').all()
-
-        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
-            for notification in old[settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE-1:]:
-                notification.delete()
+        old = OldNotificationUser.objects.order_by('created_at').all()
 
         # create a new message
         OldNotificationUser.objects.create(message=message, user=user)
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            for notification in old[0:len(old) - settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE]:
+                notification.delete()
 
 
 class OldNotificationTeam(models.Model):
@@ -120,11 +120,11 @@ class OldNotificationTeam(models.Model):
     @staticmethod
     def sync(message, team):
         # clean old notifications
-        old = OldNotificationTeam.objects.order_by('-created_at').all()
-
-        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
-            for notification in old[settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE-1:]:
-                notification.delete()
+        old = OldNotificationTeam.objects.order_by('created_at').all()
 
         # create a new message
         OldNotificationTeam.objects.create(message=message, team=team)
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            for notification in old[0:len(old) - settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE]:
+                notification.delete()
