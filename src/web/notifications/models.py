@@ -67,14 +67,14 @@ class OldAdminNotification(models.Model):
     @staticmethod
     def sync(message):
         # clean old admin notifications
-        old = OldAdminNotification.objects.order_by('-created_at').all()
-
-        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
-            for notification in old[:settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE+1]:
-                notification.delete()
+        old = OldAdminNotification.objects.order_by('created_at').all()
 
         # create a new message
         OldAdminNotification.objects.create(message=message)
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            for notification in old[0:len(old)-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE]:
+                notification.delete()
 
 
 class OldBroadcastNotification(models.Model):
@@ -86,12 +86,12 @@ class OldBroadcastNotification(models.Model):
         # clean old notifications
         old = OldBroadcastNotification.objects.order_by('created_at').all()
 
-        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
-            for notification in old[:settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE+1]:
-                notification.delete()
-
         # create a new message
         OldBroadcastNotification.objects.create(message=message)
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            for notification in old[0:len(old) - settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE]:
+                notification.delete()
 
 
 class OldNotificationUser(models.Model):
@@ -105,7 +105,7 @@ class OldNotificationUser(models.Model):
         old = OldNotificationUser.objects.order_by('-created_at').all()
 
         if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
-            for notification in old[:settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE+1]:
+            for notification in old[settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE-1:]:
                 notification.delete()
 
         # create a new message
@@ -123,7 +123,7 @@ class OldNotificationTeam(models.Model):
         old = OldNotificationTeam.objects.order_by('-created_at').all()
 
         if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
-            for notification in old[:settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE+1]:
+            for notification in old[settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE-1:]:
                 notification.delete()
 
         # create a new message
