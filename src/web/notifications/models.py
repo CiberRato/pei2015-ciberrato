@@ -2,6 +2,7 @@ from django.db import models
 from swampdragon.models import SelfPublishModel
 from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationMessage, NotificationBroadcastSerializer
 from authentication.models import Account, Team
+from django.conf import settings
 
 
 def handling_message(status, content, trigger):
@@ -51,6 +52,16 @@ class NotificationTeam(SelfPublishModel, models.Model):
 
 class OldAdminNotification(models.Model):
     message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @staticmethod
+    def sync(message):
+        # clean old admin notifications
+        old = OldAdminNotification.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+        old.delete()
+
+        # create a new message
+        OldAdminNotification.objects.create(message=message)
 
 
 class OldBroadcastNotification(models.Model):
