@@ -66,13 +66,16 @@ class OldAdminNotification(models.Model):
 
 class OldBroadcastNotification(models.Model):
     message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class OldNoficationUser(models.Model):
     message = models.TextField()
     user = models.ForeignKey(Account)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class OldNotificationTeam(models.Model):
     message = models.TextField()
     team = models.ForeignKey(Team)
+    created_at = models.DateTimeField(auto_now_add=True)
