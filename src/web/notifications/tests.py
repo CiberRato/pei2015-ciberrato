@@ -27,4 +27,17 @@ class AuthenticationTestCase(TestCase):
             self.assertEqual(response["message"], u"{'status': 200, 'content': 'ok"+str(6+i)+"', 'trigger': ''}")
             i += 1
 
+        # create 10 admin notifications
+        for i in range(11, 22):
+            NotificationBroadcast.add(channel="admin", status="ok", message="ok"+str(i))
+
+        # get admin notifications
+        url = "/api/v1/notifications/admin/"
+        response = client.get(path=url)
+
+        i = 0
+        for response in response.data:
+            self.assertEqual(response["message"], u"{'status': 200, 'content': 'ok" + str(17 + i) + "', 'trigger': ''}")
+            i += 1
+
         client.force_authenticate(user=None)
