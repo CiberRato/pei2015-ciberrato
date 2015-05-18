@@ -1260,8 +1260,11 @@ class AuthenticationTestCase(TestCase):
         del rsp['created_at']
         del rsp['updated_at']
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(rsp, {'param_list': u'param.xml', 'lab': u'Ciber2006_FinalLab.xml',
-                               'grid': u'Ciber2005_FinalGrid.xml'})
+        self.assertEqual(rsp, {"grid_path":"resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
+                               "grid":"Ciber2005_FinalGrid.xml",
+                               "param_list":"param.xml",
+                               "pram_list_path":"resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+                               "lab":"Ciber2006_FinalLab.xml"})
 
         # an error round
         url = "/api/v1/competitions/private/round/"
@@ -1282,7 +1285,11 @@ class AuthenticationTestCase(TestCase):
         del rsp[0]['created_at']
         del rsp[0]['updated_at']
         self.assertEqual(rsp, [
-            {'param_list': u'param.xml', 'lab': u'Ciber2006_FinalLab.xml', 'grid': u'Ciber2005_FinalGrid.xml'}])
+            {"grid_path": "resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
+             "grid": "Ciber2005_FinalGrid.xml",
+             "param_list": "param.xml",
+             "pram_list_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+             "lab": "Ciber2006_FinalLab.xml"}])
 
         # now let's get the files name for this round and the trials list
         url = "/api/v1/competitions/private/round/" + str(round_name) + "/"
@@ -1292,8 +1299,12 @@ class AuthenticationTestCase(TestCase):
         del rsp['round']['name']
         del rsp['round']['created_at']
         del rsp['round']['updated_at']
-        self.assertEqual(rsp, {'trials': [], 'round': {'param_list': u'param.xml', 'lab': u'Ciber2006_FinalLab.xml',
-                                                       'grid': u'Ciber2005_FinalGrid.xml'}})
+        self.assertEqual(rsp, {'trials': [], 'round': {
+            "grid_path": "resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
+            "grid": "Ciber2005_FinalGrid.xml",
+            "param_list": "param.xml",
+            "pram_list_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+            "lab": "Ciber2006_FinalLab.xml"}})
 
         # now let's launch one trial for that round
         url = "/api/v1/competitions/private/launch_trial/"
