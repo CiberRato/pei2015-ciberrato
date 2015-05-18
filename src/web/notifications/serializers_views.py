@@ -16,3 +16,12 @@ class OldBroadcastNotificationSerializer(ModelSerializer):
         model = OldBroadcastNotification
         fields = ('message', 'created_at',)
         read_only_fields = ('message', 'created_at',)
+
+
+class OldNotificationUserSerializer(ModelSerializer):
+
+    class Meta:
+        model = OldNotificationUser
+        fields = ('message', 'user', 'created_at',)
+        read_only_fields = ('message', 'user', 'created_at',)
+
