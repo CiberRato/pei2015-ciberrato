@@ -36,7 +36,8 @@ from stickynote.views import StickyNotesViewSet, StickyNotesToggle, ActiveSticky
 
 from statistics.views import MediaStats
 
-from notifications.views import OldAdminNotificationList, OldBroadcastNotificationList
+from notifications.views import OldAdminNotificationList, OldBroadcastNotificationList, OldNotificationUserList,\
+    OldNotificationTeamList
 
 from rest_framework import routers
 
@@ -140,6 +141,8 @@ router_statistics.register(r'media', MediaStats)
 router_notifications = routers.SimpleRouter()
 router_notifications.register(r'admin', OldAdminNotificationList)
 router_notifications.register(r'broadcast', OldBroadcastNotificationList)
+router_notifications.register(r'user', OldNotificationUserList)
+router_notifications.register(r'teams', OldNotificationTeamList)
 
 
 urlpatterns = patterns('',

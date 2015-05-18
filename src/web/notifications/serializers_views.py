@@ -1,4 +1,4 @@
-from swampdragon.serializers.model_serializer import ModelSerializer
+from rest_framework.serializers import ModelSerializer, BaseSerializer
 from .models import OldAdminNotification, OldBroadcastNotification, OldNotificationUser, OldNotificationTeam
 
 
@@ -25,3 +25,21 @@ class OldNotificationUserSerializer(ModelSerializer):
         fields = ('message', 'user', 'created_at',)
         read_only_fields = ('message', 'user', 'created_at',)
 
+
+class OldNotificationTeamSerializer(ModelSerializer):
+
+    class Meta:
+        model = OldNotificationTeam
+        fields = ('message', 'team', 'created_at',)
+        read_only_fields = ('message', 'team', 'created_at',)
+
+
+class OldNotificationByTeamSerializer(BaseSerializer):
+
+    def to_representation(self, instance):
+        notifications = OldNotificationTeamSerializer(instance.notifications)
+
+        return {
+            'team': instance.team,
+            'notifications': notifications.data
+        }
