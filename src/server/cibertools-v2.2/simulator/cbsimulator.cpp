@@ -541,7 +541,6 @@ bool cbSimulator::registerRobot(cbRobot *robot)
         lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
 
     emit robotRegistered((int) id);
-
 	return true;
 }
 

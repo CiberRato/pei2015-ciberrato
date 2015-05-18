@@ -64,23 +64,23 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	if (tag == "View")
 	{
 		type = VIEW;
-		view = (cbView *) client;
+		view = new cbView();
 	}
 	else if (tag == "Panel")
 	{
 		type = PANEL;
-		panel = (cbPanel *) client;
+		panel = new cbPanel();;
 	}
 	else if (tag == "PanelView")
 	{
 		type = PANELVIEW;
-		panelview = (cbPanelView *) client;
+		panelview = new cbPanelView();
 	}
 	else if (tag == "Robot")
 	{
 		type = ROBOT;
-		robot = (cbRobot *) client;
-		//robot = new cbRobot(irSensorDefaultAngles);
+		//robot = (cbRobot *) client;
+		robot = new cbRobot(irSensorDefaultAngles);
 
 		/* process attributes */
         const QString &name = attr.value(QString("Name"));
@@ -92,8 +92,7 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	{
 		type = ROBOTBEACON;
 
-		robotBeacon = (cbRobotBeacon *) client;
-		//robotBeacon = new cbRobotBeacon(irSensorDefaultAngles);
+		robotBeacon = new cbRobotBeacon(irSensorDefaultAngles);
 
 		/* process attributes */
         const QString &name = attr.value(QString("Name"));
