@@ -23,11 +23,14 @@ class NotificationBroadcast(SelfPublishModel, models.Model):
 
     @staticmethod
     def add(channel, status, message, trigger=""):
-        if channel == "admin":
-            NotificationBroadcast.objects.create(broadcast=1, message=handling_message(status, message, trigger))
-        else:
-            NotificationBroadcast.objects.create(broadcast=0, message=handling_message(status, message, trigger))
-            NotificationBroadcast.objects.create(broadcast=1, message=handling_message(status, message, trigger))
+        message = handling_message(status, message, trigger)
+
+        if channel != "admin":
+            NotificationBroadcast.objects.create(broadcast=0, message=message)
+            OldBroadcastNotification.sync(message=message)
+
+        NotificationBroadcast.objects.create(broadcast=1, message=message)
+        OldAdminNotification.sync(message=message)
 
 
 class NotificationUser(SelfPublishModel, models.Model):
@@ -37,7 +40,9 @@ class NotificationUser(SelfPublishModel, models.Model):
 
     @staticmethod
     def add(user, status, message, trigger=""):
-        NotificationUser.objects.create(user=user, message=handling_message(status, message, trigger))
+        message = handling_message(status, message, trigger)
+        NotificationUser.objects.create(user=user, message=message)
+        OldNotificationUser.sync(user=user, message=message)
 
 
 class NotificationTeam(SelfPublishModel, models.Model):
@@ -47,7 +52,9 @@ class NotificationTeam(SelfPublishModel, models.Model):
 
     @staticmethod
     def add(team, status, message, trigger=""):
-        NotificationTeam.objects.create(team=team, message=handling_message(status, message, trigger))
+        message = handling_message(status, message, trigger)
+        NotificationTeam.objects.create(team=team, message=message)
+        OldNotificationTeam.sync(message=message, team=team)
 
 
 # Old notifications
@@ -60,8 +67,11 @@ class OldAdminNotification(models.Model):
     @staticmethod
     def sync(message):
         # clean old admin notifications
-        old = OldAdminNotification.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
-        old.delete()
+        old = OldAdminNotification.objects.order_by('created_at')
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            old = old[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+            old.delete()
 
         # create a new message
         OldAdminNotification.objects.create(message=message)
@@ -74,8 +84,11 @@ class OldBroadcastNotification(models.Model):
     @staticmethod
     def sync(message):
         # clean old notifications
-        old = OldBroadcastNotification.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
-        old.delete()
+        old = OldBroadcastNotification.objects.order_by('created_at')
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            old = old[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+            old.delete()
 
         # create a new message
         OldBroadcastNotification.objects.create(message=message)
@@ -89,8 +102,11 @@ class OldNotificationUser(models.Model):
     @staticmethod
     def sync(message, user):
         # clean old notifications
-        old = OldNotificationUser.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
-        old.delete()
+        old = OldNotificationUser.objects.order_by('created_at')
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            old = old[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+            old.delete()
 
         # create a new message
         OldNotificationUser.objects.create(message=message, user=user)
@@ -104,8 +120,11 @@ class OldNotificationTeam(models.Model):
     @staticmethod
     def sync(message, team):
         # clean old notifications
-        old = OldNotificationTeam.objects.order_by('created_at')[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
-        old.delete()
+        old = OldNotificationTeam.objects.order_by('created_at')
+
+        if len(old) > settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:
+            old = old[-settings.NUMBER_OF_NOTIFICATIONS_TO_SAVE:].get()
+            old.delete()
 
         # create a new message
         OldNotificationTeam.objects.create(message=message, team=team)

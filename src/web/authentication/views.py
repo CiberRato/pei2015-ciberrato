@@ -273,8 +273,8 @@ class LoginView(views.APIView):
                                  }, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
-            account.login_error = True
-            account.save()
+            accounts[0].login_error = True
+            accounts[0].save()
 
             return Response({'status': 'Unauthorized',
                              'message': 'Username and/or password is wrong.'

@@ -79,4 +79,3 @@ class OldNotificationTeamList(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         serializer = self.serializer_class(teams, many=True)
         return Response(serializer.data)
-
