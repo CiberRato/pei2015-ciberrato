@@ -1,6 +1,5 @@
 $(document).ready(function(){
     $.getJSON("/api/v1/sticky_notes/active/", function(data) {
-        console.log(data);
         var notes = data;
         var i = -1;
 
@@ -11,6 +10,7 @@ $(document).ready(function(){
                 }else{
                     i = i+1;
                 }
+
                 $(".side-note-container").html(notes[i].note);
                 setTimeout(changeNote, notes[i].time*1000);
             }, 0);

@@ -47,3 +47,21 @@ class NotificationTeam(SelfPublishModel, models.Model):
     @staticmethod
     def add(team, status, message, trigger=""):
         NotificationTeam.objects.create(team=team, message=handling_message(status, message, trigger))
+
+
+class OldAdminNotification(models.Model):
+    message = models.TextField()
+
+
+class OldBroadcastNotification(models.Model):
+    message = models.TextField()
+
+
+class OldNoficationUser(models.Model):
+    message = models.TextField()
+    user = models.ForeignKey(Account)
+
+
+class OldNotificationTeam(models.Model):
+    message = models.TextField()
+    team = models.ForeignKey(Team)
