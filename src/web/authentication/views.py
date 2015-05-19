@@ -500,6 +500,61 @@ class PasswordRecoverRequest(mixins.CreateModelMixin, viewsets.GenericViewSet):
                          }, status=status.HTTP_400_BAD_REQUEST)
 
 
+class PasswordReset(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    lookup_field = 'username'
+    queryset = Account.objects.all()
+    serializer_class = EmailSerializer
+
+    def get_permissions(self):
+        return permissions.AllowAny(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Login to other} user
+        B{URL:} ../api/v1/password_recover/reset/
+
+        :type  token: str
+        :param token: The token
+        :type  password: str
+        :param password: The password
+        :type  password_confirmation: str
+        :param password_confirmation: The password
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            account = get_object_or_404(Account.objects.all(), email=serializer.validated_data['email'])
+
+            # send email to confirm the user email
+            try:
+                with transaction.atomic():
+                    token = EmailToken.objects.create(user=account)
+            except IntegrityError:
+                token = EmailToken.objects.get(user=account)
+
+            try:
+                send_mail('Password Recover',
+                          'Hello!\nHere is the link to recover your password: ' + settings.PASSWORD_RECOVER_EMAIL_URL +
+                                       str(token.token) + '\nThank you!',
+                          'CiberRato <' + settings.EMAIL_HOST_USER + '>',
+                          [account.first_name + " " + account.last_name + " <" + account.email + ">"],
+                          fail_silently=False,
+                          html_message='<h1>Hello!!</h1><br/><h2>Here is the link to recover your password: <a href="' +
+                                       settings.PASSWORD_RECOVER_EMAIL_URL + str(token.token) + '/">'
+                                       + settings.PASSWORD_RECOVER_EMAIL_URL + str(token.token)
+                                       + '</a><h2/><br/><h2>Thank you!</h2>')
+            except SMTPException:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The email could not be sent!'
+                                 }, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors
+                         }, status=status.HTTP_400_BAD_REQUEST)
+
+
 def check_email(request, token):
     """
     URL: check/email/<token>/
