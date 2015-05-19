@@ -8,8 +8,8 @@ from rest_framework.response import Response
 import requests
 
 from ..permissions import MustBeHallOfFameCompetition, MustBePartOfAgentTeam
-from ..models import Round, Trial, \
-    CompetitionAgent, LogTrialAgent, Agent
+from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition
+from ..serializers import HallOfFameLaunchSerializer
 
 
 class RunHallOfFameTrial(views.APIView):
@@ -31,50 +31,60 @@ class RunHallOfFameTrial(views.APIView):
         :type  agent_name: str
         :type  agent_name: The team name
         """
-        # get round
-        r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
+        serializer = HallOfFameLaunchSerializer(data=request.data)
 
-        # verify if the round is from a private competition
-        MustBeHallOfFameCompetition(competition=r.parent_competition)
+        if serializer.is_valid():
+            # get competition
+            competition = get_object_or_404(Competition.objects.all(), name='Hall of fame - Single')
 
-        # agent
-        agent = get_object_or_404(Agent.objects.all(), agent_name=request.data.get('agent_name', ''))
+            # get round
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
+                                  parent_competition=competition)
 
-        # Must be part of the agent team
-        MustBePartOfAgentTeam(agent=agent, user=request.user)
+            # verify if the round is from a private competition
+            MustBeHallOfFameCompetition(competition=r.parent_competition)
 
-        # create trial for this round
-        trial = Trial.objects.create(round=r)
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
 
-        try:
-            competition_agent = CompetitionAgent.objects.get(
-                competition=trial.round.parent_competition,
-                agent=agent,
-                round=trial.round)
-        except CompetitionAgent.DoesNotExist:
-            competition_agent = CompetitionAgent.objects.create(
-                competition=trial.round.parent_competition,
-                agent=agent,
-                round=trial.round)
+            # Must be part of the agent team
+            MustBePartOfAgentTeam(agent=agent, user=request.user)
 
-        LogTrialAgent.objects.create(competition_agent=competition_agent,
-                                     trial=trial,
-                                     pos=1)
+            # create trial for this round
+            trial = Trial.objects.create(round=r)
 
-        params = {'trial_identifier': trial.identifier}
+            try:
+                competition_agent = CompetitionAgent.objects.get(
+                    competition=trial.round.parent_competition,
+                    agent=agent,
+                    round=trial.round)
+            except CompetitionAgent.DoesNotExist:
+                competition_agent = CompetitionAgent.objects.create(
+                    competition=trial.round.parent_competition,
+                    agent=agent,
+                    round=trial.round)
 
-        try:
-            requests.post(settings.PREPARE_SIM_ENDPOINT, params)
-        except requests.ConnectionError:
-            return Response({'status': 'Bad Request',
-                             'message': 'The simulator appears to be down!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            LogTrialAgent.objects.create(competition_agent=competition_agent,
+                                         trial=trial,
+                                         pos=1)
 
-        trial.waiting = True
-        trial.prepare = False
-        trial.started = False
-        trial.save()
+            params = {'trial_identifier': trial.identifier}
 
-        return Response({'status': 'Trial started',
-                         'message': 'The trial for the Hall Of Fame has been launched!'},
-                        status=status.HTTP_200_OK)
+            try:
+                requests.post(settings.PREPARE_SIM_ENDPOINT, params)
+            except requests.ConnectionError:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The simulator appears to be down!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            trial.waiting = True
+            trial.prepare = False
+            trial.started = False
+            trial.save()
+
+            return Response({'status': 'Trial started',
+                             'message': 'The trial for the Hall Of Fame has been launched!'},
+                            status=status.HTTP_200_OK)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)

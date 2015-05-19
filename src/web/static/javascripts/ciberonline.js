@@ -24,7 +24,8 @@
             'cfp.loadingBar',
             'ngAnimate',
             'ciberonline.stickyNotes',
-            'ciberonline.statistics'
+            'ciberonline.statistics',
+            'ciberonline.hallOfFame'
         ])
         .run(run);
 

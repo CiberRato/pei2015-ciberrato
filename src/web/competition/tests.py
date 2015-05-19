@@ -1263,7 +1263,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {"grid_path":"resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
                                "grid":"Ciber2005_FinalGrid.xml",
                                "param_list":"param.xml",
-                               "pram_list_path":"resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+                               "lab_path":"resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
                                "lab":"Ciber2006_FinalLab.xml"})
 
         # an error round
@@ -1288,7 +1288,7 @@ class AuthenticationTestCase(TestCase):
             {"grid_path": "resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
              "grid": "Ciber2005_FinalGrid.xml",
              "param_list": "param.xml",
-             "pram_list_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+             "lab_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
              "lab": "Ciber2006_FinalLab.xml"}])
 
         # now let's get the files name for this round and the trials list
@@ -1303,7 +1303,7 @@ class AuthenticationTestCase(TestCase):
             "grid_path": "resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
             "grid": "Ciber2005_FinalGrid.xml",
             "param_list": "param.xml",
-            "pram_list_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+            "lab_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
             "lab": "Ciber2006_FinalLab.xml"}})
 
         # now let's launch one trial for that round
@@ -1347,6 +1347,21 @@ class AuthenticationTestCase(TestCase):
 
         trial = Trial.objects.all()
         trial_identifier = trial[0].identifier
+
+        # log trial for an private competition
+        trial = Trial.objects.get(identifier=trial_identifier)
+        trial.started = True
+        trial.save()
+
+        # save trial logs (only server by server)
+        f = open('media/tests_files/ciberOnline_log.json', 'r')
+        url = "/api/v1/trials/trial_log/"
+        data = {'trial_identifier': trial_identifier, 'log_json': f}
+        response = client.post(url, data)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
+        self.assertEqual(response.status_code, 201)
+        trial = Trial.objects.get(identifier=trial_identifier)
+        self.assertEqual(trial.log_json is None, False)
 
         # delete the trial
         url = "/api/v1/competitions/private/trial/" + trial_identifier + "/"

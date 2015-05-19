@@ -278,3 +278,14 @@ class TeamScore(models.Model):
     class Meta:
         unique_together = ('trial', 'team',)
         ordering = ('score', '-number_of_agents', 'time')
+
+
+class PrivateCompetitionLog(models.Model):
+    trial = models.ForeignKey(Trial, blank=False)
+    team = models.ForeignKey(Team, blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('trial', 'team',)
+        ordering = ('created_at',)

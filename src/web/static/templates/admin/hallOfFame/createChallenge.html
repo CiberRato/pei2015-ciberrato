@@ -1,0 +1,136 @@
+<div class="content-block" role="main">
+
+    <!-- Grid row -->
+    <div class="row">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <header>
+                    <h2>Create Challenge</h2>
+                </header>
+                <section class="tab-content">
+                    <br></br>
+                    <!-- Tab #basic -->
+                    <div class="tab-pane active" id="basic">
+
+                        <!-- Example vertical forms -->
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <p>In this page you can create your challenges.</p>
+                                <br></br>
+                                <p> When you complete your editions, please click on button <strong>Save changes</strong>.</p>
+
+                            </div>
+                            <div class="span8">
+                                <form role="form">
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="challengeName">Challenge Name</label>
+                                        <div class="controls">
+                                            <input id="challengeName" type="text" placeholder="name of the challenge" name="name" ng-model="vm.challengeName">
+                                        </div>
+                                    </div>
+
+                                        <div class="tabbable tabs-left">
+                                            <ul class="nav nav-tabs">
+                                                <li id="score" class="active"><a href="#tab1" data-toggle="tab">Select Map</a></li>
+                                                <li id="manage"><a href="#tab2" data-toggle="tab">Upload Map</a></li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="tab1">
+                                                    <br/>
+                                                    <form role="form" ng-submit="vm.create()">
+                                                        <fieldset>
+                                                            <div class="control-group">
+                                                                <label class="control-label" for="select1">Grid</label>
+                                                                <div class="controls">
+                                                                    <select id="select1" ng-change="vm.getGrid()" ng-model="vm.resources.grid">
+                                                                        <option value="" disabled>--Please select one grid</option>
+                                                                        <optgroup ng-repeat="(key, value) in vm.resources.grids" label="{{value.name}}">
+                                                                            <option ng-repeat="(key1, value1) in value.sub" id="grid" value="{{value1.path}}" name="{{value1.name}}" >{{value1.name}}</option>
+                                                                        </optgroup>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="control-group">
+                                                                <label class="control-label" for="select2">Lab</label>
+                                                                <div class="controls">
+                                                                    <select id="select2" ng-change="vm.getLab()" ng-model="vm.resources.lab">
+                                                                        <option value="" disabled>--Please select one lab</option>
+                                                                        <optgroup ng-repeat="(key, value) in vm.resources.labs" label="{{value.name}}">
+                                                                            <option ng-repeat="(key1, value1) in value.sub" id="lab" value="{{value1.path}}" name="{{value1.name}}">{{value1.name}}</option>
+                                                                        </optgroup>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="control-group">
+                                                                <label class="control-label" for="select3">Param List</label>
+                                                                <div class="controls">
+                                                                    <select id="select3">
+                                                                        <optgroup ng-repeat="(key, value) in vm.resources.pram_lists" label="{{value.name}}">
+                                                                            <option ng-repeat="(key1, value1) in value.sub" value="{{value1.path}}" name="{{value1.name}}">{{value1.name}}</option>
+                                                                        </optgroup>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-actions">
+                                                                <button class="btn btn-flat btn-success" style="float: right;" data-dismiss="modal" ng-click="vm.create()" >Create Challenge</button>
+                                                            </div>
+
+                                                        </fieldset>
+                                                    </form>
+
+                                                </div>
+                                                <div class="tab-pane" id="tab2">
+                                                    <fieldset>
+                                                        <div class="control-group">
+
+                                                            <div class="span8"  id="uploadParams">
+
+                                                                <h2 align="center">Upload your Params</h2>
+
+
+                                                                <p><strong>Upload Param_List</strong></p>
+                                                                <input id="ParamListUpload"
+                                                                       type="file" name="files[]"
+                                                                       class="inputFile clickable"
+                                                                        />
+
+                                                                <p><strong>Upload Grid</strong></p>
+                                                                <input id="GridUpload"
+                                                                       type="file" name="files[]"
+                                                                       class="inputFile clickable"
+                                                                        />
+
+                                                                <p><strong>Upload Lab</strong></p>
+                                                                <input id="LabUpload"
+                                                                       type="file" name="files[]"
+                                                                       class="inputFile clickable"
+                                                                        />
+
+
+                                                            </div>
+                                                            <div class="form-actions">
+                                                                <button class="btn btn-flat btn-success" style="float: right;" data-dismiss="modal" ng-click="vm.createUpload()" >Upload Map And Create Challenge</button>
+                                                            </div>
+
+                                                        </div>
+                                                    </fieldset>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
+    </div>
+</div>

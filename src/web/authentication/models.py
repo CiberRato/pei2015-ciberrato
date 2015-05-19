@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+import uuid
 
 from django.core.validators import MinValueValidator, MinLengthValidator, EmailValidator
 from ciberonline.validators import validate_word
@@ -82,6 +83,13 @@ class Account(AbstractBaseUser):
     def get_teaching_institution(self):
         return self.teaching_institution
 
+
+class EmailToken(models.Model):
+    token = models.CharField(max_length=100, blank=False, unique=True, default=uuid.uuid4)
+    user = models.ForeignKey(Account, blank=False)
+
+    class Meta:
+        unique_together = ('token', 'user',)
 
 """ GROUP MODELS """
 

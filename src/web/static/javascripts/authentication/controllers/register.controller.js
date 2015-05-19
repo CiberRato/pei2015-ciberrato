@@ -47,6 +47,10 @@
                     life: 2500,
                     theme: 'btn-success'
                 });
+                $.jGrowl("Please check your inbox and confirm your email!", {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all info'
+                });
                 $location.path('/idp/login/');
             }
 

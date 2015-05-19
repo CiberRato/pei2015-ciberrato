@@ -26,6 +26,14 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ADMINS = (('Rafael', 'mail@rafaelferreira.pt'),)
+EMAIL_HOST = "smtp.zoho.com"
+EMAIL_HOST_PASSWORD = "ciberrato"
+EMAIL_HOST_USER = "ciberrato@rafaelferreira.pt"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+
+CHECK_EMAIL_URL = "http://localhost:8000/check/email/"
 
 # Application definition
 
@@ -108,6 +116,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 NUMBER_OF_NOTIFICATIONS_TO_SAVE = 5
+MAX_PRIVATE_COMPETITION_LOGS_SAVED_PER_TEAM = 10
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'

@@ -1,19 +1,22 @@
 import json
 
 from competition.permissions import IsStaff, IsSuperUser
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404, render
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
-from authentication.models import Account, TeamMember
-from authentication.serializers import AccountSerializer, PasswordSerializer, AccountSerializerLogin
-from authentication.permissions import IsAccountOwner
 from django.contrib.auth import authenticate, login, logout
 from tokens.models import UserToken
 from notifications.models import NotificationTeam, NotificationUser
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
+from django.core.mail import send_mail
+from django.conf import settings
+from smtplib import SMTPException
+
 from .validation import test_captcha
-from .permissions import MustBeStaffUser, UserIsUser
+from .permissions import MustBeStaffUser, UserIsUser, IsAccountOwner
+from .models import Account, TeamMember, EmailToken
+from .serializers import AccountSerializer, PasswordSerializer, AccountSerializerLogin
 
 
 class AccountViewSet(viewsets.ModelViewSet):
@@ -84,6 +87,23 @@ class AccountViewSet(viewsets.ModelViewSet):
             test_captcha(hashkey=serializer.validated_data['hashkey'], response=serializer.validated_data['response'])
             instance = Account.objects.create_user(**serializer.validated_data)
             UserToken.get_or_set(account=instance)
+
+            # send email to confirm the user email
+            token = EmailToken.objects.create(user=instance)
+            try:
+                send_mail('Confirm Your Email Address',
+                          'Welcome to CiberRato!\nPlease confirm your email here: <a href="ok">a</a>\nThank you!',
+                          'CiberRato <'+settings.EMAIL_HOST_USER+'>',
+                          [instance.first_name + " " + instance.last_name + " <" + instance.email + ">"],
+                          fail_silently=False,
+                          html_message='<h1>Welcome to CiberRato!</h1><br/><h2>Please confirm your email here: <a href="'+
+                                       settings.CHECK_EMAIL_URL + str(token.token) + '/">' + settings.CHECK_EMAIL_URL +
+                                       str(token.token) + '</a><h2/><br/><h2>Thank you!</h2>')
+            except SMTPException:
+                return Response({'status': 'Bad Request',
+                                 'message': 'The confirmation email could not be sent!'
+                                 }, status=status.HTTP_400_BAD_REQUEST)
+
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
@@ -424,3 +444,19 @@ class GetCaptcha(views.APIView):
         response["new_cptch_image"] = captcha_image_url(response['new_cptch_key'])
 
         return Response(response)
+
+
+def check_email(request, token):
+    """
+    URL: check/email/<token>/
+    :param request:
+    :type request:
+    :param token:
+    :type token:
+    :return:
+    :rtype:
+    """
+    token = get_object_or_404(EmailToken, token=token)
+    token.user.is_active = True
+    token.delete()
+    return render(request, 'checkEmail.html')

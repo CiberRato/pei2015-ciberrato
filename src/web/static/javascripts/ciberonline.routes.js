@@ -41,6 +41,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/teams/createTeam.html',
             title: 'Create Team'
+        }).when('/panel/:username/lastNotifications',{
+            controller: 'LastNotificationsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/profile/lastNotifications.html',
+            title: 'Last Notifications'
         }).when('/panel/:name/editTeam',{
             controller: 'TeamController',
             controllerAs: 'vm',
@@ -71,6 +76,16 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/teams/allTeams.html',
             title: 'All Teams'
+        }).when('/panel/challenges',{
+            controller:'AllChallengesController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/hallOfFame/allChallenges.html',
+            title: 'Challenges'
+        }).when('/panel/challenges/:name',{
+            controller:'ChallengeDetailController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/hallOfFame/challengeDetail.html',
+            title: 'Challenge Detail'
         }).when('/panel/searchResults/:search',{
             controller:'SearchController',
             controllerAs:'vm',
@@ -204,6 +219,16 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/stickyNotes/createStickyNote.html',
             title: 'Create Sticky Notes'
+        }).when('/admin/challenges',{
+            controller:'AllChallengesController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/hallOfFame/allChallenges.html',
+            title: 'Challenges'
+        }).when('/admin/createChallenge',{
+            controller:'CreateChallengeController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/hallOfFame/createChallenge.html',
+            title: 'Create Challenge'
         }).when('/admin/statistics',{
             controller:'StatisticsController',
             controllerAs: 'vm',
