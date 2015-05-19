@@ -61,7 +61,9 @@ class Competition(models.Model):
                                                   number_agents_by_grid=number_agents_by_grid,
                                                   allow_remote_agents=False,
                                                   synchronous_simulation=True, timeout=1)
-            return Competition.objects.get(name=settings.HALL_OF_FAME_START_STR + name)
+            return Competition.objects.create(name=settings.HALL_OF_FAME_START_STR + name,
+                                              type_of_competition=tp,
+                                              state_of_competition='Competition')
 
     @staticmethod
     def get_hall_fame_type(name="Single"):
