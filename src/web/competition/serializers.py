@@ -373,6 +373,15 @@ class InputPrivateRoundSerializer(serializers.ModelSerializer):
 
 
 class HallOfFameLaunchSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
     def to_internal_value(self, data):
         round_name = data.get('round_name')
         agent_name = data.get('agent_name')
