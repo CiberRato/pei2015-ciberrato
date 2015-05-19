@@ -16,7 +16,8 @@
             destroy: destroy,
             getByFirstName: getByFirstName,
             getByLastName: getByLastName,
-            change: change
+            change: change,
+            getBroadcastNotifications: getBroadcastNotifications
         };
 
         return Profile;
@@ -54,6 +55,10 @@
 
         function change(url){
             return $http.get(url);
+        }
+
+        function getBroadcastNotifications(){
+            return $http.get("/api/v1/notifications/broadcast/");
         }
 
     }
