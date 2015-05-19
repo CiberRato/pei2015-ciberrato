@@ -41,6 +41,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/panel/teams/createTeam.html',
             title: 'Create Team'
+        }).when('/panel/:username/lastNotifications',{
+            controller: 'LastNotificationsController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/panel/profile/lastNotifications.html',
+            title: 'Last Notifications'
         }).when('/panel/:name/editTeam',{
             controller: 'TeamController',
             controllerAs: 'vm',
