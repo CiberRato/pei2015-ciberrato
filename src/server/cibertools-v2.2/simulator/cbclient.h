@@ -45,12 +45,6 @@ public:
 	bool Refuse();
 
 	bool send(const char *, unsigned int);
-
-protected:
-	QHostAddress address;
-	unsigned short port;
-	QXmlSimpleReader parser;
-	QXmlInputSource source;
 };
 
 #endif
