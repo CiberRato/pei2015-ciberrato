@@ -33,6 +33,8 @@ EMAIL_HOST_USER = "ciberrato@rafaelferreira.pt"
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 
+CHECK_EMAIL_URL = "http://localhost:8000/check/email/"
+
 # Application definition
 
 INSTALLED_APPS = (
