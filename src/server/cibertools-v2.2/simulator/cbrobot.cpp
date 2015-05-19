@@ -283,30 +283,31 @@ bool cbRobot::readAction(cbRobotAction *action)
 	}
 	else xmlBuff[xmlSize]='\0';
 */
-	QByteArray xmlBuff, readArr;
+	QByteArray datagram, readArr;
     while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
         if (readArr.isEmpty()) {
             cerr << "Delimeter not found in the message, check the message sent.\n";
             return false;
         }
-        xmlBuff += readArr;
+        datagram += readArr;
+        cerr << datagram.data() << datagram.length() << "\n";
     }
 #ifdef DEBUG_ROBOT
-	cerr << "cbRobot: " << xmlBuff.data() << "\n";
+	cerr << "cbRobot: " << datagram.data() << "\n";
 #endif
 
-	
+	cerr << "cbRobot: " << datagram.data() << " " << datagram.toHex().data() << "\n";
     if (showActions)
-        simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
+        simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
 
 	/* parse xml message */
     parser.setContentHandler(&handler);
-    source.setData(xmlBuff);
+    source.setData(datagram);
 	if (!parser.parse(source))
 	{
-        cerr << "cbRobot::Fail parsing xml action message: \"" << xmlBuff.constData() << "\"\n";
+        cerr << "cbRobot::Fail parsing xml action message: \"" << datagram.constData() << "\"\n";
         simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
-        simulator->GUI()->appendMessage( QString(" \"")+xmlBuff.constData()+"\"" , true);
+        simulator->GUI()->appendMessage( QString(" \"")+datagram.constData()+"\"" , true);
 
 		return false;
 	}
