@@ -76,6 +76,11 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/hallOfFame/allChallenges.html',
             title: 'Challenges'
+        }).when('/panel/challenges/:name',{
+            controller:'ChallengeDetailController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/hallOfFame/challengeDetail.html',
+            title: 'Challenge Detail'
         }).when('/panel/searchResults/:search',{
             controller:'SearchController',
             controllerAs:'vm',
