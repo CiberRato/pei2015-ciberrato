@@ -23,6 +23,7 @@
             function getHallOfFameSuccessFn(data){
                 vm.challenges = data.data;
                 console.log(vm.challenges);
+
                 $scope.loader = {
                     loading: true
                 };
@@ -35,6 +36,7 @@
 
 
         }
+
 
         function deleteChallenge(name){
             Round.destroy(name, "Hall of fame - Single").then(deleteChallengeSuccessFn, deleteChallengeErrorFn);
