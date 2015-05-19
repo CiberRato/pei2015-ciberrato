@@ -232,3 +232,22 @@ class AuthenticationTestCase(TestCase):
         response = client.put(url, data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(dict(response.data), {"status":"Bad Request","message":{"username":["This field may not be blank."],"first_name":["This field may not be blank."],"last_name":["This field may not be blank."],"email":["This field may not be blank."],"teaching_institution":["This field may not be blank."]}})
+
+        client.force_authenticate(user=None)
+
+    def test_recover(self):
+        Account.objects.create(email='mail@rafaelferreira.pt', username='test1', first_name='unit',
+                               last_name='test1',
+                               teaching_institution='testUA')
+
+        client = APIClient()
+        user = Account.objects.get(email='mail@rafaelferreira.pt')
+        client.force_authenticate(user=user)
+
+        # recover
+        url = "/api/v1/password_recover/request/"
+        data = {"email": "mail@rafaelferreira.pt"}
+        response = client.post(path=url, data=data)
+        self.assertEqual(response.data, {"email":"mail@rafaelferreira.pt"})
+
+        client.force_authenticate(user=None)
