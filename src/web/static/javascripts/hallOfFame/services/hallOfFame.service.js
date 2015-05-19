@@ -22,10 +22,11 @@
             });
         }
 
-        function launchTrial(roundName, agentName){
+        function launchTrial(roundName, agentName, team){
             return $http.post("/api/v1/competitions/hall_of_fame/launch_trial/", {
                 round_name: roundName,
-                agent_name: agentName
+                agent_name: agentName,
+                team_name: team
             });
         }
 
