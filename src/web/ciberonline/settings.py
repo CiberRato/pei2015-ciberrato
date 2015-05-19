@@ -34,6 +34,7 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 
 CHECK_EMAIL_URL = "http://localhost:8000/check/email/"
+PASSWORD_RECOVER_EMAIL_URL = "http://localhost:8000/idp/recover/"
 
 # Application definition
 

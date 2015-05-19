@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from authentication.models import Account
+from rest_framework.validators import ValidationError
 
 from django.core.validators import MinLengthValidator
 
@@ -44,3 +45,29 @@ class PasswordSerializer(serializers.ModelSerializer):
         model = Account
         fields = ('password', 'confirm_password',)
         read_only_fields = ()
+
+
+class EmailSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+    def to_internal_value(self, data):
+        email = data.get('email')
+
+        # Perform the data validation.
+        if not email:
+            raise ValidationError({
+                'message': 'This field is required.'
+            })
+
+        # Return the validated values. This will be available as
+        # the `.validated_data` property.
+        return {
+            'email': email
+        }

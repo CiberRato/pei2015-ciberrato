@@ -2,7 +2,8 @@ from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
 
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
-    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha
+    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha, \
+    PasswordRecoverRequest
 
 from authentication.views import check_email
 
@@ -146,11 +147,16 @@ router_notifications.register(r'broadcast', OldBroadcastNotificationList)
 router_notifications.register(r'user', OldNotificationUserList)
 router_notifications.register(r'teams', OldNotificationTeamList)
 
+# password recover
+router_password = routers.SimpleRouter()
+router_password.register(r'request', PasswordRecoverRequest)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
                        url(r'^api/v1/me/$', MyDetails.as_view(), name="ME"),
                        url(r'^api/v1/teams/', include(router_teams.urls)),
+                       url(r'^api/v1/password_recover/', include(router_password.urls)),
                        url(r'^api/v1/competitions/', include(router_competitions.urls)),
                        url(r'^api/v1/notifications/', include(router_notifications.urls)),
                        url(r'^api/v1/sticky_notes/', include(router_sticky_note.urls)),
