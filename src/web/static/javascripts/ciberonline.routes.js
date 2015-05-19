@@ -204,6 +204,16 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/stickyNotes/createStickyNote.html',
             title: 'Create Sticky Notes'
+        }).when('/admin/challenges',{
+            controller:'AllChallengesController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/hallOfFame/allChallenges.html',
+            title: 'Challenges'
+        }).when('/admin/createChallenge',{
+            controller:'CreateChallengeController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/hallOfFame/createChallenge.html',
+            title: 'Create Challenge'
         }).when('/admin/statistics',{
             controller:'StatisticsController',
             controllerAs: 'vm',
