@@ -26,6 +26,14 @@
             function getTrialsSuccessFn(data){
                 vm.trials = data.data;
                 console.log(vm.trials);
+                for(var i = 0; i<vm.trials.length; i++) {
+                    vm.trials[i].total = vm.trials[i].created_at.substr(0, vm.trials[i].created_at.indexOf('.'));
+                    vm.trials[i].date = vm.trials[i].total.substr(0, vm.trials[i].created_at.indexOf('T'));
+                    vm.trials[i].hour = vm.trials[i].total.substr(vm.trials[i].created_at.indexOf('T') + 1);
+
+                    getAgent(vm.trials[i].identifier, i);
+                }
+
 
                 Agent.getByUser(vm.username).then(getAgentsSuccessFn, getAgentsErrorFn);
 
@@ -47,6 +55,19 @@
                 console.error(data.data);
             }
 
+        }
+
+        function getAgent(identifier, i){
+            Round.getAgentsByTrial(identifier).then(successFn, errorFn);
+
+            function successFn(data){
+                vm.trials[i].agent = data.data;
+                console.log(data.data);
+            }
+
+            function errorFn(data){
+                console.error(data.data);
+            }
         }
 
 
