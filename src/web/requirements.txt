@@ -18,3 +18,4 @@ swampdragon-auth
 django-redis
 xmltodict
 django-simple-captcha
+django-smtp-ssl

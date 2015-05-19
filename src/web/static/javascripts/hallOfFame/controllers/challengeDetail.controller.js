@@ -72,9 +72,11 @@
 
 
         function launchTrial(){
-            var agent = document.getElementById('select').value;
-            console.log(agent);
-            HallOfFame.launchTrial(vm.roundName, agent).then(launchTrialSuccessFn, launchTrialErrorFn);
+            var tmp = document.getElementById('select').value;
+            var agent = tmp.substr(0,tmp.indexOf(','));
+            var team = tmp.substr(tmp.indexOf(',') + 1);
+            console.log(team);
+            HallOfFame.launchTrial(vm.roundName, agent, team).then(launchTrialSuccessFn, launchTrialErrorFn);
 
             function launchTrialSuccessFn(data){
                 $.jGrowl("Trial has been created successfully", {

@@ -10,6 +10,8 @@ import requests
 from ..permissions import MustBeHallOfFameCompetition, MustBePartOfAgentTeam
 from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition
 from ..serializers import HallOfFameLaunchSerializer
+from authentication.models import Team
+from teams.permissions import MustBeTeamMember
 
 
 class RunHallOfFameTrial(views.APIView):
@@ -26,10 +28,12 @@ class RunHallOfFameTrial(views.APIView):
         # Must be part of the team of the agent
         # Must be a Hall of fame competition
 
-        :type  round_name: str
-        :param round_name: The round name
-        :type  agent_name: str
-        :type  agent_name: The team name
+        :type   round_name: str
+        :param  round_name: The round name
+        :type   agent_name: str
+        :param  agent_name: The agent name
+        :type   team_name: The team name
+        :param  team_name: The team name
         """
         serializer = HallOfFameLaunchSerializer(data=request.data)
 
@@ -41,10 +45,17 @@ class RunHallOfFameTrial(views.APIView):
             r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
                                   parent_competition=competition)
 
-            # verify if the round is from a private competition
+            # verify if the round is from a hall of fame competition
             MustBeHallOfFameCompetition(competition=r.parent_competition)
 
-            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
+            # team
+            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
+
+            # must be team member
+            MustBeTeamMember(user=request.user, team=team)
+
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'],
+                                      team=team)
 
             # Must be part of the agent team
             MustBePartOfAgentTeam(agent=agent, user=request.user)

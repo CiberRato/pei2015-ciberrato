@@ -385,6 +385,7 @@ class HallOfFameLaunchSerializer(serializers.BaseSerializer):
     def to_internal_value(self, data):
         round_name = data.get('round_name')
         agent_name = data.get('agent_name')
+        team_name = data.get('team_name')
 
         # Perform the data validation.
         if not round_name:
@@ -393,12 +394,17 @@ class HallOfFameLaunchSerializer(serializers.BaseSerializer):
             })
         if not agent_name:
             raise ValidationError({
-                'trial_identifier': 'This field is required.'
+                'message': 'This field is required.'
+            })
+        if not team_name:
+            raise ValidationError({
+                'message': 'This field is required.'
             })
 
         # Return the validated values. This will be available as
         # the `.validated_data` property.
         return {
             'round_name': round_name,
+            'team_name': team_name,
             'agent_name': agent_name
         }

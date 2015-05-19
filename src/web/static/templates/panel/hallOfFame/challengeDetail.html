@@ -13,7 +13,7 @@
 
                         <p>Select An Agent</p>
                         <select ng-if="vm.agents.length>0" id="select" name="option">
-                            <option ng-repeat="(key, value) in vm.agents" value="{{value.agent_name}}">{{value.agent_name}}</option>
+                            <option ng-repeat="(key, value) in vm.agents" value="{{value.agent_name}},{{value.team_name}}">{{value.agent_name}} ({{value.team_name}})</option>
                         </select>
                         <a ng-if="vm.agents.length > 0" class="btn btn-flat btn-large btn-success" ng-click="vm.launchTrial()">Launch Trial</a>
                         <p ng-if="vm.agents.length == 0">Please create an Agent to launch a trial in this challenge.</p>
