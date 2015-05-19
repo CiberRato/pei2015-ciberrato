@@ -35,12 +35,12 @@ class RunHallOfFameTrial(views.APIView):
 
         if serializer.is_valid():
             # get round
-            r = get_object_or_404(Round.objects.all(), name=serializer.data['round_name',])
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
 
             # verify if the round is from a private competition
             MustBeHallOfFameCompetition(competition=r.parent_competition)
 
-            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.data['agent_name'])
+            agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'])
 
             # Must be part of the agent team
             MustBePartOfAgentTeam(agent=agent, user=request.user)
