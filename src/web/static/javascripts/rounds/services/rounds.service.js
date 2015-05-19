@@ -31,7 +31,8 @@
             getScoresByTrial: getScoresByTrial,
             getScoresByRound: getScoresByRound,
             updateScore: updateScore,
-            getResources: getResources
+            getResources: getResources,
+            getAgentsByTrial: getAgentsByTrial
         };
 
         return Round;
@@ -172,6 +173,10 @@
 
         function getResources(){
             return $http.get("api/v1/round_resources/");
+        }
+
+        function getAgentsByTrial(identifier){
+            return $http.get("/api/v1/competitions/trial_agents/" + identifier + "/");
         }
 
     }

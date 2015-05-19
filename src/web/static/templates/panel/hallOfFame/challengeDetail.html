@@ -23,14 +23,17 @@
                         <table ng-if="vm.trials.length != 0" class="table table-striped table-hover">
                             <thead>
                             <tr>
+                                <th>Agent Name</th>
+                                <th>Team Name</th>
                                 <th>Date</th>
                                 <th>State</th>
                                 <th>Watch Trial</th>
-                                <th>Remove</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.trials.trials">
+                            <tr ng-repeat="(key, value) in vm.trials">
+                                <td>{{value.agent[0].agent_name}}</td>
+                                <td><a href="panel/{{ value.agent[0].team_name }}/teamMembers">{{value.agent[0].team_name}}</a></td>
                                 <td>{{value.date}}&nbsp;&nbsp;&nbsp;{{value.hour}}</td>
                                 <td ng-if="value.state != 'ERROR'">{{value.state}}</td>
                                 <td ng-if="value.state == 'ERROR'"><a data-toggle="modal" href="#error">{{value.state}}</a>
@@ -46,7 +49,6 @@
                                     <p ng-if="value.state == 'WAITING' || value.state == 'ERROR' || value.state == 'READY'">Didn't Start</p>
                                     <p ng-if="value.state == 'STARTED' || value.state == 'PREPARE'">Processing Trial<span class="loading blue" data-original-title="Loading, please wait…">Processing Trial</span></p>
                                     <a href="/panel/{{value.identifier}}/watchTrial" ng-if="value.state == 'LOG'">Watch</a></td>
-                                <td><a ng-click="vm.removeTrial(value.identifier)" class="btn btn-primary btn-flat">X</a>
 
 
                             </tr>
