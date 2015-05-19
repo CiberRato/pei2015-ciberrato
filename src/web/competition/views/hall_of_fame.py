@@ -31,6 +31,11 @@ class RunHallOfFameTrial(views.APIView):
         :type  agent_name: str
         :type  agent_name: The team name
         """
+        if 'round_name' not in request.data:
+            return Response({'status': 'Bad Request',
+                             'message': 'Please provide the round_name!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # get round
         r = get_object_or_404(Round.objects.all(), name=request.data.get('round_name', ''))
 
@@ -38,6 +43,11 @@ class RunHallOfFameTrial(views.APIView):
         MustBeHallOfFameCompetition(competition=r.parent_competition)
 
         # agent
+        if 'agent_name' not in request.data:
+            return Response({'status': 'Bad Request',
+                             'message': 'Please provide the agent_name!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         agent = get_object_or_404(Agent.objects.all(), agent_name=request.data.get('agent_name', ''))
 
         # Must be part of the agent team
