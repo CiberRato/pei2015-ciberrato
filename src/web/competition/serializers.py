@@ -345,8 +345,8 @@ class PrivateRoundSerializer(serializers.BaseSerializer):
             'grid': grid,
             'grid_path': "resources/"+default_storage.path(instance.grid_path).split('/media/resources/')[1],
             'param_list': param_list,
-            'pram_list_path': "resources/"+default_storage.path(instance.lab_path).split('/media/resources/')[1],
             'lab': lab,
+            'lab_path': "resources/" + default_storage.path(instance.lab_path).split('/media/resources/')[1],
             'created_at': instance.created_at,
             'updated_at': instance.updated_at
         }
