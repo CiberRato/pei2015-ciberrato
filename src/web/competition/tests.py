@@ -1263,7 +1263,7 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(rsp, {"grid_path":"resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
                                "grid":"Ciber2005_FinalGrid.xml",
                                "param_list":"param.xml",
-                               "pram_list_path":"resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+                               "lab_path":"resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
                                "lab":"Ciber2006_FinalLab.xml"})
 
         # an error round
@@ -1288,7 +1288,7 @@ class AuthenticationTestCase(TestCase):
             {"grid_path": "resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
              "grid": "Ciber2005_FinalGrid.xml",
              "param_list": "param.xml",
-             "pram_list_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+             "lab_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
              "lab": "Ciber2006_FinalLab.xml"}])
 
         # now let's get the files name for this round and the trials list
@@ -1303,7 +1303,7 @@ class AuthenticationTestCase(TestCase):
             "grid_path": "resources/grids/CiberRato2005/Ciber2005_FinalGrid.xml",
             "grid": "Ciber2005_FinalGrid.xml",
             "param_list": "param.xml",
-            "pram_list_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
+            "lab_path": "resources/labs/CiberRato2006/Ciber2006_FinalLab.xml",
             "lab": "Ciber2006_FinalLab.xml"}})
 
         # now let's launch one trial for that round

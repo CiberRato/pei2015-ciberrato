@@ -286,10 +286,12 @@ class AutomaticTeamScore(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             CompetitionMustBeNotInPast(competition=trial.round.parent_competition)
 
+            # for now only hall of fame has automatic scores
             MustBeHallOfFameCompetition(competition=trial.round.parent_competition,
                                         message="This is not a Hall of fame competition")
 
-            team = trial.teamscore_set.first()
+            agent = trial.logtrialagent_set.first()
+            team = agent.team
 
             try:
                 with transaction.atomic():
@@ -299,9 +301,10 @@ class AutomaticTeamScore(mixins.CreateModelMixin, viewsets.GenericViewSet):
                                                               'number_of_agents'],
                                                           time=serializer.validated_data['time'])
             except IntegrityError:
-                return Response({'status': 'Bad request',
-                                 'message': 'There is already a score for that team in the trial!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                team_score = TeamScore.objects.get(trial=trial, team=team)
+                team_score.score = serializer.validated_data['score']
+                team_score.number_of_agents = serializer.validated_data['number_of_agents']
+                team_score.time = serializer.validated_data['time']
 
             serializer = self.serializer_class(TeamScoreSimplex(team_score))
             return Response(serializer.data, status=status.HTTP_201_CREATED)
