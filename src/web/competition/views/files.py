@@ -323,7 +323,7 @@ class UploadResourceFile(views.APIView):
         competition = get_object_or_404(Competition.objects.all(), name=competition_name)
         r = get_object_or_404(Round.objects.all(), name=round_name, parent_competition=competition)
 
-        if getattr(r, param + "_path", None) is not None and len(getattr(r, param + "_path", None)) != 0\
+        if getattr(r, param + "_path", None) is not None and getattr(r, param + "_path").file is not None != 0\
                 and getattr(r, param + "_can_delete"):
             default_storage.delete(getattr(r, param + "_path", None))
 
