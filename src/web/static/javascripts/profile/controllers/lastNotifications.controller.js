@@ -5,9 +5,9 @@
         .module('ciberonline.profile.controllers')
         .controller('LastNotificationsController', LastNotificationsController);
 
-    LastNotificationsController.$inject = ['$location', 'Profile', '$scope'];
+    LastNotificationsController.$inject = ['$location', 'Profile', '$scope', 'Users'];
 
-    function LastNotificationsController($location, Profile, $scope){
+    function LastNotificationsController($location, Profile, $scope, Users){
         var vm = this;
 
         activate();
@@ -17,32 +17,85 @@
                 loading: false
             };
 
-            Profile.getBroadcastNotifications().then(getBroadcastNotificationsSuccessFn, getBroadcastNotificationsErrorFn);
+            vm.user=Users.getMe().then(success, error);
+
+            function success(data){
+                vm.user = data.data;
+                Profile.getBroadcastNotifications().then(getBroadcastNotificationsSuccessFn, getBroadcastNotificationsErrorFn);
+                console.log(vm.user);
+
+            }
+            function error(data){
+                console.error(data.data);
+            }
+
 
             function getBroadcastNotificationsSuccessFn(data) {
                 vm.broadcast = data.data;
                 console.log(vm.broadcast);
+                if(vm.broadcast.length > 0) {
+                    for (var i = 0; i < vm.broadcast.length; i++) {
+                        vm.broadcast[i].content = convert(vm.broadcast[i].message);
+                        if (vm.broadcast[i].content.status == 100) {
+                            vm.status = "alert-info"
+                        } else if (vm.broadcast[i].content.status == 200) {
+                            vm.status = "alert-success"
+                        } else if (vm.broadcast[i].content.status == 400) {
+                            vm.status = "alert-error"
+                        }
+                    }
+                }
                 Profile.getAdminNotifications().then(getAdminNotificationsSuccessFn, getAdminNotificationsErrorFn);
 
                 function getAdminNotificationsSuccessFn(data) {
                     vm.admin = data.data;
                     console.log(vm.admin);
+                    if(vm.admin.length > 0) {
+                        for (var i = 0; i < vm.admin.length; i++) {
+                            vm.admin[i].content = convert(vm.admin[i].message);
+                            if (vm.admin[i].content.status == 100) {
+                                vm.status = "alert-info"
+                            } else if (vm.admin[i].content.status == 200) {
+                                vm.status = "alert-success"
+                            } else if (vm.admin[i].content.status == 400) {
+                                vm.status = "alert-error"
+                            }
+                        }
+                    }
 
                     Profile.getUserNotifications().then(getUserNotificationsSuccessFn, getUserNotificationsErrorFn);
 
                     function getUserNotificationsSuccessFn(data) {
                         vm.user = data.data;
+                        if(vm.user.length > 0) {
+                            for (var i = 0; i < vm.user.length; i++) {
+                                vm.user[i].content = convert(vm.user[i].message);
+                                if (vm.user[i].content.status == 100) {
+                                    vm.status = "alert-info"
+                                } else if (vm.user[i].content.status == 200) {
+                                    vm.status = "alert-success"
+                                } else if (vm.user[i].content.status == 400) {
+                                    vm.status = "alert-error"
+                                }
+                            }
+                        }
                         console.log(vm.user);
                         Profile.getTeamNotifications().then(getTeamNotificationsSuccessFn, getTeamNotificationsErrorFn);
 
                         function getTeamNotificationsSuccessFn(data) {
                             vm.team = data.data;
                             console.log(vm.team);
-                            for (var i = 0; i < vm.team.length; i++) {
-                                for (var j = 0; j < vm.team[i].notifications.length; j++) {
-                                    vm.team[i].notifications[j].content = convert(vm.team[i].notifications[j].message);
-                                    if(vm.team[i].notifications[j].content.status == 100){
-                                        vm.ola = "alert-error"
+                            if(vm.team.length > 0) {
+                                for (var i = 0; i < vm.team.length; i++) {
+                                    for (var j = 0; j < vm.team[i].notifications.length; j++) {
+                                        vm.team[i].notifications[j].content = convert(vm.team[i].notifications[j].message);
+                                        if (vm.team[i].notifications[j].content.status == 100) {
+                                            vm.status = "alert-info"
+                                        } else if (vm.team[i].notifications[j].content.status == 200) {
+                                            vm.status = "alert-success"
+                                        } else if (vm.team[i].notifications[j].content.status == 400) {
+                                            vm.status = "alert-error"
+                                        }
                                     }
                                 }
                             }

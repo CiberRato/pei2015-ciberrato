@@ -1,25 +1,28 @@
-<article class="span5 data-block decent">
+<article ng-if="vm.user.is_staff = false" class="span5 data-block decent">
     <div class="data-container">
         <header>
             <h2>Broadcast Notifications</h2>
         </header>
-        <section>
+        <section ng-if="vm.broadcast.length > 0">
             <div ng-repeat="(key, value) in vm.broadcast" class="alert alert-info">
-                {{value.message}}
+                {{value.content.content}}
             </div>
         </section>
+        <p ng-if="vm.broadcast.length == 0">There are no notifications!</p>
     </div>
 </article>
-<article class="span5 data-block decent">
+<article ng-if="vm.user.is_staff = true" class="span5 data-block decent">
     <div class="data-container">
         <header>
             <h2>Admin Notifications</h2>
         </header>
-        <section>
+        <section ng-if="vm.admin.length > 0">
             <div ng-repeat="(key, value) in vm.admin" class="alert alert-info">
-                {{value.message}}
+                {{value.content.content}}
             </div>
         </section>
+        <p ng-if="vm.admin.length == 0">There are no notifications!</p>
+
     </div>
 </article>
 <article class="span5 data-block decent">
@@ -27,11 +30,13 @@
         <header>
             <h2>User Notifications</h2>
         </header>
-        <section>
+        <section ng-if="vm.user.length > 0">
             <div ng-repeat="(key, value) in vm.user" class="alert alert-info">
-                {{value.message}}
+                {{value.content.content}}
             </div>
         </section>
+        <p ng-if="vm.user.length == 0">There are no notifications!</p>
+
     </div>
 </article>
 <article ng-repeat="(key1, value1) in vm.team" class="span5 data-block decent">
@@ -39,10 +44,13 @@
         <header>
             <h2>Team ({{value1.team}}) Notifications</h2>
         </header>
-        <section>
-            <div ng-repeat="(key, value) in value1.notifications" class="alert {{vm.ola}}">
+        <section ng-if="value1.notifications.length > 0">
+            <div ng-repeat="(key, value) in value1.notifications" class="alert {{vm.status}}">
                 {{value.content.content}}
             </div>
         </section>
+        <p ng-if="value1.notifications.length == 0">There are no notifications!</p>
+
+
     </div>
 </article>
