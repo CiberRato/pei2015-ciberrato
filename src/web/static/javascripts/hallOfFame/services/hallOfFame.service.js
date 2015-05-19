@@ -9,26 +9,14 @@
 
     function HallOfFame($http) {
         var HallOfFame = {
-            createGrid: createGrid,
-            createLab: createLab,
-            createParam: createParam
+            create: create
 
         };
 
         return HallOfFame;
 
-        function createGrid(competitionName, roundName, param, file){
-            return $http.post("/api/v1/set_round_file/" + competitionName + "/" + roundName + "/" +  param + "/", {
-                path: file
-            })
-        }
-        function createLab(competitionName, roundName, param, file){
-            return $http.post("/api/v1/set_round_file/" + competitionName + "/" + roundName + "/" +  param + "/", {
-                path: file
-            })
-        }
-        function createParam(competitionName, roundName, param, file){
-            return $http.post("/api/v1/set_round_file/" + competitionName + "/" + roundName + "/" +  param + "/", {
+        function create(competitionName, roundName, param, file) {
+            return $http.post("/api/v1/set_round_file/" + competitionName + "/" + roundName + "/" + param + "/", {
                 path: file
             })
         }

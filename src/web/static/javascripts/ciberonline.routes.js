@@ -71,6 +71,11 @@
             controllerAs:'vm',
             templateUrl: '/static/templates/panel/teams/allTeams.html',
             title: 'All Teams'
+        }).when('/panel/challenges',{
+            controller:'AllChallengesController',
+            controllerAs:'vm',
+            templateUrl: '/static/templates/panel/hallOfFame/allChallenges.html',
+            title: 'Challenges'
         }).when('/panel/searchResults/:search',{
             controller:'SearchController',
             controllerAs:'vm',

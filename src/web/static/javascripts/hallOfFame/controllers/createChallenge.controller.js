@@ -81,13 +81,13 @@
 
 
             function createSuccessFn(){
-                HallOfFame.createGrid("Hall of fame - Single", vm.challengeName, "grid", grid).then(uploadGridSuccessFn, uploadGridErrorFn);
+                HallOfFame.create("Hall of fame - Single", vm.challengeName, "grid", grid).then(uploadGridSuccessFn, uploadGridErrorFn);
 
                 function uploadGridSuccessFn(){
-                    HallOfFame.createLab("Hall of fame - Single", vm.challengeName, "lab", lab).then(uploadLabSuccessFn, uploadLabErrorFn);
+                    HallOfFame.create("Hall of fame - Single", vm.challengeName, "lab", lab).then(uploadLabSuccessFn, uploadLabErrorFn);
 
                     function uploadLabSuccessFn(){
-                        HallOfFame.createParam("Hall of fame - Single", vm.challengeName, "param_list", param).then(uploadParamSuccessFn, uploadParamErrorFn);
+                        HallOfFame.create("Hall of fame - Single", vm.challengeName, "param_list", param).then(uploadParamSuccessFn, uploadParamErrorFn);
 
                         function uploadParamSuccessFn(){
                             $.jGrowl("Challenge successfully created.", {
