@@ -11,7 +11,6 @@ from rest_framework import permissions
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
 from ..models import Trial
-from ..permissions import NotPrivateCompetition
 from ..renderers import JSONRenderer
 
 from competition.shortcuts import *
@@ -153,7 +152,11 @@ class GetTrialLog(views.APIView):
         trial = get_object_or_404(Trial.objects.all(), identifier=trial_id)
 
         # can not be private competition
-        NotPrivateCompetition(competition=trial.round.parent_competition)
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if trial.round.parent_competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         if not trial_done(trial):
             return Response({'status': 'Bad request',
