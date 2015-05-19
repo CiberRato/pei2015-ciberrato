@@ -9,7 +9,7 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 
 from ..models import Competition, Round
-from ..renderers import PlainTextRenderer
+from ..renderers import PlainTextRenderer, JSONRenderer
 from ..permissions import IsStaff
 
 import xmltodict
@@ -61,7 +61,7 @@ class GetRoundFile(views.APIView):
 
 
 class GetRoundResourcesFile(views.APIView):
-    renderer_classes = (PlainTextRenderer,)
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
@@ -121,7 +121,7 @@ class GetRoundResourcesFile(views.APIView):
 
 
 class GetRoundJsonFile(views.APIView):
-    renderer_classes = (PlainTextRenderer,)
+    renderer_classes = (JSONRenderer,)
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),

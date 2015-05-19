@@ -6,12 +6,13 @@ import bz2
 
 from rest_framework import mixins, viewsets, status, views
 from rest_framework.response import Response
-from rest_framework import renderers, permissions
+from rest_framework import permissions
 
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
 from ..models import Trial
-from ..permissions import NotPrivateCompetition, NotHallOfFameCompetition
+from ..permissions import NotPrivateCompetition
+from ..renderers import JSONRenderer
 
 from competition.shortcuts import *
 from notifications.models import NotificationBroadcast, NotificationTeam
@@ -134,16 +135,8 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class PlainTextRenderer(renderers.BaseRenderer):
-    media_type = 'text/plain'
-    format = 'txt'
-
-    def render(self, data, media_type=None, renderer_context=None):
-        return data.encode(self.charset)
-
-
 class GetTrialLog(views.APIView):
-    renderer_classes = (PlainTextRenderer, )
+    renderer_classes = (JSONRenderer, )
 
     def get_permissions(self):
         return permissions.IsAuthenticated(),
