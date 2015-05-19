@@ -8,7 +8,7 @@ from rest_framework.response import Response
 import requests
 
 from ..permissions import MustBeHallOfFameCompetition, MustBePartOfAgentTeam
-from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent
+from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition
 from ..serializers import HallOfFameLaunchSerializer
 
 
@@ -34,8 +34,12 @@ class RunHallOfFameTrial(views.APIView):
         serializer = HallOfFameLaunchSerializer(data=request.data)
 
         if serializer.is_valid():
+            # get competition
+            competition = get_object_or_404(Competition.objects.all(), name='Hall of fame - Single')
+
             # get round
-            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'])
+            r = get_object_or_404(Round.objects.all(), name=serializer.validated_data['round_name'],
+                                  parent_competition=competition)
 
             # verify if the round is from a private competition
             MustBeHallOfFameCompetition(competition=r.parent_competition)
