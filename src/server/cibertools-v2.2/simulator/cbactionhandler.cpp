@@ -34,13 +34,11 @@ bool cbActionHandler::startDocument()
 {
 	type = UNKNOWN;
 	action.reset();
-	cerr << "xpto" <<"\n";
 	return TRUE;
 }
 
 bool cbActionHandler::endDocument()
 {
-	cerr << "wtf\n";
 	return TRUE;
 }
 
@@ -50,8 +48,6 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 	const QString &tag = qName;
 	activeTag = tag;
 
-	cerr << "start ";
-	cerr << tag.constData() <<"\n";
 	switch (type) {
 		case UNKNOWN:
 			if (tag == "Actions") {
@@ -121,12 +117,9 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 	return TRUE;
 }
 
-bool cbActionHandler::endElement( const QString&, const QString&, const QString& qName)
+bool cbActionHandler::endElement( const QString&, const QString&, const QString&)
 {
 	/* process end tag */
-	cerr << "end ";
-	const QString &tag = qName;
-	cerr << tag.constData() <<"\n";
 	switch (type) {
 		case UNKNOWN:
 			return false;

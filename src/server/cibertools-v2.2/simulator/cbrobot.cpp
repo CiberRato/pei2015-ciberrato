@@ -265,24 +265,6 @@ void cbRobot::changeActiveState()
 */
 bool cbRobot::readAction(cbRobotAction *action)
 {
-	/* look for an incoming message */
-    /*char xmlBuff[1024];
-    int xmlSize;
-
-    if (!hasPendingDatagrams())
-        return false;
-
-    if ((xmlSize=readDatagram(xmlBuff, 1023)) < 0)
-    {
-        cerr << "Error reading from Robot Socket - " << errorString().toStdString();
-        //cerr << "Error no. " << error() << " reading from robot socket\n";
-        //if(showActions)
-        //   simulator->GUI()->appendMessage((QString("Error no. ") + error()
-        //                                          + " reading from robot socket");
-		return false;
-	}
-	else xmlBuff[xmlSize]='\0';
-*/
 	QByteArray datagram, readArr;
     while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
         if (readArr.isEmpty()) {
@@ -290,17 +272,17 @@ bool cbRobot::readAction(cbRobotAction *action)
             return false;
         }
         datagram += readArr;
-        cerr << datagram.data() << datagram.length() << "\n";
     }
 #ifdef DEBUG_ROBOT
 	cerr << "cbRobot: " << datagram.data() << "\n";
 #endif
 
-	cerr << "cbRobot: " << datagram.data() << " " << datagram.toHex().data() << "\n";
     if (showActions)
         simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
 
 	/* parse xml message */
+	QXmlSimpleReader parser;
+    QXmlInputSource source;
     parser.setContentHandler(&handler);
     source.setData(datagram);
 	if (!parser.parse(source))
