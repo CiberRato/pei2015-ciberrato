@@ -1079,16 +1079,7 @@ bool cbRobotBin::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
 
 bool cbRobotBin::readAction(cbRobotAction *action)
 {
-	/* look for an incoming message */
-    ActMessage msg;
-
-    //int ret;
-
-    //if (!hasPendingDatagrams())
-    //   return false;
-
-    // CHECK THIS
-    QByteArray datagram, readArr;
+	QByteArray datagram, readArr;
     while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
         if (readArr.isEmpty()) {
             cerr << "Delimeter not found in the message, check the message sent.\n";
@@ -1096,26 +1087,28 @@ bool cbRobotBin::readAction(cbRobotAction *action)
         }
         datagram += readArr;
     }
+#ifdef DEBUG_ROBOT
+	cerr << "cbRobot: " << datagram.data() << "\n";
+#endif
 
-    /*if ((ret=readDatagram((char *)&msg, sizeof(msg))) < 0)
-    {
-        cerr << "Error reading from robot socket - " << errorString().toStdString();
-        //cerr << "Error no. " << error() << " reading from robot socket\n";
+    if (showActions)
+        simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
+
+	/* parse xml message */
+	QXmlSimpleReader parser;
+    QXmlInputSource source;
+    parser.setContentHandler(&handler);
+    source.setData(datagram);
+	if (!parser.parse(source))
+	{
+        cerr << "cbRobot::Fail parsing xml action message: \"" << datagram.constData() << "\"\n";
+        simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
+        simulator->GUI()->appendMessage( QString(" \"")+datagram.constData()+"\"" , true);
+
 		return false;
-	}*/
-
-    // check message size
-    /*if(ret!=sizeof(ActMessage)) {
-        cerr << "Received bad ActMessage from " << Name() << "\n";
-        simulator->GUI()->appendMessage( QString("Received bad ActMessage from ") + Name(), true );
-    }*/
-
-    action->leftMotor=((short)ntohs(msg.lPow))/1000.0-2.0;
-    action->rightMotor=((short)ntohs(msg.rPow))/1000.0-2.0;
-    action->endLed =(bool)ntohs(msg.end);
-    action->leftMotorChanged=true;
-    action->rightMotorChanged=true;
-    action->endLedChanged =true;
+	}
+	
+	*action = handler.parsedAction();
 
 #ifdef DEBUG_ROBOT
     cerr << "actions received from robot\n";
