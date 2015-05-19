@@ -5,127 +5,139 @@
         .module('ciberonline.profile.controllers')
         .controller('LastNotificationsController', LastNotificationsController);
 
-    LastNotificationsController.$inject = ['$location', '$routeParams', 'Authentication', 'Profile', '$scope'];
+    LastNotificationsController.$inject = ['$location', 'Profile', '$scope', 'Users'];
 
-    function LastNotificationsController($location, $routeParams, Authentication, Profile, $scope){
+    function LastNotificationsController($location, Profile, $scope, Users){
         var vm = this;
-
-        vm.update = update;
-        vm.updatePassword = updatePassword;
-        vm.destroy = destroy;
 
         activate();
 
-        function activate(){
+        function activate() {
             $scope.loader = {
                 loading: false
             };
 
-            Profile.getBroadcastNotifications().then(getBroadcastNotificationsSuccessFn, getBroadcastNotificationsErrorFn);
+            vm.user=Users.getMe().then(success, error);
 
-            function getBroadcastNotificationsSuccessFn(data){
+            function success(data){
+                vm.user = data.data;
+                Profile.getBroadcastNotifications().then(getBroadcastNotificationsSuccessFn, getBroadcastNotificationsErrorFn);
+                console.log(vm.user);
+
+            }
+            function error(data){
+                console.error(data.data);
+            }
+
+
+            function getBroadcastNotificationsSuccessFn(data) {
                 vm.broadcast = data.data;
                 console.log(vm.broadcast);
-                $scope.loader = {
-                    loading: true
-                };
+                if(vm.broadcast.length > 0) {
+                    for (var i = 0; i < vm.broadcast.length; i++) {
+                        vm.broadcast[i].content = convert(vm.broadcast[i].message);
+                        if (vm.broadcast[i].content.status == 100) {
+                            vm.status = "alert-info"
+                        } else if (vm.broadcast[i].content.status == 200) {
+                            vm.status = "alert-success"
+                        } else if (vm.broadcast[i].content.status == 400) {
+                            vm.status = "alert-error"
+                        }
+                    }
+                }
+                Profile.getAdminNotifications().then(getAdminNotificationsSuccessFn, getAdminNotificationsErrorFn);
+
+                function getAdminNotificationsSuccessFn(data) {
+                    vm.admin = data.data;
+                    console.log(vm.admin);
+                    if(vm.admin.length > 0) {
+                        for (var i = 0; i < vm.admin.length; i++) {
+                            vm.admin[i].content = convert(vm.admin[i].message);
+                            if (vm.admin[i].content.status == 100) {
+                                vm.status = "alert-info"
+                            } else if (vm.admin[i].content.status == 200) {
+                                vm.status = "alert-success"
+                            } else if (vm.admin[i].content.status == 400) {
+                                vm.status = "alert-error"
+                            }
+                        }
+                    }
+
+                    Profile.getUserNotifications().then(getUserNotificationsSuccessFn, getUserNotificationsErrorFn);
+
+                    function getUserNotificationsSuccessFn(data) {
+                        vm.user = data.data;
+                        if(vm.user.length > 0) {
+                            for (var i = 0; i < vm.user.length; i++) {
+                                vm.user[i].content = convert(vm.user[i].message);
+                                if (vm.user[i].content.status == 100) {
+                                    vm.status = "alert-info"
+                                } else if (vm.user[i].content.status == 200) {
+                                    vm.status = "alert-success"
+                                } else if (vm.user[i].content.status == 400) {
+                                    vm.status = "alert-error"
+                                }
+                            }
+                        }
+                        console.log(vm.user);
+                        Profile.getTeamNotifications().then(getTeamNotificationsSuccessFn, getTeamNotificationsErrorFn);
+
+                        function getTeamNotificationsSuccessFn(data) {
+                            vm.team = data.data;
+                            console.log(vm.team);
+                            if(vm.team.length > 0) {
+                                for (var i = 0; i < vm.team.length; i++) {
+                                    for (var j = 0; j < vm.team[i].notifications.length; j++) {
+                                        vm.team[i].notifications[j].content = convert(vm.team[i].notifications[j].message);
+                                        if (vm.team[i].notifications[j].content.status == 100) {
+                                            vm.status = "alert-info"
+                                        } else if (vm.team[i].notifications[j].content.status == 200) {
+                                            vm.status = "alert-success"
+                                        } else if (vm.team[i].notifications[j].content.status == 400) {
+                                            vm.status = "alert-error"
+                                        }
+                                    }
+                                }
+                            }
+                            console.log();
+
+                            console.log(vm.team);
+                            $scope.loader = {
+                                loading: true
+                            };
+                        }
+
+                        function getTeamNotificationsErrorFn(data) {
+                            console.error(data.data);
+                        }
+                    }
+
+                    function getUserNotificationsErrorFn(data) {
+                        console.error(data.data);
+                    }
+
+                }
+
+                function getAdminNotificationsErrorFn(data) {
+                    console.error(data.data);
+                }
+
 
             }
 
-            function getBroadcastNotificationsErrorFn(data){
+            function getBroadcastNotificationsErrorFn(data) {
                 console.error(data.data);
                 $location.url('/panel/');
             }
         }
 
-        function update(){
-            Profile.update(vm.profile).then(profileUpdateSuccessFn, profileUpdateErrorFn);
-
-            function profileUpdateSuccessFn(){
-                $.jGrowl("Profile has been updated.", {
-                    life: 2500,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
-                });
-                window.location.assign("/panel/");
-            }
-
-            function profileUpdateErrorFn(data){
-                var errors = "";
-                for (var value in data.data.message) {
-                    errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
-                    for (var error in data.data.message[value]){
-                        errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
-                    }
-                }
-                if(typeof data.data.detail !== 'undefined'){
-                    errors += " &nbsp; "+ data.data.detail + '<br/>';
-                }
-                $.jGrowl(errors, {
-                    life: 5000,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-                });
-            }
-        }
-
-        function updatePassword(){
-            Profile.updatePassword(vm.profile.username,vm.profile.password, vm.profile.confirm_password).then(profilePassSuccessFn, profilePassErrorFn);
-
-            function profilePassSuccessFn(){
-                $.jGrowl("Password has been updated.", {
-                    life: 2500,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
-                });
-                window.location.assign("/");
-            }
-
-            function profilePassErrorFn(data){
-                console.log(data.data);
-                var errors = "";
-                if(typeof data.data.detail != "undefined"){
-                    errors += data.data.detail;
-                }
-                else{
-                    if (typeof data.data.message == 'object'){
-                        for (var value in data.data.message) {
-                            errors += "&bull; " + (value.charAt(0).toUpperCase() + value.slice(1)).replace("_", " ") + ":<br/>"
-                            for (var error in data.data.message[value]){
-                                errors += " &nbsp; "+ data.data.message[value][error] + '<br/>';
-                            }
-                        }
-                    }
-                    else{
-                        errors+= data.data.message + '<br/>'
-                    }
-                }
-                if(typeof data.data.detail !== 'undefined'){
-                    errors += " &nbsp; "+ data.data.detail + '<br/>';
-                }
-                $.jGrowl(errors, {
-                    life: 5000,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-                });
-            }
-        }
-
-        function destroy(){
-            Profile.destroy(vm.profile.username).then(destroyProfileSuccessFn, destroyProfileErrorFn);
-
-            function destroyProfileSuccessFn(){
-                $.jGrowl("Profile has been deleted.", {
-                    life: 2500,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
-                });
-                window.location.assign("/");
-            }
-
-            function destroyProfileErrorFn(data){
-                $.jGrowl("Profile could not be deleted.", {
-                    life: 2500,
-                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-                });
-                console.error(data.data);
-            }
+        function convert(str){
+            var res = str.replace(/u'/g, "'");
+            res = res.replace(/'/g, '"');
+            return JSON.parse(res);
 
         }
+
+
     }
 })();

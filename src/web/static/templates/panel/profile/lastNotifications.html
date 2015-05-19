@@ -1,38 +1,56 @@
-<article class="span6 data-block decent">
+<article ng-if="vm.user.is_staff = false" class="span5 data-block decent">
     <div class="data-container">
         <header>
-            <h2>Alerts</h2>
+            <h2>Broadcast Notifications</h2>
         </header>
-        <section>
-            <div class="alert">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Default alert box!</strong> This is default style. Nothing special to see.
-            </div>
-            <div class="alert alert-error">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Error alert box!</strong> Nice red alert when something goes wrong.
-            </div>
-            <div class="alert alert-info">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Info alert box!</strong> Also a blue one for tips and info highlights.
-            </div>
-            <div class="alert alert-success">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Success alert box!</strong> If you play nice, you will see this one.
-            </div>
-            <div class="alert alert-inverse">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>Black alert box!</strong> Come to the dark side, we have cookies.
-            </div>
-            <div class="alert alert-white">
-                <button class="close" data-dismiss="alert">×</button>
-                <strong>White alert box!</strong> Reversed dark side, may come handy too.
-            </div>
-            <div class="alert alert-block">
-                <button class="close" type="button" data-dismiss="alert">×</button>
-                <h4 class="alert-heading">Warning!</h4>
-                <p>Best check yo self, you're not looking too good. Nulla vitae elit libero, a pharetra augue. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</p>
+        <section ng-if="vm.broadcast.length > 0">
+            <div ng-repeat="(key, value) in vm.broadcast" class="alert alert-info">
+                {{value.content.content}}
             </div>
         </section>
+        <p ng-if="vm.broadcast.length == 0">There are no notifications!</p>
+    </div>
+</article>
+<article ng-if="vm.user.is_staff = true" class="span5 data-block decent">
+    <div class="data-container">
+        <header>
+            <h2>Admin Notifications</h2>
+        </header>
+        <section ng-if="vm.admin.length > 0">
+            <div ng-repeat="(key, value) in vm.admin" class="alert alert-info">
+                {{value.content.content}}
+            </div>
+        </section>
+        <p ng-if="vm.admin.length == 0">There are no notifications!</p>
+
+    </div>
+</article>
+<article class="span5 data-block decent">
+    <div class="data-container">
+        <header>
+            <h2>User Notifications</h2>
+        </header>
+        <section ng-if="vm.user.length > 0">
+            <div ng-repeat="(key, value) in vm.user" class="alert alert-info">
+                {{value.content.content}}
+            </div>
+        </section>
+        <p ng-if="vm.user.length == 0">There are no notifications!</p>
+
+    </div>
+</article>
+<article ng-repeat="(key1, value1) in vm.team" class="span5 data-block decent">
+    <div class="data-container">
+        <header>
+            <h2>Team ({{value1.team}}) Notifications</h2>
+        </header>
+        <section ng-if="value1.notifications.length > 0">
+            <div ng-repeat="(key, value) in value1.notifications" class="alert {{vm.status}}">
+                {{value.content.content}}
+            </div>
+        </section>
+        <p ng-if="value1.notifications.length == 0">There are no notifications!</p>
+
+
     </div>
 </article>

@@ -54,7 +54,7 @@ class Competition(models.Model):
     @staticmethod
     def get_hall_fame(name="Single", number_teams_for_trial=1, number_agents_by_grid=1):
         try:
-            return Competition.objects.get(name=name)
+            return Competition.objects.get(name=settings.HALL_OF_FAME_START_STR + name)
         except Competition.DoesNotExist:
             tp = TypeOfCompetition.objects.create(name=settings.HALL_OF_FAME_START_STR + name,
                                                   number_teams_for_trial=number_teams_for_trial,
