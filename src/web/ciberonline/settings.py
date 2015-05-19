@@ -26,6 +26,12 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ADMINS = (('Rafael', 'mail@rafaelferreira.pt'),)
+EMAIL_HOST = "smtp.zoho.com"
+EMAIL_HOST_PASSWORD = "ciberrato"
+EMAIL_HOST_USER = "ciberrato@rafaelferreira.pt"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 
 # Application definition
 
