@@ -17,7 +17,10 @@
             getByFirstName: getByFirstName,
             getByLastName: getByLastName,
             change: change,
-            getBroadcastNotifications: getBroadcastNotifications
+            getBroadcastNotifications: getBroadcastNotifications,
+            getAdminNotifications: getAdminNotifications,
+            getUserNotifications: getUserNotifications,
+            getTeamNotifications: getTeamNotifications
         };
 
         return Profile;
@@ -59,6 +62,18 @@
 
         function getBroadcastNotifications(){
             return $http.get("/api/v1/notifications/broadcast/");
+        }
+
+        function getAdminNotifications(){
+            return $http.get("/api/v1/notifications/admin/");
+        }
+
+        function getUserNotifications(){
+            return $http.get("/api/v1/notifications/user/");
+        }
+
+        function getTeamNotifications(){
+            return $http.get("/api/v1/notifications/teams/");
         }
 
     }
