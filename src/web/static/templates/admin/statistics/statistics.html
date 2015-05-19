@@ -10,7 +10,7 @@
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
 
-                        <h2>All Statistics</h2>
+                        <h2>Media Folder Sizes</h2>
                         <table class="table table-striped table-hover">
                             <thead>
                             <tr>
@@ -22,12 +22,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="(key, value) in vm.stats">
-                                <td>{{value.grids}}</td>
-                                <td>{{value.labs}}</td>
-                                <td>{{value.params}}</td>
-                                <td>{{value.agents}}</td>
-                                <td>{{value.json_logs}}</td>
+                            <tr>
+                                <td>{{vm.stats.grids}}</td>
+                                <td>{{vm.stats.labs}}</td>
+                                <td>{{vm.stats.params}}</td>
+                                <td>{{vm.stats.agents}}</td>
+                                <td>{{vm.stats.json_logs}}</td>
 
                             </tr>
                             </tbody>
