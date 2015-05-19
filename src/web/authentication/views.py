@@ -458,5 +458,5 @@ def check_email(request, token):
     """
     token = get_object_or_404(EmailToken, token=token)
     token.user.is_active = True
-    token.delete()
+    # token.delete()
     return render(request, 'checkEmail.html')

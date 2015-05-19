@@ -370,3 +370,26 @@ class InputPrivateRoundSerializer(serializers.ModelSerializer):
         model = Round
         fields = ('competition_name', 'grid', 'param_list', 'lab',)
         read_only_fields = ()
+
+
+class HallOfFameLaunchSerializer(serializers.BaseSerializer):
+    def to_internal_value(self, data):
+        round_name = data.get('round_name')
+        agent_name = data.get('agent_name')
+
+        # Perform the data validation.
+        if not round_name:
+            raise ValidationError({
+                'message': 'This field is required.'
+            })
+        if not agent_name:
+            raise ValidationError({
+                'trial_identifier': 'This field is required.'
+            })
+
+        # Return the validated values. This will be available as
+        # the `.validated_data` property.
+        return {
+            'round_name': round_name,
+            'agent_name': agent_name
+        }
