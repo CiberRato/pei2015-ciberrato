@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="ciberonline">
+<head>
+    <title>CiberRato | Check email</title>
+
+    <meta name="description" content="">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <base href="/" />
+
+    {% include 'authentication/stylesheets.html' %}
+</head>
+
+<body>
+    <h1><a href="#" onclick="window.location.assign('../../')" class="brand">Ciber</a></h1>
+    <div class="data-block" ng-show="loader.loading">
+        <form role="form" ng-submit="vm.login()">
+
+
+            <fieldset>
+                <h2>Your email is now verified! Thank you! :)</h2>
+                <div id="login" class="form-actions">
+                    <button class="btn btn-large btn-inverse btn-flat" type="submit"><span class="awe-signin"></span> Log in</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    {% include 'authentication/javascripts.html' %}
+</body>
+</html>

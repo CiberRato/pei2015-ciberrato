@@ -1,7 +1,7 @@
 import json
 
 from competition.permissions import IsStaff, IsSuperUser
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404, render
 from rest_framework import mixins, viewsets, views, status, permissions
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
@@ -446,3 +446,17 @@ class GetCaptcha(views.APIView):
         return Response(response)
 
 
+def check_email(request, token):
+    """
+    URL: check/email/<token>/
+    :param request:
+    :type request:
+    :param token:
+    :type token:
+    :return:
+    :rtype:
+    """
+    token = get_object_or_404(EmailToken, token=token)
+    token.user.is_active = True
+    token.delete()
+    return render(request, 'checkEmail.html')

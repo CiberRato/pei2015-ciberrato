@@ -4,6 +4,8 @@ from django.views.generic.base import TemplateView
 from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
     AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha
 
+from authentication.views import check_email
+
 from teams.views import TeamMembersViewSet, AccountTeamsViewSet, TeamViewSet, MakeMemberAdminViewSet, \
     MemberInTeamViewSet, AccountTeamsAdminViewSet
 
@@ -199,6 +201,9 @@ urlpatterns = patterns('',
                        # set round file
                        url(r'^api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
                            UploadResourceFile.as_view(), name="Set round file"),
+                       # check email
+                       url(r'^check/email/(?P<token>.+)/$', check_email,
+                           name="Check email"),
 
                        # get resource file
                        url(r'^api/v1/resources_file/$', GetRoundResourcesFile.as_view(),
