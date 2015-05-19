@@ -1,0 +1,40 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row" ng-show="loader.loading">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+            <div class="data-container">
+                <section class="tab-content">
+
+                    <!-- Tab #static -->
+                    <div class="tab-pane active" id="static">
+
+                        <h2>Challenges</a></h2>
+                        <p ng-if="vm.challenges.length != 0">Here is shown in table the list of all challenges.</p>
+                        <p ng-if="vm.challenges.length != 0 == 0">There are no challenges.</p>
+                        <table ng-if="vm.challenges.length != 0 != 0" class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>Challenge Name</th>
+                                <th>View Map</th>
+                                <th>Scores</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, value) in vm.challenges">
+                                <td><a href="panel/challenges/{{value.name}}">{{value.name}}</a></td>
+                                <td>Preview</td>
+                                <td>Scores</td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </section>
+            </div>
+
+        </article>
+    </div>
+</div>
