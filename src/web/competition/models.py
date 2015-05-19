@@ -287,4 +287,5 @@ class PrivateCompetitionLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        unique_together = ('trial', 'team',)
         ordering = ('created_at',)

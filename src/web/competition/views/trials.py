@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.core.files.storage import default_storage
 from django.conf import settings
+from django.db import IntegrityError, transaction
 
 import bz2
 
@@ -10,7 +11,7 @@ from rest_framework import permissions
 
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
-from ..models import Trial
+from ..models import Trial, TeamEnrolled, PrivateCompetitionLog
 from ..renderers import JSONRenderer
 
 from competition.shortcuts import *
@@ -48,6 +49,31 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
             serializer.validated_data['log_json'].name = trial.identifier + '.json.bz2'
             trial.log_json = serializer.validated_data['log_json']
             trial.save()
+
+            # if is a private competition
+            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+                try:
+                    with transaction.atomic():
+                        # get team
+                        team = TeamEnrolled.objects.filter(competition=trial.round.parent_competition).first().team
+
+                        # search logs
+                        logs = PrivateCompetitionLog.objects.order_by('created_at').filter(team=team)
+
+                        # save log reference
+                        PrivateCompetitionLog.objects.create(team=team, trial=trial)
+
+                        # clean logs
+                        if len(logs) > settings.MAX_PRIVATE_COMPETITION_LOGS_SAVED_PER_TEAM:
+                            for log in logs[0:len(logs) - settings.MAX_PRIVATE_COMPETITION_LOGS_SAVED_PER_TEAM]:
+                                try:
+                                    trial_log = log.trial
+                                    log.delete()
+                                    trial_log.delete()
+                                except Trial.DoesNotExist:
+                                    pass
+                except IntegrityError:
+                    pass
 
             NotificationBroadcast.add(channel="user", status="ok",
                                       message="The trial of " + trial.round.name + " has finished!",

@@ -1348,6 +1348,21 @@ class AuthenticationTestCase(TestCase):
         trial = Trial.objects.all()
         trial_identifier = trial[0].identifier
 
+        # log trial for an private competition
+        trial = Trial.objects.get(identifier=trial_identifier)
+        trial.started = True
+        trial.save()
+
+        # save trial logs (only server by server)
+        f = open('media/tests_files/ciberOnline_log.json', 'r')
+        url = "/api/v1/trials/trial_log/"
+        data = {'trial_identifier': trial_identifier, 'log_json': f}
+        response = client.post(url, data)
+        self.assertEqual(response.data, {'status': 'Created', 'message': 'The log has been uploaded!'})
+        self.assertEqual(response.status_code, 201)
+        trial = Trial.objects.get(identifier=trial_identifier)
+        self.assertEqual(trial.log_json is None, False)
+
         # delete the trial
         url = "/api/v1/competitions/private/trial/" + trial_identifier + "/"
         response = client.delete(path=url)

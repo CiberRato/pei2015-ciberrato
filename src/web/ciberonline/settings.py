@@ -108,6 +108,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 NUMBER_OF_NOTIFICATIONS_TO_SAVE = 5
+MAX_PRIVATE_COMPETITION_LOGS_SAVED_PER_TEAM = 10
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
