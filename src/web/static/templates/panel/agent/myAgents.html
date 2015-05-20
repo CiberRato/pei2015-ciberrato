@@ -24,13 +24,13 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.agents">
-                                <td ng-if="value.is_remote==false"><a href="panel/{{value.team_name}}/{{value.agent_name}}/agentDetail">{{ value.agent_name }}</a></td>
+                                <td ng-if="value.is_remote==false">{{ value.agent_name }}</td>
                                 <td ng-if="value.is_remote==true">{{ value.agent_name }}</td>
 
                                 <td><a href="panel/{{value.team_name}}/teamMembers">{{value.team_name}}</a></td>
                                 <td>{{value.language}}</td>
                                 <td ng-if="value.is_remote == false">
-                                    <a  href="/panel/{{value.team_name}}/{{value.agent_name}}/agentDetail">Upload</a>
+                                    <a  href="/panel/{{value.team_name}}/{{value.agent_name}}/agentDetail" class="awe-upload-alt"></a>
 
 
                                 </td>
