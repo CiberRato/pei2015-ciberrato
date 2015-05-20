@@ -17,12 +17,24 @@
                             <thead>
                             <tr>
                                 <th>Challenge Name</th>
+                                <th>View Map</th>
                                 <th>Remove</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.challenges">
                                 <td>{{value.name}}</td>
+                                <td>
+                                    <a data-toggle="modal" href="#showMap" ng-click="vm.getGrid(value.grid_path); vm.getLab(value.lab_path); vm.id = value.name">Preview</a>
+
+                                    <div  class="modal fade hide"  id="showMap">
+                                        <div class="modal-body">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+
+                                        </div>
+
+                                    </div>
+                                </td>
                                 <td><a data-toggle="modal" href="#confirmType{{key}}" class="btn btn-primary btn-flat">X</a>
                                     <div  class="modal fade hide"  id="confirmType{{key}}">
                                         <div class="modal-body">

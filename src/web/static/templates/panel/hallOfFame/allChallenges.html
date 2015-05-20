@@ -18,6 +18,8 @@
                             <tr>
                                 <th>Challenge Name</th>
                                 <th>View Map</th>
+                                <th>Select An Agent</th>
+                                <th>Launch Trial</th>
                                 <th>Scores</th>
                             </tr>
                             </thead>
@@ -25,6 +27,14 @@
                             <tr ng-repeat="(key, value) in vm.challenges">
                                 <td><a href="panel/challenges/{{value.name}}">{{value.name}}</a></td>
                                 <td>Preview</td>
+                                <td style="width: 25%">
+                                    <select class="span2" ng-if="vm.agents.length>0" id="select" name="option">
+                                        <option ng-repeat="(key, value) in vm.agents" value="{{value.agent_name}},{{value.team_name}}">{{value.agent_name}} ({{value.team_name}})</option>
+                                    </select>
+                                    <a ng-if="vm.agents.length == 0" href="/panel/createAgent">Create an Agent</a>
+                                </td>
+                                <td><a href="#" ng-if="vm.agents.length > 0" style="font-size: 200%" class="awe-play" ng-click="vm.launchTrial(value.name)"></a>
+                                    <p ng-if="vm.agents.length == 0">You don't have any agent</p></td>
                                 <td>Scores</td>
 
                             </tr>
