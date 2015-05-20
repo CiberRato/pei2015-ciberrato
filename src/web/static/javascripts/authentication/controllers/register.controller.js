@@ -39,8 +39,13 @@
         }
 
         function register() {
-            console.log(vm.teaching_institution);
-            Authentication.register(vm.email, vm.username, vm.first_name, vm.last_name, vm.password, vm.confirm_password, vm.teaching_institution, vm.captcha.new_cptch_key, vm.captcha_text).then(registerSuccessFn, registerErrorFn);
+         
+            if(vm.teaching_institution_other != undefined) {
+                Authentication.register(vm.email, vm.username, vm.first_name, vm.last_name, vm.password, vm.confirm_password, vm.teaching_institution_other, vm.captcha.new_cptch_key, vm.captcha_text).then(registerSuccessFn, registerErrorFn);
+            }else{
+                Authentication.register(vm.email, vm.username, vm.first_name, vm.last_name, vm.password, vm.confirm_password, vm.teaching_institution, vm.captcha.new_cptch_key, vm.captcha_text).then(registerSuccessFn, registerErrorFn);
+
+            }
 
             function registerSuccessFn(){
                 $.jGrowl("You have been successfully registered", {
@@ -77,10 +82,11 @@
         function myFunction(){
             var x = document.getElementById("select").value;
             console.log(x);
-            if(x === "Other..."){
+            if(vm.teaching_institution === "Other..."){
                 $scope.input = true;
-            }else{
+            }else if(vm.teaching_institution != "Other..."){
                 $scope.input = false;
+                vm.teaching_institution_other = undefined;
 
             }
         }
