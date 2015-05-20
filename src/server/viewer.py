@@ -63,6 +63,8 @@ class Viewer:
 		SIMULATOR_HOST = settings["settings"]["simulator_host"]
 
 		LOG_FILE = settings["settings"]["log_info_file"]
+
+		LOG_FILE += str(simulator_port)
 		# End of loading settings
 
 		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -163,7 +165,7 @@ class Viewer:
 		while simTime != robotTime:
 			# Update Robot time
 			data = simulator_s.recv(4096)
-			print data
+			#print data
 			data = data.replace("\x00", "")
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('LogInfo')

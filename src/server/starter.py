@@ -32,14 +32,13 @@ class Starter:
 		try:
 			self.run(sim_id, simulator_port)
 		except Exception as e:
-			print e.args[0]
-			data = {'trial_identifier': sim_id,'msg': e.args[0]}
+			print "[STARTER] Sending error message: " + e.strerror
+			data = {'trial_identifier': sim_id,'msg': e.strerror}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, data=data)
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
 
 		for i in range(0,len(running_ports[:])):
-			print i
 			if running_ports[i] == simulator_port:
 				running_ports[i] = 0
 				print running_ports[:]
@@ -73,6 +72,7 @@ class Starter:
 		SERVICES_PORT = settings["settings"]["services_end_point_port"]
 
 		LOG_FILE = settings["settings"]["log_info_file"]
+		LOG_FILE += str(simulator_port)
 
 		SYNC_TIMEOUT = settings["settings"]["sync_timeout"]
 		# End loading settings

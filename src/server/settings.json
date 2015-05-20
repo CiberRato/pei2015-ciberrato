@@ -9,7 +9,7 @@
 		"log_info_file": "./tmp/ciberOnline_log.json",
 
 		///default value for sync mode timeout (in ms)
-		"sync_timeout": 50,
+		"sync_timeout": 100,
 
 		///simulator ip, localhost by default
 		"simulator_host": "127.0.0.1",
