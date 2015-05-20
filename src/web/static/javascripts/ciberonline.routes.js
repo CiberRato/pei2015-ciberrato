@@ -268,7 +268,7 @@
             title: 'Credits'
         }).when('/panel/api/documentation',{
             templateUrl: '/static/templates/panel/api_documentation.html',
-            title: 'Credits'
+            title: 'API Documentation'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');
