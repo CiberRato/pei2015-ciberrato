@@ -13308,10 +13308,10 @@ div.jGrowl div.success a:hover {
     background-color: black;
     z-index: 0;
 }
-
-.layer7 {
+#layer5 {
     width: 100%;
     height: auto;
+    background-color: black;
     z-index: 0;
 }
 

@@ -12,7 +12,7 @@
         var vm = this;
         var hasGrid = false;
         var hasMap = false;
-        var c3 = document.getElementById("layer3");
+        var c3 = document.getElementById("layer5");
         var ctx = c3.getContext("2d");
         $scope.zoom = 50;
         vm.competitionName = $routeParams.identifier;
