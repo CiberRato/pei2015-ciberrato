@@ -47,13 +47,10 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
-
-		SIMULATOR_HOST = settings["settings"]["simulator_host"]
-		SIMULATOR_PORT = settings["settings"]["simulator_port"]
 
 		WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 		WEBSOCKET_PORT = settings["settings"]["websocket_port"]
@@ -63,14 +60,18 @@ class Viewer:
 
 		REGISTER_ROBOTS_URL = settings["urls"]["register_robots"]
 
+		SIMULATOR_HOST = settings["settings"]["simulator_host"]
+
 		LOG_FILE = settings["settings"]["log_info_file"]
+
+		LOG_FILE += str(simulator_port)
 		# End of loading settings
 
 		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 		# Register as PanelViewer in the simulator
-		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, SIMULATOR_PORT))
+		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, simulator_port))
 
 		# Get sim time, and ports
 		# params, grid e lab comes in this packet as well
@@ -164,6 +165,7 @@ class Viewer:
 		while simTime != robotTime:
 			# Update Robot time
 			data = simulator_s.recv(4096)
+			#print data
 			data = data.replace("\x00", "")
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('LogInfo')

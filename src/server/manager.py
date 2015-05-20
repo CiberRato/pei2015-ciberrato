@@ -1,7 +1,9 @@
 import socket
+from threading import Semaphore
 from threading import Thread
 from multiprocessing import Queue
 from multiprocessing import Process
+from multiprocessing import Array
 from starter import *
 from testReceiver import *
 from serverEndpoints import *
@@ -80,13 +82,44 @@ class Sims:
 		self.simulations = sims
 
 	def handle_sims(self):
+		# Loading settings
+		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
+		settings = json.loads(settings_str)
+
+		MAX_SIMULATIONS = settings["settings"]["max_simulations"]
+
+		# Creating Shared Semaphore
+		semaphore = Semaphore(value=MAX_SIMULATIONS)
+
+		# Creating shared array to store ports being used
+		ports = Array("i", MAX_SIMULATIONS)
+		for i in range(0,MAX_SIMULATIONS):
+			ports[i] = 0
+
+
+
 		while 1:
+			print ports[:]
 			sim_id = self.simulations.get(block=True)
-			print "[MANAGER] Received simulation with sim_id=" + sim_id + ", starting now.."
+			semaphore.acquire()
+			port = 0
+			for i in range(6000, 6000+MAX_SIMULATIONS):
+				if not i in ports[:]:
+					port = i
+					for j in range(0, MAX_SIMULATIONS):
+						if ports[j] == 0:
+							ports[j] = port
+							break
+					break
+				else:
+					continue
+			if port == 0:
+				print "[MANAGER] Error in assigning ports"
+				continue
+			print "[MANAGER] Received simulation with sim_id=" + sim_id + ", starting now on port " + str(port)
 			starter = Starter()
-			starter_thread = Thread(target=starter.main, args=(sim_id,))
+			starter_thread = Thread(target=starter.main, args=(sim_id, port, ports, semaphore))
 			starter_thread.start()
-			starter_thread.join()
 
 class Tests:
 	def __init__(self, t):

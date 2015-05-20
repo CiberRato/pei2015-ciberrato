@@ -9,7 +9,13 @@
 		"log_info_file": "./tmp/ciberOnline_log.json",
 
 		///default value for sync mode timeout (in ms)
-		"sync_timeout": 50,
+		"sync_timeout": 100,
+
+		///simulator ip, localhost by default
+		"simulator_host": "127.0.0.1",
+
+		///maximum number of simulations running in parallel
+		"max_simulations": 5,
 
 		///host and port for both starter and GetSimId connection
 		"starter_end_point_host": "127.0.0.1",
@@ -22,10 +28,6 @@
 		///host and port for services (like start) end-point connection
 		"services_end_point_host": "127.0.0.1",
 		"services_end_point_port": 7501,
-
-		///simulator host and port for viewer to send required commands
-		"simulator_host": "127.0.0.1",
-		"simulator_port": 6000,
 
 		///websocket host and port for viewer to send robots data stream
 		"websocket_host": "127.0.0.1",

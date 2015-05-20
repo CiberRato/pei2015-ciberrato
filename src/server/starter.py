@@ -20,7 +20,7 @@ from viewer import *
 
 
 class Starter:
-	def main(self,sim_id):
+	def main(self,sim_id, simulator_port, running_ports, semaphore):
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
 
@@ -30,15 +30,22 @@ class Starter:
 		URL = settings["urls"]["error_msg"]
 
 		try:
-			self.run(sim_id)
+			self.run(sim_id, simulator_port)
 		except Exception as e:
-			print e.args[0]
-			data = {'trial_identifier': sim_id,'msg': e.args[0]}
+			print "[STARTER] Sending error message: " + e.strerror
+			data = {'trial_identifier': sim_id,'msg': e.strerror}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, data=data)
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
 
-	def run(self,sim_id):
+		for i in range(0,len(running_ports[:])):
+			if running_ports[i] == simulator_port:
+				running_ports[i] = 0
+				print running_ports[:]
+				break
+		semaphore.release()
+
+	def run(self,sim_id, simulator_port):
 		# Find docker ip
 		DOCKERIP = None
 		for interface in netifaces.interfaces():
@@ -65,9 +72,10 @@ class Starter:
 		SERVICES_PORT = settings["settings"]["services_end_point_port"]
 
 		LOG_FILE = settings["settings"]["log_info_file"]
+		LOG_FILE += str(simulator_port)
 
 		SYNC_TIMEOUT = settings["settings"]["sync_timeout"]
-		#end loading settings
+		# End loading settings
 
 		# Get simulation
 		url = "http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + GET_SIM_URL + sim_id + "/"
@@ -123,9 +131,10 @@ class Starter:
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
 		if sync:
-			print "[STARTER] Creating process for simulator in sync mode"
+			print "[STARTER] Creating process for simulator in sync mode on port " + str(simulator_port)
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
+						"-port",	str(simulator_port), \
 						"-sync",	str(SYNC_TIMEOUT), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
@@ -135,6 +144,7 @@ class Starter:
 			print "[STARTER] Creating process for simulator"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
 						"-nogui", \
+						"-port",	str(simulator_port), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
 						"-grid", 	tempFilesList["grid"].name], \
@@ -147,7 +157,7 @@ class Starter:
 		viewer_c, starter_c = multiprocessing.Pipe(True)
 		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,))
+		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,simulator_port))
 		viewer_thread.start()
 		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
@@ -168,7 +178,7 @@ class Starter:
 										  "http://%s:8000%s" \
 										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
-										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], agents[i]['agent_name'], ),
+										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port), agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
 				docker_containers += [  ]
@@ -180,7 +190,7 @@ class Starter:
 		timeout_event.wait(TIMEOUT)
 
 		if not timeout_event.is_set():
-			print "[STARTER] Failed to register all robots in the timeout established"
+			print "[STARTER] Failed to register all robots in the timeout established. Port: " + str(simulator_port)
 			# Canceling everything regarding this simulation
 			# Shuting down connections to viewer
 			print "[STARTER] Killing Sockets"
@@ -188,8 +198,8 @@ class Starter:
 
 			# Waiting for viewer to die
 			print "[STARTER] Killing Viewer"
-			viewer.terminate()
-			viewer.wait()
+			viewer_thread.terminate()
+			viewer_thread.join()
 
 			# Kill simulator
 			print "[STARTER] Killing Simulator"
@@ -239,7 +249,7 @@ class Starter:
 				data = data.split("=")
 
 			if data[1] != sim_id:
-				print "[STARTER] Start received not the same as the current trial"
+				print "[STARTER] Start received not the same as the current trial. Port: " + str(simulator_port)
 				# Canceling everything regarding this simulation
 				# Shuting down connections to viewer
 				print "[STARTER] Killing Sockets"
@@ -252,8 +262,8 @@ class Starter:
 
 				# Waiting for viewer to die
 				print "[STARTER] Killing Viewer"
-				viewer.terminate()
-				viewer.wait()
+				viewer_thread.terminate()
+				viewer_thread.join()
 
 				# Kill simulator
 				print "[STARTER] Killing Simulator"
@@ -294,7 +304,7 @@ class Starter:
 		while data != "<EndedSimulation/>":
 			data = viewer_c.recv()
 
-		print "[STARTER] Simulation ended, killing simulator and running agents"
+		print "[STARTER] Simulation ended, killing simulator and running agents, port: " + str(simulator_port)
 
 		# Shuting down connections to viewer
 		viewer_c.close()
@@ -324,7 +334,7 @@ class Starter:
 		simulator.terminate()
 		simulator.wait()
 
-		print "[STARTER] Posting log to the database.."
+		print "[STARTER] Posting log to the database.. Port: " + str(simulator_port)
 		# save file with name = trial.identifier + '.json.gz' em gz
 		temp = tempfile.NamedTemporaryFile(delete=True)
 		temp.name = sim_id + '.json.bz2'
@@ -340,7 +350,7 @@ class Starter:
 		if response.status_code != 201:
 			raise Exception("[STARTER] ERROR: error posting log file to end point")
 
-		print "[STARTER] Log successfully posted, starter closing now.."
+		print "[STARTER] Log successfully posted, starter closing now.. Port: " + str(simulator_port)
 
 		# Remove log file from system
 		os.remove(LOG_FILE)
@@ -349,8 +359,8 @@ class Starter:
 		for key in tempFilesList:
 			tempFilesList[key].close()
 
-		print "[STARTER] Simulation " + sim_id + " finished successfully..\n"
-		sys.exit(0)
+		print "[STARTER] Simulation " + sim_id + " on port " + str(simulator_port) + " finished successfully..\n"
+		return
 
 if __name__ == "__main__":
 	main()
