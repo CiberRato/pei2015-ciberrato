@@ -71,3 +71,42 @@ class EmailSerializer(serializers.BaseSerializer):
         return {
             'email': email
         }
+
+
+class PasswordResetSerializer(serializers.BaseSerializer):
+    def to_representation(self, instance):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+    def to_internal_value(self, data):
+        token = data.get('token')
+        password = data.get('password')
+        confirm_password = data.get('email')
+
+        # Perform the data validation.
+        if not token:
+            raise ValidationError({
+                'message': 'This field is required.'
+            })
+        if not password:
+            raise ValidationError({
+                'message': 'This field is required.'
+            })
+        if not confirm_password:
+            raise ValidationError({
+                'message': 'This field is required.'
+            })
+
+        # Return the validated values. This will be available as
+        # the `.validated_data` property.
+        return {
+            'token': token,
+            'password': password,
+            'confirm_password': confirm_password
+        }
+
