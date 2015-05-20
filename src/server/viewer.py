@@ -192,6 +192,11 @@ class Viewer:
 
 		log_file.write("]}")
 
+		# Post score to the end point
+		# Type of competition: Hall of Fame - Single
+		#data = {'trial_id': sim_id,'score': , 'number_of_agents': len(checkedRobots), 'time':}
+		#response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
+
 		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet
 			time.sleep(0.1)
