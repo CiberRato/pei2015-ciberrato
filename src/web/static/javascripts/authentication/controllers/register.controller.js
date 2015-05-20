@@ -39,7 +39,7 @@
         }
 
         function register() {
-         
+
             if(vm.teaching_institution_other != undefined) {
                 Authentication.register(vm.email, vm.username, vm.first_name, vm.last_name, vm.password, vm.confirm_password, vm.teaching_institution_other, vm.captcha.new_cptch_key, vm.captcha_text).then(registerSuccessFn, registerErrorFn);
             }else{
