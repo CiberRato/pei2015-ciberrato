@@ -21,45 +21,50 @@
         activate();
 
         function prepareParameters(){
-            console.log('5');
-            var c3 = document.getElementById("layer3");
-            var ctx = c3.getContext("2d");
+            console.log(vm.id);
+            $scope.c3 = document.getElementById("layer3");
+            console.log($scope.c3.id);
+            $scope.ctx = $scope.c3.getContext("2d");
 
-            doIt(c3,ctx);
+            doIt();
 
         }
 
-        function drawMap(c3,ctx){
-
-            ctx.clearRect(0, 0, c3.width, c3.height);
-            ctx.rect(0,0, c3.width, c3.height);
-            ctx.fillStyle=$scope.groundColor;
-            ctx.fill();
-            drawWalls(c3,ctx);
-            drawBeacon(c3,ctx);
+        function drawMap(){
+            console.log("drawMAp");
+            $scope.ctx.clearRect(0, 0, $scope.c3.width, $scope.c3.height);
+            $scope.ctx.rect(0,0, $scope.c3.width, $scope.c3.height);
+            $scope.ctx.fillStyle=$scope.groundColor;
+            $scope.ctx.fill();
+            drawWalls();
         }
 
-        function drawGrid(c3,ctx){
+        function drawGrid(){
             var i;
+            console.log("drawGrid");
+
             for(i=0;i<$scope.grid.Grid.Position.length;i++) {
-                ctx.beginPath();
-                ctx.arc($scope.grid.Grid.Position[i]._X*$scope.zoom, $scope.grid.Grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
-                ctx.fillStyle = $scope.gridColor;
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = $scope.circleBorder;
-                ctx.stroke();
+                $scope.ctx.beginPath();
+                $scope.ctx.arc($scope.grid.Grid.Position[i]._X*$scope.zoom, $scope.grid.Grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                $scope.ctx.fillStyle = $scope.gridColor;
+                $scope.ctx.fill();
+                $scope.ctx.lineWidth = 2;
+                $scope.ctx.strokeStyle = $scope.circleBorder;
+                $scope.ctx.stroke();
             }
+
         }
 
-        function drawBeacon(c3,ctx){
+        function drawBeacon(){
             var i;
+            console.log("drawBeacon");
+
             for(i=0;i<$scope.map.Lab.Beacon.length;i++){
                 console.log($scope.map.Lab.Beacon[i]);
-                ctx.beginPath();
-                ctx.arc($scope.map.Lab.Beacon[i]._X * $scope.zoom, $scope.map.Lab.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
-                ctx.fillStyle = $scope.circleBorder;
-                ctx.fill();
+                $scope.ctx.beginPath();
+                $scope.ctx.arc($scope.map.Lab.Beacon[i]._X * $scope.zoom, $scope.map.Lab.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                $scope.ctx.fillStyle = $scope.circleBorder;
+                $scope.ctx.fill();
 
                 var dx = ($scope.map.Lab.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
                 var dy = ($scope.map.Lab.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
@@ -68,33 +73,39 @@
 
                 var imageObj = new Image();
                 imageObj.onload = function() {
-                    ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
+                    $scope.ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
                 };
                 imageObj.src = $scope.cheeseColor;
-                ctx.fill();
-                ctx.stroke();
+                $scope.ctx.fill();
+                $scope.ctx.stroke();
             }
+            drawGrid();
+
 
         }
 
-        function drawWalls(c3,ctx){
+        function drawWalls(){
             var i;
+            console.log("drawWalls");
+
             for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
 
                 if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
-                    ctx.fillStyle = $scope.smallWallColor;
+                    $scope.ctx.fillStyle = $scope.smallWallColor;
                 }
                 else{
-                    ctx.fillStyle = $scope.greatWallColor;
+                    $scope.ctx.fillStyle = $scope.greatWallColor;
                 }
-                ctx.beginPath();
+                $scope.ctx.beginPath();
                 var b = 0;
                 for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
-                    ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                    $scope.ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
                 }
-                ctx.closePath();
-                ctx.fill();
+                $scope.ctx.closePath();
+                $scope.ctx.fill();
             }
+            drawBeacon();
+
         }
 
         function activate(){
@@ -118,12 +129,14 @@
 
 
         }
-        function doIt(c3,ctx){
-            c3.width=$scope.zoom * $scope.map.Lab._Width;
-            c3.height=$scope.zoom * $scope.map.Lab._Height;
+        function doIt(){
+            console.log("doIT");
 
-            ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
-            ctx.scale(1, -1);
+            $scope.c3.width=$scope.zoom * $scope.map.Lab._Width;
+            $scope.c3.height=$scope.zoom * $scope.map.Lab._Height;
+
+            $scope.ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
+            $scope.ctx.scale(1, -1);
 
             /* Beacons Object */
             $scope.beacon = $scope.map.Lab.Beacon;
@@ -142,8 +155,7 @@
             $scope.greatWallColor = '#008000';
             $scope.smallWallColor = '#0000ff';
             $scope.gridColor = '#cfd4db';
-            drawMap(c3,ctx);
-            drawGrid(c3,ctx);
+            drawMap();
         }
 
         function deleteSoloTrial(name){
@@ -186,8 +198,7 @@
 
                 vm.grid = data.data;
                 $scope.grid=data.data;
-                console.log(data.data);
-                if(hasMap == true && hasGrid == true){
+                if(hasMap && hasGrid){
                     hasGrid = false;
                     hasMap = false;
                     prepareParameters();
@@ -205,8 +216,7 @@
 
                 vm.lab = data.data;
                 $scope.map=data.data;
-                console.log(data.data);
-                if(hasMap == true && hasGrid == true){
+                if(hasMap && hasGrid){
                     hasGrid = false;
                     hasMap = false;
                     prepareParameters();
