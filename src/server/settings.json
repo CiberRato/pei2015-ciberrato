@@ -15,7 +15,7 @@
 		"simulator_host": "127.0.0.1",
 
 		///maximum number of simulations running in parallel
-		"max_simulations": 5,
+		"max_simulations": 2,
 
 		///host and port for both starter and GetSimId connection
 		"starter_end_point_host": "127.0.0.1",
