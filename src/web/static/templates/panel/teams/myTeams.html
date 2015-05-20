@@ -15,19 +15,22 @@
                             <thead>
                             <tr>
                                 <th>Team Name</th>
+                                <th>Members</th>
                                 <th>Number of elements</th>
                                 <th>Max Number of Elements</th>
                                 <th>Agents</th>
+                                <th>Members</th>
                                 <th>Remove Team</th>
 
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.team">
-                                <td><a href="panel/{{ value.name }}/editTeam">{{ value.name }}</a></td>
+                                <td>{{ value.name }}</td>
+                                <td><a href="panel/{{ value.name }}/editTeam" class="fam-group-edit"></a></td>
                                 <td>{{value.allmembers}}</td>
                                 <td>{{value.max_members}}</td>
-                                <td ng-if="value.allAgents == 0"><a href="panel/createAgent">Create First Agent Of this team</a></td>
+                                <td ng-if="value.allAgents == 0"><a href="panel/createAgent">Create First Agent</a></td>
                                 <td ng-if="value.allAgents != 0"><a href="panel/{{value.name}}/allAgents">Agents</a></td>
                                 <td><a ng-click="vm.destroy(value.name)" class="btn btn-primary btn-flat">X</a></td>
                             </tr>
