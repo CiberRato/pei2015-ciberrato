@@ -323,6 +323,11 @@ class LogoutView(views.APIView):
 
 
 class MyDetails(views.APIView):
+    """
+    ## See the details of the current logged user
+    - #### Method: **GET**
+    - #### URL: **/api/v1/me/**
+    """
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
