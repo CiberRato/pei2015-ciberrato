@@ -21,6 +21,7 @@
                             <thead>
                             <tr>
                                 <th>Team Name</th>
+                                <th>View Maps</th>
                                 <th>Number of Maps</th>
                                 <th>Number of Solo Trials</th>
                             </tr>
@@ -28,8 +29,9 @@
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.solos">
                                 <td>
-                                    <a href="/panel/{{value.team}}/{{value.competition.name}}/soloTrials">{{value.team}}</a>
+                                    {{value.team}}
                                 </td>
+                                <td><a href="/panel/{{value.team}}/{{value.competition.name}}/soloTrials" class="fam-map-edit"></a></td>
                                 <td>{{value.number_of_rounds}}</td>
                                 <td>{{value.number_of_trials}}</td>
                             </tr>

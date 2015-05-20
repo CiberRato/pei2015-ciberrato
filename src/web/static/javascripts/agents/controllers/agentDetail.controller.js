@@ -40,15 +40,7 @@
 
             function getFilesSuccessFn(data) {
                 vm.files = data.data;
-                for(var i = 0; i<vm.files.length; i++){
-                    console.log(vm.files[i]);
-                    console.log(vm.files[i].file.substr(vm.files[i].file.indexOf('.')));
-                    if(vm.files[i].file.substr(vm.files[i].file.indexOf('.')) === '.zip') {
-                        vm.files[i].language = "zip";
-                    }else{
-                        vm.files[i].language = "other";
-                    }
-                }
+
                 console.log(vm.files);
                 $scope.loader.loading=true;
 

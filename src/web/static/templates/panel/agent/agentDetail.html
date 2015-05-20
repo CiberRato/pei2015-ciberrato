@@ -33,18 +33,21 @@
                                 <th>File Name</th>
                                 <th>Size</th>
                                 <th>Last Modification</th>
-                                <th>Download</th>
-                                <th>Remove File</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key,value) in vm.files">
-                                <td ng-if="value.language == 'other'"><a href="/panel/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/agentDetail/{{value.file}}/">{{value.file}}</a></td>
-                                <td ng-if="value.language == 'zip'">{{value.file}}</td>
+                                <td>{{value.file}}</td>
                                 <td>{{value.size}}</td>
                                 <td>{{value.last_modification}}</td>
-                                <td><a class = "awe-download-alt" href="/api/v1/agents/file/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank"></a></td>
-                                <td><a ng-click="vm.deleteUpload(value.file)" class="btn btn-primary btn-flat">X</a></td>
+                                <td class="toolbar">
+                                    <div class="btn-group">
+                                        <a href="/panel/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/agentDetail/{{value.file}}/" class="btn btn-flat"><span class="awe-edit"></span></a>
+                                        <a href="/api/v1/agents/file/{{vm.agent.team_name}}/{{vm.agent.agent_name}}/{{value.file}}/" target="_blank" class="btn btn-flat"><span class="awe-download-alt"></a></button>
+                                        <a ng-click="vm.deleteUpload(value.file)" class="btn btn-flat"><span class="awe-remove"></span></a>
+                                    </div>
+                                </td>
                             </tr>
                             </tbody>
 
@@ -56,11 +59,13 @@
                         <br/>
                         <output id="list"></output>
 
-                        <input id="fileupload"
-                               type="file" name="files[]"
-                               class="inputFile clickable"
-                               multiple=""
-                                />
+                        <span class="btn btn-file">
+	                        <span class="fileupload-new">Select file</span>
+	                        <input id="fileupload" type="file" name="files[]" class="inputFile clickable" multiple="">
+
+                        </span>
+                        <button class="btn btn-flat btn-success" ng-click="vm.uploadFile()">Upload All</button>
+
 
                         <script>
                             function handleFileSelect(evt) {
@@ -81,7 +86,6 @@
                         </script>
                         <br/>
 
-                        <button class="btn btn-flat btn-success" ng-click="vm.uploadFile()">Upload All</button>
                         <br/>
                         <br/>
                         <span class="awe-exclamation-sign"></span><b>
