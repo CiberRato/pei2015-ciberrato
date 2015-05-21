@@ -10,9 +10,9 @@ from authentication.models import Team
 
 from .simplex import TeamScoreSimplex
 from ..models import Competition, TeamScore, Trial, Round
-from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer, TeamScoreAutomaticSerializer
+from ..serializers import TeamScoreOutSerializer, TeamScoreInSerializer
 from ..permissions import IsStaff, CompetitionMustBeNotInPast, NotPrivateCompetition,\
-    TeamEnrolledWithValidInscription, MustBeHallOfFameCompetition
+    TeamEnrolledWithValidInscription
 
 
 class TeamScoreViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,

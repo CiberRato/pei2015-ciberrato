@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db import IntegrityError
+from django.db import transaction
 
 from rest_framework import permissions
 from rest_framework import status, views, viewsets, mixins
@@ -7,7 +9,7 @@ from rest_framework.response import Response
 
 import requests
 
-from ..permissions import MustBeHallOfFameCompetition, MustBePartOfAgentTeam
+from ..permissions import MustBePartOfAgentTeam, CompetitionMustBeNotInPast, MustBeHallOfFameCompetition
 from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition, AgentScoreRound
 from ..serializers import HallOfFameLaunchSerializer, AutomaticTeamScoreHallOfFameSerializer
 from authentication.models import Team
@@ -137,23 +139,57 @@ class AutomaticTeamScoreHallOfFame(mixins.CreateModelMixin, viewsets.GenericView
 
             agent = trial.logtrialagent_set.first()
             team = agent.team
+            r = trial.round
+            score = serializer.validated_data['score']
+            number_of_agents = serializer.validated_data['number_of_agents']
+            time = serializer.validated_data['time']
 
             try:
                 with transaction.atomic():
-                    team_score = TeamScore.objects.create(trial=trial, team=team,
-                                                          score=serializer.validated_data['score'],
-                                                          number_of_agents=serializer.validated_data[
-                                                              'number_of_agents'],
-                                                          time=serializer.validated_data['time'])
+                    AgentScoreRound.objects.create(trial=trial,
+                                                   team=team,
+                                                   round=r,
+                                                   score=score,
+                                                   number_of_agents=number_of_agents,
+                                                   time=time)
             except IntegrityError:
-                team_score = TeamScore.objects.get(trial=trial, team=team)
-                team_score.score = serializer.validated_data['score']
-                team_score.number_of_agents = serializer.validated_data['number_of_agents']
-                team_score.time = serializer.validated_data['time']
+                # see if the new score is higher than the old one
+                old = AgentScoreRound.objects.get(round=r, team=team)
 
-            serializer = self.serializer_class(TeamScoreSimplex(team_score))
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                if AutomaticTeamScoreHallOfFame.new_is_higher_than_old_one(old=old, score=score, time=time,
+                                                                           number_of_agents=number_of_agents):
+                    # if is higher, delete the old one
+                    old.trial.delete()
+                    old.delete()
+
+                    # add the new one score
+                    AgentScoreRound.objects.create(trial=trial,
+                                                   team=team,
+                                                   round=r,
+                                                   score=score,
+                                                   number_of_agents=number_of_agents,
+                                                   time=time)
+                else:
+                    # if is not higher, so delete the new one trial
+                    trial.delete()
+
+            return Response({'status': 'OK',
+                             'message': 'The score has been received!'}
+                            , status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
                          'message': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def new_is_higher_than_old_one(old, score, number_of_agents, time):
+        assert isinstance(old, AgentScoreRound)
+        if score > old.score:
+            return True
+        if score == old.score:
+            if number_of_agents > old.score:
+                return True
+            if number_of_agents == old.score:
+                if time < old.score:
+                    return True
+        return False
