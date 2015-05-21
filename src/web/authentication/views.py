@@ -35,12 +35,12 @@ class AccountViewSet(viewsets.ModelViewSet):
     - #### Permissions: **Allow Any**
     ## Update an user
     - #### Method: **PUT**
-    - #### URL: **/api/v1/accounts/<username>/**
+    - #### URL: **/api/v1/accounts/&lt;username&gt;/**
     - #### Parameters: email, username, teaching_institution, first_name, last_name
     - #### Permissions: **Is Authenticated and Is Account Owner**
     ## Delete an user
     - #### Method: **DELETE**
-    - #### URL: **/api/v1/accounts/<username>/**
+    - #### URL: **/api/v1/accounts/&lt;username&gt;/**
     - #### Permissions: **Is Authenticated and Is Account Owner**
     """
     lookup_field = 'username'
@@ -176,17 +176,24 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 
 class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """
+    ## Change password
+    - #### Method: **PUT**
+    - #### URL: **/api/v1/change_password/&lt;username&gt;/**
+    - #### Parameters: Password and confirm_password
+    - #### Permissions: **Is Authenticated and Is Account Owner**
+    """
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = PasswordSerializer
 
     def get_permissions(self):
-        return permissions.IsAuthenticated(),
+        return permissions.IsAuthenticated(), IsAccountOwner(),
 
     def update(self, request, *args, **kwargs):
         """
         B{Update} the password
-        B{URL:} ..api/v1/change_password/<username>/
+        B{URL:} ../api/v1/change_password/<username>/
 
         -> Permissions
         # update
@@ -221,6 +228,12 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
 
 class AccountByFirstName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    ## Get account by first name
+    - #### Method: **GET**
+    - #### URL: **/api/v1/account_by_first_name/&lt;first_name&gt;/**
+    - #### Permissions: **Is Authenticated**
+    """
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
@@ -241,6 +254,12 @@ class AccountByFirstName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class AccountByLastName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    ## Get account by last name
+    - #### Method: **GET**
+    - #### URL: **/api/v1/account_by_last_name/&lt;last_name&gt;/**
+    - #### Permissions: **Is Authenticated**
+    """
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
@@ -372,6 +391,12 @@ class MyDetails(views.APIView):
 
 
 class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """
+    ## Toggle the user to staff member
+    - #### Method: **PUT**
+    - #### URL: **/api/v1/toggle_staff/&lt;username&gt;/**
+    - #### Permissions: **Is authenticated and is staff**
+    """
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
@@ -406,6 +431,12 @@ class ToggleUserToStaff(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
 
 class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """
+    ## Toggle the user to super user
+    - #### Method: **PUT**
+    - #### URL: **/api/v1/toggle_super_user/&lt;username&gt;/**
+    - #### Permissions: **Is authenticated and is super user**
+    """
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
@@ -445,6 +476,12 @@ class ToggleUserToSuperUser(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
 
 class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    ## Login to other user
+    - #### Method: **GET**
+    - #### URL: **/api/v1/login_to/&lt;username&gt;/**
+    - #### Permissions: **Is authenticated and is super user**
+    """
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
@@ -471,6 +508,14 @@ class LoginToOtherUser(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class GetCaptcha(views.APIView):
+    """
+    ## Get captcha
+    - #### Method: **GET**
+    - #### URL: **/api/v1/get_captcha/**
+    """
+    def get_permissions(self):
+        return permissions.AllowAny(),
+
     def get(self, request):
         """
         Get Captcha details
