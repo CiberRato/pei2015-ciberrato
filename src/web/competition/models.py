@@ -292,7 +292,7 @@ class AgentScoreRound(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('trial', 'team',)
+        unique_together = ('round', 'team',)
         ordering = ('score', '-number_of_agents', 'time')
 
 
