@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.validators import ValidationError
 
 from competition.models import Competition, Round, TeamEnrolled, CompetitionAgent, Trial, LogTrialAgent, \
-    TypeOfCompetition, GridPositions, AgentGrid, TrialGrid, TeamScore
+    TypeOfCompetition, GridPositions, AgentGrid, TrialGrid, TeamScore, AgentScoreRound
 from teams.serializers import TeamSerializer
 
 
@@ -194,12 +194,12 @@ class RoundFilesSerializer(serializers.BaseSerializer):
         }
 
 
-class TeamScoreAutomaticSerializer(serializers.ModelSerializer):
+class AutomaticTeamScoreHallOfFameSerializer(serializers.ModelSerializer):
     score = serializers.IntegerField(write_only=True)
     trial_id = serializers.CharField(max_length=128, write_only=True)
 
     class Meta:
-        model = TeamScore
+        model = AgentScoreRound
         fields = ('trial_id', 'score', 'number_of_agents', 'time',)
         read_only_fields = ()
 

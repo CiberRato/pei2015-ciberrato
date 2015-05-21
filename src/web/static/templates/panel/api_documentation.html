@@ -7,126 +7,166 @@
             <div class="data-container">
                 <header>
                     <h2>API Documentation</h2>
+                    <ul class="data-header-actions">
+                        <li class="demoTabs active"><a href="#one" class="btn btn-flat">Endpoints</a></li>
+                        <li class="demoTabs"><a href="#two" class="btn btn-flat">Definitions</a></li>
+                    </ul>
                 </header>
                 <section class="tab-content">
-                    <div id="apidocs" class="accordion">
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#authentication" data-parent="#apidocs" data-toggle="collapse"> Authentication <code class="pull-right">13</code></a>
+
+                    <!-- Tab #one -->
+                    <div class="tab-pane active" id="one">
+                        <div id="apidocs" class="accordion">
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#authentication" data-parent="#apidocs" data-toggle="collapse"> Authentication <code class="pull-right">13</code></a>
+                                </div>
+                                <div id="authentication" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">
+                                        <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Login</th>
+                                                <th style="text-align: right"><a href="/api/v1/auth/login/" target="_top">/api/v1/auth/login/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Logout</th>
+                                                <th style="text-align: right"><a href="/api/v1/auth/logout/" target="_top">/api/v1/auth/logout/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Current logged user details</th>
+                                                <th style="text-align: right"><a href="/api/v1/me/" target="_top">/api/v1/me/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Create an user</th>
+                                                <th style="text-align: right"><a href="/api/v1/accounts/" target="_top">/api/v1/accounts/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Update an user</th>
+                                                <th style="text-align: right"><a href="/api/v1/accounts/" target="_top">/api/v1/accounts/&lt;username&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Delete an user</th>
+                                                <th style="text-align: right"><a href="/api/v1/accounts/" target="_top">/api/v1/accounts/&lt;username&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Change password</th>
+                                                <th style="text-align: right"><a href="/api/v1/change_password/<username>/" target="_top">/api/v1/change_password/&lt;username&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Get account by first name</th>
+                                                <th style="text-align: right"><a href="/api/v1/account_by_first_name/<first_name>/" target="_top">/api/v1/account_by_first_name/&lt;first_name&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Get account by last name</th>
+                                                <th style="text-align: right"><a href="/api/v1/account_by_last_name/<last_name>/" target="_top">/api/v1/account_by_last_name/&lt;last_name&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Toggle the user to staff member</th>
+                                                <th style="text-align: right"><a href="/api/v1/toggle_staff/<username>/" target="_top">/api/v1/toggle_staff/&lt;username&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Toggle the user to super user</th>
+                                                <th style="text-align: right"><a href="/api/v1/toggle_super_user/<username>/" target="_top">/api/v1/toggle_super_user/&lt;username&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Login to other user</th>
+                                                <th style="text-align: right"><a href="/api/v1/login_to/<username>/" target="_top">/api/v1/login_to/&lt;username&gt;/</a></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Get captcha</th>
+                                                <th style="text-align: right"><a href="/api/v1/get_captcha/" target="_top">/api/v1/get_captcha/</a></th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="authentication" class="accordion-body in collapse" style="height: auto;">
-                                <div class="accordion-inner">
-                                    <table class="table table-hover">
-									<thead>
-										<tr>
-											<th>Login</th>
-											<th style="text-align: right"><a href="/api/v1/auth/login/" target="_top">/api/v1/auth/login/</a></th>
-										</tr>
-										<tr>
-											<th>Logout</th>
-											<th style="text-align: right"><a href="/api/v1/auth/logout/" target="_top">/api/v1/auth/logout/</a></th>
-										</tr>
-										<tr>
-											<th>Current logged user details</th>
-											<th style="text-align: right"><a href="/api/v1/me/" target="_top">/api/v1/me/</a></th>
-										</tr>
-										<tr>
-											<th>Create an user</th>
-											<th style="text-align: right"><a href="/api/v1/accounts/" target="_top">/api/v1/accounts/</a></th>
-										</tr>
-										<tr>
-											<th>Update an user</th>
-											<th style="text-align: right"><a href="/api/v1/accounts/" target="_top">/api/v1/accounts/&lt;username&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Delete an user</th>
-											<th style="text-align: right"><a href="/api/v1/accounts/" target="_top">/api/v1/accounts/&lt;username&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Change password</th>
-											<th style="text-align: right"><a href="/api/v1/change_password/<username>/" target="_top">/api/v1/change_password/&lt;username&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Get account by first name</th>
-											<th style="text-align: right"><a href="/api/v1/account_by_first_name/<first_name>/" target="_top">/api/v1/account_by_first_name/&lt;first_name&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Get account by last name</th>
-											<th style="text-align: right"><a href="/api/v1/account_by_last_name/<last_name>/" target="_top">/api/v1/account_by_last_name/&lt;last_name&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Toggle the user to staff member</th>
-											<th style="text-align: right"><a href="/api/v1/toggle_staff/<username>/" target="_top">/api/v1/toggle_staff/&lt;username&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Toggle the user to super user</th>
-											<th style="text-align: right"><a href="/api/v1/toggle_super_user/<username>/" target="_top">/api/v1/toggle_super_user/&lt;username&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Login to other user</th>
-											<th style="text-align: right"><a href="/api/v1/login_to/<username>/" target="_top">/api/v1/login_to/&lt;username&gt;/</a></th>
-										</tr>
-										<tr>
-											<th>Get captcha</th>
-											<th style="text-align: right"><a href="/api/v1/get_captcha/" target="_top">/api/v1/get_captcha/</a></th>
-										</tr>
-									</thead>
-								</table>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="agent" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#competition" data-parent="#apidocs" data-toggle="collapse"> Competition <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="competition" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#halloffame" data-parent="#apidocs" data-toggle="collapse"> Hall of Fame <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="halloffame" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#solotrials" data-parent="#apidocs" data-toggle="collapse"> Solo Trials <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="solotrials" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#notifications" data-parent="#apidocs" data-toggle="collapse"> Notifications <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="notifications" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#statistics" data-parent="#apidocs" data-toggle="collapse"> Statistics <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="statistics" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#stickynote" data-parent="#apidocs" data-toggle="collapse"> Sticky note <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="stickynote" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" href="#teams" data-parent="#apidocs" data-toggle="collapse"> Teams <code class="pull-right">5</code> </a>
+                                </div>
+                                <div id="teams" class="accordion-body collapse" style="height: 0px;">
+                                    <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
-                            </div>
-                            <div id="agent" class="accordion-body collapse" style="height: 0px;">
-                                <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                            </div>
-                        </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
-                            </div>
-                            <div id="agent" class="accordion-body collapse" style="height: 0px;">
-                                <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                            </div>
-                        </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
-                            </div>
-                            <div id="agent" class="accordion-body collapse" style="height: 0px;">
-                                <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                            </div>
-                        </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
-                            </div>
-                            <div id="agent" class="accordion-body collapse" style="height: 0px;">
-                                <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                            </div>
-                        </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
-                            </div>
-                            <div id="agent" class="accordion-body collapse" style="height: 0px;">
-                                <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                            </div>
-                        </div>
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <a class="accordion-toggle" href="#agent" data-parent="#apidocs" data-toggle="collapse"> Agent <code class="pull-right">5</code> </a>
-                            </div>
-                            <div id="agent" class="accordion-body collapse" style="height: 0px;">
-                                <div class="accordion-inner">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </div>
-                            </div>
-                        </div>
                     </div>
+                    <!-- /Tab #one -->
+
+                    <!-- Tab #two -->
+                    <div class="tab-pane" id="two">
+                        Definitions
+                    </div>
+                    <!-- /Tab #two -->
+
                 </section>
             </div>
-
         </article>
     </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        $(".demoTabs a").click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    });
+</script>
