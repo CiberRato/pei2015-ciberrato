@@ -21,7 +21,7 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = ('email', 'username', 'teaching_institution', 'first_name', 'last_name', 'password',
                   'confirm_password', 'is_staff', 'is_superuser', 'created_at', 'updated_at', 'hashkey',
                   'response',)
-        read_only_fields = ('created_at', 'updated_at')
+        read_only_fields = ('is_staff', 'is_superuser', 'created_at', 'updated_at')
 
 
 class AccountSerializerLogin(serializers.BaseSerializer):

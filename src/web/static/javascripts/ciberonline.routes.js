@@ -263,6 +263,12 @@
         }).when('/panel/apps/desktopSoftware',{
             templateUrl: '/static/templates/panel/desktopSoftware.html',
             title: 'Desktop Software'
+        }).when('/panel/team/credits',{
+            templateUrl: '/static/templates/panel/credits.html',
+            title: 'Credits'
+        }).when('/panel/api/documentation',{
+            templateUrl: '/static/templates/panel/api_documentation.html',
+            title: 'API Documentation'
         }).when('/' ,{
             templateUrl: '/templates/index.html'
         }).otherwise('/');

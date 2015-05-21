@@ -23,6 +23,26 @@ from .serializers import AccountSerializer, PasswordSerializer, AccountSerialize
 
 
 class AccountViewSet(viewsets.ModelViewSet):
+    """
+    ## List users
+    - #### Method: **GET**
+    - #### URL: **/api/v1/accounts/**
+    - #### Permissions: **Must be staff user**
+    ## Create an user
+    - #### Method: **POST**
+    - #### URL: **/api/v1/accounts/**
+    - #### Parameters: email, username, teaching_institution, first_name, last_name, password, confirm_password
+    - #### Permissions: **Allow Any**
+    ## Update an user
+    - #### Method: **PUT**
+    - #### URL: **/api/v1/accounts/<username>/**
+    - #### Parameters: email, username, teaching_institution, first_name, last_name
+    - #### Permissions: **Is Authenticated and Is Account Owner**
+    ## Delete an user
+    - #### Method: **DELETE**
+    - #### URL: **/api/v1/accounts/<username>/**
+    - #### Permissions: **Is Authenticated and Is Account Owner**
+    """
     lookup_field = 'username'
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
@@ -36,8 +56,10 @@ class AccountViewSet(viewsets.ModelViewSet):
         -> Permissions
         # list
             Must be staff user
-        # create, update, destroy
+        # create
             Allow any
+        # destroy and update
+            Is Authenticated and Is Account Owner
 
         :return:
         :rtype:
@@ -46,9 +68,6 @@ class AccountViewSet(viewsets.ModelViewSet):
             return permissions.AllowAny(),
 
         if self.request.method in permissions.SAFE_METHODS:
-            return permissions.AllowAny(),
-
-        if self.request.method == 'POST':
             return permissions.AllowAny(),
 
         return permissions.IsAuthenticated(), IsAccountOwner(),
@@ -67,8 +86,6 @@ class AccountViewSet(viewsets.ModelViewSet):
         B{Create} an user
         B{URL:} ../api/v1/accounts/
 
-        :type  id: number
-        :param id: user id
         :type  email: str
         :param email: email
         :type  username: str
@@ -244,6 +261,13 @@ class AccountByLastName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class LoginView(views.APIView):
+    """
+    ## Login to the platform
+    - #### Method: **POST**
+    - #### Parameters: **email, password**
+    - #### URL: **/api/v1/auth/login/**
+    - #### Permissions: **Allow any**
+    """
     def post(self, request):
         """
         B{Login} an user
@@ -306,10 +330,13 @@ class LoginView(views.APIView):
 
 
 class LogoutView(views.APIView):
+    """
+    ## Logout from the platform
+    - #### Method: **POST**
+    - #### URL: **/api/v1/auth/logout/**
+    - #### Permissions: **Is authenticated**
+    """
     def get_permissions(self):
-        """
-        User needs to be authenticated to logout
-        """
         return permissions.IsAuthenticated(),
 
     def post(self, request):
@@ -323,6 +350,12 @@ class LogoutView(views.APIView):
 
 
 class MyDetails(views.APIView):
+    """
+    ## See the details of the current logged user
+    - #### Method: **GET**
+    - #### URL: **/api/v1/me/**
+    - #### Permissions: **Is authenticated**
+    """
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
@@ -332,7 +365,7 @@ class MyDetails(views.APIView):
     def get(self, request):
         """
         See the details of the current logged user
-        B{URL:} ..api/v1/me/
+        B{URL:} ../api/v1/me/
         """
         serializer = self.serializer_class(request.user)
         return Response(serializer.data)
