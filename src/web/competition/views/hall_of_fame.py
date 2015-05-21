@@ -2,14 +2,14 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 
 from rest_framework import permissions
-from rest_framework import status, views
+from rest_framework import status, views, viewsets, mixins
 from rest_framework.response import Response
 
 import requests
 
 from ..permissions import MustBeHallOfFameCompetition, MustBePartOfAgentTeam
-from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition
-from ..serializers import HallOfFameLaunchSerializer
+from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition, AgentScoreRound
+from ..serializers import HallOfFameLaunchSerializer, AutomaticTeamScoreHallOfFameSerializer
 from authentication.models import Team
 from teams.permissions import MustBeTeamMember
 
@@ -101,9 +101,9 @@ class RunHallOfFameTrial(views.APIView):
                         status=status.HTTP_400_BAD_REQUEST)
 
 
-class AutomaticTeamHallofFameScore(mixins.CreateModelMixin, viewsets.GenericViewSet):
-    queryset = TeamScore.objects.all()
-    serializer_class = TeamScoreAutomaticSerializer
+class AutomaticTeamScoreHallOfFame(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = AgentScoreRound.objects.all()
+    serializer_class = AutomaticTeamScoreHallOfFameSerializer
 
     def get_permissions(self):
         return permissions.AllowAny(),
