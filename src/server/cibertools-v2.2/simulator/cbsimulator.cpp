@@ -334,8 +334,9 @@ void cbSimulator::setReceptionistAt(int port)
 }
 
 void cbSimulator::newConnectionEvent() {
-	client = server.nextPendingConnection();
-    connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+
+	QTcpSocket * client = server.nextPendingConnection();
+	connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 void cbSimulator::setGPS(bool g)
 {
@@ -1535,6 +1536,8 @@ void cbSimulator::processPanelCommands(const QString &panelId)
 }
 void cbSimulator::processReceptionMessages()
 {
+	QObject * obj = sender();
+	QTcpSocket * client = (QTcpSocket *) obj;
 	if (receptionist->CheckIn(client))
 	{
 		cbClientForm &form = receptionist->Form();

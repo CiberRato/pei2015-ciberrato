@@ -242,8 +242,6 @@ protected: // data members
     vector<QSignalMapper*> robotMappers;
 
     QTcpServer  server;
-    QTcpSocket* client;
-
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
