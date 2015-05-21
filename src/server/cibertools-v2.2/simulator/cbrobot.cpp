@@ -268,7 +268,10 @@ bool cbRobot::readAction(cbRobotAction *action)
 	QByteArray datagram, readArr;
     while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
         if (readArr.isEmpty()) {
-            cerr << "Delimeter not found in the message, check the message sent.\n";
+        	if (datagram.isEmpty())
+        		return false;
+            cerr << "[cbRobot] Delimeter not found in the message, check the message sent.\n" << 
+            		"Message received" << datagram.data() << "\n";
             return false;
         }
         datagram += readArr;

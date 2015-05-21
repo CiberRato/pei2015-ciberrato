@@ -819,7 +819,6 @@ void cbSimulator::SendSensors()
 */
 void cbSimulator::UpdateViews()
 {
-	std::cout << "UpdatingViews\n";
 	std::ostringstream xmlStream;
 	RobotsToXml(xmlStream, false, true, showPositions);
 
@@ -832,7 +831,6 @@ void cbSimulator::UpdateViews()
 			view->socket->send(xmlCharA, xmlString.length());
 		}
 	}
-	std::cout << "UpdatedViews\n";
 }
 
 
