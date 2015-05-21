@@ -280,6 +280,22 @@ class TeamScore(models.Model):
         ordering = ('score', '-number_of_agents', 'time')
 
 
+class AgentScoreRound(models.Model):
+    round = models.ForeignKey(Round, blank=False)
+    team = models.ForeignKey(Team, blank=False)
+    trial = models.ForeignKey(Trial, blank=False)
+    score = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+    number_of_agents = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+    time = models.IntegerField(validators=[MinValueValidator(0)], blank=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('trial', 'team',)
+        ordering = ('score', '-number_of_agents', 'time')
+
+
 class PrivateCompetitionLog(models.Model):
     trial = models.ForeignKey(Trial, blank=False)
     team = models.ForeignKey(Team, blank=False)
