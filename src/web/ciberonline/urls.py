@@ -23,10 +23,10 @@ from competition.views.files import UploadParamListView, UploadGridView, UploadL
     UploadResourceFile, GetRoundJsonFile, GetRoundResourcesFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition, \
-    RankingByTeamInCompetition, AutomaticTeamScore
+    RankingByTeamInCompetition
 
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
-from competition.views.hall_of_fame import RunHallOfFameTrial
+from competition.views.hall_of_fame import RunHallOfFameTrial, AutomaticTeamScoreHallOfFame
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
     PrivateCompetitionRound, RunPrivateTrial, SoloTrial
 
@@ -152,7 +152,7 @@ router_password.register(r'request', PasswordRecoverRequest)
 
 # hall of fame
 router_hall_of_fame = routers.SimpleRouter()
-router_hall_of_fame.register(r'automatic_score', AutomaticTeamScore)
+router_hall_of_fame.register(r'automatic_score', AutomaticTeamScoreHallOfFame)
 
 
 urlpatterns = patterns('',
