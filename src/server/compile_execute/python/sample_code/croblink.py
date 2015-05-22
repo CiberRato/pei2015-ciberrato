@@ -25,6 +25,7 @@ class CRobLink:
         self.sock = socket.socket(socket.AF_INET, # Internet
                              socket.SOCK_STREAM) # UDP
         self.sock.connect((self.host, port_conn))
+        self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />\x04'
         
         self.sock.send(msg)  # TODO consider host arg
