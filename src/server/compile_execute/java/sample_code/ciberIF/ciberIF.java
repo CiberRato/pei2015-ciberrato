@@ -815,6 +815,7 @@ public class ciberIF {
 
 		try {
 			socket = new Socket(address, port);
+			socket.setTcpNoDelay(true);
 			input = new DataInputStream(socket.getInputStream());
 			output = new DataOutputStream(socket.getOutputStream());
 		} catch (Exception e) {
