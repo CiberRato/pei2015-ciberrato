@@ -408,3 +408,16 @@ class HallOfFameLaunchSerializer(serializers.BaseSerializer):
             'team_name': team_name,
             'agent_name': agent_name
         }
+
+
+class HallOfFameSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, instance):
+        return {
+            'team_name': instance.team.name,
+            'round_name': instance.round.name,
+            'trial_identifier': instance.trial.identifier,
+            'score': instance.score,
+            'number_of_agents': instance.number_of_agents,
+            'time': instance.time
+        }
