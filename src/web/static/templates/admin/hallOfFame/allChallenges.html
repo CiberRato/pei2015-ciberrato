@@ -25,7 +25,7 @@
                             <tr ng-repeat="(key, value) in vm.challenges">
                                 <td>{{value.name}}</td>
                                 <td>
-                                    <a data-toggle="modal" href="#showMap" ng-click="vm.getGrid(value.grid_path); vm.getLab(value.lab_path); vm.id = value.name">Preview</a>
+                                    <a data-toggle="modal" href="#showMap" ng-click="getFiles(value.name)">Preview</a>
 
                                     <div  class="modal fade hide"  id="showMap">
                                         <div class="modal-body">

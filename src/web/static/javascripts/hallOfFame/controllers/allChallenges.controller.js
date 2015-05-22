@@ -13,8 +13,7 @@
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
         vm.username = authenticatedAccount.username;
         vm.launchTrial = launchTrial;
-        vm.getGrid = getGrid;
-        vm.getLab = getLab;
+        vm.getFiles = getFiles;
 
         activate();
 
@@ -27,10 +26,6 @@
 
             function getHallOfFameSuccessFn(data){
                 vm.challenges = data.data;
-                for(var i = 0; i<vm.challenges.length; i++){
-                    getFiles(vm.challenges[i].name, i);
-                }
-
                 console.log(vm.challenges);
 
                 Agent.getByUser(vm.username).then(getAgentsSuccessFn, getAgentsErrorFn);
@@ -55,14 +50,25 @@
 
         }
 
-        function getFiles(name, i){
-            Round.getFiles(name, "Hall of fame - Single").then(getFilesSuccessFn, getFilesErrorFn);
+        function getFiles(name){
+            Round.getFile(name, "Hall of fame - Single", 'grid').then(getGridSuccessFn, getGridErrorFn);
 
-            function getFilesSuccessFn(data){
-                vm.challenges[i].files = data.data;
+            function getGridSuccessFn(data){
+                vm.grid = data.data;
+                Round.getFile(name, "Hall of fame - Single", 'lab').then(getLabSuccessFn, getLabErrorFn);
+
+                function getLabSuccessFn(data){
+                    vm.lab = data.data;
+
+                }
+
+                function getLabErrorFn(data){
+                    console.error(data.data);
+                }
+
             }
 
-            function getFilesErrorFn(data){
+            function getGridErrorFn(data){
                 console.error(data.data);
             }
         }
@@ -153,28 +159,6 @@
             }
         }
 
-        function getGrid(grid){
-
-            SoloTrials.getResource(grid).then(getResourceSuccessFn, getResourceErrorFn);
-
-            function getResourceSuccessFn(data) {
-                vm.grid = data.data;
-            }
-        }
-
-        function getLab(lab){
-
-            SoloTrials.getResource(lab).then(getResourceSuccessFn, getResourceErrorFn);
-
-            function getResourceSuccessFn(data){
-                vm.lab = data.data;
-            }
-
-        }
-
-        function getResourceErrorFn(data){
-            console.error(data.data);
-        }
 
     }
 })();
