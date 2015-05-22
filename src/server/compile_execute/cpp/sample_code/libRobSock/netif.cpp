@@ -32,6 +32,7 @@
 #endif
 
 #include "netif.h"
+#include <netinet/tcp.h>
 
 #define DEFAULT_PORT_NUMBER 6001
 
@@ -130,6 +131,8 @@ bool Port::init_local(void)
 	if (connect(socketfd, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0)
         return false ;
 
+    int flag = 1;
+    setsockopt(socketfd, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(int));
     return true;
 }
 
