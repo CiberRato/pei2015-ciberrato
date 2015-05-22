@@ -265,40 +265,6 @@ void cbRobot::changeActiveState()
 */
 bool cbRobot::readAction(cbRobotAction *action)
 {
-	/*QByteArray datagram, readArr;
-    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
-        if (readArr.isEmpty()) {
-        	if (datagram.isEmpty())
-        		return false;
-            cerr << "[cbRobot] Delimeter not found in the message, check the message sent.\n" << 
-            		"Message received" << datagram.data() << "\n";
-            return false;
-        }
-        datagram += readArr;
-    }*/
-    /*QByteArray datagram, read;
-    if (old.isEmpty()) {
-    	read = socket->readAll();
-    	if (read.isEmpty())
-    		return false;
-    	int index = read.indexOf("\x04");
-	    datagram = old + read.left(index);
-	    old = read.right(read.size()-index-1);
-    } else {
-    	read = old;
-    	if (read.indexOf("\x04") != -1) {
-			int index = read.indexOf("\x04");
-			datagram = read.left(index);
-			old = read.right(read.size()-index-1);
-    	} else {
-    		read = socket->readAll();
-    		if (read.isEmpty())
-    			return false;
-    		int index = read.indexOf("\x04");
-		    datagram = old + read.left(index);
-		    old = read.right(read.size()-index-1);
-    	}
-    }*/
     QByteArray read = socket->readAll();
     QList<QByteArray> data = read.split('\x04');
     QByteArray datagram = QByteArray("<XML>");
