@@ -229,6 +229,11 @@
             controllerAs: 'vm',
             templateUrl: '/static/templates/admin/hallOfFame/createChallenge.html',
             title: 'Create Challenge'
+        }).when('/admin/:competitionName/:roundName/editMap/',{
+            controller:'EditMapController',
+            controllerAs: 'vm',
+            templateUrl: '/static/templates/admin/round/editMap.html',
+            title: 'Create Challenge'
         }).when('/admin/statistics',{
             controller:'StatisticsController',
             controllerAs: 'vm',

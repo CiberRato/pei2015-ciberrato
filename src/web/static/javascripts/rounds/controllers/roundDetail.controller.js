@@ -116,7 +116,7 @@
             function getRoundFilesSuccessFn(data){
                 vm.files = data.data;
                 vm.grid = vm.files.grid;
-                console.log(vm.grid);
+                console.log(vm.files);
                 vm.lab = vm.files.lab;
                 vm.param_list = vm.files.param_list;
                 $scope.loader = {

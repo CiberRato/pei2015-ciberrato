@@ -13326,8 +13326,9 @@ div.jGrowl div.success a:hover {
 }
 
 .editor {
-    top: -30px;
+    top: 45px;
     height: 500px;
+    margin-top: -40px;
 }
 
 .ng-cloak

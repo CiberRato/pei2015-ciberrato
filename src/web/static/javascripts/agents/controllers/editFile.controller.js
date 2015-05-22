@@ -68,8 +68,10 @@
             Agent.upload(vm.agentName, file, vm.teamName, vm.file).then(success, error);
 
             function success(){
-                console.log("UPLOADDD")
-            }
+                $.jGrowl("File \'" + file.name + "\' has been updated.", {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                });            }
             function error(data){
                 console.error(data.data);
             }

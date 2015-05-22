@@ -32,7 +32,8 @@
             getScoresByRound: getScoresByRound,
             updateScore: updateScore,
             getResources: getResources,
-            getAgentsByTrial: getAgentsByTrial
+            getAgentsByTrial: getAgentsByTrial,
+            getFile: getFile
         };
 
         return Round;
@@ -44,9 +45,13 @@
             });
         }
 
-        function uploadParamList(roundName, value, competitionName){
+        function uploadParamList(roundName, value, competitionName, valueName){
             var fd = new FormData();
-            fd.append('file', value);
+            if(valueName === undefined) {
+                fd.append('file', value);
+            }else{
+                fd.append('file', value, valueName);
+            }
 
             return $http.post('/api/v1/competitions/round/upload/param_list/?round=' + roundName + '&competition_name=' + competitionName, fd, {
                 transformRequest: angular.identity,
@@ -54,9 +59,13 @@
             });
         }
 
-        function uploadGrid(roundName, value, competitionName){
+        function uploadGrid(roundName, value, competitionName, valueName){
             var fd = new FormData();
-            fd.append('file', value);
+            if(valueName === undefined) {
+                fd.append('file', value);
+            }else{
+                fd.append('file', value, valueName);
+            }
 
             return $http.post('/api/v1/competitions/round/upload/grid/?round=' + roundName + '&competition_name=' + competitionName, fd, {
                 transformRequest: angular.identity,
@@ -64,9 +73,13 @@
             });
         }
 
-        function uploadLab(roundName, value, competitionName){
+        function uploadLab(roundName, value, competitionName, valueName){
             var fd = new FormData();
-            fd.append('file', value);
+            if(valueName === undefined) {
+                fd.append('file', value);
+            }else{
+                fd.append('file', value, valueName);
+            }
 
             return $http.post('/api/v1/competitions/round/upload/lab/?round=' + roundName + '&competition_name=' + competitionName, fd, {
                 transformRequest: angular.identity,
@@ -177,6 +190,11 @@
 
         function getAgentsByTrial(identifier){
             return $http.get("/api/v1/competitions/trial_agents/" + identifier + "/");
+        }
+
+        function getFile(roundName, competitionName, param){
+            return $http.get("/api/v1/competitions/round_file/" + competitionName + "/" + roundName + "/" + param + "/");
+
         }
 
     }

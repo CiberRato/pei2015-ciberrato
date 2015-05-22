@@ -1,0 +1,85 @@
+<div class="content-block" role="main">
+    <!-- Grid row -->
+    <div class="row" ng-show="loader.loading">
+
+        <!-- Data block -->
+        <article class="span12 data-block">
+
+            <div class="tabbable tabs-left data-container">
+                <ul class="nav nav-tabs">
+                    <li id="score" class="active"><a href="#tab1" data-toggle="tab">Edit Grid</a></li>
+                    <li id="manage"><a href="#tab2" data-toggle="tab">Edit Lab</a></li>
+                    <li id="param"><a href="#tab3" data-toggle="tab">Edit Param_List</a></li>
+                    <li id="preview"><a href="#tab4" data-toggle="tab">Preview</a></li>
+
+                </ul>
+                <div class="tab-content" style="padding-right: 20px;">
+                    <div class="tab-pane active" id="tab1">
+                        <br/>
+                            <div class="row">
+                                <header style="padding-bottom: 0%">
+                                    <div class="row">
+                                        <div class="span5"><h1>{{vm.files.grid.file}}</h1></div>
+                                        <div class="span1"><a class="btn btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
+                                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCodeGrid()">Save</a></div>
+                                        <div class="span2"><a class="btn btn-success" ng-click="vm.getCodeGrid()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
+                                    </div>
+
+                                </header>
+
+                            </div>
+
+                            <section class="tab-content">
+                                <div class="editor" ui-ace="aceOptions" ng-model="codeGrid"></div>
+                            </section>
+
+                    </div>
+                    <div class="tab-pane" id="tab2">
+                            <div class="row">
+                                <header style="padding-bottom: 0%;">
+                                    <div class="row">
+                                        <div class="span5"><h1>{{vm.files.lab.file}}</h1></div>
+                                        <div class="span1"><a class="btn btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
+                                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCodeLab()">Save</a></div>
+                                        <div class="span2"><a class="btn btn-success" ng-click="vm.getCodeLab()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
+                                    </div>
+
+                                </header>
+
+                            </div>
+
+                            <section class="tab-content">
+                                <div class="editor" ui-ace="aceOptions" ng-model="codeLab"></div>
+                            </section>
+                    </div>
+                    <div class="tab-pane" id="tab3">
+                            <div class="row">
+                                <header style="padding-bottom: 0%">
+                                    <div class="row">
+                                        <div class="span5"><h1>{{vm.files.param_list.file}}</h1></div>
+                                        <div class="span1"><a class="btn btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
+                                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCodeParam()">Save</a></div>
+                                        <div class="span2"><a class="btn btn-success" ng-click="vm.getCodeParam()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
+                                    </div>
+
+                                </header>
+                            </div>
+
+
+                            <section class="tab-content">
+                                <div class="editor" ui-ace="aceOptions" ng-model="codeParam"></div>
+                            </section>
+                    </div>
+
+                    <div class="tab-pane" id="tab4">
+                        <div class="row">
+                            PREVIEW AQUI
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </article>
+    </div>
+</div>
