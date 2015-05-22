@@ -23,10 +23,10 @@ from competition.views.files import UploadParamListView, UploadGridView, UploadL
     UploadResourceFile, GetRoundJsonFile, GetRoundResourcesFile
 from competition.views.grid_position import GridPositionsViewSet, AgentGridViewSet, GridPositionsByCompetition
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition, \
-    RankingByTeamInCompetition, AutomaticTeamScore
+    RankingByTeamInCompetition
 
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
-from competition.views.hall_of_fame import RunHallOfFameTrial
+from competition.views.hall_of_fame import RunHallOfFameTrial, AutomaticTeamScoreHallOfFame
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
     PrivateCompetitionRound, RunPrivateTrial, SoloTrial
 
@@ -75,7 +75,6 @@ router_competitions.register(r'grid_position', GridPositionsViewSet)
 router_competitions.register(r'grid_positions_competition', GridPositionsByCompetition)
 router_competitions.register(r'agent_grid', AgentGridViewSet)
 router_competitions.register(r'team_score', TeamScoreViewSet)
-router_competitions.register(r'automatic_score', AutomaticTeamScore)
 router_competitions.register(r'ranking_trial', RankingByTrial)
 router_competitions.register(r'ranking_round', RankingByRound)
 router_competitions.register(r'ranking_competition', RankingByCompetition)
@@ -151,6 +150,10 @@ router_notifications.register(r'teams', OldNotificationTeamList)
 router_password = routers.SimpleRouter()
 router_password.register(r'request', PasswordRecoverRequest)
 
+# hall of fame
+router_hall_of_fame = routers.SimpleRouter()
+router_hall_of_fame.register(r'automatic_score', AutomaticTeamScoreHallOfFame)
+
 
 urlpatterns = patterns('',
                        url(r'^api/v1/', include(router_accounts.urls)),
@@ -165,6 +168,7 @@ urlpatterns = patterns('',
                            name="Launch private trial"),
                        url(r'^api/v1/competitions/hall_of_fame/launch_trial/$', RunHallOfFameTrial.as_view(),
                            name="Launch private hall of fame trial"),
+                       url(r'^api/v1/competitions/hall_of_fame/', include(router_hall_of_fame.urls)),
                        url(r'^api/v1/agents/', include(router_agents.urls)),
                        url(r'^api/v1/trials/', include(router_trials.urls)),
                        url(r'^api/v1/trials/message/$', TrialMessageCreate.as_view(),
