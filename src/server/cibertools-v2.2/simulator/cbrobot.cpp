@@ -265,7 +265,7 @@ void cbRobot::changeActiveState()
 */
 bool cbRobot::readAction(cbRobotAction *action)
 {
-	QByteArray datagram, readArr;
+	/*QByteArray datagram, readArr;
     while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
         if (readArr.isEmpty()) {
         	if (datagram.isEmpty())
@@ -275,13 +275,45 @@ bool cbRobot::readAction(cbRobotAction *action)
             return false;
         }
         datagram += readArr;
+    }*/
+    /*QByteArray datagram, read;
+    if (old.isEmpty()) {
+    	read = socket->readAll();
+    	if (read.isEmpty())
+    		return false;
+    	int index = read.indexOf("\x04");
+	    datagram = old + read.left(index);
+	    old = read.right(read.size()-index-1);
+    } else {
+    	read = old;
+    	if (read.indexOf("\x04") != -1) {
+			int index = read.indexOf("\x04");
+			datagram = read.left(index);
+			old = read.right(read.size()-index-1);
+    	} else {
+    		read = socket->readAll();
+    		if (read.isEmpty())
+    			return false;
+    		int index = read.indexOf("\x04");
+		    datagram = old + read.left(index);
+		    old = read.right(read.size()-index-1);
+    	}
+    }*/
+    QByteArray read = socket->readAll();
+    QList<QByteArray> data = read.split('\x04');
+    QByteArray datagram = QByteArray("<XML>");
+    for (int i = 0; i < data.length() - 1; i++) {
+    	datagram += data.at(i);
     }
+    old = data.at(data.length()-1);
+    datagram += QByteArray("</XML>");
+
 #ifdef DEBUG_ROBOT
 	cerr << "cbRobot: " << datagram.data() << "\n";
 #endif
-
-    if (showActions)
-        simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
+	//cerr << read.data() << " : " << datagram.data() << "\n";
+    //if (showActions)
+    //    simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
 
 	/* parse xml message */
 	QXmlSimpleReader parser;

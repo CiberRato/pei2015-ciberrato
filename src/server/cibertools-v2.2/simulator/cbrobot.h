@@ -250,7 +250,7 @@ protected:  // class data members
 	unsigned int nSensorsRequested;
 
 	cbActionHandler handler;
-
+	QByteArray old;
 };
 
 class cbRobotBin : public cbRobot
