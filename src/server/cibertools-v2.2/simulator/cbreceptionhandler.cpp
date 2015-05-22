@@ -31,7 +31,7 @@
 
 using std::cerr;
 
-cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
+cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser, QTcpSocket *client)
 {
 	robot = 0;
 	robotBeacon = 0;
@@ -39,6 +39,7 @@ cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
 	view = 0;
 	panelview = 0;
 	xmlParser=parser;
+	this->client = (cbClient*) client;
 }
  
 bool cbReceptionHandler::startDocument()
@@ -63,23 +64,23 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	if (tag == "View")
 	{
 		type = VIEW;
-		view = new cbView;
+		view = new cbView(client);
 	}
 	else if (tag == "Panel")
 	{
 		type = PANEL;
-		panel = new cbPanel;
+		panel = new cbPanel(client);
 	}
 	else if (tag == "PanelView")
 	{
 		type = PANELVIEW;
-		panelview = new cbPanelView;
+		panelview = new cbPanelView(client);
 	}
 	else if (tag == "Robot")
 	{
 		type = ROBOT;
-
-		robot = new cbRobot(irSensorDefaultAngles);
+		//robot = (cbRobot *) client;
+		robot = new cbRobot(client, irSensorDefaultAngles);
 
 		/* process attributes */
         const QString &name = attr.value(QString("Name"));
@@ -91,7 +92,7 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	{
 		type = ROBOTBEACON;
 
-		robotBeacon = new cbRobotBeacon(irSensorDefaultAngles);
+		robotBeacon = new cbRobotBeacon(client, irSensorDefaultAngles);
 
 		/* process attributes */
         const QString &name = attr.value(QString("Name"));
@@ -231,7 +232,7 @@ bool cbReceptionHandler::parse(void *data, int datasize)
      {
          type = ROBOT;
          CommMessage *pmsg=(CommMessage *)data;
-         robot=new cbRobotBin;
+         robot=new cbRobotBin(client);
          robot->setName(pmsg->u.rob_name);
          robot->setId(0);
          return true;

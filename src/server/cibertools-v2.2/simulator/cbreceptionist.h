@@ -32,7 +32,6 @@
 
 #define XMLMAX 1024
 
-#include <QUdpSocket>
 #include <QHostAddress>
 #include <qxml.h>
 #include <iostream>
@@ -56,29 +55,22 @@ struct cbClientForm
 		cbPanel *panel;
 		cbPanelView *panelview;
 	} client;
-	
-	QHostAddress addr;
-	unsigned short port;
 };
 
-class cbReceptionist : public QUdpSocket
+class cbReceptionist
 {
 public:
 	/* constructor and destructor */
-	cbReceptionist(unsigned int port);
+	cbReceptionist();
 	~cbReceptionist();
 
 	/* added functionality */
-	bool CheckIn(void);
+	void acceptConnection();
+	bool CheckIn(QTcpSocket*);
 	cbClientForm &Form();
 	bool bad();
-	//void setXmlParser(QXmlSimpleReader *);
-	//void setXmlSource(QXmlInputSource *);
-signals:
-	void xpto();
 
 private: // data members
-	char xmlBuff[XMLMAX];		// buffer for xml messages
 	bool status;
 	QXmlSimpleReader *xmlParser;
 	QXmlInputSource xmlSource;

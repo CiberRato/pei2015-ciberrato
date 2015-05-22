@@ -28,12 +28,12 @@ import java.util.Vector;
 
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import javax.xml.parsers.SAXParserFactory; 
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser; 
+import javax.xml.parsers.SAXParser;
 
 
-/** 
+/**
  *  models the result of a round of measures over all sensors
  */
 class Measures {
@@ -41,7 +41,7 @@ class Measures {
 	int     time;          // current cycle
 
 	/** value measured from respective sensor */
-	double  compass;  
+	double  compass;
 	boolean compassReady;
 
 	/** value measured from respective sensor */
@@ -49,7 +49,7 @@ class Measures {
 	/** only when beaconReady is true is the beacon measure significative */
 	boolean       [] beaconReady;
 	/** value measured from respective sensor */
-	boolean collision; 
+	boolean collision;
 	boolean collisionReady;
 
 	/** value measured from respective sensor */
@@ -61,17 +61,17 @@ class Measures {
 	boolean [] IRSensorReady;
 
 	/** value measured from respective led */
-	boolean endLed, returningLed, visitingLed; 
+	boolean endLed, returningLed, visitingLed;
 
 	/** value measured from respective button */
-	boolean startBut, stopBut; 
+	boolean startBut, stopBut;
 
 	/** value measured from GPS */
 	gpsMeasure	gpsData;
-        boolean         gpsReady;
+	boolean         gpsReady;
 
-        String []       hearMessage;
-       
+	String []       hearMessage;
+
 
 	/** Constructor */
 	Measures(int nBeacons) {
@@ -80,7 +80,7 @@ class Measures {
 
 		IRSensor = new double[4];
 		IRSensorReady = new boolean [4];
-		for(int i=0; i<4;i++) {
+		for (int i = 0; i < 4; i++) {
 			IRSensorReady[i] = false;
 		}
 
@@ -88,7 +88,7 @@ class Measures {
 		beacon = new beaconMeasure [nBeacons];
 		beaconReady = new boolean [nBeacons];
 
-		for(int b=0; b<nBeacons;b++) {
+		for (int b = 0; b < nBeacons; b++) {
 			beacon[b]  = new beaconMeasure();
 			beaconReady[b] = false;
 		}
@@ -99,21 +99,21 @@ class Measures {
 	}
 };
 
-/** 
+/**
  *  the simulation parameter values
  */
 class Parameters {
-	int     simTime;  
-	int     cycleTime;  
-	double  beaconNoise;  
-	double  obstacleNoise;  
-	double  motorsNoise;  
-	double  compassNoise;  
-	int     keyTime;  
-	int     nBeacons;  
+	int     simTime;
+	int     cycleTime;
+	double  beaconNoise;
+	double  obstacleNoise;
+	double  motorsNoise;
+	double  compassNoise;
+	int     keyTime;
+	int     nBeacons;
 };
 
-/** 
+/**
  * parses a XML message of Sensors type and
  * gathers information in values property
 */
@@ -121,8 +121,8 @@ class SensorHandler extends DefaultHandler {
 
 	public SensorHandler (int nBeac) {
 		nBeacons = nBeac;
-                activeTag = new String();
-                hearFrom = 0;
+		activeTag = new String();
+		hearFrom = 0;
 	}
 	/**
 	 * values of all sensors are stored in this field
@@ -130,14 +130,13 @@ class SensorHandler extends DefaultHandler {
 	private Measures values;
 	private int      nBeacons;
 
-        private String activeTag;
-        private int    hearFrom;
+	private String activeTag;
+	private int    hearFrom;
 
 	/**
 	 * returns the Measures collected during parsing of message
 	 */
-	Measures getValues()
-	{
+	Measures getValues() {
 		return values;
 	}
 
@@ -146,175 +145,163 @@ class SensorHandler extends DefaultHandler {
 	                         String sName, // simple name
 	                         String qName, // qualified name
 	                         Attributes attrs)
-	throws SAXException
-	{
-            activeTag = qName;
-	    // Create values object to hold measures
-	    if (values == null) values = new Measures(nBeacons);
-	    
-	    if(qName.equals("Measures")) {         // Measures Values
+	throws SAXException {
+		activeTag = qName;
+		// Create values object to hold measures
+		if (values == null) values = new Measures(nBeacons);
 
-                 if (attrs != null) {
+		if (qName.equals("Measures")) {        // Measures Values
 
-		      String timeStr=attrs.getValue("Time");         // Compass
-	              if(timeStr!=null) {
-		           values.time = Integer.valueOf(timeStr).intValue();
-		      }
+			if (attrs != null) {
 
-		 }
-	    } else if(qName.equals("Sensors")) {   // Sensors Values
-                 if (attrs != null) {
+				String timeStr = attrs.getValue("Time");       // Compass
+				if (timeStr != null) {
+					values.time = Integer.valueOf(timeStr).intValue();
+				}
 
-		      String compStr=attrs.getValue("Compass");         // Compass
-	              if(compStr!=null) {
-			   values.compassReady = true;
-		           values.compass = Double.valueOf(compStr).doubleValue();
-		      }
+			}
+		} else if (qName.equals("Sensors")) {  // Sensors Values
+			if (attrs != null) {
 
-		      String groundStr=attrs.getValue("Ground");        //Ground
-	              if(groundStr!=null) { 
-			   values.groundReady = true;
-			   values.ground = Integer.valueOf(groundStr).intValue();
-		      }
+				String compStr = attrs.getValue("Compass");       // Compass
+				if (compStr != null) {
+					values.compassReady = true;
+					values.compass = Double.valueOf(compStr).doubleValue();
+				}
 
-		      String collisionStr=attrs.getValue("Collision");  // Collision
-	              if(collisionStr!=null) {
-			   values.collisionReady = true;
-			   values.collision = collisionStr.equals("Yes");
-		      }
-                 }
-	    }
-	    else if(qName.equals("IRSensor")) {            // IRSensors
+				String groundStr = attrs.getValue("Ground");      //Ground
+				if (groundStr != null) {
+					values.groundReady = true;
+					values.ground = Integer.valueOf(groundStr).intValue();
+				}
 
-                 if (attrs != null) {
+				String collisionStr = attrs.getValue("Collision"); // Collision
+				if (collisionStr != null) {
+					values.collisionReady = true;
+					values.collision = collisionStr.equals("Yes");
+				}
+			}
+		} else if (qName.equals("IRSensor")) {         // IRSensors
 
-		      String idStr=attrs.getValue("Id");
-	              if(idStr!=null) {
-		           int IRid = Integer.valueOf(idStr).intValue();
-		           String IRValStr=attrs.getValue("Value");
-	                   if(IRValStr!=null) {
-			       values.IRSensorReady[IRid] = true;
-		               values.IRSensor[IRid] = Double.valueOf(IRValStr).doubleValue();
-		           }
-		      }
-                 }
-	    }
-	    else if(qName.equals("BeaconSensor")) {            // BeaconSensor
+			if (attrs != null) {
 
-                 if (attrs != null) {
+				String idStr = attrs.getValue("Id");
+				if (idStr != null) {
+					int IRid = Integer.valueOf(idStr).intValue();
+					String IRValStr = attrs.getValue("Value");
+					if (IRValStr != null) {
+						values.IRSensorReady[IRid] = true;
+						values.IRSensor[IRid] = Double.valueOf(IRValStr).doubleValue();
+					}
+				}
+			}
+		} else if (qName.equals("BeaconSensor")) {         // BeaconSensor
 
-		      String idStr=attrs.getValue("Id");
-	              if(idStr!=null) {
-		           int id = Integer.valueOf(idStr).intValue();
-		           String valStr=attrs.getValue("Value");
-	                   if(valStr!=null) {
-			        values.beaconReady[id]=true;
-		                if(!valStr.equals("NotVisible")) {
-		                     values.beacon[id].beaconDir = Double.valueOf(valStr).doubleValue();
-				     values.beacon[id].beaconVisible = true;
-		                }
-			        else {
-				     values.beacon[id].beaconVisible = false;
-			        }
-		           }
-		           else {
-			        values.beaconReady[id]=false;
-			        values.beacon[id].beaconVisible=false;
-			        values.beacon[id].beaconDir=0.0;
-		           }
-		      }
-                 }
-	    }
-	    else if(qName.equals("GPS")) {                // GPS
+			if (attrs != null) {
 
-                 if (attrs != null) {
+				String idStr = attrs.getValue("Id");
+				if (idStr != null) {
+					int id = Integer.valueOf(idStr).intValue();
+					String valStr = attrs.getValue("Value");
+					if (valStr != null) {
+						values.beaconReady[id] = true;
+						if (!valStr.equals("NotVisible")) {
+							values.beacon[id].beaconDir = Double.valueOf(valStr).doubleValue();
+							values.beacon[id].beaconVisible = true;
+						} else {
+							values.beacon[id].beaconVisible = false;
+						}
+					} else {
+						values.beaconReady[id] = false;
+						values.beacon[id].beaconVisible = false;
+						values.beacon[id].beaconDir = 0.0;
+					}
+				}
+			}
+		} else if (qName.equals("GPS")) {             // GPS
 
-		      String xStr=attrs.getValue("X");             
-	              if(xStr!=null) {
-			    values.gpsData.x = Double.valueOf(xStr).doubleValue();
-                            values.gpsReady = true;
-		      }
+			if (attrs != null) {
 
-		      String yStr=attrs.getValue("Y");             
-	              if(yStr!=null) {
-			    values.gpsData.y = Double.valueOf(yStr).doubleValue();
-		      }
+				String xStr = attrs.getValue("X");
+				if (xStr != null) {
+					values.gpsData.x = Double.valueOf(xStr).doubleValue();
+					values.gpsReady = true;
+				}
 
-		      String dirStr=attrs.getValue("Dir");             
-	              if(dirStr!=null) {
-			    values.gpsData.dir = Double.valueOf(dirStr).doubleValue();
-		      }
+				String yStr = attrs.getValue("Y");
+				if (yStr != null) {
+					values.gpsData.y = Double.valueOf(yStr).doubleValue();
+				}
 
-                 }
-	    }
-	    else if(qName.equals("Leds")) {                // Leds
+				String dirStr = attrs.getValue("Dir");
+				if (dirStr != null) {
+					values.gpsData.dir = Double.valueOf(dirStr).doubleValue();
+				}
 
-                 if (attrs != null) {
+			}
+		} else if (qName.equals("Leds")) {             // Leds
 
-		      String endLedStr=attrs.getValue("EndLed");              //EndLed
-	              if(endLedStr!=null) {
-			    values.endLed = endLedStr.equals("On");
-		      }
+			if (attrs != null) {
 
-		      String returningLedStr=attrs.getValue("ReturningLed");  //ReturningLed
-	              if(returningLedStr!=null) {
-			    values.returningLed = returningLedStr.equals("On");
-		      }
+				String endLedStr = attrs.getValue("EndLed");            //EndLed
+				if (endLedStr != null) {
+					values.endLed = endLedStr.equals("On");
+				}
 
-		      String visitingLedStr=attrs.getValue("VisitingLed");  //VisitingLed
-	              if(visitingLedStr!=null) {
-			    values.visitingLed = visitingLedStr.equals("On");
-		      }
-                 }
-	    }
-	    else if(qName.equals("Buttons")) {          // Buttons
+				String returningLedStr = attrs.getValue("ReturningLed"); //ReturningLed
+				if (returningLedStr != null) {
+					values.returningLed = returningLedStr.equals("On");
+				}
 
-                 if (attrs != null) {
+				String visitingLedStr = attrs.getValue("VisitingLed"); //VisitingLed
+				if (visitingLedStr != null) {
+					values.visitingLed = visitingLedStr.equals("On");
+				}
+			}
+		} else if (qName.equals("Buttons")) {       // Buttons
 
-		      String startStr=attrs.getValue("Start");                //Start
-	              if(startStr!=null) {
-			    values.startBut = startStr.equals("On");
-		      }
+			if (attrs != null) {
 
-		      String stopStr=attrs.getValue("Stop");                  //Stop
-	              if(stopStr!=null) {
-			    values.stopBut = stopStr.equals("On");
-		      }
+				String startStr = attrs.getValue("Start");              //Start
+				if (startStr != null) {
+					values.startBut = startStr.equals("On");
+				}
 
-                 }
-	    }
-	    else if(qName.equals("Message")) {          // Message
-		      String fromStr=attrs.getValue("From");        //Ground
-	              if(fromStr!=null) { 
-			   hearFrom = Integer.valueOf(fromStr).intValue();
-		      }
-            }
-	    else {
-                //System.out.println("Unknown Tag:"+qName);
-	    }
-        } 
+				String stopStr = attrs.getValue("Stop");                //Stop
+				if (stopStr != null) {
+					values.stopBut = stopStr.equals("On");
+				}
+
+			}
+		} else if (qName.equals("Message")) {       // Message
+			String fromStr = attrs.getValue("From");      //Ground
+			if (fromStr != null) {
+				hearFrom = Integer.valueOf(fromStr).intValue();
+			}
+		} else {
+			//System.out.println("Unknown Tag:"+qName);
+		}
+	}
 
 	public void endElement(String namespaceURI,
-			        String sName, // simple name
-			        String qName  // qualified name
-						        )
-	throws SAXException
-	{
-            activeTag="";
-	} 
+	                       String sName, // simple name
+	                       String qName  // qualified name
+	                      )
+	throws SAXException {
+		activeTag = "";
+	}
 
-        public void characters(char[] ch,
-                       int start,
-                       int length)
-       throws SAXException
-       {
-            if(activeTag.equals("Message")) {
-                  if(values.hearMessage[hearFrom-1]==null)
-                      values.hearMessage[hearFrom-1]=new String(ch,start,length);
-                  else 
-                      values.hearMessage[hearFrom-1]+=new String(ch,start,length);
-            }
-       }
+	public void characters(char[] ch,
+	                       int start,
+	                       int length)
+	throws SAXException {
+		if (activeTag.equals("Message")) {
+			if (values.hearMessage[hearFrom - 1] == null)
+				values.hearMessage[hearFrom - 1] = new String(ch, start, length);
+			else
+				values.hearMessage[hearFrom - 1] += new String(ch, start, length);
+		}
+	}
 };
 
 /**
@@ -332,8 +319,7 @@ class ReplyHandler extends DefaultHandler {
 	/**
 	 * returns the Parameters collected during parsing of message
 	 */
-	Parameters getParams()
-	{
+	Parameters getParams() {
 		return params;
 	}
 
@@ -341,82 +327,79 @@ class ReplyHandler extends DefaultHandler {
 	                         String sName, // simple name
 	                         String qName, // qualified name
 	                         Attributes attrs)
-	throws SAXException
-	{
-            
-	    //Create params object to hold simulation parameters
-	    if(params == null) params = new Parameters();
+	throws SAXException {
 
-	    if(qName.equals("Reply")) {  // Reply Values
+		//Create params object to hold simulation parameters
+		if (params == null) params = new Parameters();
 
-                 if (attrs != null) {
+		if (qName.equals("Reply")) { // Reply Values
 
-		      String statusStr=attrs.getValue("Status");         // Status
-	              if(statusStr!=null) {
-			   if( !statusStr.equals("Ok") ) {
-                               System.out.println("Status: Refused");
-			       System.exit(1);
-			   }
-			   else
-                               System.out.println("Status: Ok");
-		      }
-                 }
-	    }
-	    if(qName.equals("Parameters")) {     // Parameters Values
+			if (attrs != null) {
 
-                 if (attrs != null) {
+				String statusStr = attrs.getValue("Status");       // Status
+				if (statusStr != null) {
+					if ( !statusStr.equals("Ok") ) {
+						System.out.println("Status: Refused");
+						System.exit(1);
+					} else
+						System.out.println("Status: Ok");
+				}
+			}
+		}
+		if (qName.equals("Parameters")) {    // Parameters Values
 
-		      String simTimeStr=attrs.getValue("SimTime");                 // SimTime
-	              if(simTimeStr!=null) {
-		          params.simTime = Integer.valueOf(simTimeStr).intValue();
-		      }
+			if (attrs != null) {
 
-		      String cycleTimeStr=attrs.getValue("CycleTime");             // CycleTime
-	              if(cycleTimeStr!=null) {
-		          params.cycleTime = Integer.valueOf(cycleTimeStr).intValue();
-		      }
+				String simTimeStr = attrs.getValue("SimTime");               // SimTime
+				if (simTimeStr != null) {
+					params.simTime = Integer.valueOf(simTimeStr).intValue();
+				}
 
-		      String compassNoiseStr=attrs.getValue("CompassNoise");       // CompassNoise
-	              if(compassNoiseStr!=null) {
-		          params.compassNoise = Double.valueOf(compassNoiseStr).doubleValue();
-		      }
+				String cycleTimeStr = attrs.getValue("CycleTime");           // CycleTime
+				if (cycleTimeStr != null) {
+					params.cycleTime = Integer.valueOf(cycleTimeStr).intValue();
+				}
 
-		      String beaconNoiseStr=attrs.getValue("BeaconNoise");         // BeaconNoise
-	              if(beaconNoiseStr!=null) {
-		          params.beaconNoise = Double.valueOf(beaconNoiseStr).doubleValue();
-		      }
+				String compassNoiseStr = attrs.getValue("CompassNoise");     // CompassNoise
+				if (compassNoiseStr != null) {
+					params.compassNoise = Double.valueOf(compassNoiseStr).doubleValue();
+				}
 
-		      String obstacleNoiseStr=attrs.getValue("ObstacleNoise");     // ObstacleNoise
-	              if(obstacleNoiseStr!=null) {
-		          params.obstacleNoise = Double.valueOf(obstacleNoiseStr).doubleValue();
-		      }
+				String beaconNoiseStr = attrs.getValue("BeaconNoise");       // BeaconNoise
+				if (beaconNoiseStr != null) {
+					params.beaconNoise = Double.valueOf(beaconNoiseStr).doubleValue();
+				}
 
-		      String motorsNoiseStr=attrs.getValue("MotorsNoise");         // MotorsNoise
-	              if(motorsNoiseStr!=null) {
-		          params.motorsNoise = Double.valueOf(motorsNoiseStr).doubleValue();
-		      }
+				String obstacleNoiseStr = attrs.getValue("ObstacleNoise");   // ObstacleNoise
+				if (obstacleNoiseStr != null) {
+					params.obstacleNoise = Double.valueOf(obstacleNoiseStr).doubleValue();
+				}
 
-			      String keyTimeStr=attrs.getValue("KeyTime");   // KeyTime
-	              if(keyTimeStr!=null) {
-		          params.keyTime = Integer.valueOf(keyTimeStr).intValue();
-		      }
+				String motorsNoiseStr = attrs.getValue("MotorsNoise");       // MotorsNoise
+				if (motorsNoiseStr != null) {
+					params.motorsNoise = Double.valueOf(motorsNoiseStr).doubleValue();
+				}
 
-		      String nBeaconsStr=attrs.getValue("NBeacons");               // NBeacons
-	              if(nBeaconsStr!=null) {
-		          params.nBeacons = Integer.valueOf(nBeaconsStr).intValue();
-		      }
+				String keyTimeStr = attrs.getValue("KeyTime"); // KeyTime
+				if (keyTimeStr != null) {
+					params.keyTime = Integer.valueOf(keyTimeStr).intValue();
+				}
 
-                 }
-	    }
-        } 
+				String nBeaconsStr = attrs.getValue("NBeacons");             // NBeacons
+				if (nBeaconsStr != null) {
+					params.nBeacons = Integer.valueOf(nBeaconsStr).intValue();
+				}
+
+			}
+		}
+	}
 
 	public void endElement(String namespaceURI,
-			        String sName, // simple name
-			        String qName  // qualified name
-						        )
-	throws SAXException
-	{
-	} 
+	                       String sName, // simple name
+	                       String qName  // qualified name
+	                      )
+	throws SAXException {
+	}
 };
 
 /**
@@ -431,35 +414,34 @@ class xmlParser {
 	 *   @param handler SAX event handler used to parse the message
 	 */
 	public void parse (byte[] buf, int length, DefaultHandler handler) {
-	    //Create factory
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            try {
+		//Create factory
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		try {
 
-		  //replace null character (if it exists)
-		  if(buf[buf.length-1] == '\0') 
-			  buf[buf.length-1] = ' ';
+			//replace null character (if it exists)
+			if (buf[buf.length - 1] == '\0')
+				buf[buf.length - 1] = ' ';
 
-	          //Create parser
-	          SAXParser saxParser = factory.newSAXParser();
+			//Create parser
+			SAXParser saxParser = factory.newSAXParser();
 
-	          // ConvertString to ByteArrayInputStream
-		  ByteArrayInputStream bstream=new ByteArrayInputStream(buf,0,length);
+			// ConvertString to ByteArrayInputStream
+			ByteArrayInputStream bstream = new ByteArrayInputStream(buf, 0, length);
 
-	          // Parse ByteArrayInputStream
-	          saxParser.parse( bstream, handler ); 
-	    } 
+			// Parse ByteArrayInputStream
+			saxParser.parse( bstream, handler );
+		}
 
-            catch (SAXParseException spe) {
-                  // Error generated by the parser
-                  System.out.println("\n** Parsing error" 
-                    + ", line " + spe.getLineNumber()
-                    + ", uri " + spe.getSystemId());
-                  System.out.println("   " + spe.getMessage() );
+		catch (SAXParseException spe) {
+			// Error generated by the parser
+			System.out.println("\n** Parsing error"
+			                   + ", line " + spe.getLineNumber()
+			                   + ", uri " + spe.getSystemId());
+			System.out.println("   " + spe.getMessage() );
 
-            } 
-	    catch (Throwable t) {
-		    t.printStackTrace();
-	    }
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
 	}
 
 };
@@ -472,441 +454,418 @@ class xmlParser {
 public class ciberIF {
 
 
-    /** 
-     * ciberIF contructor
-    *  The constructor inits all necessary data structures,
-    */
-    public ciberIF() {
-
-        // Get a datagram socket
-	try {
-                socket = new DatagramSocket();
-	}
-	catch(Exception e) {
-	        e.printStackTrace();
+	/**
+	 * ciberIF contructor
+	*  The constructor inits all necessary data structures,
+	*/
+	public ciberIF() {
+		// Create Parser
+		parser = new xmlParser();
 	}
 
-	
-    
-	// Create Parser
-	parser = new xmlParser();
-    }
+	/**
+	 * Initializes Robot and Connects to Simulator
+	 * @param name        robot name
+	 * @param pos         initial position of robot in initial grid
+	 * @param hostname    host where simulator running
+	 */
+	public boolean InitRobot(String name, int pos, String hostname) {
+		//// Send init message
+		// Construct message
+		sendInitAndParseReply(hostname, new String("<Robot Id=\"" + pos + "\"" +
+		                      " Name=\"" + name + "\"/>"));
 
-    /**
-     * Initializes Robot and Connects to Simulator
-     * @param name        robot name
-     * @param pos         initial position of robot in initial grid
-     * @param hostname    host where simulator running
-     */
-    public boolean InitRobot(String name, int pos, String hostname)
-    {
-        //// Send init message
-	// Construct message
-        sendInitAndParseReply(hostname, new String("<Robot Id=\"" + pos + "\""+
-			              " Name=\"" + name + "\"/>"));
-
-	return true;
-    }
-
-    /**
-     * Initializes Robot and Connects to Simulator, allows specification
-     * of obstacle sensors position
-     * @param name        robot name
-     * @param pos         initial position of robot in initial grid
-     * @param IRSensorAngles  array of doubles that specifies position of IR sensors,
-     *                    positions are given from angle (in degrees) from front of Robot
-     * @param hostname    host where simulator running
-     */
-    public boolean InitRobot2(String name, int pos, double IRSensorAngles[], String hostname)
-    {
-        //// Send init message
-	// Construct message
-        String strInit = new String("<Robot Id=\"" + pos + "\"" +
-			                " Name=\"" + name +"\" />");
-
-	for(int i = 0; i < IRSensorAngles.length; i++) {
-             strInit += " " + " <IRSensor Id=\"" + i + "\" " +
-		                         "Angle=\"" + IRSensorAngles[i] + "\" /> ";
+		return true;
 	}
 
-	strInit += "</Robot>";
-	
-	sendInitAndParseReply(hostname, strInit);
+	/**
+	 * Initializes Robot and Connects to Simulator, allows specification
+	 * of obstacle sensors position
+	 * @param name        robot name
+	 * @param pos         initial position of robot in initial grid
+	 * @param IRSensorAngles  array of doubles that specifies position of IR sensors,
+	 *                    positions are given from angle (in degrees) from front of Robot
+	 * @param hostname    host where simulator running
+	 */
+	public boolean InitRobot2(String name, int pos, double IRSensorAngles[], String hostname) {
+		//// Send init message
+		// Construct message
+		String strInit = new String("<Robot Id=\"" + pos + "\"" +
+		                            " Name=\"" + name + "\" />");
 
-	return true;
-    }
+		for (int i = 0; i < IRSensorAngles.length; i++) {
+			strInit += " " + " <IRSensor Id=\"" + i + "\" " +
+			           "Angle=\"" + IRSensorAngles[i] + "\" /> ";
+		}
 
-    /**
-     * Read a message from simulator. 
-     * If no message is available wait, when message arrives parses it.
-     * This is the main synchronization method of this library.
-     */
-    public void ReadSensors() {
+		strInit += "</Robot>";
 
-        byte[] bufread = new byte[4096];
-        DatagramPacket packet = new DatagramPacket(bufread, bufread.length);
+		sendInitAndParseReply(hostname, strInit);
 
-	// read socket
-	try {
-            socket.receive(packet);
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-	}
-
-
-	// parse message
-	SensorHandler sensHandler = new SensorHandler(params.nBeacons);
-	parser.parse(packet.getData(),packet.getLength()-1, sensHandler);
-	values = sensHandler.getValues();
-    }
-
-    /**
-     * get simulation time of last received message
-     */
-    public double GetTime() {
-	    return values.time;
-    }
-
-    /**
-     * Indicates if a new Obstacle measure from sensor id has arrived.\
-     * The value of GetObstacleSensor is invalid when IsObstacleReady returns false
-     */
-    public boolean IsObstacleReady(int id) {
-	    return values.IRSensorReady[id];
-    }
-
-    /**
-     * get obstacle sensor measure, value is inversely proportional to nearest obstacle distance
-     */
-    public double GetObstacleSensor(int id) {
-	    return values.IRSensor[id];
-    }
-
-    /**
-     * only when IsBeaconReady returns true is the beacon measure significative
-     */
-    public boolean IsBeaconReady(int id) {
-	    return values.beaconReady[id];
-    }
-
-    /**
-     * get beacon sensor measure, value is the direction of beacon in robot coordinates (-180.0,180.0)
-     */
-    public beaconMeasure GetBeaconSensor(int id) {
-	    return values.beacon[id];
-    }
-
-    /**
-     * only when IsCompassReady returns true is the compass measure significative
-     */
-    public boolean IsCompassReady() {
-	    return values.compassReady;
-    }
-
-    /**
-     * get compass sensor measure, value is the direction of robot in ground coordinates (-180.0,180.0)
-     */
-    public double GetCompassSensor() {
-	    return values.compass;
-    }
-
-    /**
-     * only when IsGroundReady returns true is the ground measure significative
-     */
-    public boolean IsGroundReady() {
-	    return values.groundReady;
-    }
-
-    /**
-     * get ground sensor measure, active when in target area
-     */
-    public int GetGroundSensor() {
-	    return values.ground;
-    }
-
-    /**
-     * only when IsBumperReady returns true is the bumper measure significative
-     */
-    public boolean IsBumperReady() {
-	    return values.collisionReady;
-    }
-
-    /**
-     * only when IsBumperReady returns true is the bumper measure significative
-     */
-    public boolean NewMessageFrom(int id) {
-            if( values.hearMessage[id-1]==null) return false;
-	    return !values.hearMessage[id-1].equals("");
-    }
-
-    /**
-     * get bumper sensor measure, active when robot collides
-     */
-    public boolean GetBumperSensor() {
-	    return values.collision;
-    }
-
-    /**
-     * get bumper sensor measure, active when robot collides
-     */
-    public String GetMessageFrom(int id) {
-	    return values.hearMessage[id-1];
-    }
-
-    /**
-     * only when IsGPSReady returns true are the GPS measures (X, Y, Dir) significative
-     */
-    public boolean IsGPSReady() {
-	    return values.gpsReady;
-    }
-
-    /**
-     * get x coordinate of current position from GPS sensor, 
-     * can be used for debug, invoke simulator with '-gps' option
-     */
-    public double GetX() {
-	    return values.gpsData.x;
-    }
-
-    /**
-     * get y coordinate of current position from GPS sensor, 
-     * can be used for debug, invoke simulator with '-gps' option
-     */
-    public double GetY() {
-	    return values.gpsData.y;
-    }
-
-    /**
-     * get robot orientation of current position from GPS sensor, 
-     * can be used for debug, invoke simulator with '-gps' option
-     */
-    public double GetDir() {
-	    return values.gpsData.dir;
-    }
-
-    public void SyncRobot() {
-    	send(new String("<Actions> <Sync/> </Actions>"));
-    }
-    public void RequestCompassSensor() {
-	    send(new String("<Actions> <SensorRequests Compass=\"Yes\"/> </Actions>"));
-    }
-
-    public void RequestGroundSensor() {
-	    send(new String("<Actions> <SensorRequests Ground=\"Yes\"/> </Actions>"));
-    }
-
-    public void RequestIRSensor(int id) {
-	    send(new String("<Actions> <SensorRequests IRSensor" + id + "=\"Yes\"/> </Actions>"));
-    }
-
-    public void RequestBeaconSensor(int id) {
-	    send(new String("<Actions> <SensorRequests Beacon" + id + "=\"Yes\"/> </Actions>"));
-    }
-
-    public void RequestSensors(String [] sensorIds) {
-	    String msg = new String("<Actions> <SensorRequests ");
-
-	    for (int s=0; s < sensorIds.length ; s++) {
-	       msg += ( sensorIds + "=\"Yes\" ");
-	    }
-
-            msg += "\"/> </Actions>";
-
-	    send(msg);
-    }
-
-    /**
-     * get start button state
-     */
-    public boolean GetStartButton() {
-	    return values.startBut;
-    }
-
-    /**
-     * get stop button state
-     */
-    public boolean GetStopButton() {
-	    return values.stopBut;
-    }
-
-    /**
-     * get returning led state, usefull to verify if SetReturningLed() was executed in the simulator
-     */
-    public boolean GetVisitingLed() {
-	    return values.visitingLed;
-    }
-
-    /**
-     * get returning led state, usefull to verify if SetReturningLed() was executed in the simulator
-     */
-    public boolean GetReturningLed() {
-	    return values.returningLed;
-    }
-
-    /**
-     * get end led state, usefull to verify if Finished() was executed in the simulator
-     */
-    public boolean GetFinished() {
-	    return values.endLed;
-    }
-
-    /**
-     * drive left motor with lPow and right motor with rPow,
-     * powers are in (-0.15, 0.15)
-     */
-    public void DriveMotors(double lPow, double rPow)
-    {
-	    send(new String("<Actions LeftMotor=\"" + lPow + "\" RightMotor=\"" + rPow + "\"/>"));
-    }
-
-    /**
-     * broadcast message to all other robots,
-     * the maximum size is limited
-     */
-    public void Say(String msg)
-    {
-	    send(new String("<Actions><Say><![CDATA[" + msg + "]]></Say></Actions>"));
-    }
-
-    /**
-     * signal the end of phase 1 (go to target)
-     */
-    public void SetReturningLed(boolean val)
-    {
-	    send(new String("<Actions LeftMotor=\"0\" RightMotor=\"0\" ReturningLed=\"" + (val?"On":"Off") + "\"/>"));
-    }
-
-    public void SetVisitingLed(boolean val)
-    {
-	    send(new String("<Actions LeftMotor=\"0\" RightMotor=\"0\" VisitingLed=\"" + (val?"On":"Off") + "\"/>"));
-    }
-
-    /**
-     * finish the round
-     */
-    public void Finish()
-    {
-	    send(new String("<Actions LeftMotor=\"0\" RightMotor=\"0\" EndLed=\"On\"/>"));
-    }
-
-    /** read parameter settings */
-    public int GetCycleTime() {
-	    return params.cycleTime;
-    }
-
-    /** read parameter settings */
-    public int GetFinalTime() {
-	    return params.simTime;
-    }
-
-    /** read parameter settings */
-    public int GetKeyTime() {
-	    return params.keyTime;
-    }
-
-    /** read parameter settings */
-    public double GetNoiseObstacleSensor() {
-	    return params.obstacleNoise;
-    }
-
-    /** read parameter settings */
-    public double GetNoiseBeaconSensor() {
-	    return params.beaconNoise;
-    }
-
-    /** read parameter settings */
-    public double GetNoiseCompassSensor() {
-	    return params.compassNoise;
-    }
-
-    /** read parameter settings */
-    public double GetNoiseMotors() {
-	    return params.motorsNoise;
-    }
-
-    /** read parameter settings */
-    public int GetNumberOfBeacons() {
-	    return params.nBeacons;
-    }
-
-
-    // private
-
-    private void sendInitAndParseReply(String hostname, String strInit)
-    {
-	port = 6000;
-        byte[] buf = strInit.getBytes();
-
-	// parse hostname if it is in "host:port" format
-	int pdiv = hostname.indexOf(":");
-        if(pdiv != -1) {
-		port = Integer.valueOf(hostname.substring(pdiv+1)).intValue();
-		hostname = hostname.substring(0,pdiv);
+		return true;
 	}
 
-	//System.out.println("host = \""+ hostname + "\" port = " + port);
+	/**
+	 * Read a message from simulator.
+	 * If no message is available wait, when message arrives parses it.
+	 * This is the main synchronization method of this library.
+	 */
+	public void ReadSensors() {
 
-        // Get the simulator host address 
-    	try {
-                address = InetAddress.getByName(hostname);
-    	}
-    	catch(Exception e) {
-		e.printStackTrace();
+		byte[] bufread = new byte[4096];
+
+		// read socket
+		int nRead;
+		try {
+			nRead = input.read(bufread);
+			// parse message
+			SensorHandler sensHandler = new SensorHandler(params.nBeacons);
+			parser.parse(bufread, nRead-1, sensHandler);
+			values = sensHandler.getValues();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	// Insert message in a DatagramPacket and send
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
-	try {
-            socket.send(packet);
-	}
-	catch(Exception e) {
-		e.printStackTrace();
-	}
-    
-        //// Get response
-	//  Create buffer and DatagramPacket
-        byte[] bufread = new byte[1024];
-        packet = new DatagramPacket(bufread, bufread.length);
-	//  Read socket
-	try {
-            socket.receive(packet);
-	}
-	catch(Exception e) {
-		e.printStackTrace();
+	/**
+	 * get simulation time of last received message
+	 */
+	public double GetTime() {
+		return values.time;
 	}
 
-	// parse init response  
-	ReplyHandler replyHandler = new ReplyHandler();
-	parser.parse(packet.getData(), packet.getLength()-1, replyHandler);
-	params = replyHandler.getParams();
-
-	// port of incoming sucessful reply is the destination of all subsequent messages
-        port = packet.getPort();
-    }
-
-
-    // Send a message to simulator
-    private void send(String msg) {
-	byte[] buf = new byte[1024];
-
-	buf = msg.getBytes();
-
-	DatagramPacket packet =  new DatagramPacket(buf,buf.length,address,port);
-	try {
-           socket.send(packet);
+	/**
+	 * Indicates if a new Obstacle measure from sensor id has arrived.\
+	 * The value of GetObstacleSensor is invalid when IsObstacleReady returns false
+	 */
+	public boolean IsObstacleReady(int id) {
+		return values.IRSensorReady[id];
 	}
-	catch(Exception e) {
-		e.printStackTrace();
+
+	/**
+	 * get obstacle sensor measure, value is inversely proportional to nearest obstacle distance
+	 */
+	public double GetObstacleSensor(int id) {
+		return values.IRSensor[id];
 	}
-    }
 
-    private DatagramSocket socket;
-    private InetAddress address;
-    private xmlParser parser;
-    private int port;
+	/**
+	 * only when IsBeaconReady returns true is the beacon measure significative
+	 */
+	public boolean IsBeaconReady(int id) {
+		return values.beaconReady[id];
+	}
 
-    private Measures values;  // holds all measures present in the last received message
-    private Parameters params;  // holds all measures present in the last received message
+	/**
+	 * get beacon sensor measure, value is the direction of beacon in robot coordinates (-180.0,180.0)
+	 */
+	public beaconMeasure GetBeaconSensor(int id) {
+		return values.beacon[id];
+	}
+
+	/**
+	 * only when IsCompassReady returns true is the compass measure significative
+	 */
+	public boolean IsCompassReady() {
+		return values.compassReady;
+	}
+
+	/**
+	 * get compass sensor measure, value is the direction of robot in ground coordinates (-180.0,180.0)
+	 */
+	public double GetCompassSensor() {
+		return values.compass;
+	}
+
+	/**
+	 * only when IsGroundReady returns true is the ground measure significative
+	 */
+	public boolean IsGroundReady() {
+		return values.groundReady;
+	}
+
+	/**
+	 * get ground sensor measure, active when in target area
+	 */
+	public int GetGroundSensor() {
+		return values.ground;
+	}
+
+	/**
+	 * only when IsBumperReady returns true is the bumper measure significative
+	 */
+	public boolean IsBumperReady() {
+		return values.collisionReady;
+	}
+
+	/**
+	 * only when IsBumperReady returns true is the bumper measure significative
+	 */
+	public boolean NewMessageFrom(int id) {
+		if ( values.hearMessage[id - 1] == null) return false;
+		return !values.hearMessage[id - 1].equals("");
+	}
+
+	/**
+	 * get bumper sensor measure, active when robot collides
+	 */
+	public boolean GetBumperSensor() {
+		return values.collision;
+	}
+
+	/**
+	 * get bumper sensor measure, active when robot collides
+	 */
+	public String GetMessageFrom(int id) {
+		return values.hearMessage[id - 1];
+	}
+
+	/**
+	 * only when IsGPSReady returns true are the GPS measures (X, Y, Dir) significative
+	 */
+	public boolean IsGPSReady() {
+		return values.gpsReady;
+	}
+
+	/**
+	 * get x coordinate of current position from GPS sensor,
+	 * can be used for debug, invoke simulator with '-gps' option
+	 */
+	public double GetX() {
+		return values.gpsData.x;
+	}
+
+	/**
+	 * get y coordinate of current position from GPS sensor,
+	 * can be used for debug, invoke simulator with '-gps' option
+	 */
+	public double GetY() {
+		return values.gpsData.y;
+	}
+
+	/**
+	 * get robot orientation of current position from GPS sensor,
+	 * can be used for debug, invoke simulator with '-gps' option
+	 */
+	public double GetDir() {
+		return values.gpsData.dir;
+	}
+
+	public void SyncRobot() {
+		send(new String("<Actions> <Sync/> </Actions>"));
+	}
+	public void RequestCompassSensor() {
+		send(new String("<Actions> <SensorRequests Compass=\"Yes\"/> </Actions>"));
+	}
+
+	public void RequestGroundSensor() {
+		send(new String("<Actions> <SensorRequests Ground=\"Yes\"/> </Actions>"));
+	}
+
+	public void RequestIRSensor(int id) {
+		send(new String("<Actions> <SensorRequests IRSensor" + id + "=\"Yes\"/> </Actions>"));
+	}
+
+	public void RequestBeaconSensor(int id) {
+		send(new String("<Actions> <SensorRequests Beacon" + id + "=\"Yes\"/> </Actions>"));
+	}
+
+	public void RequestSensors(String [] sensorIds) {
+		String msg = new String("<Actions> <SensorRequests ");
+
+		for (int s = 0; s < sensorIds.length ; s++) {
+			msg += ( sensorIds + "=\"Yes\" ");
+		}
+
+		msg += "\"/> </Actions>";
+		send(msg);
+	}
+
+	/**
+	 * get start button state
+	 */
+	public boolean GetStartButton() {
+		return values.startBut;
+	}
+
+	/**
+	 * get stop button state
+	 */
+	public boolean GetStopButton() {
+		return values.stopBut;
+	}
+
+	/**
+	 * get returning led state, usefull to verify if SetReturningLed() was executed in the simulator
+	 */
+	public boolean GetVisitingLed() {
+		return values.visitingLed;
+	}
+
+	/**
+	 * get returning led state, usefull to verify if SetReturningLed() was executed in the simulator
+	 */
+	public boolean GetReturningLed() {
+		return values.returningLed;
+	}
+
+	/**
+	 * get end led state, usefull to verify if Finished() was executed in the simulator
+	 */
+	public boolean GetFinished() {
+		return values.endLed;
+	}
+
+	/**
+	 * drive left motor with lPow and right motor with rPow,
+	 * powers are in (-0.15, 0.15)
+	 */
+	public void DriveMotors(double lPow, double rPow) {
+		send(new String("<Actions LeftMotor=\"" + lPow + "\" RightMotor=\"" + rPow + "\"/>"));
+	}
+
+	/**
+	 * broadcast message to all other robots,
+	 * the maximum size is limited
+	 */
+	public void Say(String msg) {
+		send(new String("<Actions><Say><![CDATA[" + msg + "]]></Say></Actions>"));
+	}
+
+	/**
+	 * signal the end of phase 1 (go to target)
+	 */
+	public void SetReturningLed(boolean val) {
+		send(new String("<Actions LeftMotor=\"0\" RightMotor=\"0\" ReturningLed=\"" + (val ? "On" : "Off") + "\"/>"));
+	}
+
+	public void SetVisitingLed(boolean val) {
+		send(new String("<Actions LeftMotor=\"0\" RightMotor=\"0\" VisitingLed=\"" + (val ? "On" : "Off") + "\"/>"));
+	}
+
+	/**
+	 * finish the round
+	 */
+	public void Finish() {
+		send(new String("<Actions LeftMotor=\"0\" RightMotor=\"0\" EndLed=\"On\"/>"));
+	}
+
+	/** read parameter settings */
+	public int GetCycleTime() {
+		return params.cycleTime;
+	}
+
+	/** read parameter settings */
+	public int GetFinalTime() {
+		return params.simTime;
+	}
+
+	/** read parameter settings */
+	public int GetKeyTime() {
+		return params.keyTime;
+	}
+
+	/** read parameter settings */
+	public double GetNoiseObstacleSensor() {
+		return params.obstacleNoise;
+	}
+
+	/** read parameter settings */
+	public double GetNoiseBeaconSensor() {
+		return params.beaconNoise;
+	}
+
+	/** read parameter settings */
+	public double GetNoiseCompassSensor() {
+		return params.compassNoise;
+	}
+
+	/** read parameter settings */
+	public double GetNoiseMotors() {
+		return params.motorsNoise;
+	}
+
+	/** read parameter settings */
+	public int GetNumberOfBeacons() {
+		return params.nBeacons;
+	}
+
+
+	// private
+
+	private void sendInitAndParseReply(String hostname, String strInit) {
+		port = 6000;
+		byte[] buf = (strInit + "\u0004").getBytes();
+
+		// parse hostname if it is in "host:port" format
+		int pdiv = hostname.indexOf(":");
+		if (pdiv != -1) {
+			port = Integer.valueOf(hostname.substring(pdiv + 1)).intValue();
+			hostname = hostname.substring(0, pdiv);
+		}
+
+		//System.out.println("host = \""+ hostname + "\" port = " + port);
+
+		// Get the simulator host address
+		try {
+			address = InetAddress.getByName(hostname);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			socket = new Socket(address, port);
+			socket.setTcpNoDelay(true);
+			input = new DataInputStream(socket.getInputStream());
+			output = new DataOutputStream(socket.getOutputStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Insert message in a DatagramPacket and send
+		try {
+			output.write(buf);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		//// Get response
+		//  Create buffer and DatagramPacket
+		byte[] bufread = new byte[1024];
+		//  Read socket
+		int nRead;
+		try {
+			nRead = input.read(bufread);
+			// parse init response
+			ReplyHandler replyHandler = new ReplyHandler();
+			parser.parse(bufread, nRead-1, replyHandler);
+			params = replyHandler.getParams();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	// Send a message to simulator
+	private void send(String msg) {
+		byte[] buf = new byte[1024];
+
+		buf = (msg + "\u0004").getBytes();
+		try {
+			output.write(buf);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private Socket socket;
+	private InetAddress address;
+	private DataInputStream input;
+	private DataOutputStream output;
+	private xmlParser parser;
+	private int port;
+
+	private Measures values;  // holds all measures present in the last received message
+	private Parameters params;  // holds all measures present in the last received message
 
 };

@@ -23,11 +23,13 @@
 
 #include <iostream>
 
+#include "cbentity.h"
 #include "cbclient.h"
 #include "cbactionhandler.h"
 #include "cbposition.h"
 #include "cbmotor.h"
 #include "cbsensor.h"
+#include <QTcpSocket>
 
 using std::ostream;
 
@@ -46,14 +48,14 @@ const double irSensorDefaultAngles[NUM_IR_SENSORS]={0, M_PI/3, -M_PI/3, M_PI};
  * This class represents the robot state (name, position, score, actions, 
  * sensors, etc) inside the simulator.
  */
-class cbRobot : public cbClient
+class cbRobot : public cbEntity
 {
     Q_OBJECT    // enable slots and signals
 public:
 	// enum State and StrState (in cbrobot.cpp) must be compatible!!!
 	enum State {STOPPED=0, RUNNING, WAITOTHERS, RETURNING, FINISHED, REMOVED};
 
-	cbRobot(const double irSensorAngles[NUM_IR_SENSORS]);
+	cbRobot(cbClient *, const double irSensorAngles[NUM_IR_SENSORS]=irSensorDefaultAngles);
 	virtual ~cbRobot();
 
 	void setName(const char *name);
@@ -248,13 +250,13 @@ protected:  // class data members
 	unsigned int nSensorsRequested;
 
 	cbActionHandler handler;
-
+	QByteArray old;
 };
 
 class cbRobotBin : public cbRobot
 {
 public:
-    cbRobotBin() : cbRobot(irSensorDefaultAngles) {}
+    cbRobotBin(cbClient *client) : cbRobot(client, irSensorDefaultAngles) {}
     virtual ~cbRobotBin() {}
 	virtual bool readAction(cbRobotAction *);
 	virtual void sendSensors();
