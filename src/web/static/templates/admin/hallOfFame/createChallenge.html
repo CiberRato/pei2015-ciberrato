@@ -94,23 +94,91 @@
                                                                 <h2 align="center">Upload your Params</h2>
 
 
-                                                                <p><strong>Upload Param_List</strong></p>
-                                                                <input id="ParamListUpload"
-                                                                       type="file" name="files[]"
-                                                                       class="inputFile clickable"
-                                                                        />
-
                                                                 <p><strong>Upload Grid</strong></p>
-                                                                <input id="GridUpload"
-                                                                       type="file" name="files[]"
-                                                                       class="inputFile clickable"
-                                                                        />
+                                                                <output id="list1"></output>
+                                                                <span class="btn btn-file">
+                                                                    <span class="fileupload-new">Select file</span>
+                                                                    <input id="GridUpload"
+                                                                           type="file" name="files[]"
+                                                                           class="inputFile clickable"
+                                                                            />
+                                                                </span>
+                                                                <button class="btn btn-flat btn-primary"  ng-click="vm.uploadGrid()">Upload</button>
+                                                                <script>
+                                                                    function handleFileSelect(evt) {
+                                                                        var files = evt.target.files; // FileList object
 
+                                                                        // files is a FileList of File objects. List some properties.
+                                                                        var output = [];
+                                                                        for (var i = 0, f; f = files[i]; i++) {
+                                                                            output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                                                                                    f.size, ' bytes, last modified: ',
+                                                                                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                                                                                    '</li>');
+                                                                        }
+                                                                        document.getElementById('list1').innerHTML = '<ul>' + output.join('') + '</ul>';
+                                                                    }
+
+                                                                    document.getElementById('GridUpload').addEventListener('change', handleFileSelect, false);
+                                                                </script>
+                                                                <hr/>
                                                                 <p><strong>Upload Lab</strong></p>
-                                                                <input id="LabUpload"
-                                                                       type="file" name="files[]"
-                                                                       class="inputFile clickable"
-                                                                        />
+                                                                <output id="list2"></output>
+                                                                <span class="btn btn-file">
+                                                                    <span class="fileupload-new">Select file</span>
+                                                                    <input id="LabUpload"
+                                                                           type="file" name="files[]"
+                                                                           class="inputFile clickable"
+                                                                            />
+                                                                </span>
+                                                                <button class="btn btn-flat btn-primary"  ng-click="vm.uploadLab()">Upload</button>
+                                                                <script>
+                                                                    function handleFileSelect(evt) {
+                                                                        var files = evt.target.files; // FileList object
+
+                                                                        // files is a FileList of File objects. List some properties.
+                                                                        var output = [];
+                                                                        for (var i = 0, f; f = files[i]; i++) {
+                                                                            output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                                                                                    f.size, ' bytes, last modified: ',
+                                                                                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                                                                                    '</li>');
+                                                                        }
+                                                                        document.getElementById('list2').innerHTML = '<ul>' + output.join('') + '</ul>';
+                                                                    }
+
+                                                                    document.getElementById('LabUpload').addEventListener('change', handleFileSelect, false);
+                                                                </script>
+                                                                <hr/>
+                                                                <p><strong>Upload Param_List</strong></p>
+
+                                                                <output id="list"></output>
+                                                                <span class="btn btn-file">
+                                                                    <span class="fileupload-new">Select file</span>
+
+                                                                    <input id="ParamListUpload"
+                                                                           type="file" name="files[]"
+                                                                           class="inputFile clickable"
+                                                                            />
+                                                                </span>
+                                                                <button class="btn btn-flat btn-primary" ng-click="vm.uploadParamList()">Upload</button>
+                                                                <script>
+                                                                    function handleFileSelect(evt) {
+                                                                        var files = evt.target.files; // FileList object
+
+                                                                        // files is a FileList of File objects. List some properties.
+                                                                        var output = [];
+                                                                        for (var i = 0, f; f = files[i]; i++) {
+                                                                            output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                                                                                    f.size, ' bytes, last modified: ',
+                                                                                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                                                                                    '</li>');
+                                                                        }
+                                                                        document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+                                                                    }
+
+                                                                    document.getElementById('ParamListUpload').addEventListener('change', handleFileSelect, false);
+                                                                </script>
 
 
                                                             </div>
