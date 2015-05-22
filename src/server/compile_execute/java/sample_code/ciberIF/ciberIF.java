@@ -459,16 +459,6 @@ public class ciberIF {
 	*  The constructor inits all necessary data structures,
 	*/
 	public ciberIF() {
-
-		// Get a datagram socket
-		/*try {
-			socket = new DatagramSocket();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-
-
-
 		// Create Parser
 		parser = new xmlParser();
 	}
@@ -523,13 +513,11 @@ public class ciberIF {
 	public void ReadSensors() {
 
 		byte[] bufread = new byte[4096];
-		//DatagramPacket packet = new DatagramPacket(bufread, bufread.length);
 
 		// read socket
 		int nRead;
 		try {
 			nRead = input.read(bufread);
-			System.out.println(Arrays.toString(bufread));
 			// parse message
 			SensorHandler sensHandler = new SensorHandler(params.nBeacons);
 			parser.parse(bufread, nRead-1, sensHandler);
@@ -690,7 +678,6 @@ public class ciberIF {
 		}
 
 		msg += "\"/> </Actions>";
-
 		send(msg);
 	}
 
@@ -835,9 +822,7 @@ public class ciberIF {
 		}
 
 		// Insert message in a DatagramPacket and send
-		//DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 		try {
-			//socket.send(packet);
 			output.write(buf);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -857,11 +842,6 @@ public class ciberIF {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		
-
-		// port of incoming sucessful reply is the destination of all subsequent messages
-		//port = packet.getPort();
 	}
 
 
@@ -870,10 +850,7 @@ public class ciberIF {
 		byte[] buf = new byte[1024];
 
 		buf = (msg + "\u0004").getBytes();
-
-		//DatagramPacket packet =  new DatagramPacket(buf, buf.length, address, port);
 		try {
-			//socket.send(packet);
 			output.write(buf);
 		} catch (Exception e) {
 			e.printStackTrace();
