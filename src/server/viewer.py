@@ -67,16 +67,17 @@ class Viewer:
 		LOG_FILE += str(simulator_port)
 		# End of loading settings
 
-		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
+		simulator_s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+		simulator_s.connect((SIMULATOR_HOST, simulator_port))
 		# Register as PanelViewer in the simulator
-		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, simulator_port))
+		simulator_s.send("<PanelView/>\n\x04")
 
 		# Get sim time, and ports
 		# params, grid e lab comes in this packet as well
-		data, (hostSim, portSim) = simulator_s.recvfrom(4096)
-		parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
+		data = simulator_s.recv(4096)
+		parametersXML = minidom.parseString("<xml>"+data.split("\x04")[0]+"</xml>")
 		itemlist = parametersXML.getElementsByTagName('Parameters')
 		simTime = itemlist[0].attributes['SimTime'].value
 
@@ -126,8 +127,8 @@ class Viewer:
 		checkedRobots = []
 		prevlen = 0
 		while len(checkedRobots) != int(robotsAmount):
-			data, (host, port) = simulator_s.recvfrom(4096)
-			robotsXML = minidom.parseString(data.replace("\x00", ""))
+			data = simulator_s.recv(4096)
+			robotsXML = minidom.parseString(data.split("\x04")[0])
 			robots = robotsXML.getElementsByTagName('Robot')
 			if len(robots):
 				for r in robots:
@@ -151,7 +152,7 @@ class Viewer:
 		# 	data = starter_c.recv()
 
 		# Sending simulator msg to start the simulation
-		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
+		simulator_s.send("<Start/>\n\x04")
 
 		if not sync:
 			# Connect to websockets
@@ -166,7 +167,7 @@ class Viewer:
 			# Update Robot time
 			data = simulator_s.recv(4096)
 			#print data
-			data = data.replace("\x00", "")
+			data = data.split("\x04")[0]
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('LogInfo')
 			robotTime = itemlist[0].attributes['Time'].value
