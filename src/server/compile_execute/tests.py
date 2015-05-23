@@ -81,15 +81,17 @@ class Validator:
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
 			client_s, client_addr = simulator_dummy.accept()
-			data = simulator_dummy.recv(1024) # infos de quem envia
+			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
 
 		agent.kill()
+		simulator_dummy.shutdown(socket.SHUT_RDWR)
 		simulator_dummy.close()
+		client_s.close()
 
 		try:
-			parametersXML = minidom.parseString(data.replace("\x00", ""))
+			parametersXML = minidom.parseString(data.split("\x04")[0])
 			robotParam = parametersXML.getElementsByTagName('Robot')
 			nameRobot = robotParam[0].attributes['Name'].value
 
