@@ -12,7 +12,7 @@ from teams.permissions import IsAdminOfTeam
 
 from ..permissions import IsStaff, NotPrivateCompetition
 from .simplex import RoundSimplex, TeamEnrolledSimplex
-from ..models import Competition, Round, TeamEnrolled, Agent
+from ..models import Competition, Round, TeamEnrolled, Agent, GridPositions
 from ..serializers import RoundSerializer, TeamEnrolledSerializer, TeamEnrolledOutputSerializer, \
     CompetitionSerializer
 
@@ -194,10 +194,23 @@ class ToggleTeamValid(mixins.CreateModelMixin, viewsets.GenericViewSet):
                                              + " is now valid!")
                 NotificationTeam.add(team=team, status="info",
                                      message="Do not forget to create one grid position for this competition!")
+
+                # try to create one grid position if the team doesn't have one
+                try:
+                    with transaction.atomic():
+                        GridPositions.objects.create(competition=competition, team=team)
+                except IntegrityError:
+                    pass
+
             else:
                 NotificationTeam.add(team=team, status="error",
                                      message="Your inscription is the competition " + competition.name
                                              + " is now not valid!")
+                try:
+                    grid = GridPositions.objects.get(competition=competition, team=team)
+                    grid.delete()
+                except GridPositions.DoesNotExist:
+                    pass
 
             return Response({'status': 'Inscription toggled!',
                              'message': 'Inscription is now: ' + str(team_enrolled.valid)},
