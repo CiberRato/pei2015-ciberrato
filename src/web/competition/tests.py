@@ -432,21 +432,14 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         """ grid Positions """
-        # create grid position
-        url = "/api/v1/competitions/grid_position/"
-        data = {'competition_name': 'C1', 'team_name': 'XPTO3'}
-        response = client.post(path=url, data=data)
-        identifier = response.data["identifier"]
-        self.assertEqual(response.data, {'team_name': u'XPTO3', 'identifier': identifier, 'competition': OrderedDict(
-            [('name', u'C1'), ('type_of_competition', OrderedDict(
-                [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
-                 ('allow_remote_agents', False), ('synchronous_simulation', False), ('single_position', False),
-                 ('timeout', 5)])), ('state_of_competition', 'Register')])})
-        self.assertEqual(response.status_code, 201)
+        team = Team.objects.get(name="XPTO3")
+        competition = Competition.objects.get(name="C1")
+        grid_positions = GridPositions.objects.get(team=team, competition=competition)
+        identifier = grid_positions.identifier
 
         # retrieve the grid position
         url = "/api/v1/competitions/grid_position/C1/?team_name=XPTO3"
-        response = client.get(path=url, data=data)
+        response = client.get(path=url)
         self.assertEqual(response.data, {'team_name': u'XPTO3', 'identifier': identifier, 'competition': OrderedDict(
             [('name', u'C1'), ('type_of_competition', OrderedDict(
                 [('name', u'Collaborative'), ('number_teams_for_trial', 1), ('number_agents_by_grid', 5),
@@ -971,13 +964,6 @@ class AuthenticationTestCase(TestCase):
         response = client.delete(path=url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(TrialGrid.objects.all()), 0)
-
-        # delete grid position
-        url = "/api/v1/competitions/grid_position/C1/?team_name=XPTO3"
-        response = client.delete(path=url)
-        self.assertEqual(response.data, {"status": "Deleted", "message": "The grid positions has been deleted"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(GridPositions.objects.all()), 0)
 
         # set
 
