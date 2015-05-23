@@ -170,7 +170,6 @@ class Validator:
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
-		print data
 		parameters = '<Reply Status="Ok">\
 			<Parameters SimTime="1800" CycleTime="50"\
 			CompassNoise="2" BeaconNoise="2" ObstacleNoise="0.1"\
@@ -210,7 +209,6 @@ class Validator:
 		except socket.timeout:
 			error(ValidatorMessage.ANSWER_ACTIONS)
 
-		print data
 		try:
 			parametersActions = minidom.parseString(data.split("\x04")[0])
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
