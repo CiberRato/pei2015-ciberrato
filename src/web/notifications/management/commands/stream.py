@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from ...models import NotificationBroadcast
+from ...models import StreamTrial
 
 
 class Command(BaseCommand):
@@ -7,4 +7,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write('# The script was launched!')
-        NotificationBroadcast.add(channel="broadcast", status="ok", message="teste!")
+        StreamTrial.add(trial_identifier="9690b514-0895-4091-93ee-c902ac8f872f", message="teste!")
