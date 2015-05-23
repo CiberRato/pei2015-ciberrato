@@ -31,10 +31,11 @@ def error(vmsg, additional_info = None):
 
 class Validator:
 	def __init__(self):
-		self.simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-		self.simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self.simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
-		self.simulator_dummy.settimeout(1)
+		#self.simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # comunicação UDP
+		#self.simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		#self.simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
+		#self.simulator_dummy.settimeout(1)
+		pass
 
 	def validate(self):
 		if not os.path.exists('execute.sh'):
@@ -70,14 +71,22 @@ class Validator:
 		sys.exit(0)
 
 	def validateRobotName(self, name):
+		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		simulator_dummy.bind(("127.0.0.1", 6000))
+		simulator_dummy.settimeout(1)
+		simulator_dummy.listen(1)
+
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 "+name, 
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
-			data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
+			client_s, client_addr = simulator_dummy.accept()
+			data = simulator_dummy.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
 
 		agent.kill()
+		simulator_dummy.close()
 
 		try:
 			parametersXML = minidom.parseString(data.replace("\x00", ""))
