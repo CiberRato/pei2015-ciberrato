@@ -45,7 +45,14 @@ bool cbPanel::readCommand(cbPanelCommand *command)
     //if (!hasPendingDatagrams())
     //    return false;
 
-    QByteArray xmlBuff = socket->readAll();
+    QByteArray readArr, xmlBuff;
+    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "[cbReceptionist] Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        xmlBuff += readArr;
+    }
     /*if ((xmlSize=readDatagram(xmlBuff, 1024*32-1)) < 0)
     {
         cerr << "Error reading from Viewer Socket - " << errorString().toStdString();
