@@ -3,6 +3,7 @@ from swampdragon.models import SelfPublishModel
 from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationMessage, NotificationBroadcastSerializer
 from authentication.models import Account, Team
 from django.conf import settings
+from competition.models import Trial
 
 
 def handling_message(status, content, trigger):
@@ -56,6 +57,16 @@ class NotificationTeam(SelfPublishModel, models.Model):
         NotificationTeam.objects.create(team=team, message=message)
         OldNotificationTeam.sync(message=message, team=team)
 
+
+class StreamTrial(SelfPublishModel, models.Model):
+    serializer_class = StreamTrialSerializer
+    message = models.TextField()
+    trial = models.ForeignKey(Trial)
+
+    @staticmethod
+    def add(trial_identifier, message):
+        trial = Trial.objects.get(identifier=trial_identifier)
+        StreamTrial.objects.create(trial=trial, message=message)
 
 # Old notifications
 
