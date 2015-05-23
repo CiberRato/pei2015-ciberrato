@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from ...models import StreamTrial
 import socket
 
@@ -35,5 +35,5 @@ class Command(BaseCommand):
             sim_viewer_connect.close()
             sim_viewer.shutdown(socket.SHUT_RDWR)
             sim_viewer.close()
-            
+
             self.stdout.write('[STREAM] Trial ' + str(identifier) + ' ended the streaming!')
