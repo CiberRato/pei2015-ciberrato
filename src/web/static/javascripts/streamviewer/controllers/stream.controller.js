@@ -5,9 +5,9 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout', '$dragon'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout', '$dragon', 'Authentication'];
 
-    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout, $dragon){
+    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout, $dragon, Authentication){
 
         var parameters;
         $scope.simulation;
@@ -109,7 +109,7 @@
         function CiberWebSocket(){
             $dragon.onReady(function() {
                 var user = Authentication.getAuthenticatedAccount();
-                var simulation_id = '9690b514-0895-4091-93ee-c902ac8f872f';
+                var simulation_id = $scope.simulation.identifier;
 
                 $dragon.subscribe('stream_trial', 'notifications', {
                     'user': user,
