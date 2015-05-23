@@ -1,9 +1,12 @@
 from swampdragon import route_handler
 from swampdragon.route_handler import ModelPubRouter
-from .models import NotificationUser, NotificationTeam, NotificationBroadcast
-from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationBroadcastSerializer
+from .models import NotificationUser, NotificationTeam, NotificationBroadcast, StreamTrial
+from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationBroadcastSerializer, \
+    StreamTrialSerializer
 from authentication.models import Team, TeamMember
 from .permissions import LoginRequired, IsTeamMember
+from competition.models import Trial
+from competition.shortcuts import trial_started
 
 
 class NotificationBroadcastRouter(ModelPubRouter):
@@ -80,6 +83,34 @@ class NotificationTeamRouter(ModelPubRouter):
         return self.send_login_required()
 
 
+class TrialRouter(ModelPubRouter):
+    permission_classes = [LoginRequired()]
+
+    valid_verbs = ['subscribe']
+    route_name = 'stream_trial'
+    model = StreamTrial
+    serializer_class = StreamTrialSerializer
+
+    def get_subscription_contexts(self, **kwargs):
+        try:
+            user_obj = self.connection.get_user(kwargs['user']['u_stream'])
+        except AttributeError:
+            return self.send_login_required()
+
+        if user_obj is None:
+            return self.send_login_required()
+
+        if Trial.objects.filter(identifier=kwargs['identifier']).count() == 1:
+            trial_obj = Trial.objects.get(identifier=kwargs['identifier'])
+
+            if trial_started(trial_obj):
+                StreamTrial.objects.all().delete()
+                return {'trial_id': trial_obj.pk}
+
+        return self.send_login_required()
+
+
 route_handler.register(NotificationUserRouter)
 route_handler.register(NotificationTeamRouter)
 route_handler.register(NotificationBroadcastRouter)
+route_handler.register(TrialRouter)
