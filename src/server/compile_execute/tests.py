@@ -62,8 +62,6 @@ class Validator:
 		self.validateHost("127.0.0.33")
 
 		self.validateMessagesExchanged()
-
-		self.simulator_dummy.close()
 		sys.exit(0)
 
 	def validateRobotName(self, name):
@@ -160,6 +158,7 @@ class Validator:
 	def validateMessagesExchanged(self):
 		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		simulator_dummy.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 		simulator_dummy.bind(("127.0.0.1", 6000))
 		simulator_dummy.settimeout(1)
 		simulator_dummy.listen(1)
@@ -188,10 +187,11 @@ class Validator:
 			BeaconAperture="3.141593"\
 			ReturnTimePenalty="25" ArrivalTimePenalty="100"\
 			CollisionWallPenalty="2" CollisionRobotPenalty="2"\
-			TargetReward="100" HomeReward="100" /></Reply>\n'	
+			TargetReward="100" HomeReward="100" /></Reply>\n\x04'	
 
 		# Simulating the answer to the agent..	
 		client_s.send(parameters)
+		time.sleep(0.5)
 
 		readSensorsParam = '<Measures Time="345">\
 			<Sensors Collision="No">\
@@ -199,7 +199,7 @@ class Validator:
 			</Sensors>\
 			<Leds EndLed="Off" ReturningLed="Off" VisitingLed="Off"/>\
 			<Buttons Start="On" Stop="Off"/>\
-			</Measures>\n'
+			</Measures>\n\x04'
 		
 		client_s.send(readSensorsParam)
 		# Simulating a Measures to the agent...
@@ -224,7 +224,7 @@ class Validator:
 			</Sensors>\
 			<Leds EndLed="Off" ReturningLed="Off" VisitingLed="Off"/>\
 			<Buttons Start="On" Stop="Off"/>\
-			</Measures>\n'
+			</Measures>\n\x04'
 		
 		client_s.send(readSensorsParamCollisionOn)
 		try:
@@ -239,6 +239,9 @@ class Validator:
 			error(ValidatorMessage.NOT_ACTIONS)
 
 		agent.kill()
+		client_s.close()
+		simulator_dummy.shutdown(socket.SHUT_RDWR)
+		simulator_dummy.close()
 
 if __name__ == "__main__":
 	Validator().validate()
