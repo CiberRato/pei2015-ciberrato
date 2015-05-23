@@ -146,7 +146,7 @@ class DeleteUploadedFileAgent(mixins.DestroyModelMixin, viewsets.GenericViewSet)
         file_obj = get_object_or_404(AgentFile.objects.all(), agent=agent,
                                      original_name=request.GET.get('file_name', ''))
         file_obj.delete()
-        
+
         agent.code_valid = False
         agent.save()
 
