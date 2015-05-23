@@ -24,7 +24,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.agents">
-                                <td><a href="panel/{{ value.agent_name }}/agentDetail">{{value.agent_name}}</a></td>
+                                <td><a href="panel/{{vm.teamName}}/{{ value.agent_name }}/agentDetail">{{value.agent_name}}</a></td>
                                 <td ng-if="vm.member.data.is_admin== true"><a class="btn btn-primary btn-flat" ng-click="vm.destroyAgent(value.agent_name)">X</a></td>
                             </tr>
                             </tbody>
