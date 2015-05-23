@@ -87,14 +87,6 @@
                         console.log("// any thing that happens if subscribing failed");
                     });
 
-                    $dragon.subscribe('stream_trial', 'notifications', {'user': user, 'identifier': '9690b514-0895-4091-93ee-c902ac8f872f'}, function (context, data) {
-                        // any thing that happens after successfully subscribing
-                        console.log("// any thing that happens after successfully subscribing");
-                    }, function (context, data) {
-                        // any thing that happens if subscribing failed
-                        console.log("// any thing that happens if subscribing failed");
-                    });
-
                     $dragon.onChannelMessage(function(channels, data) {
                         if(data.data._type != 'streamtrial'){
                             if (data.data.message.status == 200){
