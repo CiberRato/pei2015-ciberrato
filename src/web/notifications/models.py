@@ -1,6 +1,7 @@
 from django.db import models
 from swampdragon.models import SelfPublishModel
-from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationMessage, NotificationBroadcastSerializer
+from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationMessage, \
+    NotificationBroadcastSerializer, StreamTrialSerializer
 from authentication.models import Account, Team
 from django.conf import settings
 from competition.models import Trial
