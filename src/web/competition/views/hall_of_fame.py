@@ -11,7 +11,7 @@ import requests
 
 from ..permissions import MustBePartOfAgentTeam, CompetitionMustBeNotInPast, MustBeHallOfFameCompetition
 from ..models import Round, Trial, CompetitionAgent, LogTrialAgent, Agent, Competition, AgentScoreRound
-from ..serializers import HallOfFameLaunchSerializer, AutomaticTeamScoreHallOfFameSerializer
+from ..serializers import HallOfFameLaunchSerializer, AutomaticTeamScoreHallOfFameSerializer, HallOfFameSerializer
 from authentication.models import Team
 from teams.permissions import MustBeTeamMember
 
@@ -193,3 +193,25 @@ class AutomaticTeamScoreHallOfFame(mixins.CreateModelMixin, viewsets.GenericView
                 if time < old.score:
                     return True
         return False
+
+
+class HallOfFameScore(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = AgentScoreRound.objects.all()
+    serializer_class = HallOfFameSerializer
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Retrieve} the hall of fame score
+        B{URL:} ../api/v1/competitions/hall_of_fame/round_score/<round_name>/
+
+        :type  round_name: str
+        :param round_name: The round name
+        """
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk', ''))
+        scores = AgentScoreRound.objects.filter(round=r)
+        serializer = self.serializer_class(data=scores, many=True)
+
+        return Response(serializer.data)

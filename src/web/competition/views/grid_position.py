@@ -19,8 +19,7 @@ from ..permissions import IsStaff, CompetitionMustBeNotInPast, TeamEnrolledWithV
     NotPrivateCompetition, MustBePartOfAgentTeam, NotAcceptingRemoteAgents
 
 
-class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin,
-                           mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class GridPositionsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = GridPositions.objects.all()
     serializer_class = GridPositionsSerializer
 
@@ -39,50 +38,6 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         serializer = self.serializer_class(grid_positions, many=True)
 
         return Response(serializer.data)
-
-    def create(self, request, *args, **kwargs):
-        """
-        B{Create} a grid positions
-        B{URL:} ../api/v1/competitions/grid_positions/
-
-        > Permissions
-        # Must be part of the team
-        # The competition must be not in past state
-        # The team must be enrolled in the competition
-        # The team must have a valid inscription
-
-        :type  competition_name: str
-        :param competition_name: The type of competition name
-        :type  team_name: str
-        :type  team_name: The team name
-        """
-        serializer = self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            competition = get_object_or_404(Competition.objects.all(),
-                                            name=serializer.validated_data['competition_name'])
-
-            CompetitionMustBeNotInPast(competition=competition)
-
-            team = get_object_or_404(Team.objects.all(), name=serializer.validated_data['team_name'])
-
-            MustBeTeamMember(team=team, user=request.user)
-
-            TeamEnrolledWithValidInscription(team=team, competition=competition)
-
-            try:
-                with transaction.atomic():
-                    grid = GridPositions.objects.create(competition=competition, team=team)
-            except IntegrityError:
-                return Response({'status': 'Bad request',
-                                 'message': 'You already have a grid for that competition.'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            serializer = self.serializer_class(GridPositionsSimplex(grid))
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response({'status': 'Bad Request',
-                         'message': serializer.errors},
-                        status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -115,42 +70,6 @@ class GridPositionsViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin, mi
         serializer = self.serializer_class(GridPositionsSimplex(grid))
 
         return Response(serializer.data)
-
-    def destroy(self, request, *args, **kwargs):
-        """
-        B{Destroy} the grid positions
-        B{URL:} ../api/v1/competitions/grid_positions/<competition_name>/?team_name=<team_name>
-
-        > Permissions
-        # Must be part of the team
-        # The competition must be not in past state
-        # The team must be enrolled in the competition
-        # The team must have a valid inscription
-
-        :type  competition_name: str
-        :param competition_name: The type of competition name
-        :type  team_name: str
-        :type  team_name: The team name
-        """
-        competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk', ''))
-
-        CompetitionMustBeNotInPast(competition=competition)
-
-        team = get_object_or_404(Team.objects.all(), name=request.GET.get('team_name', ''))
-
-        MustBeTeamMember(team=team, user=request.user)
-
-        TeamEnrolledWithValidInscription(team=team, competition=competition)
-
-        grid = get_object_or_404(GridPositions.objects.all(), competition=competition, team=team)
-
-        NotPrivateCompetition(competition=grid.competition, message='This grid can\'t be deleted!')
-
-        grid.delete()
-
-        return Response({'status': 'Deleted',
-                         'message': 'The grid positions has been deleted'},
-                        status=status.HTTP_200_OK)
 
 
 class AgentGridViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,

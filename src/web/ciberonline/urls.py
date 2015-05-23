@@ -26,7 +26,7 @@ from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, Rankin
     RankingByTeamInCompetition
 
 from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
-from competition.views.hall_of_fame import RunHallOfFameTrial, AutomaticTeamScoreHallOfFame
+from competition.views.hall_of_fame import RunHallOfFameTrial, AutomaticTeamScoreHallOfFame, HallOfFameScore
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
     PrivateCompetitionRound, RunPrivateTrial, SoloTrial
 
@@ -153,6 +153,7 @@ router_password.register(r'request', PasswordRecoverRequest)
 # hall of fame
 router_hall_of_fame = routers.SimpleRouter()
 router_hall_of_fame.register(r'automatic_score', AutomaticTeamScoreHallOfFame)
+router_hall_of_fame.register(r'round_score', HallOfFameScore)
 
 
 urlpatterns = patterns('',
