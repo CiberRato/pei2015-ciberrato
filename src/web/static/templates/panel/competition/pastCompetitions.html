@@ -23,7 +23,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="(key, value) in vm.competitions">
-                                <td><a href="panel/competitions/{{ value.name }}">{{value.name}}</a></td>
+                                <td><a href="panel/{{ value.name }}">{{value.name}}</a></td>
                                 <td>{{value.type_of_competition.name}}</td>
                                 <td>{{value.allTeams}}</td>
                             </tr>
