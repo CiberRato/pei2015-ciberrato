@@ -17,6 +17,7 @@
                             <tr>
                                 <th>Team Name</th>
                                 <th ng-if="vm.myTeams.length != 0">State of Inscription</th>
+                                <th ng-if="vm.myTeams.length != 0">Manage Agents</th>
                                 <th ng-if="vm.myTeams.length != 0">Remove Inscription</th>
                             </tr>
                             </thead>
@@ -27,6 +28,61 @@
                                 <td ng-if="value.valid == false && value.show == true"><span class="label label-important">Not Valid</span></td>
                                 <td ng-if="value.valid == true && value.show == true"><span class="label label-success">Valid</span></td>
                                 <td ng-if="value.show == false"></td>
+                                <td ng-if = "value.competition.state_of_competition == 'Past' || value.valid == false || value.show == false"></td>
+                                <td ng-if = "value.competition.state_of_competition != 'Past' && value.valid == true && value.show == true"><a  data-toggle="modal" ng-click="vm.getGrid(value.team.name, vm.competition.name)" href="#addAgents{{key}}">Manage</a>
+                                    <div class="modal fade"  id="addAgents{{key}}">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <p ng-if="vm.tmp1 == true" align="center">You don't have any agent with valid code</p>
+                                            <h2 ng-if="vm.models.lists.Available.length != 0" align="center">Drag the agents for this grid position (Max: {{vm.competition.type_of_competition.number_agents_by_grid}})</h2>
+                                        </div>
+                                        <div ng-if="vm.models.lists.Available.length != 0" class="modal-body" style="text-align: center">
+                                            <div class="row" style="padding-left: 40px">
+                                                <div ng-repeat="(listName, list) in vm.models.lists" class="span3 associateAgents">
+                                                    <!-- The dnd-list directive allows to drop elements into it.
+                                                        The dropped data will be added to the referenced list -->
+                                                    <h3>{{listName}}</h3>
+                                                    <ul dnd-list="list"
+                                                            >
+                                                        <!-- The dnd-draggable directive makes an element draggable and will
+                                                             transfer the object that was assigned to it. If an element was
+                                                             dragged away, you have to remove it from the original list
+                                                             yourself using the dnd-moved attribute -->
+                                                        <li ng-if="listName == 'GridPosition'" ng-repeat="item in list"
+                                                            dnd-draggable="item"
+                                                            dnd-moved="list.splice($index, 1); "
+                                                            dnd-effect-allowed="move"
+                                                            dnd-selected="vm.models.selected = item"
+                                                            ng-class="{'selected': vm.models.selected === item}"
+                                                            dnd-disable-if="true"
+                                                                >
+                                                            {{item.pos}} - {{item.label}} <button type="button" class="close" ng-click="vm.disassociate(item.pos, value.team.name)">×</button>
+
+                                                        </li>
+                                                        <li ng-if="listName == 'Available'" ng-repeat="item in list"
+                                                            dnd-draggable="item"
+                                                            dnd-moved="list.splice($index, 1); vm.associate(item.label, value.team.name);"
+                                                            dnd-effect-allowed="move"
+                                                            dnd-selected="vm.models.selected = item"
+                                                            ng-class="{'selected': vm.models.selected === item}"
+                                                            dnd-disable-if="vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"
+                                                                >
+                                                            {{item.label}}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                            <p ng-if = "vm.models.lists.GridPosition.length == vm.competition.type_of_competition.number_agents_by_grid"><strong>You can't associate more agents, limit reached.</strong></p>
+
+                                        </div>
+                                        <div ng-if="vm.competition.type_of_competition.allow_remote_agents == true && vm.models.lists.Available.length != 0" class="modal-footer">
+                                            <a  class="btn btn-flat btn-large btn-success"  ng-click="vm.associateAllRemote()">All Remote</a>
+
+                                        </div>
+
+                                    </div>
+                                </td>
 
                                 <td ng-if="value.canRemove == true && value.valid == false"><a class="btn btn-primary btn-flat" ng-click="vm.removeInscription(value.team.name)">X</a></td>
                                 <td ng-if="value.canRemove == true && value.valid == true">
