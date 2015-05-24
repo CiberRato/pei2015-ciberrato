@@ -65,24 +65,24 @@
                     $dragon.onReady(function() {
                         swampdragon.open(function () {
                             $dragon.onChannelMessage(function(channels, data) {
-                                if(data.data._type != 'streamtrial') {
-                                    if (data.data.message.trigger == 'code_valid') {
-                                        $timeout(function () {
-                                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                                console.log("AGENT");
 
-                                            function getAgentSuccessFn(data) {
-                                                vm.agent = data.data;
-                                            }
+                                if (data.data.message.trigger == 'code_valid') {
+                                    $timeout(function () {
+                                        Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
-                                            function getAgentErrorFn(data) {
-                                                console.error(data.data);
-                                            }
-                                        });
-                                    }
-                                    console.log(channels);
-                                    console.log(data.data._type);
-                                    console.log(data.data.message);
+                                        function getAgentSuccessFn(data) {
+                                            vm.agent = data.data;
+                                        }
+
+                                        function getAgentErrorFn(data) {
+                                            console.error(data.data);
+                                        }
+                                    });
                                 }
+                                console.log(channels);
+                                console.log(data.data._type);
+                                console.log(data.data.message);
                             });
                         });
                     });

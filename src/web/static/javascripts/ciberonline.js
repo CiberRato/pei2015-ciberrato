@@ -88,6 +88,7 @@
                     });
 
                     $dragon.onChannelMessage(function(channels, data) {
+                        console.log("HOME");
                         if(data.data._type != 'streamtrial'){
                             if (data.data.message.status == 200){
                                 $.jGrowl(data.data.message.content, {
@@ -108,6 +109,8 @@
                             // console.log(channels);
                             console.log(data.data._type);
                             console.log(data.data.message);
+                        }else{
+                            // tratar aqui do stream
                         }
                     });
                 });

@@ -87,17 +87,17 @@
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
                         $dragon.onChannelMessage(function(channels, data) {
-                            if(data.data._type != 'streamtrial') {
-                                if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log') {
-                                    $timeout(function () {
-                                        getTrials();
-                                    });
-                                }
+                            console.log("TRIALS");
 
-                                console.log(channels);
-                                console.log(data.data._type);
-                                console.log(data.data.message);
+                            if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log') {
+                                $timeout(function () {
+                                    getTrials();
+                                });
                             }
+
+                            console.log(channels);
+                            console.log(data.data._type);
+                            console.log(data.data.message);
                         });
                     });
                 });
@@ -106,7 +106,6 @@
                     loading: true
                 };
             }
-
 
             function getTrialsErrorFn(data){
                 console.error(data.data);

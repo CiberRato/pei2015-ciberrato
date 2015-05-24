@@ -587,7 +587,7 @@ class PasswordReset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        B{Login to other} user
+        B{PasswordReset}
         B{URL:} ../api/v1/password_recover/reset/
 
         :type  token: str

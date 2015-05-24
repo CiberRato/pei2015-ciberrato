@@ -122,21 +122,24 @@
                 });
 
                 $dragon.onChannelMessage(function(channels, data) {
-                    if(data.data._type == 'streamtrial'){
+                    console.log("STREAM");
+
+                    try{
                         $scope.logBuff_obj.push(JSON.parse(data.data.message));
+                    }catch(e){
                         console.log(data);
+                    }
 
-                        if($scope.logBuff_obj.length==20){
-                            $("#waitawhile").hide("fast");
-                            $("#row1").show("slow");
-                            $("#row2").show("slow");
-                            $("#row5").show("slow");
+                    if($scope.logBuff_obj.length==20){
+                        $("#waitawhile").hide("fast");
+                        $("#row1").show("slow");
+                        $("#row2").show("slow");
+                        $("#row5").show("slow");
 
-                            doIt();
+                        doIt();
 
-                            $scope.play();
-                            console.log('play');
-                        }
+                        $scope.play();
+                        console.log('play');
                     }
                 });
             });
