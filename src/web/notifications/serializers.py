@@ -20,6 +20,12 @@ class NotificationBroadcastSerializer(ModelSerializer):
         publish_fields = ['message']
 
 
+class StreamTrialSerializer(ModelSerializer):
+    class Meta:
+        model = 'notifications.StreamTrial'
+        publish_fields = ['message']
+
+
 class NotificationMessage(BaseSerializer):
 
     def create(self, validated_data):
