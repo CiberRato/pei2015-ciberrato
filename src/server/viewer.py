@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port, hall_of_fame):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
