@@ -210,7 +210,8 @@ class HallOfFameScore(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         :type  round_name: str
         :param round_name: The round name
         """
-        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk', ''))
+        competition = Competition.objects.get(name="Hall of fame - Single")
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk', ''), parent_competition=competition)
         scores = AgentScoreRound.objects.filter(round=r)
         serializer = self.serializer_class(data=scores, many=True)
 

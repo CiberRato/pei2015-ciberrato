@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from ciberonline.urls import urlpatterns
-from django.core.urlresolvers import resolve, reverse, RegexURLPattern
+from django.core.urlresolvers import RegexURLPattern
 import markdown
+from inflector import English, Inflector
+import json
 
 
 class Command(BaseCommand):
@@ -14,12 +16,15 @@ class Command(BaseCommand):
             self.urls = []
 
     class SlaveURL:
-        def __init__(self, url, doc):
+        def __init__(self, url, doc, name):
+            global inflector
             self.url = url
             if doc is not None:
                 self.doc = markdown.markdown(doc.replace("    ", ""))
             else:
                 self.doc = ""
+            inflector = Inflector(English)
+            self.name = inflector.humanize(word=name.replace("-", " "))
 
     def __init__(self):
         self.supers = dict()
@@ -63,13 +68,27 @@ class Command(BaseCommand):
         self.manual['api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/'] = 'api/v1/competitions/'
         self.manual['api/v1/resources_file/'] = 'api/v1/competitions/'
 
-        self.show_urls(urlpatterns)
-        print self.count
+        self.__arrange_urls__(urlpatterns)
+        print self.to_json()
 
-        print self.supers['api/v1/auth/'].count
-        print self.supers['api/v1/auth/'].urls[0].doc
+    def to_json(self):
+        json_var = dict()
+        for key, value in self.supers.iteritems():
+            sp = dict()
+            sp['count'] = value.count
+            sp['help_text'] = value.help_text
+            sp['urls'] = []
 
-    def show_urls(self, urllist, path="", verify_supers=False):
+            for slave in value.urls:
+                sl = dict()
+                sl['url'] = slave.url
+                sl['doc'] = slave.doc
+                sl['name'] = slave.name
+                sp['urls'] += [sl]
+            json_var[key] = sp
+        return json_var
+
+    def __arrange_urls__(self, urllist, path="", verify_supers=False):
         for entry in urllist:
             if isinstance(entry, RegexURLPattern):
                 url_print = str(path + entry.regex.pattern)
@@ -77,20 +96,24 @@ class Command(BaseCommand):
 
                 found = False
 
+                # save in the super list
                 for key, value in self.supers.iteritems():
                     if url.startswith(key):
-                        self.supers[key].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__)]
+                        self.supers[key].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__, name=entry.name)]
                         self.supers[key].count += 1
                         found = True
                         break
 
+                # manual URLs
                 if not found:
                     for key, value in self.manual.iteritems():
                         if url == key:
-                            self.supers[value].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__)]
+                            self.supers[value].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__,
+                                                                      name=entry.name)]
                             self.supers[value].count += 1
                             break
 
+                # verify if has new URls
                 if verify_supers:
                     in_supers = False
                     for key, value in self.supers.iteritems():
@@ -104,4 +127,4 @@ class Command(BaseCommand):
                 self.count += 1
 
             if hasattr(entry, 'url_patterns'):
-                self.show_urls(entry.url_patterns, entry.regex.pattern, verify_supers=verify_supers)
+                self.__arrange_urls__(entry.url_patterns, entry.regex.pattern, verify_supers=verify_supers)

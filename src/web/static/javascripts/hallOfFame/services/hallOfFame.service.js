@@ -10,7 +10,8 @@
     function HallOfFame($http) {
         var HallOfFame = {
             create: create,
-            launchTrial: launchTrial
+            launchTrial: launchTrial,
+            getScores: getScores
 
         };
 
@@ -28,6 +29,10 @@
                 agent_name: agentName,
                 team_name: team
             });
+        }
+
+        function getScores(roundName){
+            return $http.get("/api/v1/competitions/hall_of_fame/round_score/" + roundName + "/");
         }
 
 

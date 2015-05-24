@@ -122,12 +122,6 @@ class Starter:
 
 		print "[STARTER] Process ID: ", os.getpid()
 
-		if not sync:
-			print "[STARTER] Creating process for Websocket end-point.."
-			websocket = subprocess.Popen(["python", "./websockets/monitor.py"], stdout = subprocess.PIPE)
-			print "[STARTER] Successfully opened process with process id: ", websocket.pid
-			time.sleep(0.5)
-
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
 		if sync:

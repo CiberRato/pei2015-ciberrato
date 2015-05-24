@@ -5,9 +5,9 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout', '$dragon', 'Authentication'];
 
-    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout){
+    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout, $dragon, Authentication){
 
         var parameters;
         $scope.simulation;
@@ -107,47 +107,43 @@
         }
 
         function CiberWebSocket(){
-            if ("WebSocket" in window) {
-                console.log('entrei na funçao');
+            $dragon.onReady(function() {
+                var user = Authentication.getAuthenticatedAccount();
+                var simulation_id = $scope.simulation.identifier;
 
-                var opened = false;
+                $dragon.subscribe('stream_trial', 'notifications', {
+                    'user': user,
+                    'identifier': simulation_id
+                }, function (context, data) {
+                    // any thing that happens after successfully subscribing
+                    console.log("// any thing that happens after successfully subscribing");
+                }, function (context, data) {
+                    // any thing that happens if subscribing failed
+                    console.log("// any thing that happens if subscribing failed");
+                });
 
-                var ws = new WebSocket("ws://127.0.0.1:7777/ws");
+                $dragon.onChannelMessage(function(channels, data) {
+                    if(data.data._type == 'streamtrial'){
+                        $scope.logBuff_obj.push(JSON.parse(data.data.message));
 
-                ws.onopen = function () {
+                        if($scope.logBuff_obj.length==20){
+                            $("#waitawhile").hide("fast");
+                            $("#row1").show("slow");
+                            $("#row2").show("slow");
+                            $("#row5").show("slow");
 
-                    ws.send("OK");
-                    opened = true;
-                };
-                ws.onmessage = function (evt) {
+                            doIt();
 
-                    var received_msg = evt.data;
-
-                    $scope.logBuff_obj.push(JSON.parse(received_msg));
-
-                    if($scope.logBuff_obj.length==20){
-                        $("#waitawhile").hide("fast");
-                        $("#row1").show("slow");
-                        $("#row2").show("slow");
-                        $("#row5").show("slow");
-
-                        doIt();
-
-                        $scope.play();
-                        console.log('play');
+                            $scope.play();
+                            console.log('play');
+                        }
                     }
-                };
-                ws.onclose = function () {
-                    console.log('on close');
-                    if(!opened){
-                        CiberWebSocket();
-                    }
-                };
-            }
-            else {
-                // The browser doesn't support WebSocket
-                alert("WebSocket NOT supported by your Browser!");
-            }
+
+                    // console.log(channels);
+                    console.log(data.data._type);
+                    console.log(data.data.message);
+                });
+            });
         }
 
         $scope.drawMap=function(){
