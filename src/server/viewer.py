@@ -193,6 +193,8 @@ class Viewer:
 				if not sync:
 					# Send data to the websockets
 					websocket_tcp.send(json_data)
+			# sleep to ensure msg go on separate packets
+			time.sleep(0.1)
 
 		log_file.write("]}")
 
