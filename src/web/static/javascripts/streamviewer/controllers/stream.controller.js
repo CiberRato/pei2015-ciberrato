@@ -123,9 +123,7 @@
 
                 $dragon.onChannelMessage(function(channels, data) {
                     if(data.data._type == 'streamtrial'){
-                        try{
-                            $scope.logBuff_obj.push(JSON.parse(data.data.message));
-                        }catch(e){}
+                        $scope.logBuff_obj.push(JSON.parse(data.data.message));
                         console.log(data);
 
                         if($scope.logBuff_obj.length==20){
