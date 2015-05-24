@@ -84,6 +84,7 @@ class Starter:
 			raise Exception("[STARTER] ERROR: Simulation failed to load data")
 
 		print result.text
+		return
 		simJson = json.loads(result.text)
 		tempFilesList = {}
 		n_agents = 0
@@ -120,6 +121,7 @@ class Starter:
 			fp.seek(0)
 			tempFilesList[key] = fp
 
+		hall_of_fame = false
 		print "[STARTER] Process ID: ", os.getpid()
 
 		if not sync:
@@ -157,7 +159,7 @@ class Starter:
 		viewer_c, starter_c = multiprocessing.Pipe(True)
 		timeout_event = multiprocessing.Event()
 		viewer = Viewer()
-		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,simulator_port))
+		viewer_thread = multiprocessing.Process(target=viewer.main, args=(sim_id, allow_remote, sync, starter_c,timeout_event,simulator_port, hall_of_fame))
 		viewer_thread.start()
 		starter_c.close()
 		print "[STARTER] Successfully opened viewer"
