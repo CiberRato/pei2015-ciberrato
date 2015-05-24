@@ -62,6 +62,8 @@ class Viewer:
 
 		SIMULATOR_HOST = settings["settings"]["simulator_host"]
 
+		SCORE_URL = settings["urls"]["score"]
+
 		LOG_FILE = settings["settings"]["log_info_file"]
 
 		LOG_FILE += str(simulator_port)
@@ -203,6 +205,7 @@ class Viewer:
 
 		log_file.write("]}")
 
+<<<<<<< HEAD
 		if hall_of_fame:
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('Scores')
