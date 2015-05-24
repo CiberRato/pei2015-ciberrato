@@ -6,7 +6,7 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('TrialsController', TrialsController);
 
-    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope', Notification];
+    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope', 'Notification'];
 
     function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope, Notification){
         var vm = this;

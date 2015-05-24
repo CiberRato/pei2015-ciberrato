@@ -22,6 +22,29 @@
         vm.getLab = getLab;
         activate();
 
+        function activate(){
+            $scope.loader = {
+                loading: false
+            };
+
+            Notification.activateNotifications();
+
+            Round.getResources().then(getResourcesSuccessFn, getResourcesErrorFn);
+
+            function getResourcesSuccessFn(data){
+                vm.resources = data.data;
+                console.log(vm.resources);
+                $scope.loader = {
+                    loading: true
+                };
+            }
+
+            function getResourcesErrorFn(data){
+                console.error(data.data);
+            }
+
+        }
+
         function prepareParamters(){
 
             c3.width=$scope.zoom * $scope.map.Lab._Width;
@@ -115,29 +138,6 @@
                 ctx.closePath();
                 ctx.fill();
             }
-        }
-
-        function activate(){
-            $scope.loader = {
-                loading: false
-            };
-
-            Notification.activateNotifications();
-
-            Round.getResources().then(getResourcesSuccessFn, getResourcesErrorFn);
-
-            function getResourcesSuccessFn(data){
-                vm.resources = data.data;
-                console.log(vm.resources);
-                $scope.loader = {
-                    loading: true
-                };
-            }
-
-            function getResourcesErrorFn(data){
-                console.error(data.data);
-            }
-
         }
 
         function create(){

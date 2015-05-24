@@ -20,6 +20,30 @@
         vm.getLab = getLab;
         activate();
 
+        function activate(){
+            $scope.loader = {
+                loading: false
+            };
+            Notification.activateNotifications();
+
+            SoloTrials.getByTeam(vm.competitionName).then(getByTeamSuccessFn, getByTeamErrorFn);
+
+            function getByTeamSuccessFn(data){
+                vm.solos = data.data;
+                console.log(vm.solos);
+                $scope.loader = {
+                    loading: true
+                };
+            }
+
+
+            function getByTeamErrorFn(data){
+                console.error(data.data);
+            }
+
+
+        }
+
         function prepareParameters(){
             console.log(vm.id);
             $scope.c3 = document.getElementById("layer3");
@@ -108,29 +132,7 @@
 
         }
 
-        function activate(){
-            $scope.loader = {
-                loading: false
-            };
-            Notification.activateNotifications();
 
-            SoloTrials.getByTeam(vm.competitionName).then(getByTeamSuccessFn, getByTeamErrorFn);
-
-            function getByTeamSuccessFn(data){
-                vm.solos = data.data;
-                console.log(vm.solos);
-                $scope.loader = {
-                    loading: true
-                };
-            }
-
-
-            function getByTeamErrorFn(data){
-                console.error(data.data);
-            }
-
-
-        }
         function doIt(){
             console.log("doIT");
 
