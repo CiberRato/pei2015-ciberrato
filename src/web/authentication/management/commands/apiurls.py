@@ -42,7 +42,6 @@ class Command(BaseCommand):
 
         self.count = 0
 
-
         super(Command, self).__init__()
 
     def handle(self, *args, **options):
@@ -69,19 +68,30 @@ class Command(BaseCommand):
         self.manual['api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/'] = 'api/v1/competitions/'
         self.manual['api/v1/resources_file/'] = 'api/v1/competitions/'
 
-        self.show_urls(urlpatterns)
-        print self.count
-
-        for p in self.supers:
-            print p
-            print p.__dict__
-
-        # print json.dumps([p.__dict__ for p in self.supers])
+        self.__arrange_urls__(urlpatterns)
+        print self.to_json()
         # print self.supers['api/v1/auth/'].count
         # print self.supers['api/v1/auth/'].urls[0].doc
         # print self.supers['api/v1/auth/'].urls[0].name
 
-    def show_urls(self, urllist, path="", verify_supers=False):
+    def to_json(self):
+        json_var = dict()
+        for key, value in self.supers.iteritems():
+            sp = dict()
+            sp['count'] = value.count
+            sp['help_text'] = value.help_text
+            sp['urls'] = []
+
+            for slave in value.urls:
+                sl = dict()
+                sl['url'] = slave.url
+                sl['doc'] = slave.doc
+                sl['name'] = slave.name
+                sp['urls'] += [sl]
+            json_var[key] = sp
+        return json_var
+
+    def __arrange_urls__(self, urllist, path="", verify_supers=False):
         for entry in urllist:
             if isinstance(entry, RegexURLPattern):
                 url_print = str(path + entry.regex.pattern)
@@ -120,4 +130,4 @@ class Command(BaseCommand):
                 self.count += 1
 
             if hasattr(entry, 'url_patterns'):
-                self.show_urls(entry.url_patterns, entry.regex.pattern, verify_supers=verify_supers)
+                self.__arrange_urls__(entry.url_patterns, entry.regex.pattern, verify_supers=verify_supers)
