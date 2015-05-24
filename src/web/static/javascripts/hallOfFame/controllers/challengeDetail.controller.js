@@ -12,6 +12,7 @@
         vm.roundName = $routeParams.name;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
         vm.username = authenticatedAccount.username;
+        vm.show = [];
 
         activate();
 
@@ -25,12 +26,18 @@
             function getTrialsSuccessFn(data){
                 vm.trials = data.data;
                 console.log(vm.trials);
-                for(var i = 0; i<vm.trials.length; i++) {
-                    vm.trials[i].total = vm.trials[i].created_at.substr(0, vm.trials[i].created_at.indexOf('.'));
-                    vm.trials[i].date = vm.trials[i].total.substr(0, vm.trials[i].created_at.indexOf('T'));
-                    vm.trials[i].hour = vm.trials[i].total.substr(vm.trials[i].created_at.indexOf('T') + 1);
 
-                    getAgent(vm.trials[i].identifier, i);
+                for(var j = 0; j<vm.trials.length; j++){
+                    if(vm.trials[j].state == "LOG"){
+                       vm.show.push(vm.trials[j]);
+                    }
+                }
+                for(var i = 0; i<vm.show.length; i++) {
+                    vm.show[i].total = vm.show[i].created_at.substr(0, vm.show[i].created_at.indexOf('.'));
+                    vm.show[i].date = vm.show[i].total.substr(0, vm.show[i].created_at.indexOf('T'));
+                    vm.show[i].hour = vm.show[i].total.substr(vm.show[i].created_at.indexOf('T') + 1);
+
+                    getAgent(vm.show[i].identifier, i);
                 }
 
                 $scope.loader = {
@@ -49,7 +56,7 @@
             Round.getAgentsByTrial(identifier).then(successFn, errorFn);
 
             function successFn(data){
-                vm.trials[i].agent = data.data;
+                vm.show[i].agent = data.data;
                 console.log(data.data);
             }
 

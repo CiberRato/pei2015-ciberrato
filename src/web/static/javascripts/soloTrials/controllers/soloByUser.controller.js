@@ -74,7 +74,10 @@
         function getByTeamSuccessFn(data) {
             vm.models.lists.Available = [];
             for (var i = 0; i < data.data.length; ++i) {
-                vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                if(data.data[i].agent_name != "Remote"){
+                    vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                }
+
             }
             if(vm.models.lists.Available.length == 0){
                 vm.tmp1 = true;
@@ -140,8 +143,9 @@
                     vm.models.lists.Available = [];
                     for (var i = 0; i < data.data.length; ++i) {
 
-                        vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
-
+                        if(data.data[i].agent_name != "Remote"){
+                            vm.models.lists.Available.push({label: data.data[i].agent_name, type: 'Available'});
+                        }
                     }
                     console.log(vm.models.lists.Available);
                     Grid.getAgents(vm.grid.identifier).then(getAssociatedAgentsSuccessFn, getAssociatedAgentsErrorFn);
