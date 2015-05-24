@@ -14,7 +14,6 @@
         vm.username = authenticatedAccount.username;
         vm.launchTrial = launchTrial;
         vm.getFiles = getFiles;
-        vm.click = click;
         vm.show = [];
 
         activate();
@@ -168,17 +167,6 @@
             }
         }
 
-        function click(name){
-            HallOfFame.getScores(name).then(success, error);
-
-            function success(data){
-                console.log(data.data);
-            }
-
-            function error(data){
-                console.error(data.data);
-            }
-        }
 
 
     }
