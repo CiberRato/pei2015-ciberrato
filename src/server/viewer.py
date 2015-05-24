@@ -160,6 +160,8 @@ class Viewer:
 			websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
 
 		robotTime = 0
+		scoreTime = 0
+		number_of_agents_finished = 0
 		firstTime = True
 		log_file.write('"Log":[')
 		while simTime != robotTime:
@@ -170,6 +172,15 @@ class Viewer:
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('LogInfo')
 			robotTime = itemlist[0].attributes['Time'].value
+
+			if hall_of_fame:
+				robotXML = minidom.parseString(data)
+				itemlist = robotXML.getElementsByTagName('Leds')
+				returningLed = itemlist[0].attributes['EndLed'].value
+
+				if endLed == "On":
+					number_of_agents_finished += 1
+					scoreTime = robotTime
 
 			# Convert to json and write to log file
 			json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
@@ -192,10 +203,18 @@ class Viewer:
 
 		log_file.write("]}")
 
-		# Post score to the end point
-		# Type of competition: Hall of Fame - Single
-		#data = {'trial_id': sim_id,'score': , 'number_of_agents': len(checkedRobots), 'time':}
-		#response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
+		if hall_of_fame:
+			robotXML = minidom.parseString(data)
+			itemlist = robotXML.getElementsByTagName('Scores')
+			score = itemlist[0].attributes['Score'].value
+
+			if scoreTime = 0:
+				scoreTime = simTime
+
+			# Post score to the end point
+			# Type of competition: Hall of Fame - Single
+			data = {'trial_id': sim_id, 'score': score, 'number_of_agents': number_of_agents_finished, 'time': scoreTime}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
 
 		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet
