@@ -70,9 +70,6 @@ class Command(BaseCommand):
 
         self.__arrange_urls__(urlpatterns)
         print self.to_json()
-        # print self.supers['api/v1/auth/'].count
-        # print self.supers['api/v1/auth/'].urls[0].doc
-        # print self.supers['api/v1/auth/'].urls[0].name
 
     def to_json(self):
         json_var = dict()
