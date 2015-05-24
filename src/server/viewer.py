@@ -159,6 +159,10 @@ class Viewer:
 			websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
 
+			websocket_tcp.send(sim_id)
+			# Wait 0.1 seconds to assure the sim_id msg goes on a unique packet
+			time.sleep(0.1)
+
 		robotTime = 0
 		firstTime = True
 		log_file.write('"Log":[')
