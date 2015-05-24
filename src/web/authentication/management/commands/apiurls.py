@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from ciberonline.urls import urlpatterns
+from django.core.urlresolvers import resolve, reverse, RegexURLPattern
+import markdown
 
 
 class Command(BaseCommand):
@@ -10,6 +12,14 @@ class Command(BaseCommand):
             self.count = 0
             self.help_text = help_text
             self.urls = []
+
+    class SlaveURL:
+        def __init__(self, url, doc):
+            self.url = url
+            if doc is not None:
+                self.doc = markdown.markdown(doc.replace("    ", ""))
+            else:
+                self.doc = ""
 
     def __init__(self):
         self.supers = dict()
@@ -23,76 +33,75 @@ class Command(BaseCommand):
         self.supers['api/v1/auth/'] = self.SuperURL("Authentication")
         self.supers['api/v1/accounts/'] = self.SuperURL("Accounts")
 
-        self.supers['except'] = self.SuperURL("except")
+        self.manual = dict()
+
+        self.count = 0
 
         super(Command, self).__init__()
 
     def handle(self, *args, **options):
         # add manual urls
-        self.supers['api/v1/auth/'].urls += ['api/v1/auth/logout/']
-        self.supers['api/v1/auth/'].urls += ['api/v1/auth/login/']
-        self.supers['api/v1/auth/'].urls += ['api/v1/auth/login/']
-        self.supers['api/v1/auth/'].urls += ['api/v1/get_captcha/']
-        self.supers['api/v1/auth/'].urls += ['check/email/(?P<token>.+)/']
-        self.supers['api/v1/auth/'].urls += ['api/v1/password_recover/']
-        self.supers['api/v1/auth/'].urls += ['api/v1/password_recover/request/']
-        self.supers['api/v1/auth/'].urls += ['api/v1/login_to/(?P<username>[/.]+)/']
+        self.manual['api/v1/auth/logout/'] = 'api/v1/auth/'
 
-        self.supers['api/v1/accounts/'].urls += ['api/v1/change_password/(?P<username>[/.]+)/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/account_by_first_name/(?P<pk>[/.]+)/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/account_by_last_name/(?P<pk>[/.]+)/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/toggle_staff/(?P<username>[/.]+)/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/toggle_super_user/(?P<username>[/.]+)/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/toggle_super_user/(?P<username>[/.]+)/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/me/']
-        self.supers['api/v1/accounts/'].urls += ['api/v1/me/']
+        self.manual['api/v1/auth/login/'] = 'api/v1/auth/'
+        self.manual['api/v1/auth/login/'] = 'api/v1/auth/'
+        self.manual['api/v1/get_captcha/'] = 'api/v1/auth/'
+        self.manual['check/email/(?P<token>.+)/'] = 'api/v1/auth/'
+        self.manual['api/v1/password_recover/'] = 'api/v1/auth/'
+        self.manual['api/v1/password_recover/request/'] = 'api/v1/auth/'
+        self.manual['api/v1/login_to/(?P<username>[/.]+)/'] = 'api/v1/auth/'
 
-        self.supers['api/v1/competitions/'].urls += ['api/v1/round_resources/']
-        self.supers['api/v1/competitions/'].urls += ['api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/']
-        self.supers['api/v1/competitions/'].urls += ['api/v1/resources_file/']
+        self.manual['api/v1/change_password/(?P<username>[/.]+)/'] = 'api/v1/accounts/'
+        self.manual['api/v1/account_by_first_name/(?P<pk>[/.]+)/'] = 'api/v1/accounts/'
+        self.manual['api/v1/account_by_last_name/(?P<pk>[/.]+)/'] = 'api/v1/accounts/'
+        self.manual['api/v1/toggle_staff/(?P<username>[/.]+)/'] = 'api/v1/accounts/'
+        self.manual['api/v1/toggle_super_user/(?P<username>[/.]+)/'] = 'api/v1/accounts/'
+        self.manual['api/v1/toggle_super_user/(?P<username>[/.]+)/'] = 'api/v1/accounts/'
+        self.manual['api/v1/me/'] = 'api/v1/accounts/'
 
-        # except
-        self.supers['except'].urls += ['idp/']
-        self.supers['except'].urls += ['panel/']
-        self.supers['except'].urls += ['admin/']
-        self.supers['except'].urls += ['api-auth/']
-        self.supers['except'].urls += ['api-auth/login/']
-        self.supers['except'].urls += ['api-auth/logout/']
-        self.supers['except'].urls += ['api-auth/']
-        self.supers['except'].urls += ['captcha/']
-        self.supers['except'].urls += ['captcha/image/(?P<key>\w+)/']
-        self.supers['except'].urls += ['captcha/audio/(?P<key>\w+)/']
-        self.supers['except'].urls += ['captcha/image/(?P<key>\w+)@2/']
-        self.supers['except'].urls += ['captcha/refresh/']
-        self.supers['except'].urls += ['api/v1/']
+        self.manual['api/v1/round_resources/'] = 'api/v1/competitions/'
+        self.manual['api/v1/set_round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/'] = 'api/v1/competitions/'
+        self.manual['api/v1/resources_file/'] = 'api/v1/competitions/'
 
-        print 0 + self.show_urls(urlpatterns)
-        # print self.supers['api/v1/competitions/'].count
-        # print self.supers['api/v1/competitions/'].urls
+        self.show_urls(urlpatterns)
+        print self.count
+
+        print self.supers['api/v1/auth/'].count
+        print self.supers['api/v1/auth/'].urls[0].doc
 
     def show_urls(self, urllist, path="", verify_supers=False):
-        count = 0
         for entry in urllist:
-            url_print = str(path + entry.regex.pattern)
-            url = url_print.replace("^", "").replace(".*$", "").replace("$", "")
+            if isinstance(entry, RegexURLPattern):
+                url_print = str(path + entry.regex.pattern)
+                url = url_print.replace("^", "").replace(".*$", "").replace("$", "")
 
-            for key, value in self.supers.iteritems():
-                if url.startswith(key):
-                    self.supers[key].urls += [url]
-                    self.supers[key].count += 1
+                found = False
 
-            if verify_supers:
-                in_supers = False
                 for key, value in self.supers.iteritems():
-                    if url in value.urls:
-                        in_supers = True
+                    if url.startswith(key):
+                        self.supers[key].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__)]
+                        self.supers[key].count += 1
+                        found = True
                         break
 
-                if not in_supers:
-                    print url
+                if not found:
+                    for key, value in self.manual.iteritems():
+                        if url == key:
+                            self.supers[value].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__)]
+                            self.supers[value].count += 1
+                            break
 
-            count += 1
+                if verify_supers:
+                    in_supers = False
+                    for key, value in self.supers.iteritems():
+                        if url in value.urls:
+                            in_supers = True
+                            break
+
+                    if not in_supers:
+                        print url
+
+                self.count += 1
 
             if hasattr(entry, 'url_patterns'):
-                count += self.show_urls(entry.url_patterns, entry.regex.pattern, verify_supers=verify_supers)
-        return count
+                self.show_urls(entry.url_patterns, entry.regex.pattern, verify_supers=verify_supers)
