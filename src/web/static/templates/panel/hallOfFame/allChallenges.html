@@ -38,14 +38,14 @@
                                     </div>
                                 </td>
                                 <td style="width: 25%">
-                                    <select class="span2" ng-if="vm.agents.length>0" id="select" name="option">
-                                        <option ng-repeat="(key, value) in vm.agents" value="{{value.agent_name}},{{value.team_name}}">{{value.agent_name}} ({{value.team_name}})</option>
+                                    <select class="span2" ng-if="vm.show.length>0" id="select" name="option">
+                                        <option ng-repeat="(key, value) in vm.show" value="{{value.agent_name}},{{value.team_name}}">{{value.agent_name}} ({{value.team_name}})</option>
                                     </select>
                                     <a ng-if="vm.agents.length == 0" href="/panel/createAgent">Create an Agent</a>
                                 </td>
                                 <td><a href="#" ng-if="vm.agents.length > 0" style="font-size: 200%" class="awe-play" ng-click="vm.launchTrial(value.name)"></a>
                                     <p ng-if="vm.agents.length == 0">You don't have any agent</p></td>
-                                <td>Scores</td>
+                                <td><a ng-click="vm.click(value.name)">Scores</a></td>
 
                             </tr>
                             </tbody>
