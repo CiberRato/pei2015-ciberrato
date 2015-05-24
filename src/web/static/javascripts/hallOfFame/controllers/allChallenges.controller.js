@@ -14,6 +14,8 @@
         vm.username = authenticatedAccount.username;
         vm.launchTrial = launchTrial;
         vm.getFiles = getFiles;
+        vm.click = click;
+        vm.show = [];
 
         activate();
 
@@ -31,6 +33,13 @@
                 Agent.getByUser(vm.username).then(getAgentsSuccessFn, getAgentsErrorFn);
                 function getAgentsSuccessFn(data){
                     vm.agents = data.data;
+                    for(var i=0; i<vm.agents.length; i++){
+                        if(vm.agents[i].agent_name != "Remote"){
+                            vm.show.push(vm.agents[i]);
+
+                        }
+                    }
+                    console.log(vm.show);
                     $scope.loader = {
                         loading: true
                     };
@@ -156,6 +165,18 @@
                     life: 5000,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
                 });
+            }
+        }
+
+        function click(name){
+            HallOfFame.getScores(name).then(success, error);
+
+            function success(data){
+                console.log(data.data);
+            }
+
+            function error(data){
+                console.error(data.data);
             }
         }
 
