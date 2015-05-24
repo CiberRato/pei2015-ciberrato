@@ -45,7 +45,7 @@
                                 </td>
                                 <td><a href="#" ng-if="vm.agents.length > 0" style="font-size: 200%" class="awe-play" ng-click="vm.launchTrial(value.name)"></a>
                                     <p ng-if="vm.agents.length == 0">You don't have any agent</p></td>
-                                <td><a ng-click="vm.click(value.name)">Scores</a></td>
+                                <td><a href="/panel/challenges/{{value.name}}/scores">Scores</a></td>
 
                             </tr>
                             </tbody>
