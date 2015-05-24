@@ -5,9 +5,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('ScoresController', ScoresController);
 
-    ScoresController.$inject = ['$location', '$routeParams', 'Competition', 'Round', '$scope'];
+    ScoresController.$inject = ['$location', '$routeParams', 'Competition', 'Round', '$scope', Notification];
 
-    function ScoresController($location, $routeParams, Competition, Round, $scope){
+    function ScoresController($location, $routeParams, Competition, Round, $scope, Notification){
         var vm = this;
 
         activate();
@@ -16,6 +16,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             vm.competitionName = $routeParams.name;
             Competition.getCompetition(vm.competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
             function getCompetitionSuccessFn(data){

@@ -5,9 +5,9 @@
         .module('ciberonline.hallOfFame.controllers')
         .controller('ChallengeDetailController', ChallengeDetailController);
 
-    ChallengeDetailController.$inject = ['$scope', 'Round', '$routeParams', 'Authentication'];
+    ChallengeDetailController.$inject = ['$scope', 'Round', '$routeParams', 'Authentication', 'Notification'];
 
-    function ChallengeDetailController($scope, Round, $routeParams, Authentication){
+    function ChallengeDetailController($scope, Round, $routeParams, Authentication, Notification){
         var vm = this;
         vm.roundName = $routeParams.name;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
@@ -20,6 +20,9 @@
             $scope.loader = {
                 loading: false
             };
+
+            Notification.activateNotifications();
+
 
             Round.getTrials(vm.roundName, "Hall of fame - Single").then(getTrialsSuccessFn, getTrialsErrorFn);
 

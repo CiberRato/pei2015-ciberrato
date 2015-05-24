@@ -5,9 +5,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('CreateTypeOfCompetitionController', CreateTypeOfCompetitionController);
 
-    CreateTypeOfCompetitionController.$inject = ['$location', 'Competition'];
+    CreateTypeOfCompetitionController.$inject = ['$location', 'Competition', 'Notification'];
 
-    function CreateTypeOfCompetitionController($location, Competition){
+    function CreateTypeOfCompetitionController($location, Competition, Notification){
         var vm = this;
 
         vm.create = create;
@@ -18,6 +18,7 @@
         activate();
 
         function activate(){
+            Notification.activateNotifications();
 
         }
 

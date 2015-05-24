@@ -5,9 +5,9 @@
         .module('ciberonline.authentication.controllers')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['$location', '$dragon', 'Authentication', '$scope'];
+    LoginController.$inject = ['$location', 'Notification', 'Authentication', '$scope'];
 
-    function LoginController($location, $dragon, Authentication, $scope){
+    function LoginController($location, Notification, Authentication, $scope){
         var vm = this;
 
         vm.login = login;
@@ -19,6 +19,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }

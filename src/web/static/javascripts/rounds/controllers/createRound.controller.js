@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('CreateRoundController', CreateRoundController);
 
-    CreateRoundController.$inject = ['$location', '$route', '$routeParams', 'Round'];
+    CreateRoundController.$inject = ['$location', '$route', '$routeParams', 'Round', 'Notification'];
 
-    function CreateRoundController($location, $route, $routeParams, Round){
+    function CreateRoundController($location, $route, $routeParams, Round, Notification){
         var vm = this;
 
         vm.create = create;
@@ -16,6 +16,7 @@
         activate();
 
         function activate() {
+            Notification.activateNotifications();
 
         }
 

@@ -24,6 +24,8 @@
             templateUrl: 'static/templates/authentication/reset.html',
             title: 'Reset Password'
         }).when('/panel/', {
+            controller: 'PanelController',
+            controllerAs: 'vm',
             templateUrl: '/static/templates/panel/index.html',
             title: 'Welcome!'
         }).when('/panel/:username/changePassword',{

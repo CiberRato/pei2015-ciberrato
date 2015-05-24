@@ -5,9 +5,9 @@
         .module("ciberonline.authentication.services")
         .factory("Authentication", Authentication);
 
-    Authentication.$inject = ["$cookies", "$http", "$location"];
+    Authentication.$inject = ["$cookies", "$http"];
 
-    function Authentication($cookies, $http, $location){
+    function Authentication($cookies, $http){
         var Authentication = {
             getAuthenticatedAccount: getAuthenticatedAccount,
             isAuthenticated: isAuthenticated,
@@ -18,7 +18,8 @@
             setAuthenticatedAccount: setAuthenticatedAccount,
             unauthenticate: unauthenticate,
             getCaptcha: getCaptcha,
-            resetPassword: resetPassword
+            resetPassword: resetPassword,
+            activateNotifications: activateNotifications
         };
 
         return Authentication;

@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('TrialsController', TrialsController);
 
-    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope'];
+    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope', Notification];
 
-    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope){
+    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope, Notification){
         var vm = this;
         vm.roundName = $routeParams.identifier;
         vm.launchTrial = launchTrial;
@@ -19,6 +19,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             getTrials();
 
         }

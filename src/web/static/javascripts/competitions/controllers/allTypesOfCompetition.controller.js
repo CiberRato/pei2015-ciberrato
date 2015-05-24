@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('AllTypesOfCompetitionController', AllTypesOfCompetitionController);
 
-    AllTypesOfCompetitionController.$inject = ['$location', 'Competition', '$timeout', '$scope'];
+    AllTypesOfCompetitionController.$inject = ['$location', 'Competition', '$timeout', '$scope', 'Notification'];
 
-    function AllTypesOfCompetitionController($location, Competition, $timeout, $scope){
+    function AllTypesOfCompetitionController($location, Competition, $timeout, $scope, Notification){
         var vm = this;
         vm.deleteTypeOfCompetition = deleteTypeOfCompetition;
         vm.change = change;
@@ -19,6 +19,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             Competition.getAllTypesOfCompetition().then(getAllSuccessFn, getAllErrorFn);
 
             function getAllSuccessFn(data){

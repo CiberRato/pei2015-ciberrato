@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('CreateTeamController', CreateTeamController);
 
-    CreateTeamController.$inject = ['$location', '$routeParams', '$dragon', 'Authentication', 'Team'];
+    CreateTeamController.$inject = ['$location', '$routeParams', '$dragon', 'Authentication', 'Team', 'Notification'];
 
-    function CreateTeamController($location, $routeParams, $dragon, Authentication, Team){
+    function CreateTeamController($location, $routeParams, $dragon, Authentication, Team, Notification){
         var vm = this;
 
         vm.create = create;
@@ -18,6 +18,8 @@
         activate();
 
         function activate(){
+            Notification.activateNotifications();
+
             authenticatedAccount = Authentication.getAuthenticatedAccount();
             username = $routeParams.username;
 

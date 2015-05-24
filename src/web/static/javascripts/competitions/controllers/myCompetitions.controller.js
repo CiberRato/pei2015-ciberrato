@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('MyCompetitionsController', MyCompetitionsController);
 
-    MyCompetitionsController.$inject = ['$location', '$routeParams', 'Competition', 'Authentication', '$scope'];
+    MyCompetitionsController.$inject = ['$location', '$routeParams', 'Competition', 'Authentication', '$scope', 'Notification'];
 
-    function MyCompetitionsController($location, $routeParams, Competition, Authentication, $scope){
+    function MyCompetitionsController($location, $routeParams, Competition, Authentication, $scope, Notification){
         var vm = this;
         vm.getScoresByCompetition = getScoresByCompetition;
         activate();
@@ -17,6 +17,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 

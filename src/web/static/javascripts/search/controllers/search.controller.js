@@ -5,9 +5,9 @@
         .module('ciberonline.search.controllers')
         .controller('SearchController', SearchController);
 
-    SearchController.$inject = ['$location', '$routeParams','Team', 'Profile', 'Competition', '$scope'];
+    SearchController.$inject = ['$location', '$routeParams','Team', 'Profile', 'Competition', '$scope', 'Notification'];
 
-    function SearchController($location, $routeParams, Team, Profile, Competition, $scope){
+    function SearchController($location, $routeParams, Team, Profile, Competition, $scope, Notification){
         var vm = this;
         var search = $routeParams.search;
         vm.changeUsers = changeUsers;
@@ -19,6 +19,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             Team.getAll().then(getAllSuccessFn, getAllErrorFn);
 
 

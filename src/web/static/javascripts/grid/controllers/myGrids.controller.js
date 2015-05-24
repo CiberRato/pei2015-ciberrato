@@ -5,9 +5,9 @@
         .module('ciberonline.grid.controllers')
         .controller('MyGridsController', MyGridsController);
 
-    MyGridsController.$inject = ['$location', '$timeout', 'Authentication', 'Grid', 'Agent', 'Competition', '$scope'];
+    MyGridsController.$inject = ['$location', '$timeout', 'Authentication', 'Grid', 'Agent', 'Competition', '$scope', 'Notification'];
 
-    function MyGridsController($location, $timeout, Authentication, Grid, Agent, Competition, $scope){
+    function MyGridsController($location, $timeout, Authentication, Grid, Agent, Competition, $scope, Notification){
         var vm = this;
         vm.username;
         vm.models = {
@@ -29,6 +29,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             vm.username = authenticatedAccount.username;
             Grid.getMyGrids().then(getSuccessFn, getErrorFn);

@@ -5,9 +5,9 @@
         .module('ciberonline.hallOfFame.controllers')
         .controller('CreateChallengeController', CreateChallengeController);
 
-    CreateChallengeController.$inject = ['$scope', 'Round', '$location', 'HallOfFame', 'SoloTrials', 'Competition'];
+    CreateChallengeController.$inject = ['$scope', 'Round', '$location', 'HallOfFame', 'SoloTrials', 'Competition', 'Notification'];
 
-    function CreateChallengeController($scope, Round, $location, HallOfFame, SoloTrials, Competition){
+    function CreateChallengeController($scope, Round, $location, HallOfFame, SoloTrials, Competition, Notification){
         var vm = this;
         vm.getGrid = getGrid;
         vm.getLab = getLab;
@@ -20,6 +20,9 @@
             $scope.loader = {
                 loading: false
             };
+
+            Notification.activateNotifications();
+
             Round.getResources().then(getResourcesSuccessFn, getResourcesErrorFn);
 
             function getResourcesSuccessFn(data){

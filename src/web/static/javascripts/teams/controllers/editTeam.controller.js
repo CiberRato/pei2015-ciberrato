@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('EditTeamController', EditTeamController);
 
-    EditTeamController.$inject = ['$location', '$routeParams', 'Authentication', 'Team', '$scope'];
+    EditTeamController.$inject = ['$location', '$routeParams', 'Authentication', 'Team', '$scope', 'Notification'];
 
-    function EditTeamController($location, $routeParams, Authentication, Team, $scope){
+    function EditTeamController($location, $routeParams, Authentication, Team, $scope, Notification){
         var vm = this;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
         var username = authenticatedAccount.username;
@@ -21,6 +21,8 @@
             $scope.loader = {
                 loading: false
             };
+            Notification.activateNotifications();
+
             teamName = $routeParams.name;
 
             Team.getTeam(teamName).then(getTeamSuccessFn, getTeamErrorFn);

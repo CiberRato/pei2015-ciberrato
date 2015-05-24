@@ -6,15 +6,16 @@
         .module('ciberonline.stickyNotes.controllers')
         .controller('CreateStickyNotesController', CreateStickyNotesController);
 
-    CreateStickyNotesController.$inject = ['StickyNotes', '$location'];
+    CreateStickyNotesController.$inject = ['StickyNotes', '$location', 'Notification'];
 
-    function CreateStickyNotesController(StickyNotes, $location){
+    function CreateStickyNotesController(StickyNotes, $location, Notification){
         var vm = this;
 
         vm.create = create;
         activate();
 
         function activate(){
+            Notification.activateNotifications();
 
         }
 

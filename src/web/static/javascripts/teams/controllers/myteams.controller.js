@@ -5,9 +5,9 @@
 		.module('ciberonline.teams.controllers')
 		.controller('MyTeamsController', MyTeamsController);
 
-	MyTeamsController.$inject = ['$location', '$routeParams','$timeout','Team', 'Authentication', 'Agent', '$scope'];
+	MyTeamsController.$inject = ['$location', '$routeParams','$timeout','Team', 'Authentication', 'Agent', '$scope', 'Notification'];
 
-	function MyTeamsController($location, $routeParams, $timeout, Team, Authentication, Agent, $scope){
+	function MyTeamsController($location, $routeParams, $timeout, Team, Authentication, Agent, $scope, Notification){
 		var vm = this;
         vm.destroy = destroy;
         var username = $routeParams.username;
@@ -18,7 +18,9 @@
             $scope.loader = {
                 loading: false
             };
-			var authenticatedAccount = Authentication.getAuthenticatedAccount();
+            Notification.activateNotifications();
+
+            var authenticatedAccount = Authentication.getAuthenticatedAccount();
 
             if(!authenticatedAccount){
                 $location.url('/');

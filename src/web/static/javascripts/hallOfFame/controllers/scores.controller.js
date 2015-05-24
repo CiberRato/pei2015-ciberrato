@@ -5,9 +5,9 @@
         .module('ciberonline.hallOfFame.controllers')
         .controller('ScoreChallengesController', ScoreChallengesController);
 
-    ScoreChallengesController.$inject = ['$scope', '$routeParams', 'HallOfFame'];
+    ScoreChallengesController.$inject = ['$scope', '$routeParams', 'HallOfFame', 'Notification'];
 
-    function ScoreChallengesController($scope, $routeParams, HallOfFame){
+    function ScoreChallengesController($scope, $routeParams, HallOfFame, Notification){
         var vm = this;
         vm.roundName = $routeParams.name;
 
@@ -17,6 +17,8 @@
             $scope.loader = {
                 loading: false
             };
+
+            Notification.activateNotifications();
 
             HallOfFame.getScores(vm.roundName).then(getHallOfFameSuccessFn, getHallOfFameErrorFn);
 

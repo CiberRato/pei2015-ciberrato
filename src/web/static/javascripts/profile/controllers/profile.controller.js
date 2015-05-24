@@ -5,9 +5,9 @@
         .module('ciberonline.profile.controllers')
         .controller('ProfileController', ProfileController);
 
-    ProfileController.$inject = ['$location', '$routeParams', 'Authentication', 'Profile', '$scope'];
+    ProfileController.$inject = ['$location', '$routeParams', 'Authentication', 'Profile', '$scope', 'Notification'];
 
-    function ProfileController($location, $routeParams, Authentication, Profile, $scope){
+    function ProfileController($location, $routeParams, Authentication, Profile, $scope, Notification){
         var vm = this;
 
         vm.update = update;
@@ -20,6 +20,9 @@
             $scope.loader = {
                 loading: false
             };
+
+            Notification.activateNotifications();
+
             var authenticatedAccount = Authentication.getAuthenticatedAccount();
             var username = $routeParams.username;
 
