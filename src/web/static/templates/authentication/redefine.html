@@ -1,0 +1,26 @@
+<h1><a href="#" onclick="window.location.assign('../../')" class="brand">Ciber</a></h1>
+<div class="data-block" ng-show="loader.loading">
+    <form role="form" ng-submit="vm.resetPassword()">
+
+
+        <fieldset>
+            <div class="alert alert-danger" ng-show="error" ng-bind="error"></div>
+            <div class="control-group">
+                <label class="control-label" for="reset_password">New Password</label>
+                <div class="controls">
+                    <input id="reset_password" type="password" name="reset" ng-model="vm.password">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="confirm_password">Email</label>
+                <div class="controls">
+                    <input id="confirm_password" type="password" name="reset" ng-model="vm.confirm_password">
+                </div>
+            </div>
+            <div id="login" class="form-actions">
+                <button class="btn btn-large btn-inverse btn-flat" type="submit"><span class="awe-signin"></span> Reset Password</button>
+            </div>
+
+        </fieldset>
+    </form>
+</div>

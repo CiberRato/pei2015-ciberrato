@@ -18,6 +18,11 @@
             controllerAs: 'vm',
             templateUrl: 'static/templates/authentication/login.html',
             title: 'Login'
+        }).when('/idp/reset',{
+            controller: 'ResetController',
+            controllerAs: 'vm',
+            templateUrl: 'static/templates/authentication/reset.html',
+            title: 'Reset Password'
         }).when('/panel/', {
             templateUrl: '/static/templates/panel/index.html',
             title: 'Welcome!'
