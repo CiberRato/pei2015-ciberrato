@@ -32,8 +32,8 @@ class Starter:
 		try:
 			self.run(sim_id, simulator_port)
 		except Exception as e:
-			print "[STARTER] Sending error message: " + e.strerror
-			data = {'trial_identifier': sim_id,'msg': e.strerror}
+			print "[STARTER] Sending error message: " + e.args[0]
+			data = {'trial_identifier': sim_id,'msg': e.args[0]}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + URL, data=data)
 			if response.status_code != 201:
 				print "[STARTER] ERROR: Posting error to end point"
@@ -312,11 +312,6 @@ class Starter:
 		# Waiting for viewer to die
 		viewer_thread.join()
 
-		if not sync:
-			# Killing Websockets
-			websocket.terminate()
-			websocket.wait()
-
 		# Kill docker container
 		for dock in docker_containers:
 			proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
@@ -329,7 +324,7 @@ class Starter:
 		simulator.wait()
 
 		print "[STARTER] Posting log to the database.. Port: " + str(simulator_port)
-		# save file with name = trial.identifier + '.json.gz' em gz
+		# save file with name = trial.identifier + '.json.bz2' em bz
 		temp = tempfile.NamedTemporaryFile(delete=True)
 		temp.name = sim_id + '.json.bz2'
 		output = open(temp.name, "wb")
