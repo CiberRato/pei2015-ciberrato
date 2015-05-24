@@ -194,7 +194,7 @@ class Viewer:
 					# Send data to the websockets
 					websocket_tcp.send(json_data)
 			# sleep to ensure msg go on separate packets
-			time.sleep(0.1)
+			time.sleep(0.05)
 
 		log_file.write("]}")
 
