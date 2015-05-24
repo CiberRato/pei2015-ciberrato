@@ -411,6 +411,12 @@ class StartTrial(views.APIView):
                              'message': 'The trial must be in state PREPARE!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+        # verify if allow_remote_agents = True
+        if trial.round.parent_competition.type_of_competition.allow_remote_agents is False:
+            return Response({'status': 'Bad Request',
+                             'message': 'You only can make start when the Type of Competition allows remote agents!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # verify if round has files
         if not bool(trial.round.grid_path) or not bool(trial.round.param_list_path) \
                 or not bool(trial.round.param_list_path):
