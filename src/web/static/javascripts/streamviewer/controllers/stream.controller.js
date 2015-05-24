@@ -42,7 +42,6 @@
         function getCompetitionError(data){
             console.error(data.data);
             $location.path('/panel/');
-
         }
 
         function getSimulationErrorFn(data){
@@ -124,7 +123,10 @@
 
                 $dragon.onChannelMessage(function(channels, data) {
                     if(data.data._type == 'streamtrial'){
-                        $scope.logBuff_obj.push(JSON.parse(data.data.message));
+                        try{
+                            $scope.logBuff_obj.push(JSON.parse(data.data.message));
+                        }catch(e){}
+                        console.log(data);
 
                         if($scope.logBuff_obj.length==20){
                             $("#waitawhile").hide("fast");
@@ -138,10 +140,6 @@
                             console.log('play');
                         }
                     }
-
-                    // console.log(channels);
-                    console.log(data.data._type);
-                    console.log(data.data.message);
                 });
             });
         }

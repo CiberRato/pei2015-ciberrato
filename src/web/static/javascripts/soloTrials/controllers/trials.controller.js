@@ -87,28 +87,17 @@
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
                         $dragon.onChannelMessage(function(channels, data) {
-                            /*
-                             if (data.data.message.status == 200){
-                             $.jGrowl(data.data.message.content, {
-                             life: 3500,
-                             theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
-                             });
-                             }else if(data.data.message.status == 400){
-                             $.jGrowl(data.data.message.content, {
-                             life: 3500,
-                             theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-                             });
-                             }
-                             */
-                            if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log'){
-                                $timeout(function(){
-                                    getTrials();
-                                });
-                            }
+                            if(data.data._type != 'streamtrial') {
+                                if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log') {
+                                    $timeout(function () {
+                                        getTrials();
+                                    });
+                                }
 
-                            console.log(channels);
-                            console.log(data.data._type);
-                            console.log(data.data.message);
+                                console.log(channels);
+                                console.log(data.data._type);
+                                console.log(data.data.message);
+                            }
                         });
                     });
                 });

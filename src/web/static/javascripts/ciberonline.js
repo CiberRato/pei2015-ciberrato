@@ -105,11 +105,10 @@
                                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all info'
                                 });
                             }
+                            // console.log(channels);
+                            console.log(data.data._type);
+                            console.log(data.data.message);
                         }
-
-                        // console.log(channels);
-                        console.log(data.data._type);
-                        console.log(data.data.message);
                     });
                 });
                 swampdragon.close(function () {

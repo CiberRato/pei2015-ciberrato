@@ -7,10 +7,10 @@ class Command(BaseCommand):
     help = 'This is a TCP receiver from the simulator viewer!'
 
     def handle(self, *args, **options):
-        self.stdout.write('[STREAM] The script was launched!')
+        self.stdout.write('\033[94m'+'[STREAM] The script was launched!'+'\033[0m')
 
         while True:
-            self.stdout.write('[STREAM] Waiting for new streaming!')
+            self.stdout.write('\033[94m'+'[STREAM] Waiting for new streaming!'+'\033[0m')
 
             host = "127.0.0.1"
             port = 10000
@@ -22,10 +22,10 @@ class Command(BaseCommand):
             sim_viewer, addr = sim_viewer_connect.accept()
 
             identifier = sim_viewer.recv(1024)
-            self.stdout.write('[STREAM] Trial ' + str(identifier) + ' is now streaming!')
+            self.stdout.write('\033[94m'+'[STREAM] Trial ' + str(identifier) + ' is now streaming!'+'\033[0m')
 
             while True:
-                data = sim_viewer.recv(1024 * 8)
+                data = sim_viewer.recv(1024 * 10)
                 if str(data) == "END":
                     break
 
@@ -36,4 +36,4 @@ class Command(BaseCommand):
             sim_viewer.shutdown(socket.SHUT_RDWR)
             sim_viewer.close()
 
-            self.stdout.write('[STREAM] Trial ' + str(identifier) + ' ended the streaming!')
+            self.stdout.write('\033[92m'+'[STREAM] Trial ' + str(identifier) + ' ended the streaming!'+'\033[0m')
