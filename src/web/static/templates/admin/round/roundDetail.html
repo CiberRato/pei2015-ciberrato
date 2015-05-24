@@ -237,7 +237,7 @@
                                     <p ng-if="value.state == 'STARTED'">Started</p>
                                     <p ng-if="value.state == 'LOG'">Finished</p>
                                 </td>
-                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition' && vm.competition.type_of_competition.allow_remote_agents == false"><a href="#" ng-if="value.state == 'READY'" ng-click = "vm.startTrial(value.identifier)">Prepare the trial</a>
+                                <td style="vertical-align: middle" rowspan="{{value.gridsTotal.length}}" ng-if="vm.competition.state_of_competition == 'Competition' && vm.competition.type_of_competition.allow_remote_agents == false"><a href="#" ng-if="value.state == 'READY'" ng-click = "vm.prepareTrial(value.identifier)">Start</a>
                                     <p ng-if="value.state == 'WAITING'">Waiting to Start</p>
                                     <p ng-if="value.state == 'ERROR'">Error</p>
                                     <p ng-if="value.state == 'STARTED'">Started</p>
