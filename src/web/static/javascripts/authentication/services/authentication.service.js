@@ -17,7 +17,8 @@
             logout: logout,
             setAuthenticatedAccount: setAuthenticatedAccount,
             unauthenticate: unauthenticate,
-            getCaptcha: getCaptcha
+            getCaptcha: getCaptcha,
+            resetPassword: resetPassword
         };
 
         return Authentication;
@@ -91,6 +92,12 @@
 
         function getCaptcha(){
             return $http.get("api/v1/get_captcha/");
+        }
+
+        function resetPassword(email){
+            return $http.post("/api/v1/password_recover/request/", {
+                email: email
+            });
         }
     }
 })();
