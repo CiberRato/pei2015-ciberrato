@@ -18,11 +18,16 @@
             controllerAs: 'vm',
             templateUrl: 'static/templates/authentication/login.html',
             title: 'Login'
-        }).when('/idp/reset',{
+        }).when('/idp/reset', {
             controller: 'ResetController',
             controllerAs: 'vm',
             templateUrl: 'static/templates/authentication/reset.html',
             title: 'Reset Password'
+        }).when('/idp/recover/:token', {
+            controller: 'RedefineController',
+            controllerAs: 'vm',
+            templateUrl: 'static/templates/authentication/redefine.html',
+            title: 'Redefine Password'
         }).when('/panel/', {
             controller: 'PanelController',
             controllerAs: 'vm',

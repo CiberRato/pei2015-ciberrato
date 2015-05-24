@@ -19,7 +19,7 @@
             unauthenticate: unauthenticate,
             getCaptcha: getCaptcha,
             resetPassword: resetPassword,
-            activateNotifications: activateNotifications
+            redefinePassword: redefinePassword
         };
 
         return Authentication;
@@ -96,9 +96,17 @@
         }
 
         function resetPassword(email){
-            return $http.post("/api/v1/password_recover/request/", {
+            return $http.post("api/v1/password_recover/request/", {
                 email: email
             });
+        }
+
+        function redefinePassword(token, password, confirm_password){
+            return $http.post("api/v1/password_recover/reset/", {
+                token: token,
+                password: password,
+                confirm_password: confirm_password
+            })
         }
     }
 })();

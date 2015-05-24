@@ -3,14 +3,14 @@
 
     angular
         .module('ciberonline.authentication.controllers')
-        .controller('ResetController', ResetController);
+        .controller('RedefineController', RedefineController);
 
-    ResetController.$inject = ['$location', 'Notification', 'Authentication', '$scope'];
+    RedefineController.$inject = ['$location', 'Notification', 'Authentication', '$scope', '$routeParams'];
 
-    function ResetController($location, Notification, Authentication, $scope){
+    function RedefineController($location, Notification, Authentication, $scope, $routeParams){
         var vm = this;
 
-        vm.resetPassword = resetPassword;
+        vm.redefinePassword = redefinePassword;
 
         activate();
 
@@ -18,6 +18,8 @@
             $scope.loader = {
                 loading: false
             };
+
+            vm.token = $routeParams.token;
             Notification.activateNotifications();
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
@@ -27,18 +29,18 @@
             };
         }
 
-        function resetPassword() {
-            Authentication.resetPassword(vm.email).then(resetPasswordSuccessFn, resetPasswordErrorFn);
+        function redefinePassword() {
+            Authentication.redefinePassword(vm.token, vm.password, vm.confirm_password).then(redefinePasswordSuccessFn, redefinePasswordErrorFn);
 
-            function resetPasswordSuccessFn() {
-                $.jGrowl("Please check your inbox!", {
+            function redefinePasswordSuccessFn() {
+                $.jGrowl("Your Password has been updated successfully!", {
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all info'
                 });
                 $location.path('/idp/login/');
             }
 
-            function resetPasswordErrorFn(data) {
+            function redefinePasswordErrorFn(data) {
                 console.error(data.data);
             }
         }
