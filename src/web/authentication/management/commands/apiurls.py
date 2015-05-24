@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from ciberonline.urls import urlpatterns
-from django.core.urlresolvers import resolve, reverse, RegexURLPattern
+from django.core.urlresolvers import RegexURLPattern
 import markdown
+from inflector import English, Inflector
+import json
 
 
 class Command(BaseCommand):
@@ -14,12 +16,15 @@ class Command(BaseCommand):
             self.urls = []
 
     class SlaveURL:
-        def __init__(self, url, doc):
+        def __init__(self, url, doc, name):
+            global inflector
             self.url = url
             if doc is not None:
                 self.doc = markdown.markdown(doc.replace("    ", ""))
             else:
                 self.doc = ""
+            inflector = Inflector(English)
+            self.name = inflector.humanize(word=name.replace("-", " "))
 
     def __init__(self):
         self.supers = dict()
@@ -36,6 +41,7 @@ class Command(BaseCommand):
         self.manual = dict()
 
         self.count = 0
+
 
         super(Command, self).__init__()
 
@@ -66,8 +72,14 @@ class Command(BaseCommand):
         self.show_urls(urlpatterns)
         print self.count
 
-        print self.supers['api/v1/auth/'].count
-        print self.supers['api/v1/auth/'].urls[0].doc
+        for p in self.supers:
+            print p
+            print p.__dict__
+
+        # print json.dumps([p.__dict__ for p in self.supers])
+        # print self.supers['api/v1/auth/'].count
+        # print self.supers['api/v1/auth/'].urls[0].doc
+        # print self.supers['api/v1/auth/'].urls[0].name
 
     def show_urls(self, urllist, path="", verify_supers=False):
         for entry in urllist:
@@ -77,20 +89,24 @@ class Command(BaseCommand):
 
                 found = False
 
+                # save in the super list
                 for key, value in self.supers.iteritems():
                     if url.startswith(key):
-                        self.supers[key].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__)]
+                        self.supers[key].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__, name=entry.name)]
                         self.supers[key].count += 1
                         found = True
                         break
 
+                # manual URLs
                 if not found:
                     for key, value in self.manual.iteritems():
                         if url == key:
-                            self.supers[value].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__)]
+                            self.supers[value].urls += [self.SlaveURL(url=url, doc=entry.callback.__doc__,
+                                                                      name=entry.name)]
                             self.supers[value].count += 1
                             break
 
+                # verify if has new URls
                 if verify_supers:
                     in_supers = False
                     for key, value in self.supers.iteritems():

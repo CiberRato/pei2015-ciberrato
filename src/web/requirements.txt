@@ -20,3 +20,4 @@ xmltodict
 django-simple-captcha
 django-smtp-ssl
 markdown
+inflector
