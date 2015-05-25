@@ -219,7 +219,8 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             trial.prepare = False
             trial.started = True
 
-            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME or \
+                trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
                     team = trial.logtrialagent_set.first()
                     team = team.competition_agent.agent.team
 
@@ -230,7 +231,7 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 NotificationBroadcast.add(channel="user", status="ok",
                                           message="The trial of " + trial.round.name + " has started!",
                                           trigger="trial_start")
-        elif trial.round.parent_competition.type_of_competition.name != settings.HALL_OF_FAME_START_STR + 'Single':
+        else:
             trial.waiting = False
             trial.prepare = True
             trial.started = False
