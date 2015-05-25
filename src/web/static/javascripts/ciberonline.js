@@ -94,18 +94,23 @@
                 });
 
                 $dragon.onChannelMessage(function (channels, data) {
-                    Notification.events.publish(data.data._type, data.data);
                     console.log(data.data._type);
                     console.log(data);
+                    Notification.events.publish(data.data._type, data.data);
                 });
 
                 Notification.events.subscribe('notificationteam', function(data){
                     handle_messages(data);
                 });
 
+                Notification.events.subscribe('notificationuser', function(data){
+                    handle_messages(data);
+                });
+
                 var handle_messages = function(data){
+                    console.log(data);
                     if (data.message.status == 200){
-                        $.jGrowl(data.data.message.content, {
+                        $.jGrowl(data.message.content, {
                             life: 3500,
                             theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                         });
