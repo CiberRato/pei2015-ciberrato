@@ -533,6 +533,7 @@
                     function getTrialSuccessFn(data){
                         if (!(data.data.state === 'READY')) {
                             vm.trial = data.data;
+                            console.log(vm.trial);
                             for(var i =0; i<vm.trials.length; i++){
                                 if(vm.trial.identifier === vm.trials[i].identifier){
                                     if(vm.trial.state !== vm.trials[i].state){
@@ -547,7 +548,7 @@
                                 var round_notification = Notification.events.subscribe('notificationbroadcast', function(data){
                                     console.log("ROUNDDETAIL");
 
-                                    if (data.message.trigger == 'trial_prepare' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
+                                    if (data.message.trigger == 'trial_prepare' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log' || data.message.trigger == 'trial_start') {
                                         round_reload();
                                     }
 
@@ -557,11 +558,8 @@
                                 var round_reload = function(){
                                     round_notification.remove();
                                     $timeout(function () {
-                                        Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                                        reloadTrial(identifier);
 
-                                        $timeout(function () {
-                                            reloadTrial(identifier);
-                                        });
                                     });
                                 }
                             });
