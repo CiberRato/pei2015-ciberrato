@@ -556,12 +556,12 @@
                                 });
                                 var round_reload = function(){
                                     $timeout(function () {
+                                        round_notification.remove();
                                         Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
                                         $timeout(function () {
                                             reloadTrial(identifier);
                                         });
-                                        round_notification.remove();
                                     });
                                 }
                             });
