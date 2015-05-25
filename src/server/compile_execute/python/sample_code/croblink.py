@@ -39,13 +39,13 @@ class CRobLink:
         parser.setContentHandler( handler )
         
         # Parse reply 
-        d2 = data[:-1]
+        d2 = data.split('\x04')[0]
         sax.parseString( d2, handler )
         self.status = handler.status
 
     def readSensors(self):
         data = self.sock.recv(4096)
-        d2 = data[:-1]
+        d2 = data.split('\x04')[0]
 
         # print "RECV : \"" + d2 +'"'
         parser = sax.make_parser()
