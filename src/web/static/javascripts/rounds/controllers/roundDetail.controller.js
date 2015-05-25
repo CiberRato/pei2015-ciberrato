@@ -545,6 +545,7 @@
                         }
                         $dragon.onReady(function() {
                             swampdragon.open(function () {
+                                /*
                                 $dragon.onChannelMessage(function(channels, data) {
                                     console.log("ROUNDDETAIL");
 
@@ -558,6 +559,7 @@
                                     console.log(data.data._type);
                                     console.log(data.data.message);
                                 });
+                                */
                             });
                         });
                     }

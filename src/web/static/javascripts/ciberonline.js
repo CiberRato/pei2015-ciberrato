@@ -36,9 +36,9 @@
     angular
         .module('ciberonline.routes', ['ngRoute']);
 
-    run.$inject = ['$http', '$rootScope', '$dragon', 'Authentication', 'Team'];
+    run.$inject = ['$http', '$rootScope', '$dragon', 'Authentication', 'Team', 'Notification'];
 
-    function run($http, $rootScope, $dragon, Authentication, Team){
+    function run($http, $rootScope, $dragon, Authentication, Team, Notification){
         $http.defaults.xsrfHeaderName = 'X-CSRFToken';
         $http.defaults.xsrfCookieName = 'csrftoken';
         $rootScope.$on("$routeChangeSuccess", function(event, currentRoute, previousRoute) {
@@ -87,13 +87,13 @@
                         // any thing that happens if subscribing failed
                         console.log("// any thing that happens if subscribing failed");
                     });
-
-
                 });
                 swampdragon.close(function () {
                     // Disable inputs depending on SwampDragon
                     console.log("foi-se a baixo!");
                 });
+
+                Notification.activateNotifications();
             });
         }
     }
