@@ -11,7 +11,7 @@ from rest_framework import permissions
 
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
-from ..models import Trial, TeamEnrolled, PrivateCompetitionLog
+from ..models import Trial, TeamEnrolled, PrivateCompetitionLog, LogTrialAgent
 from ..renderers import JSONRenderer
 
 from competition.shortcuts import *
@@ -75,9 +75,19 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 except IntegrityError:
                     pass
 
-            NotificationBroadcast.add(channel="user", status="ok",
-                                      message="The trial of " + trial.round.name + " has finished!",
-                                      trigger="trial_log")
+            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME or \
+                    trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
+                t = LogTrialAgent.objects.filter(trial=trial)
+                team = t.first()
+                team = team.competition_agent.agent.team
+
+                NotificationTeam.add(team=team, status="ok",
+                                     message="The trial of " + trial.round.name + " has finished!",
+                                     trigger="trial_log")
+            else:
+                NotificationBroadcast.add(channel="user", status="ok",
+                                          message="The trial of " + trial.round.name + " has finished!",
+                                          trigger="trial_log")
 
             return Response({'status': 'Created',
                              'message': 'The log has been uploaded!'}, status=status.HTTP_201_CREATED)
@@ -115,8 +125,17 @@ class TrialMessageCreate(views.APIView):
                                  'message': 'The trial message can\'t be saved, the Trial is in LOG state!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            NotificationBroadcast.add(channel="admin", status="info",
-                                      message=serializer.validated_data['message'])
+            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME or \
+                            trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
+                t = LogTrialAgent.objects.filter(trial=trial)
+                team = t.first()
+                team = team.competition_agent.agent.team
+
+                NotificationTeam.add(team=team, status="ok",
+                                     message=serializer.validated_data['message'])
+            else:
+                NotificationBroadcast.add(channel="admin", status="info",
+                                          message=serializer.validated_data['message'])
 
             return Response({'status': 'Created',
                              'message': 'The message has been saved!'}, status=status.HTTP_201_CREATED)
@@ -148,9 +167,19 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
             trial.errors = serializer.validated_data['msg']
             trial.save()
 
-            NotificationBroadcast.add(channel="admin", status="error",
-                                      message="The trial of " + trial.round.name + " has encountered an error!",
-                                      trigger="trial_error")
+            if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME or \
+                            trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
+                t = LogTrialAgent.objects.filter(trial=trial)
+                team = t.first()
+                team = team.competition_agent.agent.team
+
+                NotificationTeam.add(team=team, status="error",
+                                     message="The trial of " + trial.round.name + " has encountered an error!",
+                                     trigger="trial_error")
+            else:
+                NotificationBroadcast.add(channel="admin", status="error",
+                                          message="The trial of " + trial.round.name + " has encountered an error!",
+                                          trigger="trial_error")
 
             return Response({'status': 'Created',
                              'message': 'The msg error has been saved!'}, status=status.HTTP_201_CREATED)
@@ -225,18 +254,15 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
                     team = trial.logtrialagent_set.first()
                     team = team.competition_agent.agent.team
-                    print "OK2"
 
                     NotificationTeam.add(team=team, status="ok",
                                          message="The trial has started!",
                                          trigger="trial_started")
             else:
-                print "OK3"
                 NotificationBroadcast.add(channel="user", status="ok",
                                           message="The trial of " + trial.round.name + " has started!",
                                           trigger="trial_start")
         else:
-            print "OK4"
             trial.waiting = False
             trial.prepare = True
             trial.started = False
