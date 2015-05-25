@@ -555,8 +555,8 @@
                                     console.log(data.message);
                                 });
                                 var round_reload = function(){
+                                    round_notification.remove();
                                     $timeout(function () {
-                                        round_notification.remove();
                                         Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
                                         $timeout(function () {
