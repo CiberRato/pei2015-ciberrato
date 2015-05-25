@@ -154,14 +154,18 @@ class Viewer:
 		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
 
 		if not sync:
-			# Connect to websockets
-			websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-			websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
+			# # Connect to websockets
+			websocket_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			websocket_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-			websocket_tcp.send(sim_id)
-			# Wait 0.1 seconds to assure the sim_id msg goes on a unique packet
-			time.sleep(0.1)
+			websocket_udp.sendto(sim_id ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
+			# websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			# websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+			# websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
+
+			# websocket_tcp.send(sim_id)
+			# # Wait 0.1 seconds to assure the sim_id msg goes on a unique packet
+			# time.sleep(0.1)
 
 		robotTime = 0
 		firstTime = True
@@ -186,29 +190,35 @@ class Viewer:
 					log_file.write(json_data)
 					if not sync:
 						# Send data to the websockets
-						websocket_tcp.send(json_data)
+						#websocket_tcp.send(json_data)
+						websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
+
 			else:
 				firstTime = False
 				log_file.write(json_data)
 				if not sync:
 					# Send data to the websockets
-					websocket_tcp.send(json_data)
+					#websocket_tcp.send(json_data)
+					websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
 			# sleep to ensure msg go on separate packets
-			time.sleep(0.05)
+			#time.sleep(0.05)
 
 		log_file.write("]}")
 
 		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet
-			time.sleep(0.1)
+			#time.sleep(0.1)
 			# Send websocket msg telling it's over
-			websocket_tcp.send("END")
+			websocket_udp.sendto("END" ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
+			#websocket_tcp.send("END")
 
 		starter_c.send('<EndedSimulation/>')
 
 		# Close all connections
 		if not sync:
-			websocket_tcp.close()
+			#websocket_tcp.close()
+			websocket_udp.close()
+
 		starter_c.close()
 		simulator_s.close()
 
