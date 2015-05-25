@@ -54,7 +54,7 @@
                                     <p ng-if="value.state == 'STARTED' || value.state == 'PREPARE'">Processing Trial<span class="loading blue" data-original-title="Loading, please wait…">Processing Trial</span></p>
                                     <a href="/panel/{{value.identifier}}/watchTrial" ng-if="value.state == 'LOG'">Watch</a></td>
                                 <td>
-                                    <a ng-if="value.state == 'LOG'" href="/api/v1/trials/get_trial_log/{{value.identifier}}/" target="_blank" class = "awe-download-alt"></a>
+                                    <a ng-if="value.state == 'LOG'" href="/api/v1/trials/get_trial_log/{{value.identifier}}/" target="_blank" download="{{value.identifier}}" class = "awe-download-alt"></a>
                                     <a ng-if="value.state != 'LOG'" href="#" class = "awe-download-alt" disabled></a>
                                 </td>
                                 <td><a ng-click="vm.removeTrial(value.identifier)" class="btn btn-primary btn-flat">X</a>
