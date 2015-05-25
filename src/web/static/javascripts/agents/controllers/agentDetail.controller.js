@@ -154,7 +154,9 @@
                 });
                 $timeout(function(){
                     getFiles();
+                    vm.agent.code_valid = false;
                     vm.agent.validation_result = [];
+                    console.log(vm.agent.validation_result.length);
 
                 });
 
