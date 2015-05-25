@@ -6,9 +6,9 @@
         .module('ciberonline.agents.controllers')
         .controller('AgentDetailController', AgentDetailController);
 
-    AgentDetailController.$inject = ['$location', '$timeout', '$dragon', '$routeParams', '$scope', 'Agent'];
+    AgentDetailController.$inject = ['$location', '$timeout', '$dragon', '$routeParams', '$scope', 'Agent', 'Notification'];
 
-    function AgentDetailController($location, $timeout, $dragon, $routeParams, $scope,  Agent) {
+    function AgentDetailController($location, $timeout, $dragon, $routeParams, $scope,  Agent, Notifcation) {
         var vm = this;
         vm.uploadFile = uploadFile;
         vm.deleteUpload = deleteUpload;
@@ -64,11 +64,10 @@
                     });
                     $dragon.onReady(function() {
                         swampdragon.open(function () {
-                            /*
-                            $dragon.onChannelMessage(function(channels, data) {
+                            var code_validate = Notifcation.events.subscribe('notificationteam', function(data){
                                 console.log("AGENT");
 
-                                if (data.data.message.trigger == 'code_valid') {
+                                if (data.message.trigger == 'code_valid') {
                                     $timeout(function () {
                                         Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
@@ -81,11 +80,10 @@
                                         }
                                     });
                                 }
-                                console.log(channels);
-                                console.log(data.data._type);
-                                console.log(data.data.message);
+
+                                console.log(data._type);
+                                console.log(data.message);
                             });
-                           */
                         });
                     });
 
