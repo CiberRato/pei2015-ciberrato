@@ -118,6 +118,7 @@
                                         <th>Teams</th>
                                         <th>Score By Trial</th>
                                         <th>Watch Trial</th>
+                                        <th>Download</th>
                                     </tr>
                                     </thead>
                                     <tbody ng-repeat="(key1,value1) in value.trials">
@@ -161,7 +162,10 @@
                                                 <a href="/panel/{{value1.identifier}}/liveStream" ng-if="value1.state == 'STARTED' || value1.state == 'PREPARE'">Watch Live</a>
                                                 <a href="/panel/{{value1.identifier}}/watchTrial" ng-if="value1.state == 'LOG'">Watch</a>
                                             </td>
-
+                                            <td style="vertical-align: middle" rowspan="{{value1.grids.length}}">
+                                                <a ng-if="value1.state == 'LOG'" href="/api/v1/trials/get_trial_log/{{value1.identifier}}/" target="_blank" download="{{value1.identifier}}" class = "awe-download-alt"></a>
+                                                <a ng-if="value1.state != 'LOG'" href="#" class = "awe-download-alt" disabled></a>
+                                            </td>
                                         </tr>
                                         <tr ng-repeat="(key2, value2) in value1.grids" ng-if="!$first">
                                             <td bgcolor="#f8f8f8">
