@@ -68,22 +68,26 @@
                                 console.log("AGENT");
 
                                 if (data.message.trigger == 'code_valid') {
-                                    $timeout(function () {
-                                        Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
-
-                                        function getAgentSuccessFn(data) {
-                                            vm.agent = data.data;
-                                        }
-
-                                        function getAgentErrorFn(data) {
-                                            console.error(data.data);
-                                        }
-                                    });
+                                    code_valid_get();
                                 }
 
                                 console.log(data._type);
                                 console.log(data.message);
                             });
+                            var code_valid_get = function(){
+                                $timeout(function () {
+                                    Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                                    function getAgentSuccessFn(data) {
+                                        vm.agent = data.data;
+                                    }
+
+                                    function getAgentErrorFn(data) {
+                                        console.error(data.data);
+                                    }
+                                    code_validate.remove();
+                                });
+                            }
                         });
                     });
 
