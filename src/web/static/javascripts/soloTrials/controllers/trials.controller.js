@@ -87,6 +87,26 @@
 
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
+                        var round_notification = Notifcation.events.subscribe('notificationbroadcast', function(data){
+                            console.log("ROUNDDETAIL");
+
+                            if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log') {
+                                round_reload();
+                            }
+
+                            console.log(data._type);
+                            console.log(data.message);
+                        });
+                        var round_reload = function(){
+                            $timeout(function () {
+                                Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                                $timeout(function () {
+                                    reloadTrial(identifier);
+                                });
+                                round_notification.remove();
+                            });
+                        }
                         /*
                         $dragon.onChannelMessage(function(channels, data) {
                             console.log("TRIALS");
