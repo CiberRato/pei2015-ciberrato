@@ -5,9 +5,9 @@
         .module('ciberonline.streamviewer.controllers')
         .controller('StreamViewer', StreamViewer);
 
-    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout', '$dragon', 'Authentication'];
+    StreamViewer.$inject = ['$location', '$scope', '$routeParams','Round', 'Competition', 'Profile', 'StreamViewer', '$timeout', '$dragon', 'Authentication', 'Notification'];
 
-    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout, $dragon, Authentication){
+    function StreamViewer($location, $scope, $routeParams, Round, Competition, Profile, StreamViewer, $timeout, $dragon, Authentication, Notification){
 
         var parameters;
         $scope.simulation;
@@ -121,13 +121,12 @@
                     // any thing that happens if subscribing failed
                     console.log("// any thing that happens if subscribing failed");
                 });
-                /*
-                $dragon.onChannelMessage(function(channels, data) {
-                    console.log("STREAM");
 
+                Notification.events.subscribe('streamtrial', function(data){
                     try{
-                        $scope.logBuff_obj.push(JSON.parse(data.data.message));
+                        $scope.logBuff_obj.push(JSON.parse(data.message));
                     }catch(e){
+                        console.log("stream packets error:");
                         console.log(data);
                     }
 
@@ -143,7 +142,6 @@
                         console.log('play');
                     }
                 });
-               */
             });
         }
 
