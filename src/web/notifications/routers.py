@@ -1,5 +1,5 @@
 from swampdragon import route_handler
-from swampdragon.route_handler import ModelPubRouter
+from swampdragon.route_handler import ModelPubRouter, BaseModelRouter
 from .models import NotificationUser, NotificationTeam, NotificationBroadcast, StreamTrial
 from .serializers import NotificationUserSerializer, NotificationTeamSerializer, NotificationBroadcastSerializer, \
     StreamTrialSerializer
@@ -56,7 +56,7 @@ class NotificationUserRouter(ModelPubRouter):
         return {'user_id': user_obj.pk}
 
 
-class NotificationTeamRouter(ModelPubRouter):
+class NotificationTeamRouter(BaseModelRouter):
     permission_classes = [IsTeamMember()]
 
     valid_verbs = ['subscribe']
@@ -81,6 +81,13 @@ class NotificationTeamRouter(ModelPubRouter):
                 return {'team_id': team_obj.pk}
 
         return self.send_login_required()
+
+    def delete(self, **kwargs):
+        obj = self._get_object(**kwargs)
+        obj.delete()
+
+    def deleted(self, obj, obj_id, **kwargs):
+        pass
 
 
 class TrialRouter(ModelPubRouter):

@@ -93,7 +93,11 @@
                     console.log("foi-se a baixo!");
                 });
 
-                Notification.activateNotifications();
+                $dragon.onChannelMessage(function (channels, data) {
+                    Notification.events.publish(data.data._type, data.data);
+                    console.log(data.data._type);
+                    console.log(data);
+                });
             });
         }
     }

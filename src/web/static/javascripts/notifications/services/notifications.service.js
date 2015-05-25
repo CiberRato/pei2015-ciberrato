@@ -40,23 +40,9 @@
         })();
 
         var Notification = {
-            events: events,
-            activateNotifications: activateNotifications
+            events: events
         };
 
         return Notification;
-
-        function activateNotifications(){
-            $dragon.onReady(function() {
-                swampdragon.open(function () {
-                    $dragon.onChannelMessage(function (channels, data) {
-                        events.publish(data.data._type, data.data);
-                        console.log(data.data._type);
-                    });
-                });
-            });
-        }
-
-
     }
 })();
