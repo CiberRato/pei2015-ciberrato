@@ -4,7 +4,7 @@ import socket
 
 
 class Command(BaseCommand):
-    help = 'This is a UDP receiver from the simulator viewer!'
+    help = 'This is a TCP receiver from the simulator viewer!'
 
     def handle(self, *args, **options):
         self.stdout.write('\033[94m'+'[STREAM] The script was launched!'+'\033[0m')
@@ -19,11 +19,11 @@ class Command(BaseCommand):
             sim_viewer_connect.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sim_viewer_connect.bind((host, port))
 
-            identifier = sim_viewer_connect.recv(1024)
+            identifier, address = sim_viewer_connect.recvfrom(1024)
             self.stdout.write('\033[94m'+'[STREAM] Trial ' + str(identifier) + ' is now streaming!'+'\033[0m')
 
             while True:
-                data, address = sim_viewer_connect.recv(1024 * 10 <5)
+                data, address = sim_viewer_connect.recvfrom(1024 * 10)
                 if str(data) == "END":
                     break
 
