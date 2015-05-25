@@ -98,6 +98,29 @@
                     console.log(data.data._type);
                     console.log(data);
                 });
+
+                Notification.events.subscribe('notificationteam', function(data){
+                    handle_messages(data);
+                });
+
+                var handle_messages = function(data){
+                    if (data.message.status == 200){
+                        $.jGrowl(data.data.message.content, {
+                            life: 3500,
+                            theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                        });
+                    }else if(data.message.status == 400){
+                        $.jGrowl(data.message.content, {
+                            life: 3500,
+                            theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
+                        });
+                    }else if(data.message.status == 100){
+                        $.jGrowl(data.message.content, {
+                            life: 3500,
+                            theme: 'jGrowl-notification ui-state-highlight ui-corner-all info'
+                        });
+                    }
+                }
             });
         }
     }
