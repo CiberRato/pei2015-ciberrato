@@ -8,39 +8,55 @@
     Notification.$inject = ["$dragon"];
 
     function Notification($dragon){
+        var events = (function(){
+          var topics = {};
+          var hOP = topics.hasOwnProperty;
+
+          return {
+            subscribe: function(topic, listener) {
+              // Create the topic's object if not yet created
+              if(!hOP.call(topics, topic)) topics[topic] = [];
+
+              // Add the listener to queue
+              var index = topics[topic].push(listener) -1;
+
+              // Provide handle back for removal of topic
+              return {
+                remove: function() {
+                  delete topics[topic][index];
+                }
+              };
+            },
+            publish: function(topic, info) {
+              // If the topic doesn't exist, or there's no listeners in queue, just leave
+              if(!hOP.call(topics, topic)) return;
+
+              // Cycle through topics queue, fire!
+              topics[topic].forEach(function(item) {
+                    item(info != undefined ? info : {});
+              });
+            }
+          };
+        })();
+
         var Notification = {
+            events: events,
             activateNotifications: activateNotifications
         };
 
         return Notification;
 
         function activateNotifications(){
-            $dragon.onChannelMessage(function(channels, data) {
-                console.log("HOME");
-                if(data.data._type != 'streamtrial'){
-                    if (data.data.message.status == 200){
-                        $.jGrowl(data.data.message.content, {
-                            life: 3500,
-                            theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
-                        });
-                    }else if(data.data.message.status == 400){
-                        $.jGrowl(data.data.message.content, {
-                            life: 3500,
-                            theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
-                        });
-                    }else if(data.data.message.status == 100){
-                        $.jGrowl(data.data.message.content, {
-                            life: 3500,
-                            theme: 'jGrowl-notification ui-state-highlight ui-corner-all info'
-                        });
-                    }
-                    // console.log(channels);
-                    console.log(data.data._type);
-                    console.log(data.data.message);
-                }else{
-                    // tratar aqui do stream
-                }
+            $dragon.onReady(function() {
+                swampdragon.open(function () {
+                    $dragon.onChannelMessage(function (channels, data) {
+                        events.publish(data.data._type, data.data);
+                        console.log(data.data._type);
+                    });
+                });
             });
         }
+
+
     }
 })();

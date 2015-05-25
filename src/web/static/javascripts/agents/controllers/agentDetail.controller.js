@@ -64,6 +64,7 @@
                     });
                     $dragon.onReady(function() {
                         swampdragon.open(function () {
+                            /*
                             $dragon.onChannelMessage(function(channels, data) {
                                 console.log("AGENT");
 
@@ -84,6 +85,7 @@
                                 console.log(data.data._type);
                                 console.log(data.data.message);
                             });
+                           */
                         });
                     });
 

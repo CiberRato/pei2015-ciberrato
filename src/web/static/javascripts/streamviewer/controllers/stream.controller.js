@@ -121,7 +121,7 @@
                     // any thing that happens if subscribing failed
                     console.log("// any thing that happens if subscribing failed");
                 });
-
+                /*
                 $dragon.onChannelMessage(function(channels, data) {
                     console.log("STREAM");
 
@@ -143,6 +143,7 @@
                         console.log('play');
                     }
                 });
+               */
             });
         }
 

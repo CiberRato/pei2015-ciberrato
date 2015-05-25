@@ -87,6 +87,7 @@
 
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
+                        /*
                         $dragon.onChannelMessage(function(channels, data) {
                             console.log("TRIALS");
 
@@ -100,6 +101,7 @@
                             console.log(data.data._type);
                             console.log(data.data.message);
                         });
+                        */
                     });
                 });
                 console.log(vm.trials);

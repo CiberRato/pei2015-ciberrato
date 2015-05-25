@@ -214,7 +214,7 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         trial = get_object_or_404(self.queryset, identifier=kwargs.get('pk'))
         serializer = self.serializer_class(TrialX(trial))
 
-        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+        if trial.round.parent_competition.type_of_competition.allow_remote_agents is False:
             trial.waiting = False
             trial.prepare = False
             trial.started = True
