@@ -5,9 +5,7 @@
         .module("ciberonline.notifications.services")
         .factory("Notification", Notification);
 
-    Notification.$inject = ["$dragon"];
-
-    function Notification($dragon){
+    function Notification(){
         var events = (function(){
           var topics = {};
           var hOP = topics.hasOwnProperty;

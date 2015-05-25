@@ -25,7 +25,7 @@ class Command(BaseCommand):
             self.stdout.write('\033[94m'+'[STREAM] Trial ' + str(identifier) + ' is now streaming!'+'\033[0m')
 
             while True:
-                data = sim_viewer.recv(1024 * 10)
+                data = sim_viewer.recv(1024 * 10 <5)
                 if str(data) == "END":
                     break
 
