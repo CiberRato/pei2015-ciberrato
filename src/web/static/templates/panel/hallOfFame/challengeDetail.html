@@ -19,6 +19,7 @@
                                 <th>Date</th>
                                 <th>State</th>
                                 <th>Watch Trial</th>
+                                <th>Download</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -29,6 +30,10 @@
                                 <td>{{value.state}}</td>
                                 <td>
                                     <a href="/panel/{{value.identifier}}/watchTrial" ng-if="value.state == 'LOG'">Watch</a>
+                                </td>
+                                <td>
+                                    <a ng-if="value.state == 'LOG'" href="/api/v1/trials/get_trial_log/{{value.identifier}}/" target="_blank" download="{{value.identifier}}" class = "awe-download-alt"></a>
+                                    <a ng-if="value.state != 'LOG'" href="#" class = "awe-download-alt" disabled></a>
                                 </td>
 
                             </tr>
