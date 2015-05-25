@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition', '$scope'];
+    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition', '$scope', 'Notification'];
 
-    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition, $scope){
+    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition, $scope, Notification){
         var vm = this;
 
         vm.saveScores = saveScores;
