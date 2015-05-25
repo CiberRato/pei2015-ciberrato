@@ -87,41 +87,26 @@
 
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
-                        var round_notification = Notifcation.events.subscribe('notificationbroadcast', function(data){
-                            console.log("ROUNDDETAIL");
+                        var round_notification = Notification.events.subscribe('notificationteam', function(data){
+                            console.log("TRIALS");
 
-                            if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log') {
-                                round_reload();
+                            if (data.message.trigger == 'trial_started' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
+                                round_trial();
                             }
 
                             console.log(data._type);
                             console.log(data.message);
                         });
-                        var round_reload = function(){
+                        var round_trial = function(){
                             $timeout(function () {
                                 Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
                                 $timeout(function () {
-                                    reloadTrial(identifier);
+                                    getTrials(identifier);
                                 });
                                 round_notification.remove();
                             });
                         }
-                        /*
-                        $dragon.onChannelMessage(function(channels, data) {
-                            console.log("TRIALS");
-
-                            if (data.data.message.trigger == 'trial_started' || data.data.message.trigger == 'trial_error' || data.data.message.trigger == 'trial_log') {
-                                $timeout(function () {
-                                    getTrials();
-                                });
-                            }
-
-                            console.log(channels);
-                            console.log(data.data._type);
-                            console.log(data.data.message);
-                        });
-                        */
                     });
                 });
                 console.log(vm.trials);
