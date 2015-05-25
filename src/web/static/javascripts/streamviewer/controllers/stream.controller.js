@@ -122,7 +122,7 @@
                     console.log("// any thing that happens if subscribing failed");
                 });
 
-                Notification.events.subscribe('streamtrial', 0, function(data){
+                var streamTrial = Notification.events.subscribe('streamtrial', 0, function(data){
                     try{
                         $scope.logBuff_obj.push(JSON.parse(data.message));
                     }catch(e){
@@ -141,6 +141,9 @@
                         $scope.play();
                         console.log('play');
                     }
+                });
+                $scope.$on("$destroy", function(event){
+                    streamTrial.remove();
                 });
             });
         }

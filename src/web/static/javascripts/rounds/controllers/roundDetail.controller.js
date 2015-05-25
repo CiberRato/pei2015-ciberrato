@@ -561,7 +561,10 @@
                                         reloadTrial(identifier);
 
                                     });
-                                }
+                                };
+                                $scope.$on("$destroy", function(event){
+                                    round_notification.remove();
+                                });
                             });
                         });
                     }

@@ -104,7 +104,10 @@
                             $timeout(function () {
                                 getTrials();
                             });
-                        }
+                        };
+                        $scope.$on("$destroy", function(event){
+                            round_notification.remove();
+                        });
                     });
                 });
                 console.log(vm.trials);

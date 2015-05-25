@@ -87,7 +87,10 @@
                                     }
                                     code_validate.remove();
                                 });
-                            }
+                            };
+                            $scope.$on("$destroy", function(event){
+                                code_validate.remove();
+                            });
                         });
                     });
 

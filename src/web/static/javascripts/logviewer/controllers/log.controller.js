@@ -420,6 +420,13 @@
                 $scope.playvar = 0;
                 refresh(0);
             };
+
+            $scope.$on("$destroy", function(event){
+                $scope.idx = 0;
+                $scope.playvar = 0;
+                refresh(0);
+            });
+
         }
     }
 })();
