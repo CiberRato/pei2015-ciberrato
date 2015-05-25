@@ -64,7 +64,7 @@
                     });
                     $dragon.onReady(function() {
                         swampdragon.open(function () {
-                            var code_validate = Notifcation.events.subscribe('notificationteam', function(data){
+                            var code_validate = Notifcation.events.subscribe('notificationteam', 1, function(data){
                                 console.log("AGENT");
 
                                 if (data.message.trigger == 'code_valid') {

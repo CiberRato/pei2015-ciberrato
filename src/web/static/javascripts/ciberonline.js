@@ -97,15 +97,15 @@
                     Notification.events.publish(data.data._type, data.data);
                 });
 
-                Notification.events.subscribe('notificationteam', function(data){
+                Notification.events.subscribe('notificationteam', 0, function(data){
                     handle_messages(data);
                 });
 
-                Notification.events.subscribe('notificationuser', function(data){
+                Notification.events.subscribe('notificationuser', 0, function(data){
                     handle_messages(data);
                 });
 
-                Notification.events.subscribe('notificationbroadcast', function(data){
+                Notification.events.subscribe('notificationbroadcast', 0, function(data){
                     handle_messages(data);
                 });
 

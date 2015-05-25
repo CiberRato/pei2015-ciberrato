@@ -545,7 +545,7 @@
                         }
                         $dragon.onReady(function() {
                             swampdragon.open(function () {
-                                var round_notification = Notification.events.subscribe('notificationbroadcast', function(data){
+                                var round_notification = Notification.events.subscribe('notificationbroadcast', 1, function(data){
                                     console.log("ROUNDDETAIL");
 
                                     if (data.message.trigger == 'trial_prepare' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log' || data.message.trigger == 'trial_start') {

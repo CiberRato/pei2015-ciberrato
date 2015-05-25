@@ -87,7 +87,7 @@
 
                 $dragon.onReady(function() {
                     swampdragon.open(function () {
-                        var round_notification = Notification.events.subscribe('notificationteam', function(data){
+                        var round_notification = Notification.events.subscribe('notificationteam', 1, function(data){
                             console.log("TRIALS");
 
                             if (data.message.trigger == 'trial_started' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
