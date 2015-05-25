@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('TrialsController', TrialsController);
 
-    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope'];
+    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope', 'Notification'];
 
-    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope){
+    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope, Notification){
         var vm = this;
         vm.roundName = $routeParams.identifier;
         vm.launchTrial = launchTrial;
@@ -92,19 +92,17 @@
 
                             if (data.message.trigger == 'trial_started' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
                                 round_trial();
+                                console.log("entrei");
                             }
 
                             console.log(data._type);
                             console.log(data.message);
                         });
                         var round_trial = function(){
-                            $timeout(function () {
-                                Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                            round_notification.remove();
 
-                                $timeout(function () {
-                                    getTrials(identifier);
-                                });
-                                round_notification.remove();
+                            $timeout(function () {
+                                getTrials();
                             });
                         }
                     });
