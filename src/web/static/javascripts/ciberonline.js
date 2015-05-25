@@ -94,8 +94,6 @@
                 });
 
                 $dragon.onChannelMessage(function (channels, data) {
-                    console.log(data.data._type);
-                    console.log(data);
                     Notification.events.publish(data.data._type, data.data);
                 });
 

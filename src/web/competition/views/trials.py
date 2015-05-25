@@ -215,6 +215,8 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(TrialX(trial))
 
         if trial.round.parent_competition.type_of_competition.allow_remote_agents is False:
+            print "OK1"
+
             trial.waiting = False
             trial.prepare = False
             trial.started = True
@@ -223,15 +225,18 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
                     team = trial.logtrialagent_set.first()
                     team = team.competition_agent.agent.team
+                    print "OK2"
 
                     NotificationTeam.add(team=team, status="ok",
                                          message="The trial has started!",
                                          trigger="trial_started")
             else:
+                print "OK3"
                 NotificationBroadcast.add(channel="user", status="ok",
                                           message="The trial of " + trial.round.name + " has started!",
                                           trigger="trial_start")
         else:
+            print "OK4"
             trial.waiting = False
             trial.prepare = True
             trial.started = False
