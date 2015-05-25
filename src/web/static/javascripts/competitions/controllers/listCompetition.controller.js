@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('ListCompetitionController', ListCompetitionController);
 
-    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round', '$scope', 'Team', 'Authentication', 'Grid', 'Agent', 'Notification'];
+    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round', '$scope', 'Team', 'Authentication', 'Grid', 'Agent'];
 
-    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round, $scope, Team, Authentication, Grid, Agent, Notification){
+    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round, $scope, Team, Authentication, Grid, Agent){
         var vm = this;
         vm.competitionName = $routeParams.name;
         vm.validateInscription = validateInscription;
@@ -36,7 +36,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Competition.getCompetition(vm.competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
 

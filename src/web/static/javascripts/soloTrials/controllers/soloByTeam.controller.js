@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('SoloByTeamController', SoloByTeamController);
 
-    SoloByTeamController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$scope', 'Notification'];
+    SoloByTeamController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$scope'];
 
-    function SoloByTeamController(SoloTrials, $routeParams, $timeout, $scope, Notification){
+    function SoloByTeamController(SoloTrials, $routeParams, $timeout, $scope){
         var vm = this;
         var hasGrid = false;
         var hasMap = false;
@@ -24,7 +24,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             SoloTrials.getByTeam(vm.competitionName).then(getByTeamSuccessFn, getByTeamErrorFn);
 

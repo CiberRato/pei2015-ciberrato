@@ -5,9 +5,9 @@
         .module('ciberonline.teams.controllers')
         .controller('AllTeamsMembersController', AllTeamsMembersController);
 
-    AllTeamsMembersController.$inject = ['$location', '$routeParams','Team', '$scope', 'Notification'];
+    AllTeamsMembersController.$inject = ['$location', '$routeParams','Team', '$scope'];
 
-    function AllTeamsMembersController($location, $routeParams, Team, $scope, Notification){
+    function AllTeamsMembersController($location, $routeParams, Team, $scope){
         var vm = this;
         var teamName;
         activate();
@@ -16,7 +16,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             teamName = $routeParams.name;
 

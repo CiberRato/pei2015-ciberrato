@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('PastCompetitionsController', PastCompetitionsController);
 
-    PastCompetitionsController.$inject = ['$location', 'Competition', '$scope', 'Notification'];
+    PastCompetitionsController.$inject = ['$location', 'Competition', '$scope'];
 
-    function PastCompetitionsController($location, Competition, $scope, Notification){
+    function PastCompetitionsController($location, Competition, $scope){
         var vm = this;
         activate();
 
@@ -16,8 +16,6 @@
             $scope.loader = {
                 loading: false
             };
-
-            Notification.activateNotifications();
 
             Competition.getPast().then(getPastSuccessFn, getPastErrorFn);
 

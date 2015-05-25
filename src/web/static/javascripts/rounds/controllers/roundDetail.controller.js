@@ -6,9 +6,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('DetailRoundController', DetailRoundController);
 
-    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition', '$scope', 'Notification'];
+    DetailRoundController.$inject = ['$location', '$route', '$timeout', '$dragon', '$routeParams', 'Round', 'Competition', '$scope'];
 
-    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition, $scope, Notification){
+    function DetailRoundController($location, $route, $timeout, $dragon, $routeParams, Round, Competition, $scope){
         var vm = this;
 
         vm.saveScores = saveScores;
@@ -43,7 +43,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Round.getTrials(vm.roundName, vm.competitionName).then(getTrialsSuccessFn, getTrialsErrorFn);
 

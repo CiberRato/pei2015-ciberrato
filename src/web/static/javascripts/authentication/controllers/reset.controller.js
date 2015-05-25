@@ -5,9 +5,9 @@
         .module('ciberonline.authentication.controllers')
         .controller('ResetController', ResetController);
 
-    ResetController.$inject = ['$location', 'Notification', 'Authentication', '$scope'];
+    ResetController.$inject = ['$location', 'Authentication', '$scope'];
 
-    function ResetController($location, Notification, Authentication, $scope){
+    function ResetController($location, Authentication, $scope){
         var vm = this;
 
         vm.resetPassword = resetPassword;
@@ -18,7 +18,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }

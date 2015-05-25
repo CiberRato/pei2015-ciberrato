@@ -5,9 +5,9 @@
         .module('ciberonline.hallOfFame.controllers')
         .controller('AllChallengesController', AllChallengesController);
 
-    AllChallengesController.$inject = ['$scope', 'Competition', '$timeout', 'Round', 'Authentication', 'Agent', 'HallOfFame', 'Notification'];
+    AllChallengesController.$inject = ['$scope', 'Competition', '$timeout', 'Round', 'Authentication', 'Agent', 'HallOfFame'];
 
-    function AllChallengesController($scope, Competition, $timeout, Round, Authentication, Agent, HallOfFame, Notification){
+    function AllChallengesController($scope, Competition, $timeout, Round, Authentication, Agent, HallOfFame){
         var vm = this;
         vm.deleteChallenge = deleteChallenge;
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
@@ -22,8 +22,6 @@
             $scope.loader = {
                 loading: false
             };
-
-            Notification.activateNotifications();
 
             Competition.getAllRounds("Hall of fame - Single").then(getHallOfFameSuccessFn, getHallOfFameErrorFn);
 

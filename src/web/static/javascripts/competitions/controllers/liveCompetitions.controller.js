@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('LiveCompetitionsController', LiveCompetitionsController);
 
-    LiveCompetitionsController.$inject = ['$location', 'Competition', '$scope', 'Notification'];
+    LiveCompetitionsController.$inject = ['$location', 'Competition', '$scope'];
 
-    function LiveCompetitionsController($location, Competition, $scope, Notification){
+    function LiveCompetitionsController($location, Competition, $scope){
         var vm = this;
         activate();
 
@@ -16,7 +16,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Competition.getLive().then(getLiveSuccessFn, getLiveErrorFn);
 

@@ -6,9 +6,9 @@
         .module('ciberonline.stickyNotes.controllers')
         .controller('AllStickyNotesController', AllStickyNotesController);
 
-    AllStickyNotesController.$inject = ['StickyNotes', '$scope', '$timeout', 'Notification'];
+    AllStickyNotesController.$inject = ['StickyNotes', '$scope', '$timeout'];
 
-    function AllStickyNotesController(StickyNotes, $scope, $timeout, Notification){
+    function AllStickyNotesController(StickyNotes, $scope, $timeout){
         var vm = this;
         vm.edit = edit;
         vm.remove = remove;
@@ -21,7 +21,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             getAll();
 

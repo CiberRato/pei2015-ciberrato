@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('CreateSoloController', CreateSoloController);
 
-    CreateSoloController.$inject = ['SoloTrials', '$routeParams', 'Round', '$location', '$scope', 'Notification'];
+    CreateSoloController.$inject = ['SoloTrials', '$routeParams', 'Round', '$location', '$scope'];
 
-    function CreateSoloController(SoloTrials, $routeParams, Round, $location, $scope, Notification){
+    function CreateSoloController(SoloTrials, $routeParams, Round, $location, $scope){
         var vm = this;
         var hasGrid = false;
         var hasMap = false;
@@ -26,8 +26,6 @@
             $scope.loader = {
                 loading: false
             };
-
-            Notification.activateNotifications();
 
             Round.getResources().then(getResourcesSuccessFn, getResourcesErrorFn);
 

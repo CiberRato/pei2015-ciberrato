@@ -6,9 +6,9 @@
 		.module('ciberonline.teams.controllers')
 		.controller('AllTeamsController', AllTeamsController);
 
-	AllTeamsController.$inject = ['$location', 'Team', '$scope', 'Notification'];
+	AllTeamsController.$inject = ['$location', 'Team', '$scope'];
 
-	function AllTeamsController($location, Team, $scope, Notification){
+	function AllTeamsController($location, Team, $scope){
 		var vm = this;
         vm.change = change;
 		activate();
@@ -17,7 +17,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Team.getAll().then(getAllSuccessFn, getAllErrorFn);
 

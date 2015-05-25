@@ -5,8 +5,8 @@
         .module('ciberonline.authentication.controllers')
         .controller('RegisterController', RegisterController);
 
-    RegisterController.$inject = ['$location', 'Authentication', '$scope', 'Notification'];
-    function RegisterController($location, Authentication, $scope, Notification){
+    RegisterController.$inject = ['$location', 'Authentication', '$scope'];
+    function RegisterController($location, Authentication, $scope){
         var vm = this;
 
         vm.register = register;
@@ -18,7 +18,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
             if(Authentication.isAuthenticated()){
                 $location.url("/idp/register/");
             }

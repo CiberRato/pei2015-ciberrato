@@ -6,9 +6,9 @@
         .module('ciberonline.statistics.controllers')
         .controller('StatisticsController', StatisticsController);
 
-    StatisticsController.$inject = ['Statistics', '$scope', 'Notification'];
+    StatisticsController.$inject = ['Statistics', '$scope'];
 
-    function StatisticsController(Statistics, $scope, Notification){
+    function StatisticsController(Statistics, $scope){
         var vm = this;
 
         activate();
@@ -17,7 +17,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Statistics.getStats().then(getStatsSuccessFn, getStatsErrorFn);
 

@@ -6,9 +6,9 @@
         .module('ciberonline.users.controllers')
         .controller('ChangePermissionsController', ChangePermissionsController);
 
-    ChangePermissionsController.$inject = ['$location', 'Users', '$scope', 'Authentication', 'Notification'];
+    ChangePermissionsController.$inject = ['$location', 'Users', '$scope', 'Authentication'];
 
-    function ChangePermissionsController($location, Users, $scope, Authentication, Notification){
+    function ChangePermissionsController($location, Users, $scope, Authentication){
         var vm = this;
         vm.change = change;
         vm.removeStaff = removeStaff;
@@ -23,7 +23,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Users.getAll().then(getAllSuccessFn, getAllErrorFn);
 

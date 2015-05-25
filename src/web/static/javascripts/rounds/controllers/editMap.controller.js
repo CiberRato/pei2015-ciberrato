@@ -5,9 +5,9 @@
         .module('ciberonline.rounds.controllers')
         .controller('EditMapController', EditMapController);
 
-    EditMapController.$inject = ['$scope', '$routeParams', 'Round', 'Notification'];
+    EditMapController.$inject = ['$scope', '$routeParams', 'Round'];
 
-    function EditMapController($scope, $routeParams, Round, Notification){
+    function EditMapController($scope, $routeParams, Round){
         var vm = this;
         vm.getCodeGrid = getCodeGrid;
         vm.getCodeLab = getCodeLab;
@@ -18,7 +18,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             vm.competitionName = $routeParams.competitionName;
             vm.roundName = $routeParams.roundName;

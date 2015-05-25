@@ -6,9 +6,9 @@
         .module('ciberonline.teams.controllers')
         .controller('MemberProfile', MemberProfile);
 
-    MemberProfile.$inject = ['$location', '$routeParams', 'Team', 'Profile', '$scope', 'Notification'];
+    MemberProfile.$inject = ['$location', '$routeParams', 'Team', 'Profile', '$scope'];
 
-    function MemberProfile($location,$routeParams, Team, Profile, $scope, Notification){
+    function MemberProfile($location,$routeParams, Team, Profile, $scope){
         var vm = this;
         var username = $routeParams.username;
         
@@ -18,7 +18,6 @@
             $scope.loader = {
                 loading: false
             };
-            Notification.activateNotifications();
 
             Team.getByUser(username).then(getByUserSuccessFn, getByUserErrorFn);
 

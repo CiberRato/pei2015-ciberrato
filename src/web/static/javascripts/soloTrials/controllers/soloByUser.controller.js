@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('SoloByUserController', SoloByUserController);
 
-    SoloByUserController.$inject = ['SoloTrials', '$scope', 'Round', 'Grid', 'Agent', '$location', 'Notification'];
+    SoloByUserController.$inject = ['SoloTrials', '$scope', 'Round', 'Grid', 'Agent', '$location'];
 
-    function SoloByUserController(SoloTrials, $scope, Round, Grid, Agent, $location, Notification){
+    function SoloByUserController(SoloTrials, $scope, Round, Grid, Agent, $location){
         var vm = this;
         vm.models = {
             selected: null,
@@ -26,8 +26,6 @@
             $scope.loader = {
                 loading: false
             };
-
-            Notification.activateNotifications();
 
             SoloTrials.getAll().then(getAllSuccessFn, getAllErrorFn);
 

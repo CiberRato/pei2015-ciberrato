@@ -5,9 +5,9 @@
         .module('ciberonline.profile.controllers')
         .controller('LastNotificationsController', LastNotificationsController);
 
-    LastNotificationsController.$inject = ['$location', 'Profile', '$scope', 'Users', 'Notification'];
+    LastNotificationsController.$inject = ['$location', 'Profile', '$scope', 'Users'];
 
-    function LastNotificationsController($location, Profile, $scope, Users, Notification){
+    function LastNotificationsController($location, Profile, $scope, Users){
         var vm = this;
 
         activate();
@@ -16,8 +16,6 @@
             $scope.loader = {
                 loading: false
             };
-
-            Notification.activateNotifications();
 
             vm.user=Users.getMe().then(success, error);
 

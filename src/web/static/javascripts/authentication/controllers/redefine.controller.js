@@ -5,9 +5,9 @@
         .module('ciberonline.authentication.controllers')
         .controller('RedefineController', RedefineController);
 
-    RedefineController.$inject = ['$location', 'Notification', 'Authentication', '$scope', '$routeParams'];
+    RedefineController.$inject = ['$location', 'Authentication', '$scope', '$routeParams'];
 
-    function RedefineController($location, Notification, Authentication, $scope, $routeParams){
+    function RedefineController($location, Authentication, $scope, $routeParams){
         var vm = this;
 
         vm.redefinePassword = redefinePassword;
@@ -20,7 +20,6 @@
             };
 
             vm.token = $routeParams.token;
-            Notification.activateNotifications();
             if(Authentication.isAuthenticated()){
                 $location.url('/idp/login');
             }

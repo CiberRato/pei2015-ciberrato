@@ -24,6 +24,7 @@
         /* Zoom variable (50->Standard) */
         $scope.zoom = 50;
         activate();
+
         function activate(){
             Round.getTrial(identifier).then(getSimulationSuccessFn, getSimulationErrorFn);
         }
