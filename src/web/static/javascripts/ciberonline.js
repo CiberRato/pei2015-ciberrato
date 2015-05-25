@@ -107,8 +107,11 @@
                     handle_messages(data);
                 });
 
+                Notification.events.subscribe('notificationbroadcast', function(data){
+                    handle_messages(data);
+                });
+
                 var handle_messages = function(data){
-                    console.log(data);
                     if (data.message.status == 200){
                         $.jGrowl(data.message.content, {
                             life: 3500,
