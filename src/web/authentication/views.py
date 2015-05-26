@@ -532,9 +532,6 @@ class PasswordRecoverRequest(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Account.objects.all()
     serializer_class = EmailSerializer
 
-    def get_permissions(self):
-        return permissions.AllowAny(),
-
     def create(self, request, *args, **kwargs):
         """
         B{Login to other} user
@@ -581,9 +578,6 @@ class PasswordRecoverRequest(mixins.CreateModelMixin, viewsets.GenericViewSet):
 class PasswordReset(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Account.objects.all()
     serializer_class = PasswordResetSerializer
-
-    def get_permissions(self):
-        return permissions.AllowAny(),
 
     def create(self, request, *args, **kwargs):
         """
