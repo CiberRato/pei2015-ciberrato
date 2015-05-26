@@ -26,4 +26,5 @@ PREPARE_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trial_id/"
 TEST_CODE_ENDPOINT = "http://127.0.0.1:9000/api/v1/test_agent/?agent_name=<agent_name>&team_name=<team_name>/"
 
 # swampdragon settings
-DRAGON_URL = 'http://ciber.atnog.org:8081/'
+SWAMP_DRAGON_HOST = 'ciber.atnog.org'
+SWAMP_DRAGON_PORT = 8081
