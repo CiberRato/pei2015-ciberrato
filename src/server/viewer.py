@@ -67,16 +67,17 @@ class Viewer:
 		LOG_FILE += str(simulator_port)
 		# End of loading settings
 
-		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
+		simulator_s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+		simulator_s.connect((SIMULATOR_HOST, simulator_port))
 		# Register as PanelViewer in the simulator
-		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, simulator_port))
+		simulator_s.send("<PanelView/>\x04")
 
 		# Get sim time, and ports
 		# params, grid e lab comes in this packet as well
-		data, (hostSim, portSim) = simulator_s.recvfrom(4096)
-		parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
+		data = simulator_s.recv(8192)
+		parametersXML = minidom.parseString("<xml>"+data.split("\x04")[0]+"</xml>")
 		itemlist = parametersXML.getElementsByTagName('Parameters')
 		simTime = itemlist[0].attributes['SimTime'].value
 
@@ -126,8 +127,12 @@ class Viewer:
 		checkedRobots = []
 		prevlen = 0
 		while len(checkedRobots) != int(robotsAmount):
-			data, (host, port) = simulator_s.recvfrom(4096)
-			robotsXML = minidom.parseString(data.replace("\x00", ""))
+			data = simulator_s.recv(8192)
+			sr = data.split("\x04")
+			if len(sr) <= 1:
+				continue
+			print sr[0]
+			robotsXML = minidom.parseString(sr[0])
 			robots = robotsXML.getElementsByTagName('Robot')
 			if len(robots):
 				for r in robots:
@@ -151,7 +156,7 @@ class Viewer:
 		# 	data = starter_c.recv()
 
 		# Sending simulator msg to start the simulation
-		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
+		simulator_s.send("<Start/>\n\x04")
 
 		if not sync:
 			# # Connect to websockets
@@ -170,36 +175,41 @@ class Viewer:
 		robotTime = 0
 		firstTime = True
 		log_file.write('"Log":[')
+
+		buffer_data = ''
 		while simTime != robotTime:
 			# Update Robot time
-			data = simulator_s.recv(4096)
+			data = simulator_s.recv(16384)
+			print data
 			#print data
-			data = data.replace("\x00", "")
-			robotXML = minidom.parseString(data)
-			itemlist = robotXML.getElementsByTagName('LogInfo')
-			robotTime = itemlist[0].attributes['Time'].value
+			sr = data.split("\x04")
+			sr[0] = buffer_data + sr[0]
+			buffer_data = sr[-1]
 
-			# Convert to json and write to log file
-			json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
-			json_data = json.dumps(json_obj)
-			json_data = json_data.replace("@", "_")
+			for data in sr[:-1]:
+				robotXML = minidom.parseString(data)
+				itemlist = robotXML.getElementsByTagName('LogInfo')
+				robotTime = itemlist[0].attributes['Time'].value
 
-			if not firstTime:
-				if int(robotTime) != 0:
-					log_file.write(",")
+				# Convert to json and write to log file
+				json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
+				json_data = json.dumps(json_obj)
+				json_data = json_data.replace("@", "_")
+
+				if not firstTime:
+					if int(robotTime) != 0:
+						log_file.write(",")
+						log_file.write(json_data)
+						if not sync:
+							# Send data to the websockets
+							websocket_tcp.send(json_data)
+				else:
+					firstTime = False
 					log_file.write(json_data)
 					if not sync:
 						# Send data to the websockets
 						#websocket_tcp.send(json_data)
 						websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-
-			else:
-				firstTime = False
-				log_file.write(json_data)
-				if not sync:
-					# Send data to the websockets
-					#websocket_tcp.send(json_data)
-					websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
 			# sleep to ensure msg go on separate packets
 			#time.sleep(0.05)
 

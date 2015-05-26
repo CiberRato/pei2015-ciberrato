@@ -20,9 +20,7 @@
 
 #include "cbclient.h"
 
-#include <QUdpSocket>
 #include <QHostAddress>
-
 #include <iostream>
 #include <stdio.h>
 
@@ -30,9 +28,8 @@ using std::cerr;
 
 #define REPLYMAXSIZE 8192
 
-cbClient::cbClient() : QUdpSocket()
+cbClient::cbClient() : QTcpSocket()
 {
-    bind();
 }
 
 cbClient::~cbClient()
@@ -42,66 +39,50 @@ cbClient::~cbClient()
 /*!
 	Send the OK reply message to client.
 */
-bool cbClient::AcceptWithoutReply(QHostAddress &a, unsigned short &p)
-{
-    /* set peer address and peer port */
-    address = a;
-	port = p;
-
-	return true;
-}
-/*!
-	Send the OK reply message to client.
-*/
-bool cbClient::Reply(QHostAddress &a, unsigned short &p, cbParameters *param, cbGrid *grid, cbLab *lab)
+bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 {
     //cout.form("Sending reply for client to %s:%hd\n", a.toString().toLatin1().constData(), p);
-    /* set peer address and peer port */
-    address = a;
-	port = p;
 	/* constructing reply message */
 	char reply[REPLYMAXSIZE];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Ok\">\n\t");
-
 	if (param != NULL) cnt += param->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (lab != NULL) cnt += lab->toXml(reply+cnt, REPLYMAXSIZE-cnt);
 	if (grid != NULL) cnt += grid->toXml(reply+cnt, REPLYMAXSIZE-cnt);
-
 	cnt += sprintf(reply+cnt, "</Reply>\n");
+	cnt += sprintf(reply+cnt, "\x04");
 
     /* send reply to client */
-    if (writeDatagram(reply, cnt+1, address, port) != cnt+1)
+    if (write(reply) != cnt)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    //cout << "Reply sent\n" << reply;
+    //flush();
 	return true;
 }
 
 /*!
 	Send the Refused reply message to client.
 */
-bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
+bool cbClient::Refuse()
 {
 	//cout.form("Sending refuse for client to %s:%hd\n", a.toString().latin1(), p);
 	/* set peer address and peer port */
-	address = a;
-	port = p;
 
 	/* constructing reply message */
 	char reply[256];
 	int cnt;
 	cnt = sprintf(reply, "<Reply Status=\"Refused\"></Reply>\n");
+	cnt += sprintf(reply+cnt, "\x04");
 
     /* send reply to client */
-    if (writeDatagram(reply, cnt+1, address, port) != cnt+1)
+    if (write(reply) != cnt)
 	{
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    //cout << "Reply sent\n" << reply;
+    //flush();
 	return true;
 }
 
@@ -111,12 +92,15 @@ bool cbClient::Refuse(QHostAddress &a, unsigned short &p)
 */
 bool cbClient::send(const char *xml, unsigned int cnt)
 {
-    if (writeDatagram(xml, cnt, address, port) != (int)cnt)
+	char reply[cnt+1];
+	strcpy(reply, xml);
+	
+	cnt += sprintf(reply+cnt, "\x04");
+    if (write(reply) != (int)cnt)
     {
-        //cerr << "Fail sending xml message to client\n";
-		//cerr << xml;
+        cerr << "Fail sending xml message to client\n";
 		return false;
     }
-
+    //flush();
 	return true;
 }

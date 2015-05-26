@@ -30,7 +30,7 @@
  * 	are called,	according to the type of information received.
  */
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 #include <QTimer>
 #include "../Lab/crlab.h"
@@ -46,7 +46,7 @@
 
 class CRQLabView;
 
-class CRQComm : public QUdpSocket
+class CRQComm : public QTcpSocket
 {
 Q_OBJECT
 public:

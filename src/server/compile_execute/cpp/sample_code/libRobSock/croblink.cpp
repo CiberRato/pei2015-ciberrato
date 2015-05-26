@@ -41,7 +41,7 @@ void CRobLink::send_register_message(char *rob_name,int rob_id)
 {
     // register in server
 	char xml[MSGMAXSIZE];
-    const char fmt[] = "<Robot Name=\"%s\" Id=\"%d\"></Robot>";
+    const char fmt[] = "<Robot Name=\"%s\" Id=\"%d\"></Robot>\x04";
 	sprintf(xml, fmt, rob_name, rob_id);
 
     if(port.send_info(xml, strlen(xml)+1)!=true)
@@ -64,7 +64,7 @@ void CRobLink::send_register_message(char *rob_name,int rob_id, double irSensorA
         n += sprintf(xml+n,"<IRSensor Id=\"%d\" Angle=\"%g\"/>",
                      i, irSensorAngles[i]);
 
-	sprintf(xml+n,"</Robot>");
+	sprintf(xml+n,"</Robot>\x04");
 
     if(port.send_info(xml, strlen(xml)+1)!=true)
     {
@@ -109,9 +109,15 @@ void CRobLink::parse_server_reply(void)
     }
     //cerr << "XML=\"" << xml <<"\"\nXMLEND\n";
 
+    QString data = QString(xml);
+    if (data[data.length()-1] != '\x04') {
+        cerr << "Invalid message received" << endl;
+        return;
+    }
+    data = data.left(data.length()-2);
 	/* set source of xml document */
 	QXmlInputSource source;
-	source.setData(QString(xml));
+	source.setData(data);
 
 	/* set parser handler */
     StructureParser handler(simParam.nBeacons);
@@ -256,52 +262,52 @@ int CRobLink::ReadSensors()
 void CRobLink::SyncRobot() 
 {
     char xml[128];
-    const char fmt[] = "<Actions> <Sync/> </Actions>\n";
+    const char fmt[] = "<Actions><Sync/></Actions>\x04";
     unsigned int n = sprintf(xml, "%s", fmt);
-    port.send_info(xml, n+1);
+    port.send_info(xml, n);
     //cout << xml;
 }
 
 void CRobLink::requestGround()
 {
     char xml[128];
-    const char fmt[] = "<Actions> <SensorRequests Ground=\"Yes\" /> </Actions>\n";
+    const char fmt[] = "<Actions><SensorRequests Ground=\"Yes\" /></Actions>\x04";
     unsigned int n = sprintf(xml,"%s", fmt);
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
     //cout << xml;
 }
 
 void CRobLink::requestCompass()
 {
     char xml[128];
-    const char fmt[] = "<Actions> <SensorRequests Compass=\"Yes\" /> </Actions>\n";
+    const char fmt[] = "<Actions><SensorRequests Compass=\"Yes\" /></Actions>\x04";
     unsigned int n = sprintf(xml, "%s", fmt);
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
     //cout << xml;
 }
 
 void CRobLink::requestBeacon(int id)
 {
     char xml[128];
-    const char fmt[] = "<Actions> <SensorRequests Beacon%d=\"Yes\" /> </Actions>\n";
+    const char fmt[] = "<Actions><SensorRequests Beacon%d=\"Yes\" /></Actions>\x04";
     unsigned int n = sprintf(xml, fmt, id);
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
     //cout << xml;
 }
 
 void CRobLink::requestObstacle(int id)
 {
     char xml[128];
-    const char fmt[] = "<Actions> <SensorRequests IRSensor%d=\"Yes\" /> </Actions>\n";
+    const char fmt[] = "<Actions><SensorRequests IRSensor%d=\"Yes\" /></Actions>\x04";
     unsigned int n = sprintf(xml, fmt, id);
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
     //cout << xml;
 }
 
 void CRobLink::requestSensors(int nReqs, va_list ap)
 {
     char *sensId;
-    char xml[2048]="<Actions>\n\t<SensorRequests ";
+    char xml[2048]="<Actions><SensorRequests ";
 	int  s,n;
 
 	n=strlen(xml);
@@ -311,56 +317,56 @@ void CRobLink::requestSensors(int nReqs, va_list ap)
 	   n += sprintf(xml+n,"%s=\"Yes\" ",sensId);
 	}
 
-	n+= sprintf(xml+n,"/>\n</Actions>");
+	n+= sprintf(xml+n,"/></Actions>\x04");
 
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
 }
 
 void CRobLink::DriveMotors(double lPow,double rPow)
 {
     char xml[1024];
-    const char fmt[] = "<Actions LeftMotor=\"%g\" RightMotor=\"%g\"/>\n";
+    const char fmt[] = "<Actions LeftMotor=\"%g\" RightMotor=\"%g\"/>\x04";
 	//sprintf(xml, fmt, lPow*1000.0+2000.5, rPow*1000.0+2000.5);
 	unsigned int n = sprintf(xml, fmt, lPow, rPow);
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
 	//cout << xml;
 }
 
 void CRobLink::Say(char *msg)
 {
     char xml[1024];
-    const char fmt[] = "<Actions><Say><![CDATA[%s]]></Say></Actions>\n";
+    const char fmt[] = "<Actions><Say><![CDATA[%s]]></Say></Actions>\x04";
     //char *fmt = "<Actions> <Say Ground=\"Yes\"/> </Actions>";
     unsigned int n = sprintf(xml, fmt, msg);
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
 	//cout << xml;
 }
 
 void CRobLink::SetReturningLed(bool val)
 {
     char xml[128];
-    const char fmt[] = "<Actions LeftMotor=\"%g\" RightMotor=\"%g\" ReturningLed=\"%s\"/>\n";
+    const char fmt[] = "<Actions LeftMotor=\"%g\" RightMotor=\"%g\" ReturningLed=\"%s\"/>\x04";
 	//sprintf(xml, fmt, lPow*1000.0+2000.5, rPow*1000.0+2000.5, "Off");
 	unsigned int n = sprintf(xml, fmt, 0.0, 0.0, (val?"On":"Off"));
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
 	//cout << xml;
 }
 
 void CRobLink::SetVisitingLed(bool val)
 {
     char xml[128];
-    const char fmt[] = "<Actions LeftMotor=\"%g\" RightMotor=\"%g\" VisitingLed=\"%s\"/>\n";
+    const char fmt[] = "<Actions LeftMotor=\"%g\" RightMotor=\"%g\" VisitingLed=\"%s\"/>\x04";
 	//sprintf(xml, fmt, lPow*1000.0+2000.5, rPow*1000.0+2000.5, "Off");
 	unsigned int n = sprintf(xml, fmt, 0.0, 0.0, (val?"On":"Off"));
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
 	//cout << xml;
 }
 
 void CRobLink::Finish(void)
 {
-	char xml[] = "<Actions LeftMotor=\"0.0\" RightMotor=\"0.0\" EndLed=\"On\"/>\n";
+	char xml[] = "<Actions LeftMotor=\"0.0\" RightMotor=\"0.0\" EndLed=\"On\"/>\x04";
 	unsigned int n = strlen(xml);
 	//cout << xml;
-    port.send_info(xml,n+1);
+    port.send_info(xml,n);
 }
 

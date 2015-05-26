@@ -32,6 +32,7 @@
 #endif
 
 #include "netif.h"
+#include <netinet/tcp.h>
 
 #define DEFAULT_PORT_NUMBER 6001
 
@@ -118,18 +119,20 @@ bool Port::init_local(void)
 	struct sockaddr_in	local_addr ;
 
 	/* Open UDP socket */
-	if ((socketfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+	if ((socketfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         return false ;	/* Can't open socket. */
 
 	/* Bind local address */
 	memset((char *)&local_addr, 0, sizeof(local_addr)) ;
 	local_addr.sin_family		= AF_INET ;
 	local_addr.sin_addr.s_addr	= htonl(INADDR_ANY) ;
-	local_addr.sin_port		= htons(localport) ;
+	local_addr.sin_port		= htons(portnum) ;
 
-	if (bind(socketfd, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0)
+	if (connect(socketfd, (struct sockaddr *)&local_addr, sizeof(local_addr)) < 0)
         return false ;
 
+    int flag = 1;
+    setsockopt(socketfd, IPPROTO_TCP, TCP_NODELAY, (char *) &flag, sizeof(int));
     return true;
 }
 

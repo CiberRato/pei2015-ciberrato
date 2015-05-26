@@ -110,7 +110,7 @@ static const char *SIMPARAM =
         "\t\tTargetReward=\"100\" HomeReward=\"100\"/>\n";
 
 
-cbSimulator::cbSimulator()
+cbSimulator::cbSimulator(QObject* parent): QObject(parent)
 {
 	lab = 0;
 	curCycle = 0;
@@ -217,7 +217,7 @@ void cbSimulator::reset()
 	// notify viewers
 	for (j=0; j<views.size(); j++)
 	{
-		views[j]->send("<Restart/>",11);
+		views[j]->socket->send("<Restart/>",11);
 	}
 
 	//delete Viewers
@@ -315,9 +315,10 @@ void cbSimulator::setReceptionist(cbReceptionist *r)
 {
 	receptionist = r;
 }
+
 void cbSimulator::setReceptionistAt(int port)
 {
-	cbReceptionist *receptionist = new cbReceptionist(port);
+	cbReceptionist *receptionist = new cbReceptionist();
 	if (receptionist == 0 || receptionist->bad()) {
         cerr << "Could not initialize receptionist\n";
         QMessageBox::critical(0,"Error",
@@ -327,8 +328,16 @@ void cbSimulator::setReceptionistAt(int port)
 		assert(0);
 	}
 	setReceptionist(receptionist);
+
+	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
+    server.listen(QHostAddress::Any, port);
 }
 
+void cbSimulator::newConnectionEvent() {
+
+	QTcpSocket * client = server.nextPendingConnection();
+	connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+}
 void cbSimulator::setGPS(bool g)
 {
     if (g == param->GPSOn) return;
@@ -533,7 +542,6 @@ bool cbSimulator::registerRobot(cbRobot *robot)
         lab->addBeacon(dynamic_cast<cbRobotBeacon *> (robot));
 
     emit robotRegistered((int) id);
-
 	return true;
 }
 
@@ -820,7 +828,7 @@ void cbSimulator::UpdateViews()
 
 		for (unsigned int j = 0; j < views.size(); j++) {
 			cbView *view = (cbView *) views[j];
-			view->send(xmlCharA, xmlString.length()+1);
+			view->socket->send(xmlCharA, xmlString.length());
 		}
 	}
 }
@@ -849,7 +857,7 @@ void cbSimulator::UpdateState()
         if (curState == FINISHED) {
         	for (unsigned int i= 0; i < robotMappers.size(); i++) {
         		if (robotMappers[i] == NULL) continue;
-        		disconnect(robots[i], SIGNAL(readyRead()), robotMappers[i], SLOT(map()));
+        		disconnect(robots[i]->socket, SIGNAL(readyRead()), robotMappers[i], SLOT(map()));
         	}
         }
     }
@@ -1412,11 +1420,12 @@ void cbSimulator::setDefaultParameters(void)
 
 void cbSimulator::startTimer(void)
 {
-	connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+	//connect(receptionist, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 }
 
 void cbSimulator::processRobotActions(const QString &id)
 {
+
 	unsigned int robotid = id.toInt();
 	// debug
 	//std::cout << "RobotActions send by robot " << robotid << std::endl;
@@ -1427,27 +1436,28 @@ void cbSimulator::processRobotActions(const QString &id)
 		if (robot == 0 || robot->Id() != robotid) continue;
 		robot->resetReceivedFlags();
 		robot->resetRequestedSensors();
-		while (robot->readAction(&action))
+		if (robot->readAction(&action))
 		{
 			//cerr << "Robot action received l=" << action.leftMotor
 			//     << " r=" << action.rightMotor << "\n";
-			if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
+			/*if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
 			if (action.rightMotorChanged)    robot->setRightMotor(   action.rightMotor);
 			if (action.endLedChanged)        robot->setEndLed(       action.endLed);
 			if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
-			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
+			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);*/
 
-			for (unsigned int r = 0; r < action.sensorRequests.size(); r++) {
-				robot->requestSensor(action.sensorRequests[r]);
-			}
+			//for (unsigned int r = 0; r < action.sensorRequests.size(); r++) {
+			//	robot->requestSensor(action.sensorRequests[r]);
+			//}
 
-			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
+			//if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
 			if (action.sync) {
+				step();
 				robot->setWaitingForSync(true);
 
 				if (syncmode) { //&& curState == RUNNING) {
 					bool stepSim = true;
-					for (unsigned int i = 0; i < robots.size(); i++)
+					/*for (unsigned int i = 0; i < robots.size(); i++)
 					{
 						cbRobot *robot = robots[i];
 						if (robot == 0) continue;
@@ -1456,23 +1466,22 @@ void cbSimulator::processRobotActions(const QString &id)
 							break;
 						}
 					}
-					if (stepSim) {
-						timer.stop();
-						for (unsigned int i = 0; i < robots.size(); i++)
+					if (stepSim) {*/
+						//timer.stop();
+					/*	for (unsigned int i = 0; i < robots.size(); i++)
 						{
 							cbRobot *robot = robots[i];
 							if (robot == 0) continue;
 							robot->setWaitingForSync(false);
-						}
-						step();
+						}*/
 
-						timer.start(syncTimeout());
-					}
+					/*	timer.start(syncTimeout());
+					}*/
 				}
 			}
 
-			action.sensorRequests.clear();
-		}
+			//action.sensorRequests.clear();
+		} 
 	}
 }
 void cbSimulator::processPanelCommands(const QString &panelId)
@@ -1526,7 +1535,9 @@ void cbSimulator::processPanelCommands(const QString &panelId)
 }
 void cbSimulator::processReceptionMessages()
 {
-	while (receptionist->CheckIn())
+	QObject * obj = sender();
+	QTcpSocket * client = (QTcpSocket *) obj;
+	if (receptionist->CheckIn(client))
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;
@@ -1534,12 +1545,11 @@ void cbSimulator::processReceptionMessages()
 		switch (form.type)
 		{
 		case cbClientForm::VIEW:
-			//cout << "View form is going to be processed\n";
 			cnt = views.size();
 			views.resize(cnt + 1);
 			views[cnt] = form.client.view;
 
-			views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+			views[cnt]->socket->Reply(param, grid, lab);
 
 			if (curState == INIT) {
 				nextState = STOPPED;
@@ -1549,34 +1559,34 @@ void cbSimulator::processReceptionMessages()
 			cout << "Viewer has been registered\n";
 			gui->appendMessage( "Viewer has been registered\n" );
 			UpdateViews();
+
+			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::PANEL:
-			//cout << "Panel form is going to be processed\n";
 			cnt = panels.size();
 			panels.resize(cnt + 1);
 			panels[cnt] = form.client.panel;
-			panels[cnt]->Reply(form.addr, form.port, param);
+			panels[cnt]->socket->Reply(param);
 
 			mapper = new QSignalMapper(this);
-			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
-			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(panels[cnt]->socket, SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt]->socket, QString::number(cnt));
 			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
 
 			cout << "Panel has been registered\n";
 			gui->appendMessage( "Panel has been registered\n" );
+
+			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::PANELVIEW:
-
-			form.client.panelview->Reply(form.addr, form.port, param, grid, lab);
-
 			cnt = panels.size();
 			panels.resize(cnt + 1);
 			panels[cnt] = form.client.panelview;
+			panels[cnt]->socket->Reply(param, grid, lab);
 
 			cnt = views.size();
 			views.resize(cnt + 1);
 			views[cnt] = form.client.panelview;
-
 			if (curState == INIT) {
 				nextState = STOPPED;
 				if (logging)
@@ -1585,28 +1595,29 @@ void cbSimulator::processReceptionMessages()
 
 
 			mapper = new QSignalMapper(this);
-			connect(panels[cnt], SIGNAL(readyRead()), mapper, SLOT(map()));
-			mapper->setMapping(panels[cnt], QString::number(cnt));
+			connect(panels[cnt]->socket, SIGNAL(readyRead()), mapper, SLOT(map()));
+			mapper->setMapping(panels[cnt]->socket, QString::number(cnt));
 			connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processPanelCommands(const QString&)));
 
 			cout << "PanelView has been registered\n";
 			gui->appendMessage( "PanelView has been registered\n" );
 			UpdateViews();
+
+			disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 			break;
 		case cbClientForm::ROBOT:
 		case cbClientForm::ROBOTBEACON:
 		{
-			//cout << "Robot form is going to be processed\n";
 			cbRobot *robot = form.client.robot;
 			if (registerRobot(robot))
 			{
-				robot->Reply(form.addr, form.port, param);
+				robot->socket->Reply(param);
 				cout << robot->Name() << " has been registered\n";
 				gui->appendMessage( QString(robot->Name()) + " has been registered" );
 
 				mapper = new QSignalMapper(this);
-				connect(robot, SIGNAL(readyRead()), mapper, SLOT(map()));
-				mapper->setMapping(robot, QString::number(robot->Id()));
+				connect(robot->socket, SIGNAL(readyRead()), mapper, SLOT(map()));
+				mapper->setMapping(robot->socket, QString::number(robot->Id()));
 				connect(mapper, SIGNAL(mapped(const QString&)), this, SLOT(processRobotActions(const QString&)));
 
 				robotMappers.resize(robots.size());
@@ -1614,10 +1625,13 @@ void cbSimulator::processReceptionMessages()
 
 				UpdateState();
 				UpdateViews();
+
+				disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+	
 			}
-			else // robot was refused
+			else
 			{
-				robot->Refuse(form.addr, form.port);
+				robot->socket->Refuse();
 				cout << robot->Name() << " has been refused\n";
 				gui->appendMessage( QString(robot->Name()) + " has been refused", true);
 				delete robot;

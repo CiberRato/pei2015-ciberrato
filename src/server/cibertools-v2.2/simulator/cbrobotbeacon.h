@@ -25,6 +25,7 @@
 
 #include "cbrobot.h"
 #include "cbbeacon.h"
+#include "cbclient.h"
 
 using std::ostream;
 
@@ -39,10 +40,10 @@ using std::ostream;
 class cbRobotBeacon : public cbRobot, public cbBeacon
 {
 public:
-	cbRobotBeacon(const double irSensorAngles[NUM_IR_SENSORS]);
+	cbRobotBeacon(cbClient*, const double irSensorAngles[NUM_IR_SENSORS]);
 	virtual ~cbRobotBeacon();
 
-        cbPoint &Center();
+    cbPoint &Center();
 
 	void Log(ostream &Log, bool withactions=true);
 

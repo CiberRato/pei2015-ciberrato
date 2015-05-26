@@ -1,14 +1,13 @@
 #/bin/bash
-(cd simulator; ./simulator)&
+(cd simulator; ./simulator -sync)&
 
 sleep 1
 
-(cd robsample; python robsample_python.py -pos 1 -robname SAMPLE_1) &
-(cd robsample; python robsample_python.py -pos 2 -robname SAMPLE_2)&
-(cd robsample; python robsample_python.py -pos 3 -robname SAMPLE_3)&
-(cd robsample; python robsample_python.py -pos 4 -robname SAMPLE_4)&
-(cd robsample; python robsample_python.py -pos 5 -robname SAMPLE_5)&
-
+(cd ../compile_execute/python/; ./execute.sh localhost 1 SAMPLE_1) &
+(cd ../compile_execute/python/; ./execute.sh localhost 2 SAMPLE_2) &
+(cd ../compile_execute/python/; ./execute.sh localhost 3 SAMPLE_3) &
+#(cd ../compile_execute/python/; ./execute.sh localhost 4 SAMPLE_4) &
+#(cd ../compile_execute/python/; ./execute.sh localhost 5 SAMPLE_5) &
 sleep 1
 
 #(cd Viewer; ./Viewer -autoconnect -autostart)

@@ -34,6 +34,11 @@
 #include <QThread>
 #include <iostream>
 #include <vector>
+#include <QtNetwork>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include "cbclient.h"
+#include "cbentity.h"
 
 using std::vector;
 using std::ostream;
@@ -48,7 +53,6 @@ class cbGrid;
 class cbRobot;
 class cbView;
 class cbPanel;
-class cbClient;
 class cbViewInterface;
 class cbPanelInterface;
 class cbPanelView;
@@ -66,7 +70,7 @@ class cbSimulator : public QObject
 {
 Q_OBJECT
 public:
-	cbSimulator();
+	cbSimulator(QObject* parent = 0);
 	~cbSimulator();
 
 	enum State {INIT, STOPPED, RUNNING, FINISHED};
@@ -170,6 +174,8 @@ public slots:
     void processPanelCommands(const QString&);
     void processReceptionMessages();
 
+    void newConnectionEvent();
+
 signals:
     void toggleGPS(bool);
     void toggleScoreSensor(bool);
@@ -212,8 +218,8 @@ protected: // data members
 
 	cbSimulatorGUI *gui;
 
-    vector<cbClient *> views;
-    vector<cbClient *> panels;
+    vector<cbEntity *> views;
+    vector<cbEntity *> panels;
     vector<cbRobot *> robots;
 
 	State curState, nextState;	// current and next states
@@ -235,6 +241,7 @@ protected: // data members
 
     vector<QSignalMapper*> robotMappers;
 
+    QTcpServer  server;
 protected: // member functions
 	void RobotsToXml(ostream &, bool withactions, bool stateIndependent, bool guiShowPositions=false);
 	void NextPositions();
