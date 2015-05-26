@@ -8,10 +8,31 @@
     EditMapController.$inject = ['$scope', '$routeParams', 'Round'];
 
     function EditMapController($scope, $routeParams, Round){
+        var x2js = new X2JS();
+
+
+        function isArray(what) {
+            return Object.prototype.toString.call(what) === '[object Array]';
+        }
+
+        function labConvertXml2JSon() {
+            return JSON.stringify(x2js.xml_str2json($scope.codeLab));
+        }
+
+        function gridConvertXml2JSon() {
+            return JSON.stringify(x2js.xml_str2json($scope.codeGrid));
+        }
+
         var vm = this;
+        var hasGrid = false;
+        var hasMap = false;
         vm.getCodeGrid = getCodeGrid;
         vm.getCodeLab = getCodeLab;
         vm.getCodeParam = getCodeParam;
+        var c3 = document.getElementById("layer5");
+        var ctx = c3.getContext("2d");
+        $scope.zoom = 50;
+
         activate();
 
         function activate(){
@@ -69,15 +90,142 @@
 
         }
 
+        function prepareParamters(){
+
+            c3.width=$scope.zoom * $scope.map.Lab._Width;
+            c3.height=$scope.zoom * $scope.map.Lab._Height;
+
+            ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
+            ctx.scale(1, -1);
+
+            /* Beacons Object */
+            $scope.beacon = $scope.map.Lab.Beacon;
+
+            /* Number of Beacons */
+            try{
+                $scope.nBeacon = $scope.map.Lab.Beacon.length;
+                $scope.beacon_height =  $scope.map.Lab.Beacon[0]._Height;
+            }
+            catch(e){
+                $scope.nBeacon = 1;
+                $scope.beacon_height =  $scope.map.Lab.Beacon._Height;
+            }
+
+
+            /* Set Maze Colors */
+            $scope.groundColor = 'black';
+            $scope.cheeseColor = 'static/img/svg/cheese.png';
+            $scope.circleBorder = '#00ffff';
+            $scope.greatWallColor = '#008000';
+            $scope.smallWallColor = '#0000ff';
+            $scope.gridColor = '#cfd4db';
+        }
+
+        function drawMap(){
+
+            ctx.clearRect(0, 0, c3.width, c3.height);
+            ctx.rect(0,0, c3.width, c3.height);
+            ctx.fillStyle=$scope.groundColor;
+            ctx.fill();
+            drawWalls();
+            drawBeacon();
+        }
+
+        function drawGrid(){
+            var i;
+            for(i=0;i<$scope.grid.Grid.Position.length;i++) {
+                ctx.beginPath();
+                ctx.arc($scope.grid.Grid.Position[i]._X*$scope.zoom, $scope.grid.Grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                ctx.fillStyle = $scope.gridColor;
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = $scope.circleBorder;
+                ctx.stroke();
+            }
+        }
+
+        function drawBeacon(){
+            var i;
+            if($scope.nBeacon == 1){
+                ctx.beginPath();
+                ctx.arc($scope.map.Lab.Beacon._X * $scope.zoom, $scope.map.Lab.Beacon._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                ctx.fillStyle = $scope.circleBorder;
+                ctx.fill();
+
+                var dx = ($scope.map.Lab.Beacon._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target._Radius);
+                var dy = ($scope.map.Lab.Beacon._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target._Radius);
+                var dWidth = $scope.zoom*$scope.map.Lab.Target._Radius*2;
+                var dHeight = $scope.zoom*$scope.map.Lab.Target._Radius*2;
+
+                var imageObj = new Image();
+                imageObj.onload = function() {
+                    ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
+                };
+                imageObj.src = $scope.cheeseColor;
+                ctx.fill();
+                ctx.stroke();
+            }
+            else{
+                for(i=0;i<$scope.map.Lab.Beacon.length;i++){
+                    ctx.beginPath();
+                    ctx.arc($scope.map.Lab.Beacon[i]._X * $scope.zoom, $scope.map.Lab.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                    ctx.fillStyle = $scope.circleBorder;
+                    ctx.fill();
+
+                    var dx = ($scope.map.Lab.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
+                    var dy = ($scope.map.Lab.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
+                    var dWidth = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
+                    var dHeight = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
+
+                    var imageObj = new Image();
+                    imageObj.onload = function() {
+                        ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
+                    };
+                    imageObj.src = $scope.cheeseColor;
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+
+
+        }
+
+        function drawWalls(){
+            var i;
+            for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
+
+                if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
+                    ctx.fillStyle = $scope.smallWallColor;
+                }
+                else{
+                    ctx.fillStyle = $scope.greatWallColor;
+                }
+                ctx.beginPath();
+                var b = 0;
+                for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
+                    ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
         function getCodeGrid(){
+            hasGrid = true;
             var a = $scope.codeGrid;
-            console.log(a);
+            $scope.grid = angular.fromJson(gridConvertXml2JSon());
+            console.log($scope.grid);
 
             var file = new Blob([a], {type: 'text/plain'});
 
             Round.uploadGrid(vm.roundName, file, vm.competitionName, vm.files.grid.file).then(success, error);
 
             function success(){
+                if (hasMap){
+                    prepareParamters();
+                    drawMap();
+                    drawGrid();
+                }
                 $.jGrowl("File \'" + vm.files.grid.file + "\' has been updated.", {
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
@@ -88,14 +236,21 @@
             }
         }
         function getCodeLab(){
+            hasMap = true;
             var a = $scope.codeLab;
-            console.log(a);
+            $scope.map = angular.fromJson(labConvertXml2JSon());
+            console.log($scope.map);
 
             var file = new Blob([a], {type: 'text/plain'});
 
             Round.uploadLab(vm.roundName, file, vm.competitionName, vm.files.lab.file).then(success, error);
 
             function success(){
+                if (hasGrid){
+                    prepareParamters();
+                    drawMap();
+                    drawGrid();
+                }
                 $.jGrowl("File \'" + vm.files.lab.file + "\' has been updated.", {
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
