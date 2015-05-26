@@ -131,7 +131,6 @@ class Viewer:
 			sr = data.split("\x04")
 			if len(sr) <= 1:
 				continue
-			print sr[0]
 			robotsXML = minidom.parseString(sr[0])
 			robots = robotsXML.getElementsByTagName('Robot')
 			if len(robots):
@@ -180,7 +179,6 @@ class Viewer:
 		while simTime != robotTime:
 			# Update Robot time
 			data = simulator_s.recv(16384)
-			print data
 			#print data
 			sr = data.split("\x04")
 			sr[0] = buffer_data + sr[0]
