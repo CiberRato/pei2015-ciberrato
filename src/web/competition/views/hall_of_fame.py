@@ -107,9 +107,6 @@ class AutomaticTeamScoreHallOfFame(mixins.CreateModelMixin, viewsets.GenericView
     queryset = AgentScoreRound.objects.all()
     serializer_class = AutomaticTeamScoreHallOfFameSerializer
 
-    def get_permissions(self):
-        return permissions.AllowAny(),
-
     def create(self, request, *args, **kwargs):
         """
         B{Create} an automatic team score
