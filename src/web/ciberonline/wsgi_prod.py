@@ -10,8 +10,10 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 import os
 import sys
 
+print os.path.abspath(os.path.join(os.path.dirname(__file__)))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__))))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ciberonline.settings")
 
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+os.environ['DJANGO_SETTINGS_MODULE'] = 'ciberonline.settings'
+from django.core.handlers.wsgi import WSGIHandler
+application = WSGIHandler()
