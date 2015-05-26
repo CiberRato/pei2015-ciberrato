@@ -183,7 +183,7 @@ class Viewer:
 			# Update Robot time
 			data = simulator_s.recv(16384)
 			#print data
-<<<<<<< HEAD
+
 			sr = data.split("\x04")
 			sr[0] = buffer_data + sr[0]
 			buffer_data = sr[-1]
@@ -228,25 +228,30 @@ class Viewer:
 		log_file.write("]}")
 
 
-		if hall_of_fame:
-			robotXML = minidom.parseString(data)
-			itemlist = robotXML.getElementsByTagName('Scores')
-			score = itemlist[0].attributes['Score'].value
-
-			if scoreTime = 0:
-				scoreTime = simTime
-
-			# Post score to the end point
-			# Type of competition: Hall of Fame - Single
-			data = {'trial_id': sim_id, 'score': score, 'number_of_agents': number_of_agents_finished, 'time': scoreTime}
-			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
-
 		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet
 			#time.sleep(0.1)
 			# Send websocket msg telling it's over
 			websocket_udp.sendto("END" ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
 			#websocket_tcp.send("END")
+
+		if hall_of_fame:
+			robotXML = minidom.parseString(data)
+			itemlist = robotXML.getElementsByTagName('Scores')
+			score = itemlist[0].attributes['Score'].value
+
+			if scoreTime == 0:
+				scoreTime = simTime
+
+			print "[VIEWER] Posting scores.. score: " + score + " time: " + scoreTime
+			# Post score to the end point
+			# Type of competition: Hall of Fame - Single
+			data = {'trial_id': sim_id, 'score': score, 'number_of_agents': number_of_agents_finished, 'time': scoreTime}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
+
+			if response.status_code != 201:
+				print response.text
+				raise Exception("[STARTER] ERROR: error posting scores to end point")
 
 		starter_c.send('<EndedSimulation/>')
 
