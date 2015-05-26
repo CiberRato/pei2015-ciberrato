@@ -338,7 +338,7 @@
                 try {
                     $scope.updateValues();
 
-                    $(".leftGrip").css("left", ($scope.idx * ($("#tmline").width())) / $scope.param._SimTime);
+                    $(".leftGrip").css("left", ($scope.log[$scope.idx].LogInfo._Time * ($("#tmline").width()-20)) / $scope.param._SimTime);
                     if ($scope.playvar) {
                         $scope.idx++;
                     }
