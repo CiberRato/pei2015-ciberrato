@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port, hall_of_fame):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
@@ -62,21 +62,24 @@ class Viewer:
 
 		SIMULATOR_HOST = settings["settings"]["simulator_host"]
 
+		SCORE_URL = settings["urls"]["score"]
+
 		LOG_FILE = settings["settings"]["log_info_file"]
 
 		LOG_FILE += str(simulator_port)
 		# End of loading settings
 
-		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		simulator_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
+		simulator_s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+		simulator_s.connect((SIMULATOR_HOST, simulator_port))
 		# Register as PanelViewer in the simulator
-		simulator_s.sendto("<PanelView/>\n" ,(SIMULATOR_HOST, simulator_port))
+		simulator_s.send("<PanelView/>\x04")
 
 		# Get sim time, and ports
 		# params, grid e lab comes in this packet as well
-		data, (hostSim, portSim) = simulator_s.recvfrom(4096)
-		parametersXML = minidom.parseString("<xml>"+data.replace("\x00", "")+"</xml>")
+		data = simulator_s.recv(8192)
+		parametersXML = minidom.parseString("<xml>"+data.split("\x04")[0]+"</xml>")
 		itemlist = parametersXML.getElementsByTagName('Parameters')
 		simTime = itemlist[0].attributes['SimTime'].value
 
@@ -126,8 +129,11 @@ class Viewer:
 		checkedRobots = []
 		prevlen = 0
 		while len(checkedRobots) != int(robotsAmount):
-			data, (host, port) = simulator_s.recvfrom(4096)
-			robotsXML = minidom.parseString(data.replace("\x00", ""))
+			data = simulator_s.recv(8192)
+			sr = data.split("\x04")
+			if len(sr) <= 1:
+				continue
+			robotsXML = minidom.parseString(sr[0])
 			robots = robotsXML.getElementsByTagName('Robot')
 			if len(robots):
 				for r in robots:
@@ -151,7 +157,7 @@ class Viewer:
 		# 	data = starter_c.recv()
 
 		# Sending simulator msg to start the simulation
-		simulator_s.sendto("<Start/>\n" ,(hostSim, portSim))
+		simulator_s.send("<Start/>\n\x04")
 
 		if not sync:
 			# # Connect to websockets
@@ -168,16 +174,33 @@ class Viewer:
 			# time.sleep(0.1)
 
 		robotTime = 0
+		scoreTime = 0
+		number_of_agents_finished = 0
 		firstTime = True
 		log_file.write('"Log":[')
+		buffer_data = ''
 		while simTime != robotTime:
 			# Update Robot time
-			data = simulator_s.recv(4096)
+			data = simulator_s.recv(16384)
 			#print data
-			data = data.replace("\x00", "")
-			robotXML = minidom.parseString(data)
-			itemlist = robotXML.getElementsByTagName('LogInfo')
-			robotTime = itemlist[0].attributes['Time'].value
+<<<<<<< HEAD
+			sr = data.split("\x04")
+			sr[0] = buffer_data + sr[0]
+			buffer_data = sr[-1]
+
+			for data in sr[:-1]:
+				robotXML = minidom.parseString(data)
+				itemlist = robotXML.getElementsByTagName('LogInfo')
+				robotTime = itemlist[0].attributes['Time'].value
+
+			if hall_of_fame:
+				robotXML = minidom.parseString(data)
+				itemlist = robotXML.getElementsByTagName('Leds')
+				endLed = itemlist[0].attributes['EndLed'].value
+
+				if endLed == "On":
+					number_of_agents_finished += 1
+					scoreTime = robotTime
 
 			# Convert to json and write to log file
 			json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
@@ -192,7 +215,6 @@ class Viewer:
 						# Send data to the websockets
 						#websocket_tcp.send(json_data)
 						websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-
 			else:
 				firstTime = False
 				log_file.write(json_data)
@@ -204,6 +226,20 @@ class Viewer:
 			#time.sleep(0.05)
 
 		log_file.write("]}")
+
+
+		if hall_of_fame:
+			robotXML = minidom.parseString(data)
+			itemlist = robotXML.getElementsByTagName('Scores')
+			score = itemlist[0].attributes['Score'].value
+
+			if scoreTime = 0:
+				scoreTime = simTime
+
+			# Post score to the end point
+			# Type of competition: Hall of Fame - Single
+			data = {'trial_id': sim_id, 'score': score, 'number_of_agents': number_of_agents_finished, 'time': scoreTime}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
 
 		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet

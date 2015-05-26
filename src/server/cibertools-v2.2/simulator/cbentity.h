@@ -18,24 +18,34 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef CBPANEL_H
-#define CBPANEL_H
+#ifndef CBENTITY_H
+#define CBENTITY_H
 
+#include <QObject>
+#include <QTcpSocket>
+#include <QHostAddress>
+#include <qxml.h>
 #include "cbclient.h"
-#include "cbentity.h"
-#include "cbpanelcommand.h"
+    
+/**
+ * base class of all representations of clients in the simulator.
+ * 
+ *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
+ */
 
-class cbPanelInterface {
-    virtual bool readCommand(cbPanelCommand *command) = 0;
-};
-
-class cbPanel : public cbEntity, public cbPanelInterface
+class cbEntity : public QObject
 {
 public:
-	cbPanel(cbClient *);
-	~cbPanel();
+	cbEntity(cbClient*, QObject *parent = 0);
+	~cbEntity();
 
-    bool readCommand(cbPanelCommand *command);
+    cbClient* socket;
+
+protected:
+    QHostAddress address;
+    unsigned short port;
+    QXmlSimpleReader parser;
+    QXmlInputSource source;
 };
 
 #endif

@@ -31,10 +31,7 @@ def error(vmsg, additional_info = None):
 
 class Validator:
 	def __init__(self):
-		self.simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
-		self.simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		self.simulator_dummy.bind(("127.0.0.1", 6000)) # ouvir na porta 6000
-		self.simulator_dummy.settimeout(1)
+		pass
 
 	def validate(self):
 		if not os.path.exists('execute.sh'):
@@ -65,22 +62,30 @@ class Validator:
 		self.validateHost("127.0.0.33")
 
 		self.validateMessagesExchanged()
-
-		self.simulator_dummy.close()
 		sys.exit(0)
 
 	def validateRobotName(self, name):
+		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		simulator_dummy.bind(("127.0.0.1", 6000))
+		simulator_dummy.settimeout(1)
+		simulator_dummy.listen(1)
+
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 "+name, 
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
-			data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
+			client_s, client_addr = simulator_dummy.accept()
+			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
 
 		agent.kill()
+		client_s.close()
+		simulator_dummy.shutdown(socket.SHUT_RDWR)
+		simulator_dummy.close()
 
 		try:
-			parametersXML = minidom.parseString(data.replace("\x00", ""))
+			parametersXML = minidom.parseString(data.split("\x04")[0])
 			robotParam = parametersXML.getElementsByTagName('Robot')
 			nameRobot = robotParam[0].attributes['Name'].value
 
@@ -90,18 +95,28 @@ class Validator:
 			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validatePosition(self, pos):
+		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		simulator_dummy.bind(("127.0.0.1", 6000))
+		simulator_dummy.settimeout(1)
+		simulator_dummy.listen(1)
+
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 "+pos+" robot", 
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 		try:
-			data, (host, port) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
+			client_s, client_addr = simulator_dummy.accept()
+			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
 
 		agent.kill()
+		client_s.close()
+		simulator_dummy.shutdown(socket.SHUT_RDWR)
+		simulator_dummy.close()
 
 		try:
-			parametersXML = minidom.parseString(data.replace("\x00", ""))
+			parametersXML = minidom.parseString(data.split("\x04")[0])
 			robotParam = parametersXML.getElementsByTagName('Robot')
 			ID = robotParam[0].attributes['Id'].value
 
@@ -111,23 +126,27 @@ class Validator:
 			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validateHost(self, hostVal):
-		hostSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # comunicação UDP
+		hostSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		hostSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		hostSocket.bind((hostVal, 6000)) # ouvir na porta 6000
+		hostSocket.bind((hostVal, 6000))
 		hostSocket.settimeout(1)
+		hostSocket.listen(1)
 
 		agent = subprocess.Popen("./execute.sh "+hostVal+" 1 robot",
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
-			data, (host, port) = hostSocket.recvfrom(1024) # infos de quem envia
+			client_s, client_addr = hostSocket.accept()
+			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
 
-		hostSocket.close()
 		agent.kill()
+		client_s.close()
+		hostSocket.shutdown(socket.SHUT_RDWR)
+		hostSocket.close()
 
 		try:
-			parametersXML = minidom.parseString(data.replace("\x00", ""))
+			parametersXML = minidom.parseString(data.split("\x04")[0])
 			robotParam = parametersXML.getElementsByTagName('Robot')
 			robotid = robotParam[0].attributes['Id']
 			if int(robotid.value) < 0:
@@ -137,13 +156,20 @@ class Validator:
 			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validateMessagesExchanged(self):
+		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		simulator_dummy.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+		simulator_dummy.bind(("127.0.0.1", 6000))
+		simulator_dummy.settimeout(1)
+		simulator_dummy.listen(1)
+
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 robot", 
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
-			data, (host_robot, port_robot) = self.simulator_dummy.recvfrom(1024) # infos de quem envia
+			client_s, client_addr = simulator_dummy.accept()
+			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
-
 		parameters = '<Reply Status="Ok">\
 			<Parameters SimTime="1800" CycleTime="50"\
 			CompassNoise="2" BeaconNoise="2" ObstacleNoise="0.1"\
@@ -160,10 +186,11 @@ class Validator:
 			BeaconAperture="3.141593"\
 			ReturnTimePenalty="25" ArrivalTimePenalty="100"\
 			CollisionWallPenalty="2" CollisionRobotPenalty="2"\
-			TargetReward="100" HomeReward="100" /></Reply>\n'	
+			TargetReward="100" HomeReward="100" /></Reply>\n\x04'	
 
 		# Simulating the answer to the agent..	
-		self.simulator_dummy.sendto(parameters ,(host_robot, port_robot))
+		client_s.send(parameters)
+		time.sleep(0.5)
 
 		readSensorsParam = '<Measures Time="345">\
 			<Sensors Collision="No">\
@@ -171,18 +198,19 @@ class Validator:
 			</Sensors>\
 			<Leds EndLed="Off" ReturningLed="Off" VisitingLed="Off"/>\
 			<Buttons Start="On" Stop="Off"/>\
-			</Measures>\n'
+			</Measures>\n\x04'
 		
+		client_s.send(readSensorsParam)
 		# Simulating a Measures to the agent...
-		self.simulator_dummy.sendto(readSensorsParam ,(host_robot, port_robot))
+		#self.simulator_dummy.sendto(readSensorsParam ,(host_robot, port_robot))
 
 		try:
-	 		data, (host, port) = self.simulator_dummy.recvfrom(1024)
+	 		data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.ANSWER_ACTIONS)
 
 		try:
-			parametersActions = minidom.parseString(data.replace("\x00", ""))
+			parametersActions = minidom.parseString(data.split("\x04")[0])
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
 		except:
 			error(ValidatorMessage.VALID_ACTIONS)
@@ -194,21 +222,24 @@ class Validator:
 			</Sensors>\
 			<Leds EndLed="Off" ReturningLed="Off" VisitingLed="Off"/>\
 			<Buttons Start="On" Stop="Off"/>\
-			</Measures>\n'
+			</Measures>\n\x04'
 		
-		self.simulator_dummy.sendto(readSensorsParamCollisionOn ,(host_robot, port_robot))
+		client_s.send(readSensorsParamCollisionOn)
 		try:
-			data, (host, port) = self.simulator_dummy.recvfrom(1024)
+			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.ANSWER_ACTIONS)	
 
 		try:
-			parametersActions = minidom.parseString(data.replace("\x00", ""))
+			parametersActions = minidom.parseString(data.split("\x04")[0])
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
 		except:
 			error(ValidatorMessage.NOT_ACTIONS)
 
 		agent.kill()
+		client_s.close()
+		simulator_dummy.shutdown(socket.SHUT_RDWR)
+		simulator_dummy.close()
 
 if __name__ == "__main__":
 	Validator().validate()

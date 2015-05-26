@@ -48,6 +48,7 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 	const QString &tag = qName;
 	activeTag = tag;
 
+	//cerr << "start: "<< activeTag.toUtf8().constData() << "\n";
 	switch (type) {
 		case UNKNOWN:
 			if (tag == "Actions") {
@@ -83,12 +84,11 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 					if (visitingled == "On") action.visitingLed = true;
 					else action.visitingLed = false;
 				}
-			} else {
+			} else if (tag == "XML") { } else {
 				return false;
 			}
 			break;
 		case ACTIONS:
-
 			if (tag == "SensorRequests") {
 				type = SENSORREQUESTS;
 				for (int a = 0; a < attr.length(); a++) {
@@ -114,15 +114,17 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 		default:
 			return false;
 	}
+	//cerr << "true\n";
 	return TRUE;
 }
 
 bool cbActionHandler::endElement( const QString&, const QString&, const QString&)
 {
 	/* process end tag */
+	//cerr << "end: "<< qName.toUtf8().constData() << "; "<< type<<"\n";
 	switch (type) {
 		case UNKNOWN:
-			return false;
+			break;
 		case ACTIONS:
 			type = UNKNOWN;
 			break;

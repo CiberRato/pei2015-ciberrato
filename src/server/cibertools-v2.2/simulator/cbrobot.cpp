@@ -43,7 +43,7 @@ static const char *StrState[] =
     "Stopped", "Running", "Waiting", "Returning", "Finished", "Removed"
 };
 
-cbRobot::cbRobot(const double irSensorAngle[]) : cbClient()
+cbRobot::cbRobot(cbClient *client, const double irSensorAngle[]) : cbEntity(client)
 {
 	int i;
 
@@ -265,40 +265,32 @@ void cbRobot::changeActiveState()
 */
 bool cbRobot::readAction(cbRobotAction *action)
 {
-	/* look for an incoming message */
-    char xmlBuff[1024];
-    int xmlSize;
-
-    if (!hasPendingDatagrams())
-        return false;
-
-    if ((xmlSize=readDatagram(xmlBuff, 1023)) < 0)
-    {
-        cerr << "Error reading from Robot Socket - " << errorString().toStdString();
-        //cerr << "Error no. " << error() << " reading from robot socket\n";
-        //if(showActions)
-        //   simulator->GUI()->appendMessage((QString("Error no. ") + error()
-        //                                          + " reading from robot socket");
-		return false;
-	}
-	else xmlBuff[xmlSize]='\0';
+    QByteArray read = socket->readAll();
+    QList<QByteArray> data = read.split('\x04');
+    QByteArray datagram = QByteArray("<XML>");
+    for (int i = 0; i < data.length() - 1; i++) {
+    	datagram += data.at(i);
+    }
+    old = data.at(data.length()-1);
+    datagram += QByteArray("</XML>");
 
 #ifdef DEBUG_ROBOT
-	cerr << "cbRobot: " << xmlBuff << "\n";
+	cerr << "cbRobot: " << datagram.data() << "\n";
 #endif
-
-	
-    if (showActions)
-        simulator->GUI()->writeOnBoard(QString(name) + " : " + xmlBuff, (int) id, 1);
+	//cerr << read.data() << " : " << datagram.data() << "\n";
+    //if (showActions)
+    //    simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
 
 	/* parse xml message */
+	QXmlSimpleReader parser;
+    QXmlInputSource source;
     parser.setContentHandler(&handler);
-    source.setData(QByteArray(xmlBuff));
+    source.setData(datagram);
 	if (!parser.parse(source))
 	{
-        cerr << "cbRobot::Fail parsing xml action message: \"" << xmlBuff << "\"\n";
+        cerr << "cbRobot::Fail parsing xml action message: \"" << datagram.constData() << "\"\n";
         simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
-        simulator->GUI()->appendMessage( QString(" \"")+xmlBuff+"\"" , true);
+        simulator->GUI()->appendMessage( QString(" \"")+datagram.constData()+"\"" , true);
 
 		return false;
 	}
@@ -892,15 +884,14 @@ void cbRobot::sendSensors()
 	n += sprintf(xml+n, "</Measures>\n");
 
 	/* send XML message to client */
-	send(xml, n+1);
+	socket->send(xml, n);
 	
 #ifdef DEBUG_ROBOT
 	cerr << "Measures sent to robot " << id << "\n" << xml;
 #endif
 
-	// CHECK THIS...
-    //if (showMeasures)
-    //    simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
+    if (showMeasures)
+        simulator->GUI()->writeOnBoard("Measures sent to " + QString(name) + "(robot " + QString::number(id) + ")" + ":\n" + xml, (int) id, 0);
 
 }
 
@@ -1062,66 +1053,69 @@ bool cbRobotBin::Reply(QHostAddress &a, unsigned short &p, cbParameters *param)
 	port = p;
 
 	/* constructing reply message */
-   CommMessage commMsg;
+    CommMessage commMsg;
 
-   commMsg.comm=htons(OK_COMM);
+    commMsg.comm=htons(OK_COMM);
 
-   commMsg.u.params.cycle_time= htons(param->cycleTime);
-   //commMsg.u.params.sim_time_final  =htons(sim_time);
-   //commMsg.u.params.noise_obstacles =htons( (unsigned short) (noise_obstacles*10.0+0.5) );
-   //commMsg.u.params.noise_beacon    =htons( (unsigned short) (noise_beacon+0.5));
-   //commMsg.u.params.noise_compass   =htons( (unsigned short) (noise_compass+0.5));
-   //commMsg.u.params.noise_motors    =htons( (unsigned short) (noise_motors*10.0+0.5));
+    commMsg.u.params.cycle_time= htons(param->cycleTime);
+    //commMsg.u.params.sim_time_final  =htons(sim_time);
+    //commMsg.u.params.noise_obstacles =htons( (unsigned short) (noise_obstacles*10.0+0.5) );
+    //commMsg.u.params.noise_beacon    =htons( (unsigned short) (noise_beacon+0.5));
+    //commMsg.u.params.noise_compass   =htons( (unsigned short) (noise_compass+0.5));
+    //commMsg.u.params.noise_motors    =htons( (unsigned short) (noise_motors*10.0+0.5));
    
 
     /* send reply to client */
-   if (writeDatagram((char *)&commMsg, sizeof(CommMessage), address, port) != sizeof(CommMessage))
+    if (socket->write((char *)&commMsg, sizeof(CommMessage)) != sizeof(CommMessage))
 	{
         cerr << "Fail replying to client\n";
         simulator->GUI()->appendMessage( "Fail replying to client", true);
 		return false;
 	}
 
-   //cout << "Reply sent\n" << reply;
+    //cout << "Reply sent\n" << reply;
 	return true;
 }
 
 
 bool cbRobotBin::readAction(cbRobotAction *action)
 {
-	/* look for an incoming message */
-   ActMessage msg;
-
-   int ret;
-
-   if (!hasPendingDatagrams())
-       return false;
-
-	if ((ret=readDatagram((char *)&msg, sizeof(msg))) < 0)
-    {
-        cerr << "Error reading from robot socket - " << errorString().toStdString();
-        //cerr << "Error no. " << error() << " reading from robot socket\n";
-		return false;
-	}
-
-   // check message size
-   if(ret!=sizeof(ActMessage)) {
-       cerr << "Received bad ActMessage from " << Name() << "\n";
-       simulator->GUI()->appendMessage( QString("Received bad ActMessage from ") + Name(), true );
-   }
-
-   action->leftMotor=((short)ntohs(msg.lPow))/1000.0-2.0;
-   action->rightMotor=((short)ntohs(msg.rPow))/1000.0-2.0;
-   action->endLed =(bool)ntohs(msg.end);
-   action->leftMotorChanged=true;
-   action->rightMotorChanged=true;
-   action->endLedChanged =true;
-
+	QByteArray datagram, readArr;
+    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        datagram += readArr;
+    }
 #ifdef DEBUG_ROBOT
-   cerr << "actions received from robot\n";
+	cerr << "cbRobot: " << datagram.data() << "\n";
 #endif
 
-   return true;
+    if (showActions)
+        simulator->GUI()->writeOnBoard(QString(name) + " : " + datagram, (int) id, 1);
+
+	/* parse xml message */
+	QXmlSimpleReader parser;
+    QXmlInputSource source;
+    parser.setContentHandler(&handler);
+    source.setData(datagram);
+	if (!parser.parse(source))
+	{
+        cerr << "cbRobot::Fail parsing xml action message: \"" << datagram.constData() << "\"\n";
+        simulator->GUI()->appendMessage( "cbRobot: Fail parsing xml action message:" , true);
+        simulator->GUI()->appendMessage( QString(" \"")+datagram.constData()+"\"" , true);
+
+		return false;
+	}
+	
+	*action = handler.parsedAction();
+
+#ifdef DEBUG_ROBOT
+    cerr << "actions received from robot\n";
+#endif
+
+    return true;
 }
 
 void cbRobotBin::sendSensors()
@@ -1145,7 +1139,7 @@ void cbRobotBin::sendSensors()
 
 
 	/* send XML message to client */
-	send((char *)&msg, sizeof(msg));
+	socket->send((char *)&msg, sizeof(msg));
 #ifdef DEBUG_ROBOT
 	cerr << "Measures sent to robot (bin protocol)\n";
 #endif
@@ -1165,7 +1159,7 @@ bool cbRobotBin::Refuse(QHostAddress &a, unsigned short &p)
 
     commMsg.comm=htons(OK_COMM+1);
 
-    send((char *)&commMsg,sizeof(commMsg));
+    socket->send((char *)&commMsg,sizeof(commMsg));
 
 	return true;
 }

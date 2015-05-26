@@ -23,14 +23,15 @@
 
 #include "cbpanel.h"
 #include "cbview.h"
+#include "cbentity.h"
 
-class cbPanelView : public cbClient, public cbPanelInterface, public cbViewInterface
+class cbPanelView : public cbEntity, public cbPanelInterface, public cbViewInterface
 {
 public:
-	cbPanelView();
+	cbPanelView(cbClient *);
 	~cbPanelView();
 
-    virtual bool readCommand(cbPanelCommand *command);
+    bool readCommand(cbPanelCommand *command);
 };
 
 #endif

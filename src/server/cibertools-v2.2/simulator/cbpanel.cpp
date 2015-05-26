@@ -20,7 +20,7 @@
 
 #include "cbpanel.h"
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 
 #include <iostream>
@@ -28,7 +28,7 @@
 
 using namespace std;
 
-cbPanel::cbPanel()
+cbPanel::cbPanel(cbClient * socket) : cbEntity(socket)
 {
 }
 
@@ -39,25 +39,33 @@ cbPanel::~cbPanel()
 bool cbPanel::readCommand(cbPanelCommand *command)
 {
     /* look for an incoming message */
-    char xmlBuff[1024*32];
-    int xmlSize;
+    //char xmlBuff[1024*32];
+    //int xmlSize;
 
-    if (!hasPendingDatagrams())
-        return false;
+    //if (!hasPendingDatagrams())
+    //    return false;
 
-    if ((xmlSize=readDatagram(xmlBuff, 1024*32-1)) < 0)
+    QByteArray readArr, xmlBuff;
+    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "[cbReceptionist] Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        xmlBuff += readArr;
+    }
+    /*if ((xmlSize=readDatagram(xmlBuff, 1024*32-1)) < 0)
     {
         cerr << "Error reading from Viewer Socket - " << errorString().toStdString();
         return false;
     }
-    else xmlBuff[xmlSize]='\0';
+    else xmlBuff[xmlSize]='\0';*/
 
 #ifdef DEBUG_VIEW
     cerr << "cbPanel: " << xmlBuff << endl;
 #endif
 
     /* parse xml message */
-    source.setData(QByteArray(xmlBuff));
+    source.setData(xmlBuff);
     cbPanelHandler *handler = new cbPanelHandler(QString(xmlBuff));
     parser.setContentHandler(handler);
     if (!parser.parse(source))
