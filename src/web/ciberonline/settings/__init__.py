@@ -1,12 +1,12 @@
 servers = {
     'development': [
-        'ciber'
+        ''
     ],
     'testing': [
         ''
     ],
     'production': [
-        ''
+        'ciber'
     ]
 }
 
