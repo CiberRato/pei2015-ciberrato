@@ -303,7 +303,52 @@ class Starter:
 		while data != "<EndedSimulation/>":
 			data = viewer_c.recv()
 
+		if hall_of_fame:
+			data = viewer_c.recv()
+			data = data.split("-")
+			if data[1] != "SUCCESS":
+				print "[STARTER] ERROR posting scores"
+				# Canceling everything regarding this simulation
+				# Shuting down connections to viewer
+				print "[STARTER] Killing Sockets"
+				viewer_c.close()
+
+				# Waiting for viewer to die
+				print "[STARTER] Killing Viewer"
+				viewer_thread.terminate()
+				viewer_thread.join()
+
+				# Kill simulator
+				print "[STARTER] Killing Simulator"
+				simulator.terminate()
+				simulator.wait()
+
+				if not sync:
+					# Killing Websockets
+					print "[STARTER] Killing Websocket"
+					websocket.terminate()
+					websocket.wait()
+
+				# Kill docker container
+				print "[STARTER] Killing Docker Containers"
+				for dock in docker_containers:
+					proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
+					proc.wait()
+					proc = subprocess.Popen(["docker", "rm", dock])
+					proc.wait()
+
+				# Remove log file from system
+				print "[STARTER] Removing log file"
+				os.remove(LOG_FILE)
+
+				# Close all tmp files
+				print "[STARTER] Closing tmp files"
+				for key in tempFilesList:
+					tempFilesList[key].close()
+				raise Exception("[STARTER] ERROR posting scores")
+
 		print "[STARTER] Simulation ended, killing simulator and running agents, port: " + str(simulator_port)
+
 
 		# Shuting down connections to viewer
 		viewer_c.close()

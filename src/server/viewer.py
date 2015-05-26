@@ -235,6 +235,8 @@ class Viewer:
 			websocket_udp.sendto("END" ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
 			#websocket_tcp.send("END")
 
+		starter_c.send('<EndedSimulation/>')
+
 		if hall_of_fame:
 			robotXML = minidom.parseString(data)
 			itemlist = robotXML.getElementsByTagName('Scores')
@@ -251,9 +253,13 @@ class Viewer:
 
 			if response.status_code != 201:
 				print response.text
-				raise Exception("[STARTER] ERROR: error posting scores to end point")
+				starter_c.send("SCORE-FAIL")
+			else:
+				starter_c.send("SCORE-SUCCESS")
 
-		starter_c.send('<EndedSimulation/>')
+
+
+
 
 		# Close all connections
 		if not sync:
