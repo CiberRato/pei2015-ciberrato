@@ -2,8 +2,8 @@ from base import *
 
 
 # debug options
-DEBUG = True
-TEMPLATE_DEBUG = True
+DEBUG = False
+TEMPLATE_DEBUG = False
 
 # password recover URLs
 CHECK_EMAIL_URL = "http://ciber.atnog.org/check/email/"
