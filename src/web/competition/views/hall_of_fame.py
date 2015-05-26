@@ -135,7 +135,7 @@ class AutomaticTeamScoreHallOfFame(mixins.CreateModelMixin, viewsets.GenericView
                                         message="This is not a Hall of fame competition")
 
             agent = trial.logtrialagent_set.first()
-            team = agent.team
+            team = agent.competition_agent.agent.team
             r = trial.round
             score = serializer.validated_data['score']
             number_of_agents = serializer.validated_data['number_of_agents']
