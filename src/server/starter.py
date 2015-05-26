@@ -83,7 +83,7 @@ class Starter:
 			raise Exception("[STARTER] ERROR: Simulation failed to load data")
 
 		print result.text
-		return
+		hall_of_fame = False
 		simJson = json.loads(result.text)
 		tempFilesList = {}
 		n_agents = 0
@@ -110,6 +110,9 @@ class Starter:
 				sync = details["synchronous_simulation"]
 				if not isinstance(sync, bool):
 					raise Exception("[STARTER] ERROR: Synchronous Simulation Field invalid")
+				hof = details["name"]
+				if hof == "Hall of fame - Single":
+					hall_of_fame = True
 				continue
 
 			fp = tempfile.NamedTemporaryFile()
@@ -120,7 +123,7 @@ class Starter:
 			fp.seek(0)
 			tempFilesList[key] = fp
 
-		hall_of_fame = false
+
 		print "[STARTER] Process ID: ", os.getpid()
 
 		##CHECK ./simulator --help 				##
@@ -173,7 +176,7 @@ class Starter:
 										  "http://%s:8000%s" \
 										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
-										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port), 
+										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port),
 										  agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
