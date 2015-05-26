@@ -193,37 +193,37 @@ class Viewer:
 				itemlist = robotXML.getElementsByTagName('LogInfo')
 				robotTime = itemlist[0].attributes['Time'].value
 
-			if hall_of_fame:
-				robotXML = minidom.parseString(data)
-				itemlist = robotXML.getElementsByTagName('Leds')
-				endLed = itemlist[0].attributes['EndLed'].value
+				if hall_of_fame:
+					robotXML = minidom.parseString(data)
+					itemlist = robotXML.getElementsByTagName('Leds')
+					endLed = itemlist[0].attributes['EndLed'].value
 
-				if endLed == "On":
-					number_of_agents_finished += 1
-					scoreTime = robotTime
+					if endLed == "On":
+						number_of_agents_finished += 1
+						scoreTime = robotTime
 
-			# Convert to json and write to log file
-			json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
-			json_data = json.dumps(json_obj)
-			json_data = json_data.replace("@", "_")
+				# Convert to json and write to log file
+				json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
+				json_data = json.dumps(json_obj)
+				json_data = json_data.replace("@", "_")
 
-			if not firstTime:
-				if int(robotTime) != 0:
-					log_file.write(",")
+				if not firstTime:
+					if int(robotTime) != 0:
+						log_file.write(",")
+						log_file.write(json_data)
+						if not sync:
+							# Send data to the websockets
+							#websocket_tcp.send(json_data)
+							websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
+				else:
+					firstTime = False
 					log_file.write(json_data)
 					if not sync:
 						# Send data to the websockets
 						#websocket_tcp.send(json_data)
 						websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-			else:
-				firstTime = False
-				log_file.write(json_data)
-				if not sync:
-					# Send data to the websockets
-					#websocket_tcp.send(json_data)
-					websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-			# sleep to ensure msg go on separate packets
-			#time.sleep(0.05)
+				# sleep to ensure msg go on separate packets
+				#time.sleep(0.05)
 
 		log_file.write("]}")
 
