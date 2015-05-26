@@ -6,6 +6,5 @@
 
 # Usage: ./execute.sh localhost 3 myrobot
 
-unzip -o sample.zip;
 cd sample_code;
 python python_sample.py -host $1 -pos $2 -robname $3

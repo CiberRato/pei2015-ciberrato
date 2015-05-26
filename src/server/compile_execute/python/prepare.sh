@@ -3,3 +3,5 @@
 #
 # To install additional libraries that you may need, use:
 # sudo apt-get install library_name (Debian system)
+
+unzip -o sample.zip;

@@ -131,7 +131,8 @@ class Starter:
 						"-sync",	str(SYNC_TIMEOUT), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
-						"-grid", 	tempFilesList["grid"].name])
+						"-grid", 	tempFilesList["grid"].name], \
+						stdout = subprocess.PIPE)
 		else:
 			print "[STARTER] Creating process for simulator"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
@@ -169,8 +170,9 @@ class Starter:
 										  "bash -c 'curl " \
 										  "http://%s:8000%s" \
 										  " | tar -xz;"
-										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s' > xpto.log" %  \
-										  (DOCKERIP, agents[i]['files'], DOCKERIP, agents[i]['pos'], agents[i]['agent_name'], ),
+										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
+										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port), 
+										  agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
 				docker_containers += [  ]
