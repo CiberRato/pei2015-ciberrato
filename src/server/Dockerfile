@@ -1,7 +1,4 @@
 FROM ubuntu
-EXPOSE 6000-6100
-EXPOSE 8000
-
 # Docker builds seems to have a bug related with chfn
 RUN ln -s -f /bin/true /usr/bin/chfn
 
@@ -10,6 +7,17 @@ RUN apt-get update && apt-get install -y curl wget \
 	python-pip zip unzip
 RUN pip install pytest \
 				flufl.enum
+
+EXPOSE 6000
+EXPOSE 6001
+EXPOSE 6002
+EXPOSE 6003
+EXPOSE 6004
+EXPOSE 6005
+EXPOSE 6006
+EXPOSE 6007
+EXPOSE 6008
+EXPOSE 8000
 
 RUN mkdir -p /ciber/user_sourcecode
 
