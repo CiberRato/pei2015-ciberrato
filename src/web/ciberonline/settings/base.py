@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__),  "../../"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -19,13 +19,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ggv8+_0p@b6t+y)3k6aul!qpj&73*#@hbw8o_4mdx)8-=jp^n$'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# emails
 ADMINS = (('Rafael', 'mail@rafaelferreira.pt'),)
 DEFAULT_FROM_EMAIL = "ciberrato@rafaelferreira.pt"
 SERVER_EMAIL = "ciberrato@rafaelferreira.pt"
@@ -36,11 +33,7 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-CHECK_EMAIL_URL = "http://localhost:8000/check/email/"
-PASSWORD_RECOVER_EMAIL_URL = "http://localhost:8000/idp/recover/"
-
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -77,17 +70,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'ciberonline.urls'
 
 WSGI_APPLICATION = 'ciberonline.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 CACHES = {
     "default": {
@@ -136,11 +118,6 @@ ALLOWED_UPLOAD_LANGUAGES = (
 )
 ALLOWED_UPLOAD_SIZE = 50000000  # bytes
 
-START_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trials/start/"
-PREPARE_SIM_ENDPOINT = "http://127.0.0.1:9000/api/v1/trial_id/"
-
-TEST_CODE_ENDPOINT = "http://127.0.0.1:9000/api/v1/test_agent/?agent_name=<agent_name>&team_name=<team_name>/"
-
 PRIVATE_COMPETITIONS_NAME = "Private Competition"
 
 HALL_OF_FAME_START_STR = "Hall of fame - "
@@ -174,8 +151,6 @@ REST_FRAMEWORK = {
 }
 
 # SwampDragon settings
-# SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
-DRAGON_URL = 'http://localhost:9999/'
 SWAMP_DRAGON_CONNECTION = ('notifications.socketconnection.HttpDataConnection', '/data')
 
 # Catpcha
