@@ -13326,11 +13326,15 @@ div.jGrowl div.success a:hover {
 }
 
 .editor {
-    top: 45px;
     height: 500px;
     margin-top: -40px;
 }
 
+.editor1 {
+    top: 45px;
+    height: 500px;
+    margin-top: -40px;
+}
 .ng-cloak
 {
     display: none;
