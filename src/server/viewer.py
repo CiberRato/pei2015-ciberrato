@@ -47,7 +47,7 @@ class JsonListElements:
 		return tupl
 
 class Viewer:
-	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port):
+	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port, hall_of_fame):
 		# Load settings
 		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
 		settings = json.loads(settings_str)
@@ -61,6 +61,8 @@ class Viewer:
 		REGISTER_ROBOTS_URL = settings["urls"]["register_robots"]
 
 		SIMULATOR_HOST = settings["settings"]["simulator_host"]
+
+		SCORE_URL = settings["urls"]["score"]
 
 		LOG_FILE = settings["settings"]["log_info_file"]
 
@@ -172,14 +174,16 @@ class Viewer:
 			# time.sleep(0.1)
 
 		robotTime = 0
+		scoreTime = 0
+		number_of_agents_finished = 0
 		firstTime = True
 		log_file.write('"Log":[')
-
 		buffer_data = ''
 		while simTime != robotTime:
 			# Update Robot time
 			data = simulator_s.recv(16384)
 			#print data
+<<<<<<< HEAD
 			sr = data.split("\x04")
 			sr[0] = buffer_data + sr[0]
 			buffer_data = sr[-1]
@@ -189,29 +193,53 @@ class Viewer:
 				itemlist = robotXML.getElementsByTagName('LogInfo')
 				robotTime = itemlist[0].attributes['Time'].value
 
-				# Convert to json and write to log file
-				json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
-				json_data = json.dumps(json_obj)
-				json_data = json_data.replace("@", "_")
+			if hall_of_fame:
+				robotXML = minidom.parseString(data)
+				itemlist = robotXML.getElementsByTagName('Leds')
+				endLed = itemlist[0].attributes['EndLed'].value
 
-				if not firstTime:
-					if int(robotTime) != 0:
-						log_file.write(",")
-						log_file.write(json_data)
-						if not sync:
-							# Send data to the websockets
-							websocket_tcp.send(json_data)
-				else:
-					firstTime = False
+				if endLed == "On":
+					number_of_agents_finished += 1
+					scoreTime = robotTime
+
+			# Convert to json and write to log file
+			json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
+			json_data = json.dumps(json_obj)
+			json_data = json_data.replace("@", "_")
+
+			if not firstTime:
+				if int(robotTime) != 0:
+					log_file.write(",")
 					log_file.write(json_data)
 					if not sync:
 						# Send data to the websockets
 						#websocket_tcp.send(json_data)
 						websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
+			else:
+				firstTime = False
+				log_file.write(json_data)
+				if not sync:
+					# Send data to the websockets
+					#websocket_tcp.send(json_data)
+					websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
 			# sleep to ensure msg go on separate packets
 			#time.sleep(0.05)
 
 		log_file.write("]}")
+
+
+		if hall_of_fame:
+			robotXML = minidom.parseString(data)
+			itemlist = robotXML.getElementsByTagName('Scores')
+			score = itemlist[0].attributes['Score'].value
+
+			if scoreTime = 0:
+				scoreTime = simTime
+
+			# Post score to the end point
+			# Type of competition: Hall of Fame - Single
+			data = {'trial_id': sim_id, 'score': score, 'number_of_agents': number_of_agents_finished, 'time': scoreTime}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + SCORE_URL, data=data)
 
 		if not sync:
 			# Wait 0.1 seconds to assure the END msg goes on a separate packet
