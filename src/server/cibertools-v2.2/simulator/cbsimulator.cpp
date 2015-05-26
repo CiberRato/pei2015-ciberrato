@@ -1451,35 +1451,32 @@ void cbSimulator::processRobotActions(const QString &id)
 			}
 
 			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
-			if (action.sync) {
-				step();
+			if (syncmode && action.sync) {
 				robot->setWaitingForSync(true);
 
-				if (syncmode) { //&& curState == RUNNING) {
-					bool stepSim = true;
+				bool stepSim = true;
+				for (unsigned int i = 0; i < robots.size(); i++)
+				{
+					cbRobot *robot = robots[i];
+					if (robot == 0) continue;
+					if (!robot->getWaitingForSync()) {
+						stepSim = false;
+						break;
+					}
+				}
+
+				if (stepSim) {
+					step();
+					timer.stop();
 					for (unsigned int i = 0; i < robots.size(); i++)
 					{
 						cbRobot *robot = robots[i];
 						if (robot == 0) continue;
-						if (!robot->getWaitingForSync()) {
-							stepSim = false;
-							break;
-						}
+						robot->setWaitingForSync(false);
 					}
-					if (stepSim) {
-						timer.stop();
-					for (unsigned int i = 0; i < robots.size(); i++)
-						{
-							cbRobot *robot = robots[i];
-							if (robot == 0) continue;
-							robot->setWaitingForSync(false);
-						}
-
 					timer.start(syncTimeout());
-					}
 				}
 			}
-
 			action.sensorRequests.clear();
 		} 
 	}

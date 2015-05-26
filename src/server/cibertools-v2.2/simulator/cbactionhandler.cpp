@@ -118,7 +118,7 @@ bool cbActionHandler::startElement( const QString&, const QString&, const QStrin
 	return TRUE;
 }
 
-bool cbActionHandler::endElement( const QString&, const QString&, const QString& qName)
+bool cbActionHandler::endElement( const QString&, const QString&, const QString&)
 {
 	/* process end tag */
 	//cerr << "end: "<< qName.toUtf8().constData() << "; "<< type<<"\n";
