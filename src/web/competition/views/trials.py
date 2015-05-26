@@ -244,8 +244,6 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(TrialX(trial))
 
         if trial.round.parent_competition.type_of_competition.allow_remote_agents is False:
-            print "OK1"
-
             trial.waiting = False
             trial.prepare = False
             trial.started = True

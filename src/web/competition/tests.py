@@ -626,7 +626,7 @@ class AuthenticationTestCase(TestCase):
             self.assertEqual(response.data, {'status': 'Trial started',
                                              'message': 'Please wait that the trial starts at the simulator!'})
         elif response.status_code == 400:
-            self.assertEqual(response.data, {'status': 'Bad Request', 'message': 'The simulator appears to be down!'})
+            self.assertEqual(response.data, {"status":"Bad Request","message":"You only can make start when the Type of Competition allows remote agents!"})
 
         trial = Trial.objects.get(identifier=trial_identifier)
         trial.started = True
