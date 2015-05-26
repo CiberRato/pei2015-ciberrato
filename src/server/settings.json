@@ -72,7 +72,7 @@
 		"register_robots": "/api/v1/trials/message/",
 
 		///url to post the final score of the simulation
-		"score": "/api/v1/competitions/automatic_score/"
+		"score": "/api/v1/competitions/hall_of_fame/automatic_score/"
 
 	}
 }
