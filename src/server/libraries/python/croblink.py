@@ -6,7 +6,6 @@
 
 import socket
 
-UDP_PORT = 6000
 NUM_IR_SENSORS = 4
 
 class CRobLink:
@@ -14,15 +13,23 @@ class CRobLink:
     def __init__ (self, robName, robId, host):
         self.robName = robName
         self.robId = robId
-        self.host = host
+
+        val = host.split(":")
+        port_conn = 6000
+        if len(val) > 1:
+            self.host = val[0]
+            port_conn = int(val[1])
+        else:
+            self.host = host
 
         self.sock = socket.socket(socket.AF_INET, # Internet
-                             socket.SOCK_DGRAM) # UDP
+                             socket.SOCK_STREAM) # UDP
+        self.sock.connect((self.host, port_conn))
+        self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />\x04'
         
-        msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />'
-        
-        self.sock.sendto(msg, (self.host, UDP_PORT))  # TODO consider host arg
-        data, (host,self.port) = self.sock.recvfrom(1024)
+        self.sock.send(msg)  # TODO consider host arg
+        data = self.sock.recv(1024)
         #print "received message:", data, " port ", self.port
 
         parser = sax.make_parser()
@@ -32,13 +39,13 @@ class CRobLink:
         parser.setContentHandler( handler )
         
         # Parse reply 
-        d2 = data[:-1]
+        d2 = data.split('\x04')[0]
         sax.parseString( d2, handler )
         self.status = handler.status
 
     def readSensors(self):
-        data, (host,port) = self.sock.recvfrom(4096)
-        d2 = data[:-1]
+        data = self.sock.recv(4096)
+        d2 = data.split('\x04')[0]
 
         # print "RECV : \"" + d2 +'"'
         parser = sax.make_parser()
@@ -49,22 +56,26 @@ class CRobLink:
         sax.parseString( d2, handler )
         self.status = handler.status
         self.measures  = handler.measures
-        
+    
+    def syncRobot(self):
+        msg = '<Actions> <Sync/> </Actions>\x04'
+        self.sock.send(msg)
+
     def driveMotors(self, lPow, rPow):
-        msg = '<Actions LeftMotor="'+str(lPow)+'" RightMotor="'+str(rPow)+'"/>'
-        self.sock.sendto(msg,(self.host,self.port))
+        msg = '<Actions LeftMotor="'+str(lPow)+'" RightMotor="'+str(rPow)+'"/>\x04'
+        self.sock.send(msg)
 
     def setReturningLed(self,val):
-        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" ReturningLed="'+ ("On" if val else "Off") +'"/>'
-        self.sock.sendto(msg,(self.host,self.port))
+        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" ReturningLed="'+ ("On" if val else "Off") +'"/>\x04'
+        self.sock.send(msg)
 
     def setVisitingLed(self,val):
-        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" VisitingLed="'+ ("On" if val else "Off") +'"/>'
-        self.sock.sendto(msg,(self.host,self.port))
+        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" VisitingLed="'+ ("On" if val else "Off") +'"/>\x04'
+        self.sock.send(msg)
 
     def finish(self):
-        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" EndLed="On"/>'
-        self.sock.sendto(msg,(self.host,self.port))
+        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" EndLed="On"/>\x04'
+        self.sock.send(msg)
 
 
 class CMeasures:

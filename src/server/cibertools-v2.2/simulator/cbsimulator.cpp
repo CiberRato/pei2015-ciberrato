@@ -1440,24 +1440,24 @@ void cbSimulator::processRobotActions(const QString &id)
 		{
 			//cerr << "Robot action received l=" << action.leftMotor
 			//     << " r=" << action.rightMotor << "\n";
-			/*if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
+			if (action.leftMotorChanged)     robot->setLeftMotor(    action.leftMotor);
 			if (action.rightMotorChanged)    robot->setRightMotor(   action.rightMotor);
 			if (action.endLedChanged)        robot->setEndLed(       action.endLed);
 			if (action.returningLedChanged)  robot->setReturningLed( action.returningLed);
-			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);*/
+			if (action.visitingLedChanged)   robot->setVisitingLed(  action.visitingLed);
 
-			//for (unsigned int r = 0; r < action.sensorRequests.size(); r++) {
-			//	robot->requestSensor(action.sensorRequests[r]);
-			//}
+			for (unsigned int r = 0; r < action.sensorRequests.size(); r++) {
+				robot->requestSensor(action.sensorRequests[r]);
+			}
 
-			//if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
+			if (action.sayReceived)   	robot->setSayMessage(action.sayMessage);
 			if (action.sync) {
 				step();
 				robot->setWaitingForSync(true);
 
 				if (syncmode) { //&& curState == RUNNING) {
 					bool stepSim = true;
-					/*for (unsigned int i = 0; i < robots.size(); i++)
+					for (unsigned int i = 0; i < robots.size(); i++)
 					{
 						cbRobot *robot = robots[i];
 						if (robot == 0) continue;
@@ -1466,21 +1466,21 @@ void cbSimulator::processRobotActions(const QString &id)
 							break;
 						}
 					}
-					if (stepSim) {*/
-						//timer.stop();
-					/*	for (unsigned int i = 0; i < robots.size(); i++)
+					if (stepSim) {
+						timer.stop();
+					for (unsigned int i = 0; i < robots.size(); i++)
 						{
 							cbRobot *robot = robots[i];
 							if (robot == 0) continue;
 							robot->setWaitingForSync(false);
-						}*/
+						}
 
-					/*	timer.start(syncTimeout());
-					}*/
+					timer.start(syncTimeout());
+					}
 				}
 			}
 
-			//action.sensorRequests.clear();
+			action.sensorRequests.clear();
 		} 
 	}
 }
