@@ -29,7 +29,7 @@
         vm.getCodeGrid = getCodeGrid;
         vm.getCodeLab = getCodeLab;
         vm.getCodeParam = getCodeParam;
-        var c3 = document.getElementById("layer5");
+        var c3 = document.getElementById("layer3");
         var ctx = c3.getContext("2d");
         $scope.zoom = 50;
 
