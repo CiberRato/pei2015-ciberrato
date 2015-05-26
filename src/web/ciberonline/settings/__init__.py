@@ -1,6 +1,6 @@
 servers = {
     'development': [
-        ''
+        'ciber'
     ],
     'testing': [
         ''
