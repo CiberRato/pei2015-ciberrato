@@ -57,7 +57,8 @@ cbLogplayer::cbLogplayer()
 	curState = nextState = STOPPED;
 
 	logIndex=0;
-
+	port = 6000;
+	
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
     server.listen(QHostAddress::Any, port);
 }
