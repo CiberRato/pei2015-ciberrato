@@ -24,6 +24,7 @@ ALLOWED_HOSTS = []
 
 # emails
 ADMINS = (('Rafael', 'mail@rafaelferreira.pt'),)
+"""
 DEFAULT_FROM_EMAIL = "ciberrato@rafaelferreira.pt"
 SERVER_EMAIL = "ciberrato@rafaelferreira.pt"
 EMAIL_HOST = "smtp.zoho.com"
@@ -32,6 +33,7 @@ EMAIL_HOST_USER = "ciberrato@rafaelferreira.pt"
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+"""
 
 # Application definition
 INSTALLED_APPS = (
