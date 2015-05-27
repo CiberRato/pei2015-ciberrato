@@ -12,6 +12,7 @@ import tarfile
 import re
 import zipfile
 from xml.dom import minidom
+from settingsChooser import Settings
 
 class Test:
 	def run(self, team_name, agent_name):
@@ -25,8 +26,7 @@ class Test:
 			print "Please check your docker interface."
 			sys.exit(-1)
 
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 
 		GET_AGENT_URL = settings["urls"]["get_agent"]
 
@@ -35,7 +35,7 @@ class Test:
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
 
-		AGENT_ENDPOINT = "http://" + DOCKERIP + ":80" + GET_AGENT_URL + team_name + "/" + agent_name + "/"
+		AGENT_ENDPOINT = "http://" + DOCKERIP + ":" + str(DJANGO_PORT) + GET_AGENT_URL + team_name + "/" + agent_name + "/"
 
 		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
 									  "bash -c 'curl -s " \

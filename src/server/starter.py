@@ -17,12 +17,11 @@ import multiprocessing
 from threading import Thread
 from xml.dom import minidom
 from viewer import *
-
+from settingsChooser import Settings
 
 class Starter:
 	def main(self,sim_id, simulator_port, running_ports, semaphore):
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
@@ -58,8 +57,7 @@ class Starter:
 			print "[STARTER] Docker interface: %s" % (DOCKERIP, )
 
 		# Loading settings
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 
 		GET_SIM_URL = settings["urls"]["get_simulation"]
 
@@ -173,7 +171,7 @@ class Starter:
 
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
-										  "http://%s:80%s" \
+										  "http://%s:" + str(DJANGO_PORT) + "%s" \
 										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port),

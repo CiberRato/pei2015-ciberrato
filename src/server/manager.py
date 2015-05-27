@@ -7,12 +7,12 @@ from multiprocessing import Array
 from starter import *
 from testReceiver import *
 from serverEndpoints import *
+from settingsChooser import Settings
 
 class Manager:
 	def main(self):
 		# Loading settings
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 
 		GET_SIM_HOST = settings["settings"]["starter_end_point_host"]
 		GET_SIM_PORT = settings["settings"]["starter_end_point_port"]

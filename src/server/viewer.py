@@ -8,6 +8,7 @@ import re
 import sys
 from xml.dom import minidom
 from collections import OrderedDict
+from settingsChooser import Settings
 
 class JsonListElements:
 	# Listar em cada self.grid, self.param, etc.. os parametros que podem ser listas!
@@ -49,8 +50,7 @@ class JsonListElements:
 class Viewer:
 	def main(self, sim_id, remote, sync, starter_c, robotsRegistered_event, simulator_port, hall_of_fame):
 		# Load settings
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 
 		WEBSOCKET_HOST = settings["settings"]["websocket_host"]
 		WEBSOCKET_PORT = settings["settings"]["websocket_port"]

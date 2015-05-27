@@ -1,11 +1,12 @@
 import cherrypy, socket, re, json, subprocess, netifaces, time, requests
 from multiprocessing import Process
+from settingsChooser import Settings
 
 class Root(object):
 	def __init__(self):
 		self.trials = Services()
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+
+		settings = Settings().getSettings()
 		self.HOST = settings["settings"]["starter_end_point_host"]
 		self.PORT = settings["settings"]["starter_end_point_port"]
 
@@ -47,8 +48,7 @@ class Services(object):
 
 		trial_id = kwargs["trial_identifier"]
 
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 		HOST = settings["settings"]["services_end_point_host"]
 		PORT = settings["settings"]["services_end_point_port"]
 
@@ -63,8 +63,7 @@ class Services(object):
 
 class EndPoint():
 	def start(self):
-		settings_str = re.sub("///.*", "", open("settings.json", "r").read())
-		settings = json.loads(settings_str)
+		settings = Settings().getSettings()
 
 		HOST = settings["settings"]["end_point_host"]
 		PORT = settings["settings"]["end_point_port"]
