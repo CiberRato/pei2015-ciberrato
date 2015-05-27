@@ -27,9 +27,8 @@
 
 using std::cerr;
 
-cbView::cbView() : cbClient()
+cbView::cbView(cbClient * socket) : cbEntity(socket)
 {
-    bind();
 }
 
 cbView::~cbView()
@@ -45,36 +44,30 @@ cbView::~cbView()
 */
 bool cbView::readCommand(cbCommand *command)
 {
-	/* look for an incoming message */
-
-    char xmlBuff[64];
-    int xmlSize;
-
-    if (!hasPendingDatagrams())
-        return false;
-
-    if ((xmlSize=readDatagram(xmlBuff, 63)) < 0)
-	{
-        cerr << "Error no. " << error() << " reading from view socket\n";
-		return false;
-	}
-	else xmlBuff[xmlSize]='\0';
+    QByteArray readArr, xmlBuff;
+    while (strcmp((readArr = socket->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "[cbReceptionist] Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        xmlBuff += readArr;
+    }
 
 #ifdef DEBUG_VIEW
-	cerr << "cbView: " << xmlBuff << endl;
+    cerr << "cbView: " << xmlBuff << endl;
 #endif
 
-	/* parse xml message */
-	parser.setContentHandler(&handler);
-        source.setData(QByteArray(xmlBuff));
-	if (!parser.parse(source))
-	{
-		cerr << "cbView::Fail parsing xml view message\n";
-		return false;
-	}
-	
-	*command = handler.Command();
-	return true;
+    /* parse xml message */
+    source.setData(xmlBuff);
+    cbPanelHandler *handler = new cbPanelHandler(QString(xmlBuff));
+    parser.setContentHandler(handler);
+    if (!parser.parse(source))
+    {
+        cerr << "cbView::Fail parsing xml view message\n";
+        return false;
+    }
+    *command = handler->Command();
+    return true;
 }
 
 

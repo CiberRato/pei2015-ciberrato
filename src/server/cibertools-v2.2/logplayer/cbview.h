@@ -21,7 +21,7 @@
 #ifndef CBVIEW_H
 #define CBVIEW_H
 
-#include "cbclient.h"
+#include "cbentity.h"
 #include "cbviewhandler.h"
 #include "cbviewcommand.h"
 
@@ -29,7 +29,7 @@
   *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
   */
 
-class cbView : public cbClient
+class cbView : public cbEntity
 {
 public:
 	cbView();
