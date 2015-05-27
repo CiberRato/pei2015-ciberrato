@@ -108,6 +108,7 @@ class AccountViewSet(viewsets.ModelViewSet):
             instance = Account.objects.create_user(**serializer.validated_data)
             UserToken.get_or_set(account=instance)
 
+            """
             # send email to confirm the user email
             token = EmailToken.objects.create(user=instance)
             try:
@@ -124,7 +125,7 @@ class AccountViewSet(viewsets.ModelViewSet):
                 return Response({'status': 'Bad Request',
                                  'message': 'The confirmation email could not be sent!'
                                  }, status=status.HTTP_400_BAD_REQUEST)
-
+            """
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 
         return Response({'status': 'Bad Request',
