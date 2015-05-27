@@ -33,6 +33,7 @@
 #include <qvector.h>
 #include <iostream>
 #include <vector>
+#include <QTcpServer>
 
 using std::vector;
 using std::istream;
@@ -62,7 +63,7 @@ public:
 	void setParameters(cbParameters *);
     void setReceptionist(cbReceptionist *);
     void setGUI(Ui_logplayerGUI *g) { gui=g;}
-
+    void setPort(int);
 
     void WriteLog(void);
 
@@ -80,6 +81,8 @@ public:
 
 public slots:
 	void step();
+    void processReceptionMessages();
+    void newConnectionEvent();
 
 private: // data members
 	unsigned int curCycle;		// current simulation cycle
@@ -101,11 +104,11 @@ private: // data members
     istream *logStream;
 
 	unsigned int logIndex;
+	int port;
 
     Ui_logplayerGUI *gui;
-	
+	QTcpServer  server;
 private: // member functions
-	void CheckIn();
 	void ViewCommands();
 	void PanelCommands();
 	void UpdateViews();

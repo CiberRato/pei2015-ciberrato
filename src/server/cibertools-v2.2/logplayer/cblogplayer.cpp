@@ -57,6 +57,9 @@ cbLogplayer::cbLogplayer()
 	curState = nextState = STOPPED;
 
 	logIndex=0;
+
+	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
+    server.listen(QHostAddress::Any, port);
 }
 
 cbLogplayer::~cbLogplayer()
@@ -108,9 +111,19 @@ const char *cbLogplayer::curStateAsString()
 	return sas[curState];
 }
 
+void cbLogplayer::newConnectionEvent() {
+
+	QTcpSocket * client = server.nextPendingConnection();
+	connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+}
+
+void cbLogplayer::setPort(int port) {
+	this->port = port;
+}
+
 void cbLogplayer::step()
 {
-	CheckIn();
+	//CheckIn();
 	ViewCommands();
 	UpdateViews();
 	if(curState==RUNNING) {
@@ -129,9 +142,11 @@ void cbLogplayer::step()
 	Process registration requests of all
 	clients waiting at reception.
 */
-void cbLogplayer::CheckIn()
+void cbLogplayer::processReceptionMessages()
 {
-	while (receptionist->CheckIn())
+	QObject * obj = sender();
+	QTcpSocket * client = (QTcpSocket *) obj;
+	while (receptionist->CheckIn(client))
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;
@@ -145,6 +160,7 @@ void cbLogplayer::CheckIn()
 				views[cnt]->socket->Reply(param, grid, lab);
 				cout << "Viewer has been registered\n";
 				//gui->messages->insertLine("viewer has been registered");
+				disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 				break;
 			case cbClientForm::UNKNOWN:
 				cerr << "UNKNOWN form was received, and discarded\n";

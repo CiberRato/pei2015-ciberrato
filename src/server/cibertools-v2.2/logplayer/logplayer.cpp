@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
             if (p+1 < argc) {
                 sscanf(argv[p+1], "%d", &port);
                 p+=2;
+                logplayer.setPort(port);
             }
             else CommandLineError();
 		}
@@ -218,7 +219,7 @@ int main(int argc, char *argv[])
 
 	/* preparing the receptionist */
 	//cout << "Launching the receptionist...";
-	cbReceptionist *receptionist = new cbReceptionist(port);
+	cbReceptionist *receptionist = new cbReceptionist();
 	if (receptionist == 0 || receptionist->bad())
     {
         QMessageBox::critical(0,"Error", QString("Error creating socket"),

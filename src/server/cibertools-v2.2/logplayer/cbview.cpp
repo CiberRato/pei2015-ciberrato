@@ -59,7 +59,7 @@ bool cbView::readCommand(cbCommand *command)
 
     /* parse xml message */
     source.setData(xmlBuff);
-    cbPanelHandler *handler = new cbPanelHandler(QString(xmlBuff));
+    cbViewHandler *handler = new cbViewHandler();
     parser.setContentHandler(handler);
     if (!parser.parse(source))
     {
