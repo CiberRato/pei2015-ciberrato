@@ -22,6 +22,7 @@
 #define CBVIEW_H
 
 #include "cbentity.h"
+#include "cbclient.h"
 #include "cbviewhandler.h"
 #include "cbviewcommand.h"
 
@@ -32,7 +33,7 @@
 class cbView : public cbEntity
 {
 public:
-	cbView();
+	cbView(cbClient *);
 	~cbView();
 
 	bool readCommand(cbCommand *command);

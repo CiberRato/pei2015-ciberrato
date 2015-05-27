@@ -21,6 +21,7 @@
 #define _CB_RECEPTION_HANDLER_
 
 #include <qxml.h>
+#include "cbclient.h"
 
 class QString;
 class QXmlLocator;
@@ -32,7 +33,7 @@ class cbReceptionHandler : public QXmlDefaultHandler
 {
 public:
 	enum Type { UNKNOWN, VIEW, PANEL, ROBOT};
-	cbReceptionHandler(QXmlSimpleReader *xmlParser);
+	cbReceptionHandler(QXmlSimpleReader *xmlParser, QTcpSocket *);
 
     bool parse(void *data);
     
@@ -53,6 +54,7 @@ private:
 	cbView *view;
 	cbPanel *panel;
 	Type type;
+    cbClient *client;
 };                   
 
 #endif

@@ -142,7 +142,7 @@ void cbLogplayer::CheckIn()
 				cnt = views.size();
 				views.resize(cnt+1);
 				views[cnt] = form.client.view;
-				views[cnt]->Reply(param, grid, lab);
+				views[cnt]->socket->Reply(param, grid, lab);
 				cout << "Viewer has been registered\n";
 				//gui->messages->insertLine("viewer has been registered");
 				break;
@@ -186,12 +186,12 @@ void cbLogplayer::ViewCommands()
 				case cbCommand::LABRQ:
 					//cout << "View command = LabReq\n";
 					cnt = lab->toXml(xml, sizeof(xml));
-					views[i]->send(xml, cnt+1);
+					views[i]->socket->send(xml, cnt+1);
 					break;
 				case cbCommand::GRIDRQ:
 					//cout << "View command = GridReq\n";
 					cnt = grid->toXml(xml, sizeof(xml));
-					views[i]->send(xml, cnt+1);
+					views[i]->socket->send(xml, cnt+1);
 					break;
 				case cbCommand::ROBOTDEL:
 					//cout << "View command = RobotDel\n";
@@ -219,7 +219,7 @@ void cbLogplayer::UpdateViews()
 		for (unsigned int j=0; j<views.size(); j++)
 		{
 			cbView *view = views[j];
-			view->send(xml, n+1);
+			view->socket->send(xml, n+1);
 		}
 	}
 }

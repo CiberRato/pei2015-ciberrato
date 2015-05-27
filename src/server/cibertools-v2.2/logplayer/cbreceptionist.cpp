@@ -54,28 +54,8 @@ using std::cout;
 	Create socket and bind it with machine address and given port.
 	Set the socket non-blocking.
 */
-cbReceptionist::cbReceptionist(unsigned int port) : QUdpSocket()
+cbReceptionist::cbReceptionist()
 {
-	QHostAddress address;
-	address.setAddress(QString("0.0.0.0"));	// this way any address is accepted
-	/* bind local address */
-	//cout.form(" binding to address %s and port %hd...\n", "0.0.0.0", port);
-	if (!bind(address, port))
-	{
-		cerr << " Couldn't open socket at port " << port << "\n";
-		status = false;
-		return;
-	}
-
-	/* set non-blocking */
-//#ifndef MicWindows
-//        setBlocking(false);
-/*#else
-        u_long dummy;  //setBlocking doesn't work in Windows
-        ioctlsocket(socket(), FIONBIO, &dummy); 
-        
-#endif*/
-	/* make initialization */
 	xmlParser = 0;
 	status = true;
 }
@@ -120,55 +100,35 @@ void cbReceptionist::setXmlParser(QXmlSimpleReader *parser)
 	If one, parse it, fill in the check-in form and return true;
 	Otherwise returns false.
 */
-bool cbReceptionist::CheckIn()
+bool cbReceptionist::CheckIn(QTcpSocket* client)
 {
-	//cout << "Entering checkIn\n";
 	/* check if parser is set */
-	int datasize;
 	if (xmlParser == 0) 
 	{
-		cerr << "Parser was not setup\n";
-                QMessageBox::critical(0,"Error", QString("Error in parser"), 
-		                       QMessageBox::Ok,Qt::NoButton,Qt::NoButton);
-		exit (1);
+        cerr << "Parser was not setup\n";
+        QMessageBox::critical(0,"Error",
+                              "Error in parser",
+                              QMessageBox::Ok, Qt::NoButton, Qt::NoButton);
+        exit (1);
 	}
 	
-	/* look for an incoming message */
-    if (!hasPendingDatagrams())
-        return false;
-
-    if ((datasize=readDatagram(xmlBuff, XMLMAX-1, &form.addr, &form.port)) < 0)
-    {
-        cerr << "Error no. " << error() << " reading from the socket\n";
-                    QMessageBox::critical(0,"Error", QString("Error no. ")+ QString::number(error()) + " reading from socket",
-                           QMessageBox::Ok,Qt::NoButton,Qt::NoButton);
-        exit(1);
-		return false;
-	}
-	else xmlBuff[datasize]='\0';
-
-	//cout << xmlBuff << endl;
+	QByteArray readArr, datagram;
+	while (strcmp((readArr = client->read(1)).data(), "\x04") != 0) {
+        if (readArr.isEmpty()) {
+            cerr << "[cbReceptionist] Delimeter not found in the message, check the message sent.\n";
+            return false;
+        }
+        datagram += readArr;
+    }
 
 	/* parse xml message */
-	cbReceptionHandler handler(xmlParser);
-
-	if (!handler.parse(xmlBuff))
+	cbReceptionHandler handler(xmlParser, client);
+	if (!handler.parse(datagram.data()))
 	{
-		cerr << "Fail parsing xml message\n";
+		cerr << "Fail parsing xml message\n" << datagram.data() << "\n";
 		return false;
 	}
 
-	//xmlParser->setContentHandler(&handler);
-	//xmlSource.setData(xmlBuff);
-	//if (!xmlParser->parse(xmlSource))
-	//{
-	//	cerr.form("Fail parsing xml message\n");
-	//	return false;
-	//}
-	
-	/* process request */
-    //form.addr = peerAddress();
-    //form.port = peerPort();
 	switch (handler.objectType())
 	{
 		case cbReceptionHandler::VIEW:
