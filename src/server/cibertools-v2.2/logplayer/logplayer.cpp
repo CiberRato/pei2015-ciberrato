@@ -117,8 +117,6 @@ int main(int argc, char *argv[])
 	int port = 6000;
 
     QApplication app(argc,argv);
-
-
     //cout << "Parsing command line..."
 
     int p=1;
@@ -249,6 +247,7 @@ int main(int argc, char *argv[])
 
     QObject::connect(ui.QuitButton,SIGNAL(clicked()),&app,SLOT(quit()));
     logplayer.setGUI(&ui);
+    logplayer.startLogplayer();
     gui->setMaximumSize(gui->size());
     gui->setMinimumSize(gui->size());
     gui->show();

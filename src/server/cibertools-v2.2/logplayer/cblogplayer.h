@@ -64,7 +64,7 @@ public:
     void setReceptionist(cbReceptionist *);
     void setGUI(Ui_logplayerGUI *g) { gui=g;}
     void setPort(int);
-
+    void startLogplayer();
     void WriteLog(void);
 
     inline cbLab *Lab() { return lab;}
