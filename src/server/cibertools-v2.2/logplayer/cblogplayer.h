@@ -34,9 +34,11 @@
 #include <iostream>
 #include <vector>
 #include <QTcpServer>
-
+#include <sstream>
+	
 using std::vector;
 using std::istream;
+using std::ostream;
 
 class cbPosition;
 class cbParameters;
@@ -109,6 +111,7 @@ private: // data members
     Ui_logplayerGUI *gui;
 	QTcpServer  server;
 private: // member functions
+	void RobotsToXml(ostream &log);
 	void ViewCommands();
 	void PanelCommands();
 	void UpdateViews();

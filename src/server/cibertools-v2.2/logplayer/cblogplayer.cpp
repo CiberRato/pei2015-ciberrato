@@ -39,10 +39,11 @@
 #include "cbreceptionist.h"
 #include "cbview.h"
 #include "cbgrid.h"
+#include <sstream>
 
 #include "cblogplayer.h"
 
-
+using std::ostream;
 using std::cerr;
 using std::cout;
 
@@ -58,6 +59,7 @@ cbLogplayer::cbLogplayer()
 
 	logIndex=0;
 	port = 6000;
+	nextState = RUNNING;
 }
 
 cbLogplayer::~cbLogplayer()
@@ -230,17 +232,37 @@ void cbLogplayer::ViewCommands()
 */
 void cbLogplayer::UpdateViews()
 {
-	char xml[1024];
-	vector <cbRobot> &robots = (*log)[logIndex];
-	for (unsigned int i=0; i<robots.size(); i++)
-	{
-		cbRobot &robot = robots[i];
-		unsigned int n = robot.toXml(xml, sizeof(xml));
-		for (unsigned int j=0; j<views.size(); j++)
-		{
-			cbView *view = views[j];
-			view->socket->send(xml, n);
+	std::ostringstream xmlStream;
+	RobotsToXml(xmlStream);
+
+	std::string xmlString = xmlStream.str();
+	if (xmlString.length() != 0) {
+		const char* xmlCharA = xmlString.c_str();
+
+		for (unsigned int j = 0; j < views.size(); j++) {
+			cbView *view = (cbView *) views[j];
+			if (!view->socket->send(xmlCharA, xmlString.length())) {
+				cerr << xmlString << "\n";
+			}
 		}
+	}
+}
+
+void cbLogplayer::RobotsToXml(ostream &logger)
+{
+	vector <cbRobot> &robots = (*log)[logIndex];
+	char buff[1024 * 16];
+	unsigned int n = robots.size();
+	if(curState == RUNNING) {
+		logger << "<LogInfo Time=\"" << curCycle << "\">\n";
+		for (unsigned int i = 0; i<n; i++)
+		{
+			cbRobot &robot = robots[i];
+            //if (robot == 0) continue;
+            robot.toXml(buff, sizeof(buff));
+			logger << buff;
+		}
+        logger << "</LogInfo>\n";
 	}
 }
 

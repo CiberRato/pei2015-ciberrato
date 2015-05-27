@@ -109,32 +109,24 @@ void cbRobot::changeActiveState()
 */
 unsigned int cbRobot::toXml(char *xml, unsigned int len) // len = buffer size not used
 {
-	unsigned int n;
-	n = sprintf(xml, "<Robot");
-	/* add attributes */
-	n += sprintf(xml+n, " Name=\"%s\"", name);
-	n += sprintf(xml+n, " Id=\"%d\"", id);
-	n += sprintf(xml+n, " Time=\"%u\"", simTime);
-	n += sprintf(xml+n, " Score=\"%u\"", score);
-	n += sprintf(xml+n, " ArrivalTime=\"%u\"", arrivalTime);
-	n += sprintf(xml+n, " ReturningTime=\"%u\"", returningTime);
-	n += sprintf(xml+n, " Collisions=\"%u\"", collisionCount);
-	n += sprintf(xml+n, " Collision=\"%s\"", collision ? "True" : "False");
-        n += sprintf(xml+n, " VisitedMask=\"%s\"",visitedMask.toAscii().constData());
-	n += sprintf(xml+n, " State=\"%s\">\n", StrState[_state]);
+    unsigned int n;
+    n = sprintf(xml, "\t<Robot Name=\"%s\" Id=\"%u\" State=\"%s\">\n", Name(), Id(), StrState[_state]);
+    n += sprintf(xml+n, "\t\t<Pos X=\"%f\" Y=\"%f\" Dir=\"%f\"/>\n", X(), Y(), Degrees());
+	
 
-	/* add position */
-	double dir = curPos.directionInDegrees();
-	n += sprintf(xml+n, "\t<Position X=\"%g\" Y=\"%g\" Dir=\"%g\"/>\n", curPos.X(), 
-			curPos.Y(), dir);
-	n += sprintf(xml+n, "</Robot>\n");
+	n += sprintf(xml+n, "\t\t<Scores Score=\"%u\" ArrivalTime=\"%u\" ReturningTime=\"%u\" Collisions=\"%u\" "
+						"Collision=\"%s\" VisitedMask=\"%s\"/>\n", score, arrivalTime, returningTime, 
+						collisionCount, hasCollide() ? "True" : "False", visitedMask.toAscii().constData());
 
-        if(n > len - 1) {
-              fprintf(stderr, "cbRobot::toXml message is too long\n");
-              abort();
-        }
+    n += sprintf(xml+n, "\t</Robot>\n");
 
-//	fprintf(stderr,"Robot : %s\n",xml);
+    if(n > len-1) {
+        fprintf(stderr,"cbRobot::toXml message is too long\n");
+        abort();
+    }
+
+	//if(returningTime > 0) cerr << "returnTime=" << returningTime << " startRet=" << startReturningTime << "\n";
+	//cerr << xml;
 
 	return n;
 }
