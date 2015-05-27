@@ -8,8 +8,6 @@ class Settings():
 
 	def getSettings(self):
 		server_name = gethostname()
-		print server_name
-
 		for n in self.serverNames:
 			if server_name == n:
 				settings_str = re.sub("///.*", "", open("settings.json", "r").read())

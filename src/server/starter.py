@@ -171,10 +171,10 @@ class Starter:
 
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
-										  "http://%s:" + str(DJANGO_PORT) + "%s" \
+										  "http://%s:%s%s" \
 										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
-										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port),
+										  (DOCKERIP, str(DJANGO_PORT), agents[i]['files'], DOCKERIP+":"+str(simulator_port),
 										  agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
