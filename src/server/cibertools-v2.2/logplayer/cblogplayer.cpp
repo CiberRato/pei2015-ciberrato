@@ -206,12 +206,12 @@ void cbLogplayer::ViewCommands()
 				case cbCommand::LABRQ:
 					//cout << "View command = LabReq\n";
 					cnt = lab->toXml(xml, sizeof(xml));
-					views[i]->socket->send(xml, cnt+1);
+					views[i]->socket->send(xml, cnt);
 					break;
 				case cbCommand::GRIDRQ:
 					//cout << "View command = GridReq\n";
 					cnt = grid->toXml(xml, sizeof(xml));
-					views[i]->socket->send(xml, cnt+1);
+					views[i]->socket->send(xml, cnt);
 					break;
 				case cbCommand::ROBOTDEL:
 					//cout << "View command = RobotDel\n";
@@ -239,7 +239,7 @@ void cbLogplayer::UpdateViews()
 		for (unsigned int j=0; j<views.size(); j++)
 		{
 			cbView *view = views[j];
-			view->socket->send(xml, n+1);
+			view->socket->send(xml, n);
 		}
 	}
 }
