@@ -271,7 +271,7 @@
                 var value = $(".leftGrip").css("left");
                 value = parseInt(value);
                 var scope = angular.element('[ng-controller=LogViewer]').scope();
-                scope.idx = parseInt((value * angular.element('[ng-controller=LogViewer]').scope().param._SimTime) / ( $("#tmline").width()));
+                scope.idx = parseInt((value * angular.element('[ng-controller=LogViewer]').scope().param._SimTime) / ( $("#tmline").width()-20));
                 console.log(scope.idx);
 
             }catch(TypeError){}

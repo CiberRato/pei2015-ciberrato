@@ -68,10 +68,12 @@
                 ctx1.stroke();
             }
         }
-
         function drawBeacon(){
             var i;
-
+            var dx = [];
+            var dy =[];
+            var dWidth = [];
+            var dHeight = [];
             for(i=0;i<$scope.map.Beacon.length;i++){
                 console.log($scope.map.Beacon[i]);
                 ctx1.beginPath();
@@ -79,19 +81,21 @@
                 ctx1.fillStyle = $scope.circleBorder;
                 ctx1.fill();
 
-                var dx = ($scope.map.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Target[i]._Radius);
-                var dy = ($scope.map.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Target[i]._Radius);
-                var dWidth = $scope.zoom*$scope.map.Target[i]._Radius*2;
-                var dHeight = $scope.zoom*$scope.map.Target[i]._Radius*2;
+                dx[i] = ($scope.map.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Target[i]._Radius);
+                dy[i] = ($scope.map.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Target[i]._Radius);
+                dWidth[i] = $scope.zoom*$scope.map.Target[i]._Radius*2;
+                dHeight[i] = $scope.zoom*$scope.map.Target[i]._Radius*2;
 
-                var imageObj = new Image();
-                imageObj.onload = function() {
-                    ctx1.drawImage(imageObj, dx, dy, dWidth, dHeight);
-                };
-                imageObj.src = $scope.cheeseColor;
-                ctx1.fill();
-                ctx1.stroke();
             }
+            var imageObj = new Image();
+            imageObj.onload = function() {
+                for(i=0;i<$scope.map.Beacon.length;i++){
+                    ctx1.drawImage(imageObj, dx[i], dy[i], dWidth[i], dHeight[i]);
+                }
+            };
+            imageObj.src = $scope.cheeseColor;
+            ctx1.fill();
+            ctx1.stroke();
 
         }
 
