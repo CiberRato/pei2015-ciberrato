@@ -115,7 +115,6 @@ void cbLogplayer::newConnectionEvent() {
 
 	QTcpSocket * client = server.nextPendingConnection();
 	connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
-	cerr << "wtf2\n";
 }
 
 void cbLogplayer::setPort(int port) {
@@ -149,7 +148,6 @@ void cbLogplayer::step()
 */
 void cbLogplayer::processReceptionMessages()
 {
-	cerr << "wtf\n";
 	QObject * obj = sender();
 	QTcpSocket * client = (QTcpSocket *) obj;
 	while (receptionist->CheckIn(client))
