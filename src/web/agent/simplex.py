@@ -28,4 +28,4 @@ class AgentFileSimplex:
         self.file = basename(file_obj.original_name)
         self.last_modification = getmtime(default_storage.path(file_obj.file))
         self.size = size(getsize(default_storage.path(file_obj.file)))
-        self.url = "/api/v1/agents/file/" + file_obj.agent.agent_name + "/" + self.file + "/"
+        self.url = "/api/v1/agents/file/" + file_obj.agent.team.name + "/" + file_obj.agent.agent_name + "/" + self.file + "/"
