@@ -35,9 +35,10 @@ CRQLabView::CRQLabView(CRMainParameters *p, QWidget *parent) :
     comm = new CRQComm(this, scene, lab, host, param->port,
                        param->control, param->autoConnect, param->autoStart);
 
-    ui->graphicsView_lab->setBackgroundBrush( QColor( 128, 128, 128 ));
+    ui->graphicsView_lab->setBackgroundBrush( QColor( 255, 255, 255 ));
     ui->graphicsView_lab->setScene(scene);
-    ui->graphicsView_lab->fitInView(scene->sceneRect());
+    ui->graphicsView_lab->ensureVisible(scene->sceneRect());
+    ui->graphicsView_lab->fitInView(scene->sceneRect() ,Qt::KeepAspectRatio);
 
     connect (comm, SIGNAL(viewerConnected(bool)), ui->actionConnect, SLOT(setChecked(bool)));
 
@@ -78,7 +79,8 @@ void CRQLabView::on_actionReset_Viewer_triggered()
         scene->clear();
         scene->skin(skinFileName);
         scene->bgInitDraw();
-        ui->graphicsView_lab->fitInView(scene->sceneRect());
+        ui->graphicsView_lab->ensureVisible ( scene->sceneRect() );
+        ui->graphicsView_lab->fitInView(scene->sceneRect() ,Qt::KeepAspectRatioByExpanding);
     }
 
     ui->actionConnect->setChecked(false);
@@ -184,5 +186,6 @@ void CRQLabView::on_actionChange_skin_triggered()
 
 void CRQLabView::paintEvent(QPaintEvent *)
 {
-    ui->graphicsView_lab->fitInView(scene->sceneRect());
+    
+    ui->graphicsView_lab->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }

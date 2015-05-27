@@ -32,7 +32,7 @@
 
 #define XMLMAX 1024
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 #include <qxml.h>
 
@@ -57,15 +57,15 @@ struct cbClientForm
 	unsigned short port;
 };
 
-class cbReceptionist : public QUdpSocket
+class cbReceptionist 
 {
 public:
 	/* constructor and destructor */
-	cbReceptionist(unsigned int port);
+	cbReceptionist();
 	~cbReceptionist();
 
 	/* added functionality */
-	bool CheckIn(void);
+	bool CheckIn(QTcpSocket *);
 	cbClientForm &Form();
 	bool bad();
 	void setXmlParser(QXmlSimpleReader *);

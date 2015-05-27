@@ -828,7 +828,9 @@ void cbSimulator::UpdateViews()
 
 		for (unsigned int j = 0; j < views.size(); j++) {
 			cbView *view = (cbView *) views[j];
-			view->socket->send(xmlCharA, xmlString.length());
+			if (!view->socket->send(xmlCharA, xmlString.length())) {
+				cerr << xmlString << "\n";
+			}
 		}
 	}
 }

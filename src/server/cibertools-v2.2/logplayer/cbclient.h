@@ -21,7 +21,7 @@
 #ifndef CBCLIENT_H
 #define CBCLIENT_H
 
-#include <QUdpSocket>
+#include <QTcpSocket>
 #include <QHostAddress>
 #include <qxml.h>
 
@@ -30,28 +30,21 @@
 #include "cblab.h"
 
 /**
-  *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
-  */
+ * base class of all representations of clients in the simulator.
+ * 
+ *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
+ */
 
-class cbClient : public QUdpSocket
+class cbClient : public QTcpSocket
 {
 public:
-	cbClient();
-	virtual ~cbClient();
+    cbClient();
+    virtual ~cbClient();
 
-    virtual bool Reply(QHostAddress &addr, unsigned short &port, cbParameters *param = NULL, cbGrid *grid = NULL, cbLab *lab = NULL);
-	virtual bool Refuse(QHostAddress &addr, unsigned short &port);
+    bool Reply(cbParameters *param = NULL, cbGrid *grid = NULL, cbLab *lab = NULL);
+    bool Refuse();
 
-	bool send(char *, unsigned int);
-
-protected:
-	QHostAddress address;
-	unsigned short port;
-
-protected:	// class data members
-	QXmlSimpleReader parser;
-	QXmlInputSource source;
-
+    bool send(const char *, unsigned int);
 };
 
 #endif

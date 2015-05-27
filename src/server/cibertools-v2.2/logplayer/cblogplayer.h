@@ -33,9 +33,12 @@
 #include <qvector.h>
 #include <iostream>
 #include <vector>
-
+#include <QTcpServer>
+#include <sstream>
+	
 using std::vector;
 using std::istream;
+using std::ostream;
 
 class cbPosition;
 class cbParameters;
@@ -62,8 +65,8 @@ public:
 	void setParameters(cbParameters *);
     void setReceptionist(cbReceptionist *);
     void setGUI(Ui_logplayerGUI *g) { gui=g;}
-
-
+    void setPort(int);
+    void startLogplayer();
     void WriteLog(void);
 
     inline cbLab *Lab() { return lab;}
@@ -80,6 +83,8 @@ public:
 
 public slots:
 	void step();
+    void processReceptionMessages();
+    void newConnectionEvent();
 
 private: // data members
 	unsigned int curCycle;		// current simulation cycle
@@ -101,11 +106,12 @@ private: // data members
     istream *logStream;
 
 	unsigned int logIndex;
+	int port;
 
     Ui_logplayerGUI *gui;
-	
+	QTcpServer  server;
 private: // member functions
-	void CheckIn();
+	void RobotsToXml(ostream &log);
 	void ViewCommands();
 	void PanelCommands();
 	void UpdateViews();

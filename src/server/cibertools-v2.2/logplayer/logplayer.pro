@@ -11,14 +11,14 @@ HEADERS		= cbbeacon.h cbclient.h\
                   cbpoint.h cbposition.h cbreceptionform.h cbreceptionhandler.h\
                   cbreceptionist.h\
                   cblogplayer.h cbrobot.h cbtarget.h cbview.h cbviewcommand.h\
-                  cbviewhandler.h cbwall.h\
-		  cbloghandler.h
+                  cbviewhandler.h cbwall.h cbentity.h \
+		          cbloghandler.h
 SOURCES		= cbbeacon.cpp cbclient.cpp\
                   cbgrid.cpp cbgridhandler.cpp cblab.cpp cblabhandler.cpp\
-                  cbparameters.cpp cbparamhandler.cpp\
+                  cbparameters.cpp cbparamhandler.cpp cbentity.cpp \
                   cbpoint.cpp cbposition.cpp cbreceptionhandler.cpp cbreceptionist.cpp\
                   cblogplayer.cpp cbrobot.cpp cbtarget.cpp cbview.cpp cbviewhandler.cpp\
-                  cbwall.cpp cbloghandler.cpp logplayer.cpp
+                  cbwall.cpp cbloghandler.cpp logplayer.cpp 
 
 TARGET		= logplayer
 

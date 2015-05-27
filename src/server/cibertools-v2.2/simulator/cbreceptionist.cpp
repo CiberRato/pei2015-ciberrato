@@ -83,6 +83,8 @@ bool cbReceptionist::CheckIn(QTcpSocket* client)
 	QByteArray readArr, datagram;
 	while (strcmp((readArr = client->read(1)).data(), "\x04") != 0) {
         if (readArr.isEmpty()) {
+        	if (datagram.isEmpty())
+        		return false;
             cerr << "[cbReceptionist] Delimeter not found in the message, check the message sent.\n";
             return false;
         }

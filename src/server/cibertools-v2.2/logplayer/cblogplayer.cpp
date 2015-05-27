@@ -39,10 +39,11 @@
 #include "cbreceptionist.h"
 #include "cbview.h"
 #include "cbgrid.h"
+#include <sstream>
 
 #include "cblogplayer.h"
 
-
+using std::ostream;
 using std::cerr;
 using std::cout;
 
@@ -57,6 +58,8 @@ cbLogplayer::cbLogplayer()
 	curState = nextState = STOPPED;
 
 	logIndex=0;
+	port = 6000;
+	nextState = RUNNING;
 }
 
 cbLogplayer::~cbLogplayer()
@@ -108,9 +111,23 @@ const char *cbLogplayer::curStateAsString()
 	return sas[curState];
 }
 
+void cbLogplayer::newConnectionEvent() {
+
+	QTcpSocket * client = server.nextPendingConnection();
+	connect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
+}
+
+void cbLogplayer::setPort(int port) {
+	this->port = port;
+}
+
+void cbLogplayer::startLogplayer() {
+	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
+    server.listen(QHostAddress::Any, port);
+}
 void cbLogplayer::step()
 {
-	CheckIn();
+	//CheckIn();
 	ViewCommands();
 	UpdateViews();
 	if(curState==RUNNING) {
@@ -129,9 +146,11 @@ void cbLogplayer::step()
 	Process registration requests of all
 	clients waiting at reception.
 */
-void cbLogplayer::CheckIn()
+void cbLogplayer::processReceptionMessages()
 {
-	while (receptionist->CheckIn())
+	QObject * obj = sender();
+	QTcpSocket * client = (QTcpSocket *) obj;
+	while (receptionist->CheckIn(client))
 	{
 		cbClientForm &form = receptionist->Form();
 		int cnt;
@@ -142,9 +161,10 @@ void cbLogplayer::CheckIn()
 				cnt = views.size();
 				views.resize(cnt+1);
 				views[cnt] = form.client.view;
-				views[cnt]->Reply(form.addr, form.port, param, grid, lab);
+				views[cnt]->socket->Reply(param, grid, lab);
 				cout << "Viewer has been registered\n";
 				//gui->messages->insertLine("viewer has been registered");
+				disconnect(client, SIGNAL(readyRead()), this, SLOT(processReceptionMessages()));
 				break;
 			case cbClientForm::UNKNOWN:
 				cerr << "UNKNOWN form was received, and discarded\n";
@@ -186,12 +206,12 @@ void cbLogplayer::ViewCommands()
 				case cbCommand::LABRQ:
 					//cout << "View command = LabReq\n";
 					cnt = lab->toXml(xml, sizeof(xml));
-					views[i]->send(xml, cnt+1);
+					views[i]->socket->send(xml, cnt);
 					break;
 				case cbCommand::GRIDRQ:
 					//cout << "View command = GridReq\n";
 					cnt = grid->toXml(xml, sizeof(xml));
-					views[i]->send(xml, cnt+1);
+					views[i]->socket->send(xml, cnt);
 					break;
 				case cbCommand::ROBOTDEL:
 					//cout << "View command = RobotDel\n";
@@ -210,17 +230,37 @@ void cbLogplayer::ViewCommands()
 */
 void cbLogplayer::UpdateViews()
 {
-	char xml[1024];
-	vector <cbRobot> &robots = (*log)[logIndex];
-	for (unsigned int i=0; i<robots.size(); i++)
-	{
-		cbRobot &robot = robots[i];
-		unsigned int n = robot.toXml(xml, sizeof(xml));
-		for (unsigned int j=0; j<views.size(); j++)
-		{
-			cbView *view = views[j];
-			view->send(xml, n+1);
+	std::ostringstream xmlStream;
+	RobotsToXml(xmlStream);
+
+	std::string xmlString = xmlStream.str();
+	if (xmlString.length() != 0) {
+		const char* xmlCharA = xmlString.c_str();
+
+		for (unsigned int j = 0; j < views.size(); j++) {
+			cbView *view = (cbView *) views[j];
+			if (!view->socket->send(xmlCharA, xmlString.length())) {
+				cerr << xmlString << "\n";
+			}
 		}
+	}
+}
+
+void cbLogplayer::RobotsToXml(ostream &logger)
+{
+	vector <cbRobot> &robots = (*log)[logIndex];
+	char buff[1024 * 16];
+	unsigned int n = robots.size();
+	if(curState == RUNNING) {
+		logger << "<LogInfo Time=\"" << curCycle << "\">\n";
+		for (unsigned int i = 0; i<n; i++)
+		{
+			cbRobot &robot = robots[i];
+            //if (robot == 0) continue;
+            robot.toXml(buff, sizeof(buff));
+			logger << buff;
+		}
+        logger << "</LogInfo>\n";
 	}
 }
 

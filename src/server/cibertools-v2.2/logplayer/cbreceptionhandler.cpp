@@ -26,11 +26,12 @@
 
 using std::cerr;
 
-cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser)
+cbReceptionHandler::cbReceptionHandler(QXmlSimpleReader *parser, QTcpSocket *client)
 {
 	panel = 0;
 	view = 0;
 	xmlParser=parser;
+	this->client = (cbClient*) client;
 }
  
 bool cbReceptionHandler::startDocument()
@@ -52,7 +53,7 @@ bool cbReceptionHandler::startElement( const QString&, const QString&, const QSt
 	if (tag == "View" || tag == "PanelView")
 	{
 		type = VIEW;
-		view = new cbView;
+		view = new cbView(client);
 	}
 	else
 	{

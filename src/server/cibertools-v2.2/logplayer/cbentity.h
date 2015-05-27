@@ -17,44 +17,35 @@
     along with Foobar; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-#ifndef _CB_RECEPTION_HANDLER_
-#define _CB_RECEPTION_HANDLER_
 
+#ifndef CBENTITY_H
+#define CBENTITY_H
+
+#include <QObject>
+#include <QTcpSocket>
+#include <QHostAddress>
 #include <qxml.h>
 #include "cbclient.h"
+    
+/**
+ * base class of all representations of clients in the simulator.
+ * 
+ *@author Nuno Lau, Artur Pereira & Andreia Melo, Miguel Rodrigues
+ */
 
-class QString;
-class QXmlLocator;
-
-class cbView;
-class cbPanel;
-
-class cbReceptionHandler : public QXmlDefaultHandler
+class cbEntity : public QObject
 {
 public:
-	enum Type { UNKNOWN, VIEW, PANEL, ROBOT};
-	cbReceptionHandler(QXmlSimpleReader *xmlParser, QTcpSocket *);
+	cbEntity(cbClient*, QObject *parent = 0);
+	~cbEntity();
 
-    bool parse(void *data);
-    
-    bool startDocument();
-    bool endDocument();
-    bool startElement( const QString&, const QString&, const QString& , const QXmlAttributes& );
-    bool endElement( const QString&, const QString&, const QString& );
-	void setDocumentLocator(QXmlLocator *);
+    cbClient* socket;
 
-	cbView *viewObject();
-	cbPanel *panelObject();
-	Type objectType();
-
-private:
-        QXmlInputSource xmlSource;
-        QXmlSimpleReader *xmlParser;
-
-	cbView *view;
-	cbPanel *panel;
-	Type type;
-    cbClient *client;
-};                   
+protected:
+    QHostAddress address;
+    unsigned short port;
+    QXmlSimpleReader parser;
+    QXmlInputSource source;
+};
 
 #endif

@@ -149,7 +149,7 @@ class Starter:
 						stdout = subprocess.PIPE)
 
 		print "[STARTER] Successfully opened process with process id: ", simulator.pid
-		time.sleep(1)
+		time.sleep(2)
 
 		print "[STARTER] Creating process for viewer"
 		viewer_c, starter_c = multiprocessing.Pipe(True)
