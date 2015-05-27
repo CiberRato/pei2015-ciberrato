@@ -18,6 +18,7 @@ EXPOSE 6006
 EXPOSE 6007
 EXPOSE 6008
 EXPOSE 8000
+EXPOSE 80
 
 RUN mkdir -p /ciber/user_sourcecode
 

@@ -173,7 +173,7 @@ class Starter:
 
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
-										  "http://%s:8000%s" \
+										  "http://%s:80%s" \
 										  " | tar -xz;"
 										  " chmod +x prepare.sh execute.sh; ./prepare.sh; ./execute.sh %s %s %s'" %  \
 										  (DOCKERIP, agents[i]['files'], DOCKERIP+":"+str(simulator_port),
