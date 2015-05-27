@@ -1,0 +1,78 @@
+///settings file for ciberonline
+///do not change unless necessary
+///please comment using 3 '/'
+
+{
+	///general settings to be used by starter, viewer and other programs that may require so
+	"settings": {
+		///default tmp file name for log info
+		"log_info_file": "./tmp/ciberOnline_log.json",
+
+		///default value for sync mode timeout (in ms)
+		"sync_timeout": 100,
+
+		///simulator ip, localhost by default
+		"simulator_host": "127.0.0.1",
+
+		///maximum number of simulations running in parallel
+		"max_simulations": 2,
+
+		///host and port for both starter and GetSimId connection
+		"starter_end_point_host": "127.0.0.1",
+		"starter_end_point_port": 7500,
+
+		///host and port for GetSimId and Tests end-point connection
+		"end_point_host": "127.0.0.1",
+		"end_point_port": 9000,
+
+		///host and port for services (like start) end-point connection
+		"services_end_point_host": "127.0.0.1",
+		"services_end_point_port": 7501,
+
+		///websocket host and port for viewer to send robots data stream
+		"websocket_host": "127.0.0.1",
+		"websocket_port": 10000,
+
+		///django server default host and port for end-points
+		"django_host": "127.0.0.1",
+		"django_port": 8000
+	},
+	"urls":{
+		///url to get a simulation with a sim_id
+		///USAGE: http://HOST:PORT/api/v1/competitions/get_simulation/<SIM_ID>/
+		"get_simulation": "/api/v1/trials/get_trial/",
+
+		///url to get agents from a specific simulation
+		/// USAGE: http://HOST:PORT/api/v1/competitions/agent_file/<team_name>/<agent_name>/
+		"get_agent": "/api/v1/agents/agent_file/",
+
+		///url to post the log file after a simulation
+		///PARAMS: data={'simulation_identifier': <SIM_ID>}, files={'log_json': <FILE>}
+		"post_log": "/api/v1/trials/trial_log/",
+
+		///url to post a sim_id to be executed
+		///PARAMS: params={'simulation_identifier': <SIM_ID> }
+		"post_sim_id": "/api/v1/trial_id/",
+
+		///url to post a test to be executed
+		///PARAMS: params={'agent_name': <agent_name>, team_name: <team_name>}
+		"test_agent": "/api/v1/test_agent/",
+
+		///url to post error msg from stater
+		///PARAMS: params={'msg': <msg> }
+		"error_msg": "/api/v1/trials/trial_error/",
+
+		///url to post the result of the tests
+		///USAGE: /api/v1/agents/code_validation/<agent_name>
+		///PARAMS:{'team_name': <team_name>, code_valid': <return_code>, 'validation_result': <message>}
+		"code_validation": "/api/v1/agents/code_validation/",
+
+		///url to post the robots that are registered
+		///PARAMS:{'message': <message>, 'trial_identifier': <trial_identifier>}
+		"register_robots": "/api/v1/trials/message/",
+
+		///url to post the final score of the simulation
+		"score": "/api/v1/competitions/hall_of_fame/automatic_score/"
+
+	}
+}
