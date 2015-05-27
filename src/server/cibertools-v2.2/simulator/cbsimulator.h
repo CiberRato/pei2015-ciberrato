@@ -153,8 +153,8 @@ public:
 	void startTimer(void);
 
 public slots:
-	void step();
     void forcedStep();
+    void step();
 	void reset();
 	void start();
 	void stop();

@@ -58,7 +58,6 @@ bool cbClient::Reply(cbParameters *param, cbGrid *grid, cbLab *lab)
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    //flush();
 	return true;
 }
 
@@ -82,7 +81,6 @@ bool cbClient::Refuse()
 		cerr << "Fail replying to client\n";
 		return false;
     }
-    //flush();
 	return true;
 }
 
@@ -96,11 +94,11 @@ bool cbClient::send(const char *xml, unsigned int cnt)
 	strcpy(reply, xml);
 	
 	cnt += sprintf(reply+cnt, "\x04");
-    if (write(reply) != (int)cnt)
+
+	if (write(reply) != (int)cnt)
     {
         cerr << "Fail sending xml message to client\n";
 		return false;
     }
-    //flush();
 	return true;
 }
