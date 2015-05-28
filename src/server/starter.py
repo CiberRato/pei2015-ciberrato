@@ -166,8 +166,8 @@ class Starter:
 		docker_containers = []
 		for i in range(n_agents):
 			if agents[i]['agent_type'] == "local":
-				print "[STARTER] Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s" % \
-						(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], )
+				print "[STARTER] Creating docker for agent: \n\tName: %s\n\tPosition: %s\n\tLanguage: %s\n\tPath: http://%s:%s%s" % \
+						(agents[i]['agent_name'], agents[i]['pos'], agents[i]['language'], DOCKERIP, str(DJANGO_PORT), agents[i]['files'], )
 
 				docker = subprocess.Popen("docker run -d ubuntu/ciberonline " \
 										  "bash -c 'curl " \
