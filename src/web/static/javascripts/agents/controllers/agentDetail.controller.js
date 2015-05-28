@@ -86,11 +86,13 @@
                             console.log(data._type);
                             console.log(data.message);
                         });
+
+                        $scope.$on("$destroy", function(event){
+                            code_validate.remove();
+                        });
                     }
 
-                    $scope.$on("$destroy", function(event){
-                        code_validate.remove();
-                    });
+
 
                 }
 
@@ -130,6 +132,8 @@
                     });
                     $timeout(function(){
                         getFiles();
+                        vm.agent.code_valid = false;
+                        vm.agent.validation_result = [];
                     });
                 }
 

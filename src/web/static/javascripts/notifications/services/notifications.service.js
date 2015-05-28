@@ -70,7 +70,7 @@
                   // Provide handle back for removal of topic
                   return {
                     remove: function() {
-                      delete slotTopics0[topic][index];
+                      slotTopics0 = {};
                     }
                   };
                 }else if (slot==1) {
@@ -83,7 +83,9 @@
                   // Provide handle back for removal of topic
                   return {
                     remove: function() {
-                      delete slotTopics1[topic][index];
+                      slotTopics1 = {};
+                        console.log("aquipa");
+                        console.log(slotTopics1);
                     }
                   };
                 }
