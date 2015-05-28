@@ -17,7 +17,9 @@ apt-get update && apt-get install -y	python \
 			redis-server \
 			libfreetype6-dev \
 			libxft-dev  \
-			libjpeg62
+			libjpeg62 \
+			libpq-dev
+			
 (cd src/web;
 echo "	>> Installing python dependencies"
 pip install cherrypy \
