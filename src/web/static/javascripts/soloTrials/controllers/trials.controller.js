@@ -6,9 +6,9 @@
         .module('ciberonline.soloTrials.controllers')
         .controller('TrialsController', TrialsController);
 
-    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$dragon', '$scope', 'Notification'];
+    TrialsController.$inject = ['SoloTrials', '$routeParams', '$timeout', '$scope', 'Notification'];
 
-    function TrialsController(SoloTrials, $routeParams, $timeout, $dragon, $scope, Notification){
+    function TrialsController(SoloTrials, $routeParams, $timeout, $scope, Notification){
         var vm = this;
         vm.roundName = $routeParams.identifier;
         vm.launchTrial = launchTrial;
@@ -33,9 +33,32 @@
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
-                console.log(data.data);
-                $timeout(function(){
-                    getTrials();
+                    console.log("TRIALS");
+                var round_notification = Notification.events.subscribe('notificationteam', 1, function(data){
+                    console.log(data);
+
+                    if (data.message.trigger == 'trial_started'){
+                        $timeout(function () {
+                            getTrials();
+                        });
+                    }else if(data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
+                        round_trial();
+                        console.log("entrei");
+                    }
+
+                    console.log(data._type);
+                    console.log(data.message);
+                });
+                console.log(round_notification);
+                var round_trial = function(){
+                    round_notification.remove();
+
+                    $timeout(function () {
+                        getTrials();
+                    });
+                };
+                $scope.$on("$destroy", function(event){
+                    round_notification.remove();
                 });
             }
 
@@ -81,35 +104,9 @@
                     vm.trials.trials[i].total = vm.trials.trials[i].created_at.substr(0, vm.trials.trials[i].created_at.indexOf('.'));
                     vm.trials.trials[i].date = vm.trials.trials[i].total.substr(0, vm.trials.trials[i].created_at.indexOf('T'));
                     vm.trials.trials[i].hour = vm.trials.trials[i].total.substr(vm.trials.trials[i].created_at.indexOf('T')+1);
-
-                    console.log(vm.trials.trials[i].hour);
                 }
 
-                $dragon.onReady(function() {
-                    swampdragon.open(function () {
-                        var round_notification = Notification.events.subscribe('notificationteam', 1, function(data){
-                            console.log("TRIALS");
 
-                            if (data.message.trigger == 'trial_started' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
-                                round_trial();
-                                console.log("entrei");
-                            }
-
-                            console.log(data._type);
-                            console.log(data.message);
-                        });
-                        var round_trial = function(){
-                            round_notification.remove();
-
-                            $timeout(function () {
-                                getTrials();
-                            });
-                        };
-                        $scope.$on("$destroy", function(event){
-                            round_notification.remove();
-                        });
-                    });
-                });
                 console.log(vm.trials);
                 $scope.loader = {
                     loading: true

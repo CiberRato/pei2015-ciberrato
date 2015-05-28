@@ -62,36 +62,33 @@
                         life: 2500,
                         theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
-                    $dragon.onReady(function() {
-                        swampdragon.open(function () {
-                            var code_validate = Notifcation.events.subscribe('notificationteam', 1, function(data){
-                                console.log("AGENT");
 
-                                if (data.message.trigger == 'code_valid') {
-                                    code_valid_get();
-                                }
+                    console.log("AGENT");
+                    var code_validate = Notifcation.events.subscribe('notificationteam', 1, function(data){
 
-                                console.log(data._type);
-                                console.log(data.message);
-                            });
-                            var code_valid_get = function(){
-                                $timeout(function () {
-                                    Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                        if (data.message.trigger == 'code_valid') {
+                            code_valid_get();
+                        }
 
-                                    function getAgentSuccessFn(data) {
-                                        vm.agent = data.data;
-                                    }
+                        console.log(data._type);
+                        console.log(data.message);
+                    });
+                    var code_valid_get = function(){
+                        $timeout(function () {
+                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
-                                    function getAgentErrorFn(data) {
-                                        console.error(data.data);
-                                    }
-                                    code_validate.remove();
-                                });
-                            };
-                            $scope.$on("$destroy", function(event){
-                                code_validate.remove();
-                            });
+                            function getAgentSuccessFn(data) {
+                                vm.agent = data.data;
+                            }
+
+                            function getAgentErrorFn(data) {
+                                console.error(data.data);
+                            }
+                            code_validate.remove();
                         });
+                    };
+                    $scope.$on("$destroy", function(event){
+                        code_validate.remove();
                     });
 
                 }

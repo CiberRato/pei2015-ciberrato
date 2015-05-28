@@ -9,7 +9,9 @@
 
                     <!-- Tab #static -->
                     <div class="tab-pane active" id="static">
-                        <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.team_name}}) </h2>
+                        <header>
+                            <h2><span id="agent_name">{{vm.agent.agent_name}}</span> ({{vm.agent.team_name}}) </h2>&nbsp;&nbsp;<span class="awe-exclamation-sign"><b><a data-toggle="modal"  href="#samples">See the Samples</a></b></span>
+                        </header>
                         <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length > 0 && vm.agent.validation_result != 'submitted' && vm.files.length != 0" class="alert alert-error">
                             <strong>Code not valid!</strong><br/> {{vm.agent.validation_result}}<br/><br/>
                             <button class="btn btn-flat btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
@@ -86,10 +88,6 @@
                         </script>
                         <br/>
 
-                        <br/>
-                        <br/>
-                        <span class="awe-exclamation-sign"></span><b>
-                        <a data-toggle="modal"  href="#samples">See the Samples</a></b>
                         <br/>
                         <br/>
                         <div class="modal fade"  id="samples">

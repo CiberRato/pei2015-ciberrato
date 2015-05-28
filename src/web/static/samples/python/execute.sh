@@ -6,5 +6,5 @@
 
 # Usage: ./execute.sh localhost 3 myrobot
 
-cd sample_code;
+# cd sample_code;
 python python_sample.py -host $1 -pos $2 -robname $3

@@ -25,6 +25,7 @@
             }else if (slot==1) {
               for (var topic1 in slotTopics1){
                 if(slotTopics1.hasOwnProperty(topic1)){
+                    console.log("topic1" + topic1);
                   if(topic1==topicSubscribed){
                     return true;
                   }
@@ -38,14 +39,20 @@
 
           return {
             subscribe: function(topic, slot, listener) {
+                console.log("topic" + topic + "slot" +slot);
+                console.log(listener);
               if(hasSubscribed(topic, slot)){
                 if(slot==0){
+                    console.log("FUI PARA AQUI1");
                   return {
                     remove: function() {
                       delete slotTopics0[topic][0];
                     }
                   };
                 }else if (slot==1) {
+                    console.log("FUI PARA AQUI2");
+                    console.log(slotTopics1[topic][0]);
+                    console.log(slotTopics1);
                   return {
                     remove: function() {
                       delete slotTopics1[topic][0];

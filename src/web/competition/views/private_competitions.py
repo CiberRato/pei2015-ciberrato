@@ -230,7 +230,7 @@ class RunPrivateTrial(views.APIView):
         # the grid must have at least one agent
         if grid_position.agentgrid_set.count() == 0:
             return Response({'status': 'Bad request',
-                             'message': 'Your Grid must have at least one agent!'},
+                             'message': 'Please select your agents to run this trial in the first page of Solo Trials!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         # create trial for this round

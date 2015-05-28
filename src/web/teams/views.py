@@ -89,6 +89,11 @@ class TeamViewSet(viewsets.ModelViewSet):
         :param pk: The team name
         """
         team = get_object_or_404(Team.objects.all(), name=kwargs.get('pk'))
+
+        # remove trials from solo trials
+
+        # remove trials from hall of fame
+
         team.delete()
         return Response({'status': 'Deleted',
                          'message': 'The team has been deleted and the team members too.'},
