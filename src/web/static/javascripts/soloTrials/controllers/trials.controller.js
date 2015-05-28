@@ -13,6 +13,7 @@
         vm.roundName = $routeParams.identifier;
         vm.launchTrial = launchTrial;
         vm.removeTrial = removeTrial;
+        var subscribed = false;
         activate();
 
         function activate(){
@@ -34,32 +35,25 @@
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
                     console.log("TRIALS");
-                var round_notification = Notification.events.subscribe('notificationteam', 1, function(data){
-                    console.log(data);
+                if(!subscribed){
+                    subscribed = true;
+                    var round_notification = Notification.events.subscribe('notificationteam', 1, function(data){
+                        console.log(data);
 
-                    if (data.message.trigger == 'trial_started'){
-                        $timeout(function () {
-                            getTrials();
-                        });
-                    }else if(data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log') {
-                        round_trial();
-                        console.log("entrei");
-                    }
+                        if (data.message.trigger == 'trial_started' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log'){
+                            $timeout(function () {
+                                getTrials();
+                            });
+                        }
 
-                    console.log(data._type);
-                    console.log(data.message);
-                });
-                console.log(round_notification);
-                var round_trial = function(){
-                    round_notification.remove();
-
-                    $timeout(function () {
-                        getTrials();
+                        console.log(data._type);
+                        console.log(data.message);
                     });
-                };
-                $scope.$on("$destroy", function(event){
-                    round_notification.remove();
-                });
+                    console.log(round_notification);
+                    $scope.$on("$destroy", function(event){
+                        round_notification.remove();
+                    });
+                }
             }
 
             function launchErrorFn(data){
