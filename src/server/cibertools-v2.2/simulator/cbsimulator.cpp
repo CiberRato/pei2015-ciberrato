@@ -331,6 +331,8 @@ void cbSimulator::setReceptionistAt(int port)
 
 	connect(&server, SIGNAL(newConnection()), this, SLOT(newConnectionEvent()));
     server.listen(QHostAddress::Any, port);
+    if (!gui)
+    	cerr << " Simulator is listening.\n";
 }
 
 void cbSimulator::newConnectionEvent() {
