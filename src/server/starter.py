@@ -126,28 +126,28 @@ class Starter:
 
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
+
+		cmd = ["./cibertools-v2.2/simulator/simulator", \
+						"-nogui", \
+						"-port", str(simulator_port)]
+		if sync:
+			cmd += ["-sync", str(SYNC_TIMEOUT)]
+		cmd += ["-param", 	tempFilesList["param_list"].name, \
+				"-lab", 	tempFilesList["lab"].name, \
+				"-grid", 	tempFilesList["grid"].name]
 		if sync:
 			print "[STARTER] Creating process for simulator in sync mode on port " + str(simulator_port)
-			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-						"-nogui", \
-						"-port",	str(simulator_port), \
-						"-sync",	str(SYNC_TIMEOUT), \
-						"-param", 	tempFilesList["param_list"].name, \
-						"-lab", 	tempFilesList["lab"].name, \
-						"-grid", 	tempFilesList["grid"].name], \
-						stdout = subprocess.PIPE)
 		else:
-			print "[STARTER] Creating process for simulator"
-			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
-						"-nogui", \
-						"-port",	str(simulator_port), \
-						"-param", 	tempFilesList["param_list"].name, \
-						"-lab", 	tempFilesList["lab"].name, \
-						"-grid", 	tempFilesList["grid"].name], \
-						stdout = subprocess.PIPE)
+			print "[STARTER] Creating process for simulator on port " + str(simulator_port)
+		simulator = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 		print "[STARTER] Successfully opened process with process id: ", simulator.pid
-		time.sleep(2)
+		print "[STARTER] Waiting for simulator to start TCP connection"
+		while True:
+  			line = simulator.stderr.readline()
+  			if "Simulator is listening" in line:
+  				break
+  		print "[STARTER] Simulator is already listening"
 
 		print "[STARTER] Creating process for viewer"
 		viewer_c, starter_c = multiprocessing.Pipe(True)
