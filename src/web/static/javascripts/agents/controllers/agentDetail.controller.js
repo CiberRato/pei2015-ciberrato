@@ -16,6 +16,7 @@
         var agentName = $routeParams.name;
         console.log($routeParams);
         var teamName = $routeParams.teamName;
+        var subscribed = false;
 
         activate();
 
@@ -63,30 +64,30 @@
                         theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                     });
 
-                    console.log("AGENT");
-                    var code_validate = Notifcation.events.subscribe('notificationteam', 1, function(data){
+                    if(!subscribed){
+                        subscribed = true;
+                        console.log("AGENT");
+                        var code_validate = Notifcation.events.subscribe('notificationteam', 1, function(data){
 
-                        if (data.message.trigger == 'code_valid') {
-                            code_valid_get();
-                        }
+                            if (data.message.trigger == 'code_valid') {
+                                $timeout(function () {
+                                    Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
 
-                        console.log(data._type);
-                        console.log(data.message);
-                    });
-                    var code_valid_get = function(){
-                        $timeout(function () {
-                            Agent.getAgent(agentName, teamName).then(getAgentSuccessFn, getAgentErrorFn);
+                                    function getAgentSuccessFn(data) {
+                                        vm.agent = data.data;
+                                    }
 
-                            function getAgentSuccessFn(data) {
-                                vm.agent = data.data;
+                                    function getAgentErrorFn(data) {
+                                        console.error(data.data);
+                                    }
+                                });
                             }
 
-                            function getAgentErrorFn(data) {
-                                console.error(data.data);
-                            }
-                            code_validate.remove();
+                            console.log(data._type);
+                            console.log(data.message);
                         });
-                    };
+                    }
+
                     $scope.$on("$destroy", function(event){
                         code_validate.remove();
                     });
