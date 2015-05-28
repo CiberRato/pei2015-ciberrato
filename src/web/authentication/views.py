@@ -228,58 +228,6 @@ class AccountChangePassword(mixins.UpdateModelMixin, viewsets.GenericViewSet):
                          }, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AccountByFirstName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    """
-    ## Get account by first name
-    - #### Method: **GET**
-    - #### URL: **/api/v1/account_by_first_name/&lt;first_name&gt;/**
-    - #### Permissions: **Is Authenticated**
-    """
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Retrieve} one account by First Name
-        B{URL:} ../api/v1/account_by_first_name/<first_name>/
-
-        :type  first_name: str
-        :param first_name: The first name
-        """
-        account = get_list_or_404(self.queryset, first_name=kwargs.get('pk'))
-        serializer = self.serializer_class(account, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AccountByLastName(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    """
-    ## Get account by last name
-    - #### Method: **GET**
-    - #### URL: **/api/v1/account_by_last_name/&lt;last_name&gt;/**
-    - #### Permissions: **Is Authenticated**
-    """
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
-
-    def get_permissions(self):
-        return permissions.IsAuthenticated(),
-
-    def retrieve(self, request, *args, **kwargs):
-        """
-        B{Retrieve} one account by Last Name
-        B{URL:} ../api/v1/account_by_last_name/<last_name>/
-
-        :type  last_name: str
-        :param last_name: The last name
-        """
-        account = get_list_or_404(self.queryset, last_name=kwargs.get('pk'))
-        serializer = self.serializer_class(account, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class LoginView(views.APIView):
     """
     ## Login to the platform

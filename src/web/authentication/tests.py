@@ -36,27 +36,6 @@ class AuthenticationTestCase(TestCase):
 
         user.is_staff = False
         user.save()
-
-        url = "/api/v1/account_by_first_name/unit/"
-        response = client.get(url)
-        rsp = response.data
-        del rsp[0]['updated_at']
-        del rsp[0]['created_at']
-        self.assertEqual(rsp, [OrderedDict(
-            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
-             ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
-        self.assertEqual(response.status_code, 200)
-
-        url = "/api/v1/account_by_last_name/test/"
-        response = client.get(url)
-        rsp = response.data
-        del rsp[0]['updated_at']
-        del rsp[0]['created_at']
-        self.assertEqual(rsp, [OrderedDict(
-            [('email', u'test@test.com'), ('username', u'test'), ('teaching_institution', u'testUA'),
-             ('first_name', u'unit'), ('last_name', u'test'), ('is_staff', False), ('is_superuser', False)])])
-        self.assertEqual(response.status_code, 200)
-
         # get captcha
         url = "/api/v1/get_captcha/"
         response = client.get(path=url)
