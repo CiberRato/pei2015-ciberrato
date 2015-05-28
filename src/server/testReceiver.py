@@ -11,6 +11,7 @@ import sys
 import tarfile
 import re
 import zipfile
+from urllib import pathname2url as encode
 from xml.dom import minidom
 from settingsChooser import Settings
 
@@ -35,7 +36,8 @@ class Test:
 		DJANGO_HOST = settings["settings"]["django_host"]
 		DJANGO_PORT = settings["settings"]["django_port"]
 
-		AGENT_ENDPOINT = "http://" + DOCKERIP + ":" + str(DJANGO_PORT) + GET_AGENT_URL + team_name + "/" + agent_name + "/"
+		AGENT_ENDPOINT = "http://" + DOCKERIP + ":" + str(DJANGO_PORT) + GET_AGENT_URL + \
+						encode(team_name) + "/" + encode(agent_name) + "/"
 
 		docker = subprocess.Popen("docker run ubuntu/ciberonline " \
 									  "bash -c 'curl -s " \
@@ -52,7 +54,7 @@ class Test:
 
 		print "[TESTS] " + message
 
-		url = "http://" + DJANGO_HOST + ":" + str(DJANGO_PORT) + CODE_VALIDATION_URL + agent_name + "/"
+		url = "http://" + DJANGO_HOST + ":" + str(DJANGO_PORT) + CODE_VALIDATION_URL + encode(agent_name) + "/"
 		data = {'team_name': team_name ,'code_valid': docker.returncode == 0, 'validation_result': message}
 		r = requests.put(url, data=data)
 

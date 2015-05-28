@@ -632,7 +632,8 @@ void cbSimulator::start()
 }
 
 void cbSimulator::forcedStep() {
-	cerr << "Robots didn't send a syncronization message before the timeout.\n";
+	cerr << "Onde or more robots didn't send syncronization message before the timeout. Cycle: "
+		 << curCycle << ", State: " << curState << ", NextState: " << nextState << "\n";
 	step();
 }
 void cbSimulator::stop()
@@ -843,6 +844,8 @@ void cbSimulator::UpdateViews()
 void cbSimulator::UpdateState()
 {
     if(simTime() <= curTime() && isTimed()) {
+	    timer.stop();
+	    cerr << ">>> Simulation finished right here, stream ended at this point\n";
         nextState = FINISHED;
 	    if (logging) {
 	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
@@ -1427,6 +1430,8 @@ void cbSimulator::startTimer(void)
 
 void cbSimulator::processRobotActions(const QString &id)
 {
+	if (curState != RUNNING)
+		return;
 
 	unsigned int robotid = id.toInt();
 	// debug
@@ -1468,7 +1473,6 @@ void cbSimulator::processRobotActions(const QString &id)
 				}
 
 				if (stepSim) {
-					step();
 					timer.stop();
 					for (unsigned int i = 0; i < robots.size(); i++)
 					{
@@ -1477,6 +1481,7 @@ void cbSimulator::processRobotActions(const QString &id)
 						robot->setWaitingForSync(false);
 					}
 					timer.start(syncTimeout());
+					step();
 				}
 			}
 			action.sensorRequests.clear();
