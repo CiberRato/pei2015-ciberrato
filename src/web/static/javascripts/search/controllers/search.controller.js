@@ -48,7 +48,7 @@
                 console.log(vm.members);
                 vm.membersFound =[];
                 for(var i = 0; i<vm.members.results.length; i++) {
-                    if (vm.members.results[i].username === search || (vm.members.results[i].first_name === search.substr(0,search.indexOf(' ')) && vm.members.results[i].last_name === search.substr(search.indexOf(' ')+1)) || vm.members.results[i].first_name === search || vm.members.results[i].last_name === search){
+                    if (vm.members.results[i].username === search){
                         vm.membersFound[j] = vm.members.results[i];
                         j++;
                     }
