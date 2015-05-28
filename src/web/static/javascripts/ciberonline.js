@@ -46,7 +46,6 @@
         });
 
         if (Authentication.isAuthenticated()) {
-            console.log("AQUI");
             /* SUBSCRIBE */
             /// Subscribe to the chat router
             var user = Authentication.getAuthenticatedAccount();
