@@ -51,8 +51,8 @@ class Account(AbstractBaseUser):
     username = models.CharField(max_length=40, unique=True, blank=False,
                                 validators=[validate_word, MinLengthValidator(2)])
 
-    first_name = models.CharField(max_length=40, validators=[validate_word, MinLengthValidator(2)])
-    last_name = models.CharField(max_length=40, validators=[validate_word, MinLengthValidator(2)])
+    first_name = models.CharField(max_length=40, validators=[MinLengthValidator(2)])
+    last_name = models.CharField(max_length=40, validators=[MinLengthValidator(2)])
 
     teaching_institution = models.CharField(max_length=140, validators=[MinLengthValidator(2)])
 

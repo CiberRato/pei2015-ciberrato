@@ -1,9 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic.base import TemplateView
 
-from authentication.views import AccountViewSet, LoginView, LogoutView, AccountByFirstName, AccountByLastName, \
-    AccountChangePassword, ToggleUserToStaff, ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha, \
-    PasswordRecoverRequest
+from authentication.views import AccountViewSet, LoginView, LogoutView, AccountChangePassword, ToggleUserToStaff, \
+    ToggleUserToSuperUser, LoginToOtherUser, MyDetails, GetCaptcha, PasswordRecoverRequest
 
 from authentication.views import check_email
 
@@ -48,8 +47,6 @@ from rest_framework import routers
 router_accounts = routers.SimpleRouter()
 router_accounts.register(r'accounts', AccountViewSet)
 router_accounts.register(r'change_password', AccountChangePassword)
-router_accounts.register(r'account_by_first_name', AccountByFirstName)
-router_accounts.register(r'account_by_last_name', AccountByLastName)
 router_accounts.register(r'toggle_staff', ToggleUserToStaff)
 router_accounts.register(r'toggle_super_user', ToggleUserToSuperUser)
 router_accounts.register(r'login_to', LoginToOtherUser)
