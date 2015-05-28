@@ -845,6 +845,7 @@ void cbSimulator::UpdateState()
 {
     if(simTime() <= curTime() && isTimed()) {
 	    timer.stop();
+	    cerr << ">>> Simulation finished right here, stream ended at this point\n";
         nextState = FINISHED;
 	    if (logging) {
 	    	RobotsToXml(*logStream, false, false); // last loginfo item - should not contain robot actions
