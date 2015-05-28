@@ -89,7 +89,7 @@ class CMeasures:
         self.beacon = (False, 0.0)
         self.time = 0
 
-        self.groundReady = False
+        self.ground_ready = False
         self.ground = False
         self.collisionReady = False
         self.collision = False 
@@ -147,8 +147,8 @@ class StructureHandler(sax.ContentHandler):
             if self.measures.collisionReady:
                 self.measures.collision = (attrs["Collision"] == "Yes")
 
-            self.measures.groundReady = ("Ground" in attrs.keys())
-            if self.measures.groundReady:
+            self.measures.ground_ready = ("Ground" in attrs.keys())
+            if self.measures.ground_ready:
                 self.measures.ground = int(attrs["Ground"])
 
         elif name == "IRSensor":
