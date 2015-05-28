@@ -34,7 +34,7 @@
 		"websocket_port": 10000,
 
 		///django server default host and port for end-points
-		"django_host": "ciber.atnog.org",
+		"django_host": "127.0.0.1",
 		"django_port": 80
 	},
 	"urls":{
