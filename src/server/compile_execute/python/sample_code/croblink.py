@@ -230,7 +230,7 @@ class StructureHandler(sax.ContentHandler):
         self.status = 0
         self.measures = CMeasures()
 
-    def start_element(self, name, attrs):
+    def startElement(self, name, attrs):
         # print attrs
         if name == "Reply":
             if "Status" not in attrs.keys():

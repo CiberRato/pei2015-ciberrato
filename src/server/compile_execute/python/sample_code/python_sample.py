@@ -87,7 +87,7 @@ class MyRob(CRobLink):
         if self.measures.irSensorReady[back_id]:
             back = self.measures.irSensor[back_id]
 
-        beacon_ready = self.measures.beacon_ready
+        beacon_ready = self.measures.beaconReady
         if beacon_ready:
             beacon_visible, beacon_dir = self.measures.beacon
 
@@ -98,21 +98,19 @@ class MyRob(CRobLink):
 
         if center > 4.5 or right > 4.5 or left > 4.5 or collision:
             if self.counter % 400 < 200:
-                self.drive_motors(0.06, -0.06)
-                self.read_sensors()
+                l_pow = 0.06
+                r_pow = -0.06
 
-            else:
-                self.drive_motors(-0.06, 0.06)
-                self.read_sensors()
-
+            else:       
+                l_pow = -0.06
+                r_pow = 0.06
         elif right > 1.5:
-            self.drive_motors(0.0, 0.5)
-            self.read_sensors()
+            l_pow = 0.0
+            r_pow = 0.5
 
         elif left > 1.5:
-            self.drive_motors(0.05, 0.0)
-            self.read_sensors()
-
+            l_pow = 0.05
+            r_pow = 0.0
         else:
             follow = False
             if state == 'run' and beacon_ready and beacon_visible:
@@ -120,15 +118,12 @@ class MyRob(CRobLink):
                 target_dir = beacon_dir
 
             if follow and target_dir > 20.0:
-                self.drive_motors(0.0, 0.1)
-                self.read_sensors()
-
+                l_pow = 0.0
+                r_pow = 0.1
             elif follow and target_dir < -20.0:
-                self.drive_motors(0.1, 0.0)
-                self.read_sensors()
+                l_pow = 0.1
+                r_pow = 0.0
             else:
-                self.read_sensors()
-                self.drive_motors(0.1, 0.1)
                 l_pow = 0.1
                 r_pow = 0.1
 
@@ -145,7 +140,7 @@ for i in range(0, len(sys.argv)):
         host = sys.argv[i + 1]
     if sys.argv[i] == "-pos" and i != len(sys.argv) - 1:
         pos = int(sys.argv[i + 1])
-    if sys.argv[i] == "-rob_name" and i != len(sys.argv) - 1:
+    if sys.argv[i] == "-robname" and i != len(sys.argv) - 1:
         rob_name = sys.argv[i + 1]
 
 rob = MyRob(rob_name, host, pos)
