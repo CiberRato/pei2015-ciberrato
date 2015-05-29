@@ -27,18 +27,18 @@ class CRobLink:
         self.sock.connect((self.host, port_conn))
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />\x04'
-        
+
         self.sock.send(msg)  # TODO consider host arg
         data = self.sock.recv(1024)
         #print "received message:", data, " port ", self.port
 
         parser = sax.make_parser()
-        
+
         # Tell it what handler to use
         handler = StructureHandler()
         parser.setContentHandler( handler )
-        
-        # Parse reply 
+
+        # Parse reply
         d2 = data.split('\x04')[0]
         sax.parseString( d2, handler )
         self.status = handler.status
@@ -56,7 +56,7 @@ class CRobLink:
         sax.parseString( d2, handler )
         self.status = handler.status
         self.measures  = handler.measures
-    
+
     def syncRobot(self):
         msg = '<Actions> <Sync/> </Actions>\x04'
         self.sock.send(msg)
@@ -82,24 +82,24 @@ class CMeasures:
 
     def __init__ (self):
         self.compassReady=False
-        self.compass=0.0; 
+        self.compass=0.0;
         self.irSensorReady=[False for i in range(NUM_IR_SENSORS)]
         self.irSensor=[0.0 for i in range(NUM_IR_SENSORS)]
         self.beaconReady = False   # TODO consider more than one beacon
         self.beacon = (False, 0.0)
         self.time = 0
 
-        self.ground_ready = False
+        self.groundReady = False
         self.ground = False
         self.collisionReady = False
-        self.collision = False 
-        self.start = False 
-        self.stop = False 
+        self.collision = False
+        self.start = False
+        self.stop = False
         self.endLed = False
         self.returningLed = False
         self.visitingLed = False
-        self.x = 0.0   
-        self.y = 0.0   
+        self.x = 0.0
+        self.y = 0.0
         self.dir = 0.0
 
         self.scoreReady = False
@@ -131,7 +131,7 @@ class StructureHandler(sax.ContentHandler):
             if "Status" not in attrs.keys():
                 self.status = -1
                 return
-                
+
             if attrs["Status"]=="Ok":
                 self.status = 0
                 return
@@ -147,18 +147,18 @@ class StructureHandler(sax.ContentHandler):
             if self.measures.collisionReady:
                 self.measures.collision = (attrs["Collision"] == "Yes")
 
-            self.measures.ground_ready = ("Ground" in attrs.keys())
-            if self.measures.ground_ready:
+            self.measures.groundReady = ("Ground" in attrs.keys())
+            if self.measures.groundReady:
                 self.measures.ground = int(attrs["Ground"])
 
         elif name == "IRSensor":
             id = int(attrs["Id"])
             #print "IRSensor id ", id
-            if id < NUM_IR_SENSORS: 
+            if id < NUM_IR_SENSORS:
                 self.measures.irSensorReady[id] = True
                 #print "IRSensor val ", attrs["Value"]
                 self.measures.irSensor[id] = float_of_string(attrs["Value"])
-            else: 
+            else:
                 self.status = -1
         elif name == "BeaconSensor":
             id = attrs["Id"]
