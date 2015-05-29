@@ -345,33 +345,6 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
 
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
-        f = open('media/tests_files/main.c', 'r')
-        response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
-
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
-        f = open('media/tests_files/main.cpp', 'r')
-        response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
-
-        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
-        f = open('media/tests_files/main.java', 'r')
-        response = client.post(url, {'file': f})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
-
-        url = "/api/v1/agents/agent_files/KAMIKAZE/?team_name=XPTO3"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 4)
-
-        url = "/api/v1/agents/agent_all_files/KAMIKAZE/?team_name=XPTO3"
-        response = client.get(url)
-        self.assertEqual(response.status_code, 200)
-
         url = "/api/v1/agents/file/XPTO3/KAMIKAZE/myrob_do.py/"
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -381,6 +354,51 @@ class AuthenticationTestCase(TestCase):
         response = client.delete(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
+
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
+        f = open('media/tests_files/main.c', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        # delete uploaded file
+        url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=main.c&team_name=XPTO3"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
+
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
+        f = open('media/tests_files/main.cpp', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        # delete uploaded file
+        url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=main.cpp&team_name=XPTO3"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
+
+        url = "/api/v1/agents/upload/agent/?agent_name=KAMIKAZE&team_name=XPTO3"
+        f = open('media/tests_files/main.java', 'r')
+        response = client.post(url, {'file': f})
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {'status': 'File uploaded!', 'message': 'The agent code has been uploaded!'})
+
+        # delete uploaded file
+        url = "/api/v1/agents/delete_agent_file/KAMIKAZE/?file_name=main.java&team_name=XPTO3"
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {"status": "Deleted", "message": "The agent file has been deleted"})
+
+        url = "/api/v1/agents/agent_files/KAMIKAZE/?team_name=XPTO3"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 4)
+
+        url = "/api/v1/agents/agent_all_files/KAMIKAZE/?team_name=XPTO3"
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200)
 
         url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.get(url)
@@ -1291,7 +1309,7 @@ class AuthenticationTestCase(TestCase):
         data = {'round_name': round_name}
         response = client.post(path=url, data=data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data, {"status": "Bad request", "message": "Your Grid must have at least one agent!"})
+        self.assertEqual(response.data, {'status': 'Bad request', 'message': 'Please select your agents to run this trial in the first page of Solo Trials!'})
 
         # create one agent
         team = Team.objects.get(name="TestTeam")

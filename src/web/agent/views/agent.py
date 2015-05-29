@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.core.files import File
 from django.db import IntegrityError
 from django.db import transaction
+import os
 
 from rest_framework import permissions
 from rest_framework import mixins, viewsets, status
@@ -9,7 +11,7 @@ from rest_framework.response import Response
 
 import requests
 
-from ..models import Agent
+from ..models import Agent, AgentFile
 from ..serializers import AgentSerializer, AgentCodeValidationSerializer, SubmitCodeAgentSerializer
 from ..simplex import AgentSimplex
 
@@ -54,8 +56,16 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
 
             try:
                 with transaction.atomic():
-                    Agent.objects.create(agent_name=agent_name, user=request.user, team=team,
-                                         language=serializer.validated_data['language'])
+                    agent = Agent.objects.create(agent_name=agent_name, user=request.user, team=team,
+                                                 language=serializer.validated_data['language'])
+                    directory = os.path.join(settings.BASE_DIR, "static/samples/"+agent.language+"/")
+
+                    only_files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+                    for f in only_files:
+                        if f != '.DS_Store':
+                            f_a = AgentFile.objects.create(agent=agent, original_name=f)
+                            f_a.file.save(f, File(open(directory + f), 'rb'))
+                            f_a.save()
             except IntegrityError:
                 return Response({'status': 'Bad request',
                                  'message': 'The team has already one agent with that name!'},

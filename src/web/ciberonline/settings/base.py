@@ -122,7 +122,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 ALLOWED_UPLOAD_LANGUAGES = (
     ('Python', 'Python'),
-    ('C', 'C'),
     ('C++', 'cplusplus'),
     ('Java', 'Java')
 )
