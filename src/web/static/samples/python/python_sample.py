@@ -67,7 +67,7 @@ class MyRob(CRobLink):
                 else:
                     l_pow, r_pow = self.determine_action("run")
                     self.drive_motors(l_pow, r_pow)
-                    
+
             self.sync_robot()
 
     def determine_action(self, state):

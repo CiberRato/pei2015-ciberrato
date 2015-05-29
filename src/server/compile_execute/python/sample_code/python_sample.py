@@ -68,6 +68,8 @@ class MyRob(CRobLink):
                     l_pow, r_pow = self.determine_action("run")
                     self.drive_motors(l_pow, r_pow)
 
+            self.sync_robot()
+
     def determine_action(self, state):
         collision = False
         beacon_visible = False
@@ -101,7 +103,7 @@ class MyRob(CRobLink):
                 l_pow = 0.06
                 r_pow = -0.06
 
-            else:       
+            else:
                 l_pow = -0.06
                 r_pow = 0.06
         elif right > 1.5:
