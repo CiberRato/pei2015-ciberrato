@@ -11,15 +11,17 @@
         var x2js = new X2JS();
 
 
-        function isArray(what) {
-            return Object.prototype.toString.call(what) === '[object Array]';
-        }
+
 
         function labConvertXml2JSon() {
+            hasMap = true;
+
             return JSON.stringify(x2js.xml_str2json($scope.codeLab));
         }
 
         function gridConvertXml2JSon() {
+            hasGrid = true;
+
             return JSON.stringify(x2js.xml_str2json($scope.codeGrid));
         }
 
@@ -34,6 +36,7 @@
         $scope.zoom = 50;
 
         activate();
+
 
         function activate(){
             $scope.loader = {
@@ -217,9 +220,12 @@
             }
         }
 
+
+
         function getCodeGrid(){
             hasGrid = true;
             var a = $scope.codeGrid;
+            console.log($scope.codeGrid);
             $scope.grid = angular.fromJson(gridConvertXml2JSon());
             console.log($scope.grid);
 
@@ -249,6 +255,7 @@
             console.log($scope.map);
 
             var file = new Blob([a], {type: 'text/plain'});
+            console.log(file);
 
             Round.uploadLab(vm.roundName, file, vm.competitionName, vm.files.lab.file).then(success, error);
 
@@ -283,8 +290,62 @@
                 console.error(data.data);
             }
         }
+        $scope.gridChanged = function(_editor){
+            if(hasMap && hasGrid){
+                console.log('Grid changed');
+                $scope.grid = angular.fromJson(gridConvertXml2JSon());
+                console.log($scope.grid);
+                prepareParamters();
+                drawMap();
+                drawGrid();
+            }
 
+        };
 
+        // Runs when editor loads
+        $scope.gridLoaded = function(_editor){
+            console.log('Ace editor loaded successfully');
+            var _session = _editor.getSession();
+            _session.setUndoManager(new ace.UndoManager());
+            $scope.grid = angular.fromJson(gridConvertXml2JSon());
+            if (hasMap){
+                prepareParamters();
+                drawMap();
+                drawGrid();
+            }
+        };
+
+        $scope.labChanged = function(_editor){
+            if(hasMap && hasGrid) {
+                console.log('lab changed');
+                $scope.map = angular.fromJson(labConvertXml2JSon());
+                console.log($scope.map);
+                prepareParamters();
+                drawMap();
+                drawGrid();
+            }
+
+        };
+
+        // Runs when editor loads
+        $scope.labLoaded = function(_editor){
+
+            console.log('Ace editor loaded successfully');
+            var _session = _editor.getSession();
+            _session.setUndoManager(new ace.UndoManager());
+            $scope.map = angular.fromJson(labConvertXml2JSon());
+            if (hasGrid){
+                prepareParamters();
+                drawMap();
+                drawGrid();
+            }
+        };
+        /*$scope.codeGrid.getSession().on('change', function () {
+            console.log($scope.codeGrid.getSession().getValue());
+            prepareParamters();
+             drawMap();
+             drawGrid();
+        });*/
 
     }
 })();
