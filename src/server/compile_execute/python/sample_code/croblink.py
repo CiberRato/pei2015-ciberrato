@@ -7,25 +7,26 @@
 import socket
 NUM_IR_SENSORS = 4
 
+
 class CRobLink:
     """
     Class used to simulate the robot.
     """
-    def __init__(self, robName, robId, host):
+    def __init__(self, rob_name, rob_id, host):
         """
         Initializes robot and connects to simulator on a given host.
         It registers the robot on the simulator sending a message TCP 
             <Robot Id='robId' Name='robName' />
 
         Parameters:
-            `robName`: Robot name that will be used by the simulator
-            `robId`: The robot identifier (it must be unique for the 
+            `rob_name`: Robot name that will be used by the simulator
+            `rob_id`: The robot identifier (it must be unique for the
                 simulation)
             `host`: Hostname of the simulator (might include port, 
                 example: 127.0.0.1:4001)
         """
-        self.robName = robName
-        self.robId = robId
+        self.rob_name = rob_name
+        self.rob_id = rob_id
 
         val = host.split(":")
         port_conn = 6000
@@ -39,9 +40,9 @@ class CRobLink:
                                   socket.SOCK_STREAM)  # UDP
         self.sock.connect((self.host, port_conn))
         self.sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        msg = '<Robot Id="'+str(robId)+'" Name="'+robName+'" />\x04'
+        msg = '<Robot Id="'+str(rob_id)+'" Name="'+rob_name+'" />\x04'
 
-        self.sock.send(msg)  # TODO consider host arg
+        self.sock.send(msg)
         data = self.sock.recv(1024)
         # print "received message:", data, " port ", self.port
 
@@ -56,7 +57,7 @@ class CRobLink:
         sax.parseString(d2, handler)
         self.status = handler.status
 
-    def readSensors(self):
+    def read_sensors(self):
         """
         This functions read all the sensors available given by the 
             simulator, storing them at measures field.
@@ -110,7 +111,7 @@ class CRobLink:
         data = self.sock.recv(4096)
         d2 = data.split('\x04')[0]
 
-        # print "RECV : \"" + d2 +'"'
+        # print "Received : \"" + d2 +'"'
         parser = sax.make_parser()
         # Tell it what handler to use
         handler = StructureHandler()
@@ -120,7 +121,7 @@ class CRobLink:
         self.status = handler.status
         self.measures = handler.measures
 
-    def syncRobot(self):
+    def sync_robot(self):
         """
         This function is used to signal the simulator that the robot 
         has done everything that he wanted in that cycle and he is 
@@ -133,20 +134,20 @@ class CRobLink:
         msg = '<Actions> <Sync/> </Actions>\x04'
         self.sock.send(msg)
 
-    def driveMotors(self, lPow, rPow):
+    def drive_motors(self, lpow, rpow):
         """
         This function signals the simulator the speed for each wheel of
         the robot.
 
         Parameters:
-            `lPow` - Speed for the left motor (value between 0 and 1)
-            `rPow` - Speed for the right motor (value between 0 and 1)
+            `lpow` - Speed for the left motor (value between 0 and 1)
+            `rpow` - Speed for the right motor (value between 0 and 1)
         """
         msg = '<Actions LeftMotor="' + \
-            str(lPow)+'" RightMotor="'+str(rPow)+'"/>\x04'
+            str(lpow)+'" RightMotor="'+str(rpow)+'"/>\x04'
         self.sock.send(msg)
 
-    def setReturningLed(self, val):
+    def set_returning_led(self, val):
         """
         This function turns on or off the returning led to signal that 
         the robot is returning to the initial position.
@@ -158,7 +159,7 @@ class CRobLink:
             'ReturningLed="' + ("On" if val else "Off") + '"/>\x04'
         self.sock.send(msg)
 
-    def setVisitingLed(self, val):
+    def set_visiting_led(self, val):
         """
         This function turns on or off the visiting led to signal that 
         the robot reached the beacon.
@@ -166,7 +167,7 @@ class CRobLink:
         Parameters:
             `val` - True to set the led on, False otherwise
         """
-        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" '
+        msg = '<Actions LeftMotor="0.0" RightMotor="0.0" ' + \
             'VisitingLed="' + ("On" if val else "Off") + '"/>\x04'
         self.sock.send(msg)
 
@@ -220,6 +221,8 @@ class CMeasures:
         self.hearMessage = ''
 
 from xml import sax
+
+
 class StructureHandler(sax.ContentHandler):
     """
     Class used to process the messages sent by the simulator (parser).
@@ -260,8 +263,7 @@ class StructureHandler(sax.ContentHandler):
             if id < NUM_IR_SENSORS:
                 self.measures.irSensorReady[id] = True
                 # print "IRSensor val ", attrs["Value"]
-                self.measures.irSensor[id] = 
-                    float_of_string(attrs["Value"])
+                self.measures.irSensor[id] = float_of_string(attrs["Value"])
             else:
                 self.status = -1
         elif name == "BeaconSensor":
