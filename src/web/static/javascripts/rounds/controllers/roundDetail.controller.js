@@ -37,6 +37,7 @@
         vm.startTrial = startTrial;
         vm.all = false;
         vm.getScoresByTrial = getScoresByTrial;
+        var subscribed = false;
         activate();
 
         function activate() {
@@ -543,30 +544,25 @@
                                 }
                             }
                         }
-                        $dragon.onReady(function() {
-                            swampdragon.open(function () {
-                                var round_notification = Notification.events.subscribe('notificationbroadcast', 1, function(data){
-                                    console.log("ROUNDDETAIL");
+                        if(!subscribed){
+                            subscribed = true;
+                            var round_notification = Notification.events.subscribe('notificationbroadcast', 1, function(data){
+                                console.log(data);
 
-                                    if (data.message.trigger == 'trial_prepare' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log' || data.message.trigger == 'trial_start') {
-                                        round_reload();
-                                    }
-
-                                    console.log(data._type);
-                                    console.log(data.message);
-                                });
-                                var round_reload = function(){
-                                    round_notification.remove();
+                                if (data.message.trigger == 'trial_prepare' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log' || data.message.trigger == 'trial_start'){
                                     $timeout(function () {
-                                        reloadTrial(identifier);
-
+                                        reloadTrials();
                                     });
-                                };
-                                $scope.$on("$destroy", function(event){
-                                    round_notification.remove();
-                                });
+                                }
+
+                                console.log(data._type);
+                                console.log(data.message);
                             });
-                        });
+                            console.log(round_notification);
+                            $scope.$on("$destroy", function(event){
+                                round_notification.remove();
+                            });
+                        }
                     }
 
                     function getTrialErrorFn(data){
@@ -679,6 +675,7 @@
             function getTrialSuccessFn(data){
                 if (!(data.data.state === 'READY')) {
                     vm.trial = data.data;
+                    console.log(vm.trial);
                     updateState();
                 }
             }
