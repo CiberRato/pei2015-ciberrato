@@ -1,4 +1,3 @@
-
 #
 # Authors: Nuno Lau and Luis Seabra Lopes
 # October - November 2013
@@ -15,14 +14,14 @@ class CRobLink:
     def __init__(self, rob_name, rob_id, host):
         """
         Initializes robot and connects to simulator on a given host.
-        It registers the robot on the simulator sending a message TCP 
+        It registers the robot on the simulator sending a message TCP
             <Robot Id='robId' Name='robName' />
 
         Parameters:
             `rob_name`: Robot name that will be used by the simulator
             `rob_id`: The robot identifier (it must be unique for the
                 simulation)
-            `host`: Hostname of the simulator (might include port, 
+            `host`: Hostname of the simulator (might include port,
                 example: 127.0.0.1:4001)
         """
         self.rob_name = rob_name
@@ -59,44 +58,44 @@ class CRobLink:
 
     def read_sensors(self):
         """
-        This functions read all the sensors available given by the 
+        This functions read all the sensors available given by the
             simulator, storing them at measures field.
 
         Measures field (CMeasures object) is composed by:
-            compassReady    * True if compass value is available to be 
+            compassReady    * True if compass value is available to be
                                 read
-            compass         * Compass value (value between 0 and 360) 
-            irSensorReady   * True if sensor is available (list of 
+            compass         * Compass value (value between 0 and 360)
+            irSensorReady   * True if sensor is available (list of
                                 sensors - NUM_IR_SENSORS)
-            irSensor        * Sensor value (the more closer to the 
+            irSensor        * Sensor value (the more closer to the
                                 obstacle, the bigger is the value)
             beaconReady     * True if beacon is available to be read
-            beacon          * Returns a tuple of (bool, float) where 
+            beacon          * Returns a tuple of (bool, float) where
                                 the bool represents if the Beacon is
-                                visible and the float represents the 
+                                visible and the float represents the
                                 distance when visible
             time = 0        * Current time of the simulation
-            groundReady     * True if ground sensor is available to 
+            groundReady     * True if ground sensor is available to
                                 be read
-            ground          * True if robot detects the ground as a 
+            ground          * True if robot detects the ground as a
                                 target area
-            collisionReady  * True if collision sensor is available 
+            collisionReady  * True if collision sensor is available
                                 to be read
             collision       * True if robot as collided
             start           * True if the button start was pressed
             stop            * True if the button end was pressed
             endLed          * True when the end led has been turned
-            returningLed    * True when the returning led has been 
+            returningLed    * True when the returning led has been
                                 turned on
-            visitingLed     * True when the visiting led has been 
+            visitingLed     * True when the visiting led has been
                                 turned on
-            gpsReady        * True when GPS is available 
+            gpsReady        * True when GPS is available
             gpsDirReady     * True when GPS direction is available
-            x               * Current x-axis position of the robot, 
+            x               * Current x-axis position of the robot,
                                 GPS must be enabled
-            y               * Current y-axis position of the robot, 
+            y               * Current y-axis position of the robot,
                                 GPS must be enabled
-            dir             * Current direction of the robot, GPS 
+            dir             * Current direction of the robot, GPS
                                 must be enabled
             scoreReady      * Simulation score is ready to be read
             score           * Returns the current score of the robot
@@ -123,8 +122,8 @@ class CRobLink:
 
     def sync_robot(self):
         """
-        This function is used to signal the simulator that the robot 
-        has done everything that he wanted in that cycle and he is 
+        This function is used to signal the simulator that the robot
+        has done everything that he wanted in that cycle and he is
         ready to process the next cycle.
 
         This function must be used when simulator is running in
@@ -149,7 +148,7 @@ class CRobLink:
 
     def set_returning_led(self, val):
         """
-        This function turns on or off the returning led to signal that 
+        This function turns on or off the returning led to signal that
         the robot is returning to the initial position.
 
         Parameters:
@@ -161,7 +160,7 @@ class CRobLink:
 
     def set_visiting_led(self, val):
         """
-        This function turns on or off the visiting led to signal that 
+        This function turns on or off the visiting led to signal that
         the robot reached the beacon.
 
         Parameters:
@@ -190,7 +189,7 @@ class CMeasures:
         self.compass = 0.0
         self.irSensorReady = [False for i in range(NUM_IR_SENSORS)]
         self.irSensor = [0.0 for i in range(NUM_IR_SENSORS)]
-        self.beaconReady = False 
+        self.beaconReady = False
         self.beacon = (False, 0.0)
         self.time = 0
 
@@ -231,7 +230,7 @@ class StructureHandler(sax.ContentHandler):
         self.status = 0
         self.measures = CMeasures()
 
-    def startElement(self, name, attrs):
+    def start_element(self, name, attrs):
         # print attrs
         if name == "Reply":
             if "Status" not in attrs.keys():
