@@ -162,7 +162,7 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_identifier'])
 
             trial.errors = serializer.validated_data['msg']
             trial.save()
