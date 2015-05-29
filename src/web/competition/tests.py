@@ -421,8 +421,7 @@ class AuthenticationTestCase(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data,
-                         [{'name': 'Python', 'value': 'Python'}, {'name': 'C', 'value': 'C'},
-                          {'name': 'Java', 'value': 'Java'}, {'name': 'C++', 'value': 'cplusplus'}])
+                         [{'name': 'Python', 'value': 'Python'}, {'name': 'Java', 'value': 'Java'}, {'name': 'C++', 'value': 'cplusplus'}])
 
         # make the code valid, this operation only can be made by the script (server validation)
         team = Team.objects.get(name="XPTO3")

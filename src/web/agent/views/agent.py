@@ -18,6 +18,7 @@ from ..simplex import AgentSimplex
 from authentication.models import Team, Account
 from teams.permissions import IsAdminOfTeam, MustBeTeamMember
 from competition.serializers import CompetitionSerializer
+from competition.models import TypeOfCompetition, Competition, CompetitionAgent, LogTrialAgent
 
 from notifications.models import NotificationTeam
 
@@ -140,6 +141,33 @@ class AgentViewSets(mixins.CreateModelMixin, mixins.DestroyModelMixin,
         # when the agent is deleted sends notification to the team
         NotificationTeam.add(team=team, status="info",
                              message="The agent " + agent.agent_name + " has been removed!")
+
+        # if is enrolled in some competition != solo trials or hall of fame cant't be deleted
+        # when the agent is deleted it must delete the solo trials and participations in hall of fame
+        try:
+            private_competition_type = TypeOfCompetition.objects.get(name=settings.PRIVATE_COMPETITIONS_NAME)
+
+            for cp in agent.competitionagent_set.all():
+                if cp.competition.type_of_competition.name != settings.PRIVATE_COMPETITIONS_NAME and cp.competition.type_of_competition.name != settings.HALL_OF_FAME_START_STR + 'Single':
+                    return Response({'status': 'Bad request',
+                                     'message': 'You can not remove this agent, participated in some competitions!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+            for cp in agent.competitionagent_set.all():
+                if cp.competition.type_of_competition == private_competition_type:
+                    cp.delete()
+        except TypeOfCompetition.DoesNotExist:
+            pass
+
+        hall_of_fame = Competition.get_hall_fame()
+        try:
+            cp = CompetitionAgent.objects.get(competition=hall_of_fame, agent=agent)
+            for cp_trial in cp.logtrialagent_set.all():
+                cp_trial.trial.delete()
+                cp_trial.delete()
+        except CompetitionAgent.DoesNotExist:
+            pass
+
         agent.delete()
 
         return Response({'status': 'Deleted',
