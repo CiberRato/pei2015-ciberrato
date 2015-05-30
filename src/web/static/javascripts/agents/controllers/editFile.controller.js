@@ -5,13 +5,16 @@
         .module('ciberonline.agents.controllers')
         .controller('EditFileController', EditFileController);
 
-    EditFileController.$inject = ['$scope', '$routeParams', 'Agent', 'SoloTrials', '$timeout', 'Notification'];
+    EditFileController.$inject = ['$scope', '$routeParams', 'Agent', 'SoloTrials', '$timeout', 'Notification', '$location'];
 
-    function EditFileController($scope, $routeParams, Agent, SoloTrials, $timeout, Notification){
+    function EditFileController($scope, $routeParams, Agent, SoloTrials, $timeout, Notification, $location){
         var vm = this;
         vm.getCode = getCode;
         vm.validateCode = validateCode;
+        vm.launchTrial = launchTrial;
         var subscribed = false;
+        $scope.showLaunch = true;
+        $scope.showWait = false;
         activate();
 
         function activate(){
@@ -172,7 +175,53 @@
             }
         }
 
+        function launchTrial(){
+            var name = document.getElementById("select").value;
+            console.log(name);
+            SoloTrials.launchTrial(name).then(launchSuccessFn, launchErrorFn);
 
+            function launchSuccessFn(data){
+                $.jGrowl("Trial has been created successfully", {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                });
+                console.log("TRIALS");
+                if(!subscribed){
+                    subscribed = true;
+                    var round_notification = Notification.events.subscribe('notificationteam', 1, function(data){
+                        console.log(data);
+
+                        if (data.message.trigger == 'trial_started'){
+                            $timeout(function () {
+                                $scope.showLaunch = false;
+                                $scope.showWait = true;
+                            });
+                        }
+
+                        if(data.message.trigger == 'trial_log' || data.message.trigger == 'trial_error'){
+                            $timeout(function() {
+                                $location.path('/panel/trials/'+ name);
+                            });
+                        }
+
+                        console.log(data._type);
+                        console.log(data.message);
+                    });
+                    console.log(round_notification);
+                    $scope.$on("$destroy", function(event){
+                        round_notification.remove();
+                    });
+                }
+            }
+
+            function launchErrorFn(data){
+                console.error(data.data);
+                $.jGrowl(data.data.message, {
+                    life: 5000,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
+                });
+            }
+        }
 
     }
 })();

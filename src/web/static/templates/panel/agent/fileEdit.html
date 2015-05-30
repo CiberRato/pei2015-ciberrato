@@ -38,13 +38,15 @@
                         <!-- Second level tabs -->
                         <div ng-if="vm.agent.code_valid == true">
                             <p>Please select a map to launch your trial</p>
-                            <select ng-if="vm.maps.length>0" id="select" name="option">
+                            <select class="span4" ng-if="vm.maps.length>0" id="select" name="option">
                                 <option ng-repeat="(key, value) in vm.maps" value="{{value.name}}">{{value.grid}} {{value.lab}}</option>
                             </select>
-                            <a href="#" ng-click="vm.launchTrial()">Launch Trial</a>
+        
+                            <a ng-show="showLaunch" href="#" ng-click="vm.launchTrial()">&nbsp;&nbsp;Launch Trial</a>
+                            <p ng-show="showWait">Processing Trial<span class="loading blue" data-original-title="Loading, please wait…">Processing Trial</span></p>
                         </div>
                         <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length == 0" class="alert alert-inverse">
-                            <p>Please run a code validation!</p>&nbsp;&nbsp;
+                            <p>Please run a code validation!</p>
                             <button class="btn btn-flat btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
                         </div>
 
