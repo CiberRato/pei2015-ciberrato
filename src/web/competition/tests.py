@@ -998,13 +998,8 @@ class AuthenticationTestCase(TestCase):
         # destroy the agent
         url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
         response = client.delete(path=url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, {"status": "Deleted", "message": "The agent has been deleted"})
-
-        url = "/api/v1/agents/agent/KAMIKAZE/?team_name=XPTO3"
-        response = client.get(path=url)
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.data, {u'detail': u'Not found.'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data, {"status":"Bad request","message":"You can not remove this agent, participated in some competitions!"})
 
         url = "/api/v1/competitions/enroll/"
         response = client.get(path=url)

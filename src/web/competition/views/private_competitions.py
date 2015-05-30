@@ -1,7 +1,7 @@
 import uuid
 
 from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
+from django.db import IntegrityError, DataError
 from django.db import transaction
 from django.conf import settings
 
@@ -129,6 +129,10 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
             except IntegrityError, e:
                 return Response({'status': 'Bad request',
                                  'message': e.message},
+                                status=status.HTTP_400_BAD_REQUEST)
+            except DataError, e:
+                return Response({'status': 'Bad request',
+                                 'message': 'Please specify correctly the files!'},
                                 status=status.HTTP_400_BAD_REQUEST)
 
             serializer = PrivateRoundSerializer(r)

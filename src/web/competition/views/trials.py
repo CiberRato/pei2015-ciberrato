@@ -250,8 +250,13 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
             if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME or \
                 trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
-                    team = trial.logtrialagent_set.first()
-                    team = team.competition_agent.agent.team
+                    try:
+                        team = trial.logtrialagent_set.first()
+                        team = team.competition_agent.agent.team
+                    except AttributeError:
+                        return Response({'status': 'Bad request',
+                                         'message': 'The trial must have one agent!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
 
                     NotificationTeam.add(team=team, status="ok",
                                          message="The trial has started!",
