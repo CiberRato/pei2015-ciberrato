@@ -2,27 +2,92 @@
     <!-- Grid row -->
     <div class="row" ng-show="loader.loading">
 
-        <!-- Data block -->
         <article class="span12 data-block">
             <div class="data-container">
-                <div class="row">
-                    <header style="padding-bottom: 0%">
+                <header>
+                    <h2>Files Editor</h2>
+                    <ul class="data-header-actions">
+                        <li class="demoTabs active"><a href="#one" class="btn btn-flat">Editor</a></li>
+                        <li class="demoTabs"><a href="#two" class="btn btn-flat">Run/Validation</a></li>
+                    </ul>
+                </header>
+
+                <section class ="tab-content">
+                    <!-- Tab #one -->
+                    <div class="tab-pane active" id="one">
                         <div class="row">
-                            <div class="span8"><h1>{{vm.file}}</h1></div>
-                            <div class="span1"><a class="btn btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
-                            <div class="span1"><a class="btn btn-success" ng-click="vm.getCode()">Save</a></div>
-                            <div class="span2"><a class="btn btn-success" ng-click="vm.getCode()" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Save And Exit</a></div>
+                            <header style="padding-bottom: 0%">
+                                <div class="row">
+                                    <div class="span8"><h1>{{vm.file}}</h1></div>
+                                    <div class="span1"><a class="btn btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
+                                    <div class="span1"><a class="btn btn-success" ng-click="vm.getCode()">Save</a></div>
+                                    <div class="span2"><a class="btn btn-success" ng-click="vm.getCode()" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Save And Exit</a></div>
+                                </div>
+
+                            </header>
+
                         </div>
 
-                    </header>
+                        <div class="editor" ui-ace="aceOptions" ng-model="code"></div>
+                    </div>
+                    <!-- /Tab #one -->
 
-                </div>
+                    <!-- Tab #two -->
+                    <div class="tab-pane" id="two">
 
-                <section class="tab-content">
-                    <div class="editor" ui-ace="aceOptions" ng-model="code"></div>
+                        <!-- Second level tabs -->
+                        <div ng-if="vm.agent.code_valid == true">
+                            <p>Please select a map to launch your trial</p>
+                            <select ng-if="vm.maps.length>0" id="select" name="option">
+                                <option ng-repeat="(key, value) in vm.maps" value="{{value.name}}">{{value.grid}} {{value.lab}}</option>
+                            </select>
+                            <a href="#" ng-click="vm.launchTrial()">Launch Trial</a>
+                        </div>
+                        <div ng-if="vm.agent.code_valid == false">
+                            <p>Please run a code validation!</p>&nbsp;&nbsp;
+                            <button class="btn btn-flat btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
+                        </div>
+                        <!-- Second level tabs -->
+
+                    </div>
+                    <!-- /Tab #two -->
                 </section>
-            </div>
 
+
+            </div>
         </article>
+
     </div>
 </div>
+
+<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tab.js' %}"></script>
+
+<script>
+    $(document).ready(function(){
+        // Tooltips
+        $("[title]:not(.demoPopover)").tooltip({
+            placement: 'top'
+        });
+
+        // Dropdowns
+        $('.dropdown-toggle').dropdown();
+
+        // Tabs
+        $(".demoTabs a").click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+            console.log("ok");
+        });
+
+        // Radio buttons
+        $('.demoBtns').button();
+
+        // Popover
+        $('.demoPopover').popover({
+            trigger: 'hover'
+        });
+
+
+    });
+</script>
+

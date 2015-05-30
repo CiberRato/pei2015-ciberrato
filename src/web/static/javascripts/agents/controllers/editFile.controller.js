@@ -5,11 +5,13 @@
         .module('ciberonline.agents.controllers')
         .controller('EditFileController', EditFileController);
 
-    EditFileController.$inject = ['$scope', '$routeParams', 'Agent'];
+    EditFileController.$inject = ['$scope', '$routeParams', 'Agent', 'SoloTrials', '$timeout', 'Notification'];
 
-    function EditFileController($scope, $routeParams, Agent){
+    function EditFileController($scope, $routeParams, Agent, SoloTrials, $timeout, Notification){
         var vm = this;
         vm.getCode = getCode;
+        vm.validateCode = validateCode;
+        var subscribed = false;
         activate();
 
         function activate(){
@@ -36,7 +38,6 @@
                 }else{
                     vm.language = 'plain_text';
                 }
-                console.log(vm.language);
                 $scope.aceOptions = {mode: vm.language, theme: 'monokai'};
                 Agent.getFile(vm.teamName, vm.agentName, vm.file).then(getFileSuccessFn, getFileErrorFn);
 
@@ -48,8 +49,27 @@
 
             function getFileSuccessFn(data){
                 $scope.code = data.data;
-                $scope.loader.loading=true;
 
+                SoloTrials.getAll().then(getAllSuccessFn, getAllErrorFn);
+
+                function getAllSuccessFn(data){
+                    vm.solos = data.data;
+                    console.log(vm.solos);
+                    for(var i = 0; i<vm.solos.length; i++){
+                        if(vm.solos[i].team == vm.teamName){
+                            vm.competitionName = vm.solos[i].competition.name;
+                            getCompetitionMaps();
+                        }
+                    }
+
+
+                    $scope.loader.loading=true;
+
+                }
+
+                function getAllErrorFn(data){
+                    console.error(data.data);
+                }
 
             }
 
@@ -59,21 +79,86 @@
 
         }
 
+        function getCompetitionMaps(){
+            SoloTrials.getByTeam(vm.competitionName).then(getMapsSuccessFn, getMapsErrorFn);
+
+            function getMapsSuccessFn(data){
+                vm.maps = data.data;
+                console.log(vm.maps);
+            }
+
+            function getMapsErrorFn(data){
+                console.error(data.data);
+            }
+
+        }
+
         function getCode(){
             var a = $scope.code;
-            console.log(a);
 
             var file = new Blob([a], {type: 'text/plain'});
 
             Agent.upload(vm.agentName, file, vm.teamName, vm.file).then(success, error);
 
             function success(){
-                $.jGrowl("File \'" + file.name + "\' has been updated.", {
+                $.jGrowl("File \'" + vm.file + "\' has been updated.", {
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
-                });            }
+                });
+                vm.agent.code_valid = false;
+            }
             function error(data){
                 console.error(data.data);
+            }
+        }
+
+        function validateCode(){
+            Agent.validateAgent(vm.agentName, vm.teamName).then(validateSuccessFn, validateErrorFn);
+
+            function validateSuccessFn() {
+                $.jGrowl("The code has been submitted for validation!", {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                });
+
+                if(!subscribed){
+                    subscribed = true;
+                    console.log("AGENT");
+                    var code_validate = Notification.events.subscribe('notificationteam', 1, function(data){
+
+                        if (data.message.trigger == 'code_valid') {
+                            $timeout(function () {
+                                Agent.getAgent(vm.agentName, vm.teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                                function getAgentSuccessFn(data) {
+                                    vm.agent = data.data;
+                                }
+
+                                function getAgentErrorFn(data) {
+                                    console.error(data.data);
+                                }
+                            });
+                        }
+
+                        console.log(data._type);
+                        console.log(data.message);
+                    });
+
+                    $scope.$on("$destroy", function(event){
+                        code_validate.remove();
+                    });
+                }
+
+
+
+            }
+
+            function validateErrorFn(data) {
+                console.log(data.data);
+                $.jGrowl(data.data.message, {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all danger'
+                });
             }
         }
 
