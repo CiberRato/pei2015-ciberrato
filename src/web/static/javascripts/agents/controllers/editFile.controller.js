@@ -105,7 +105,17 @@
                     life: 2500,
                     theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
                 });
-                vm.agent.code_valid = false;
+                $timeout(function () {
+                    Agent.getAgent(vm.agentName, vm.teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                    function getAgentSuccessFn(data) {
+                        vm.agent = data.data;
+                    }
+
+                    function getAgentErrorFn(data) {
+                        console.error(data.data);
+                    }
+                });
             }
             function error(data){
                 console.error(data.data);

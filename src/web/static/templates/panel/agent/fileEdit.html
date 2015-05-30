@@ -43,8 +43,13 @@
                             </select>
                             <a href="#" ng-click="vm.launchTrial()">Launch Trial</a>
                         </div>
-                        <div ng-if="vm.agent.code_valid == false">
+                        <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length == 0" class="alert alert-inverse">
                             <p>Please run a code validation!</p>&nbsp;&nbsp;
+                            <button class="btn btn-flat btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
+                        </div>
+
+                        <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length > 0" class="alert alert-error">
+                            <p>Code not valid!</p><br/> {{vm.agent.validation_result}}<br/><br/>
                             <button class="btn btn-flat btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
                         </div>
                         <!-- Second level tabs -->
