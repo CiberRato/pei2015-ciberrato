@@ -73,8 +73,10 @@ class Validator:
 
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 "+name, 
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 		try:
 			client_s, client_addr = simulator_dummy.accept()
+			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
@@ -106,6 +108,7 @@ class Validator:
 
 		try:
 			client_s, client_addr = simulator_dummy.accept()
+			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
@@ -136,6 +139,7 @@ class Validator:
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
 			client_s, client_addr = hostSocket.accept()
+			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
@@ -167,6 +171,7 @@ class Validator:
 				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		try:
 			client_s, client_addr = simulator_dummy.accept()
+			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
 			error(ValidatorMessage.TIMEOUT)
