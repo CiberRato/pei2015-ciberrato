@@ -237,11 +237,17 @@ class RunPrivateTrial(views.APIView):
                              'message': 'Please select your agents to run this trial in the first page of Solo Trials!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # create trial for this round
-        trial = Trial.objects.create(round=r)
-
         # same method used in the prepare
         agents_grid = AgentGrid.objects.filter(grid_position=grid_position)
+
+        # verify if all agents are with code valid
+        if not reduce(lambda result, h: result and h.agent.code_valid, agents_grid, True):
+            return Response({'status': 'Bad request',
+                             'message': 'All the agents must have the code valid!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # create trial for this round
+        trial = Trial.objects.create(round=r)
 
         pos = 1
         for agent_grid in agents_grid:

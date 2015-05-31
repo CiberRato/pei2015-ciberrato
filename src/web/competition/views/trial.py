@@ -343,6 +343,13 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
             grid_positions = trial_grid.grid_positions
             agents_grid = AgentGrid.objects.filter(grid_position=grid_positions)
 
+            # verify if all agents are with code valid
+            if not reduce(lambda result, h: result and h.agent.code_valid, agents_grid, True):
+                trial.delete()
+                return Response({'status': 'Bad request',
+                                 'message': 'All the agents must have the code valid!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             for agent_grid in agents_grid:
                 # print agent_grid.position
 
@@ -453,3 +460,6 @@ class StartTrial(views.APIView):
         return Response({'status': 'Trial started',
                          'message': 'Please wait that the trial starts at the simulator!'},
                         status=status.HTTP_200_OK)
+
+
+# class Create
