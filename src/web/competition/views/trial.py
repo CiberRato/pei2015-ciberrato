@@ -467,11 +467,13 @@ class ExecutionLog(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     queryset = Trial.objects.all()
     serializer_class = ExecutionLogSerializer
 
+    """
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return permissions.IsAuthenticated(),
         else:
-            return permissions.BasePermission(),
+            return permissions.(),
+    """
 
     def create(self, request, *args, **kwargs):
         """
