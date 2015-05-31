@@ -103,7 +103,7 @@ class MyRob(CRobLink):
                 l_pow = 0.06
                 r_pow = -0.06
 
-            else:       
+            else:
                 l_pow = -0.06
                 r_pow = 0.06
         elif right > 1.5:

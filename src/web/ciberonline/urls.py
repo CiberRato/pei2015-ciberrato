@@ -15,7 +15,7 @@ from competition.views.team import EnrollTeam, CompetitionGetTeamsViewSet, Compe
 from competition.views.round import RoundTeams, RoundViewSet, RoundFile, GetResourcesFiles
 
 from competition.views.trial import TrialViewSet, TrialByRound, TrialByCompetition, GetTrialAgents, \
-    StartTrial, TrialGridViewSet, PrepareTrial
+    StartTrial, TrialGridViewSet, PrepareTrial, ExecutionLog
 from competition.views.view import CompetitionViewSet, CompetitionStateViewSet, CompetitionRounds, \
     CompetitionChangeState, TypeOfCompetitionViewSet
 from competition.views.files import UploadParamListView, UploadGridView, UploadLabView, GetRoundFile, \
@@ -118,6 +118,7 @@ router_trials.register(r'trial_log', SaveLogs)
 router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
 router_trials.register(r'prepare', PrepareTrial)
+router_trials.register(r'execution_log', ExecutionLog)
 
 # Private Competitions
 router_private_competitions = routers.SimpleRouter()
