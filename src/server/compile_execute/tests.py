@@ -79,7 +79,8 @@ class Validator:
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stderr)
+			
 
 		agent.kill()
 		client_s.close()
@@ -111,7 +112,7 @@ class Validator:
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stderr)
 
 		agent.kill()
 		client_s.close()
@@ -142,7 +143,7 @@ class Validator:
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stderr)
 
 		agent.kill()
 		client_s.close()
@@ -174,7 +175,7 @@ class Validator:
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stderr)
 		parameters = '<Reply Status="Ok">\
 			<Parameters SimTime="1800" CycleTime="50"\
 			CompassNoise="2" BeaconNoise="2" ObstacleNoise="0.1"\
