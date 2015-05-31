@@ -239,8 +239,7 @@ class Trial(models.Model):
 
     errors = models.CharField(max_length=150)
 
-    execute_sh_log = models.TextField()
-    prepare_sh_log = models.TextField()
+    execution_log = models.TextField()
 
     log_json = models.FileField(upload_to="json_logs/%Y/%m/%d")
 

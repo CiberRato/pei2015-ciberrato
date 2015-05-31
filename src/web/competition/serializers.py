@@ -372,6 +372,15 @@ class InputPrivateRoundSerializer(serializers.ModelSerializer):
         read_only_fields = ()
 
 
+class ExecutionLogSerializer(serializers.ModelSerializer):
+    trial_id = serializers.CharField(max_length=128, write_only=True)
+
+    class Meta:
+        model = Trial
+        fields = ('trial_id', 'execution_log',)
+        read_only_fields = ()
+
+
 class HallOfFameLaunchSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         pass

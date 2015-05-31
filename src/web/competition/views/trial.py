@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from .simplex import TrialSimplex, TrialAgentSimplex, TrialGridSimplex
 from ..serializers import TrialSerializer, TrialAgentSerializer, TrialGridsSerializer, \
-    TrialGridInputSerializer
+    TrialGridInputSerializer, ExecutionLogSerializer
 from ..models import Competition, Round, Trial, CompetitionAgent, LogTrialAgent, TrialGrid, \
     GridPositions, TeamEnrolled, AgentGrid
 from ..shortcuts import *
@@ -462,4 +462,52 @@ class StartTrial(views.APIView):
                         status=status.HTTP_200_OK)
 
 
-# class Create
+class ExecutionLog(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Trial.objects.all()
+    serializer_class = ExecutionLogSerializer
+
+    def get_permissions(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return permissions.IsAuthenticated(),
+        else:
+            return permissions.BasePermission(),
+
+    def create(self, request, *args, **kwargs):
+        """
+        B{Save} execution log
+        B{URL:} ../api/v1/trials/execution_log/
+
+        :type  execution_log: str
+        :param execution_log: The execution  log
+        :type  identifier: str
+        :param identifier: The execution sh log
+        """
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            trial = get_object_or_404(Trial.objects.all(),
+                                      identifier=serializer.validated_data['trial_id'])
+            trial.execution_log = serializer.validated_data['execution_log']
+            trial.save()
+
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response({'status': 'Bad Request',
+                         'message': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        B{Get} execution log
+        B{URL:} ../api/v1/trials/execution_log/<trial_id>/
+
+        :type  trial_id: str
+        :param trial_id: The trial id
+        """
+        trial = get_object_or_404(Trial.objects.all(),
+                                  identifier=kwargs.get('pk', ''))
+
+        serializer = self.serializer_class(trial)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
