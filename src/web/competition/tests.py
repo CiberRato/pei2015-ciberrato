@@ -1394,6 +1394,13 @@ class AuthenticationTestCase(TestCase):
         self.assertEqual(response.data, {"execution_log":"teste"})
         self.assertEqual(response.status_code, 200)
 
+        # save trial execution log blank
+        url = "/api/v1/trials/execution_log/"
+        data = {'trial_id': trial_identifier, 'execution_log': ""}
+        response = client.post(url, data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data, {"trial_id": trial_identifier, "execution_log": ""})
+
         # delete the trial
         url = "/api/v1/competitions/private/trial/" + trial_identifier + "/"
         response = client.delete(path=url)
