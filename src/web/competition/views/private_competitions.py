@@ -1,7 +1,7 @@
 import uuid
 
 from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
+from django.db import IntegrityError, DataError
 from django.db import transaction
 from django.conf import settings
 
@@ -59,7 +59,7 @@ class PrivateCompetitionsRounds(mixins.RetrieveModelMixin, viewsets.GenericViewS
         # The competition must be one private competition
         # The team must be enrolled in the competition, if yes the team can be in the competition
         """
-        private_competition = Competition.objects.get(name=kwargs.get('pk'))
+        private_competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
         # this competition must be a private competition
         MustBePrivateCompetition(competition=private_competition)
@@ -130,6 +130,10 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
                 return Response({'status': 'Bad request',
                                  'message': e.message},
                                 status=status.HTTP_400_BAD_REQUEST)
+            except DataError, e:
+                return Response({'status': 'Bad request',
+                                 'message': 'Please specify correctly the files!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
             serializer = PrivateRoundSerializer(r)
             return Response(serializer.data)
@@ -157,7 +161,7 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         B{URL:} ../api/v1/competitions/private/round/<round_name>/
         """
         # the round must exist
-        r = Round.objects.get(name=kwargs.get('pk'))
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
         MustBePrivateCompetition(competition=r.parent_competition)
@@ -190,7 +194,7 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         B{URL:} ../api/v1/competitions/private/round/<round_name>/
         """
         # the round must exist
-        r = Round.objects.get(name=kwargs.get('pk'))
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
         MustBePrivateCompetition(competition=r.parent_competition)
@@ -233,17 +237,23 @@ class RunPrivateTrial(views.APIView):
                              'message': 'Please select your agents to run this trial in the first page of Solo Trials!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # create trial for this round
-        trial = Trial.objects.create(round=r)
-
         # same method used in the prepare
         agents_grid = AgentGrid.objects.filter(grid_position=grid_position)
+
+        # verify if all agents are with code valid
+        if not reduce(lambda result, h: result and h.agent.code_valid, agents_grid, True):
+            return Response({'status': 'Bad request',
+                             'message': 'All the agents must have the code valid!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # create trial for this round
+        trial = Trial.objects.create(round=r)
 
         pos = 1
         for agent_grid in agents_grid:
             if agent_grid.agent.code_valid:
-                team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
-                                                       competition=trial.round.parent_competition)
+                team_enroll = get_object_or_404(TeamEnrolled.objects.all(), team=agent_grid.agent.team,
+                                                competition=trial.round.parent_competition)
                 if team_enroll.valid:
                     # competition agent
                     try:
@@ -297,7 +307,7 @@ class SoloTrial(mixins.DestroyModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/competitions/private/trial/<trial_identifier>/
         """
         # the round must exist
-        trial = Trial.objects.get(identifier=kwargs.get('pk'))
+        trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
         MustBePrivateCompetition(competition=trial.round.parent_competition)

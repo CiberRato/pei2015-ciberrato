@@ -59,6 +59,11 @@ class RunHallOfFameTrial(views.APIView):
             agent = get_object_or_404(Agent.objects.all(), agent_name=serializer.validated_data['agent_name'],
                                       team=team)
 
+            if not agent.code_valid:
+                return Response({'status': 'Bad request',
+                                 'message': 'The agents must have the code valid!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             # Must be part of the agent team
             MustBePartOfAgentTeam(agent=agent, user=request.user)
 

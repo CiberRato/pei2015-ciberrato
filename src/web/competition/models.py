@@ -239,6 +239,8 @@ class Trial(models.Model):
 
     errors = models.CharField(max_length=150)
 
+    execution_log = models.TextField()
+
     log_json = models.FileField(upload_to="json_logs/%Y/%m/%d")
 
     created_at = models.DateTimeField(auto_now_add=True)

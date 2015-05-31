@@ -126,20 +126,25 @@ class Starter:
 
 		##CHECK ./simulator --help 				##
 		# Run simulator for LINUX
-
-		cmd = ["./cibertools-v2.2/simulator/simulator", \
-						"-nogui", \
-						"-port", str(simulator_port)]
-		if sync:
-			cmd += ["-sync", str(SYNC_TIMEOUT)]
-		cmd += ["-param", 	tempFilesList["param_list"].name, \
-				"-lab", 	tempFilesList["lab"].name, \
-				"-grid", 	tempFilesList["grid"].name]
 		if sync:
 			print "[STARTER] Creating process for simulator in sync mode on port " + str(simulator_port)
+			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+						"-nogui", \
+						"-port",	str(simulator_port), \
+						"-sync",	str(SYNC_TIMEOUT), \
+						"-param", 	tempFilesList["param_list"].name, \
+						"-lab", 	tempFilesList["lab"].name, \
+						"-grid", 	tempFilesList["grid"].name], \
+						stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		else:
-			print "[STARTER] Creating process for simulator on port " + str(simulator_port)
-		simulator = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			print "[STARTER] Creating process for simulator"
+			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+						"-nogui", \
+						"-port",	str(simulator_port), \
+						"-param", 	tempFilesList["param_list"].name, \
+						"-lab", 	tempFilesList["lab"].name, \
+						"-grid", 	tempFilesList["grid"].name], \
+						stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 
 		print "[STARTER] Successfully opened process with process id: ", simulator.pid
 		print "[STARTER] Waiting for simulator to start TCP connection"
@@ -178,7 +183,7 @@ class Starter:
 										  agents[i]['pos'], agents[i]['agent_name'], ),
 										  shell = True, stdout = subprocess.PIPE)
 				docker_container = docker.stdout.readline().strip()
-				docker_containers += [  ]
+				docker_containers += [ docker_container ]
 				docker.wait()
 				print "[STARTER] Successfully opened container: %s" % (docker_container, )
 
@@ -276,6 +281,9 @@ class Starter:
 				# Kill docker container
 				print "[STARTER] Killing Docker Containers"
 				for dock in docker_containers:
+					proc = subprocess.Popen(["docker", "logs", dock], stdout=subprocess.PIPE)
+					proc.wait()
+					print "log:", proc.stdout.readline()
 					proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
 					proc.wait()
 					proc = subprocess.Popen(["docker", "rm", dock])
@@ -362,6 +370,20 @@ class Starter:
 
 		# Kill docker container
 		for dock in docker_containers:
+			proc = subprocess.Popen(["docker", "logs", dock], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			proc.wait()
+			
+			log = ''
+			for line in iter(proc.stdout.readline,''):
+   				log += line
+
+   			url = "/api/v1/trials/execution_log/"
+			data = {'trial_id': sim_id, 'execution_log': log}
+			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + url, data=data)
+
+			if response.status_code != 201:
+				raise Exception("[STARTER] ERROR: error posting docker logs to end point")
+
 			proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
 			proc.wait()
 			proc = subprocess.Popen(["docker", "rm", dock])
