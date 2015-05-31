@@ -636,6 +636,23 @@ void cbSimulator::start()
 void cbSimulator::forcedStep() {
 	cerr << "Onde or more robots didn't send syncronization message before the timeout. Cycle: "
 		 << curCycle << ", State: " << curState << ", NextState: " << nextState << "\n";
+
+	bool finishSim = true;
+	for (unsigned int i = 0; i < robots.size(); i++)
+	{
+		cbRobot *robot = robots[i];
+		if (robot == 0) continue;
+		if (!robot->getWaitingForSync()) {
+			robot->incrementFailedSyncs();
+		} 
+		if (!(robot->getNumberFailedSyncs() >= 50)) {
+			finishSim = false;
+		}
+	}
+	if (finishSim) {
+        curCycle = simTime() - 1;
+        emit curTimeChanged(curCycle);
+	}
 	step();
 }
 void cbSimulator::stop()

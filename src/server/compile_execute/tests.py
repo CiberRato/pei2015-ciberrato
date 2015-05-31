@@ -22,11 +22,11 @@ class ValidatorMessage(Enum):
 		self._code = code
 		self._message = message
 
-def error(vmsg, additional_info = None):
-	if additional_info == None:
+def error(vmsg, stdout_err = None):
+	if stdout_err == None:
 		sys.stderr.write(vmsg.value[1])
 	else:
-		sys.stderr.write(vmsg.value[1] + "\n" + additional_info)
+		sys.stderr.write(vmsg.value[1] + "\nAgent standard output/error:\n" + stdout_err)
 	sys.exit(vmsg.value[0])
 
 class Validator:
@@ -44,10 +44,10 @@ class Validator:
 		# Bash -e -o pipefail will check for return codes in every single line.
 		if os.path.exists('prepare.sh'):
 			comp = subprocess.Popen("chmod +x prepare.sh; bash -e -o pipefail prepare.sh", 
-				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 			(stdout, stderr) = comp.communicate()
 			if comp.returncode != 0:
-				error(ValidatorMessage.FAILED_PREPARE, stderr)
+				error(ValidatorMessage.FAILED_PREPARE, stdout.read())
 
 		## At this point we got every file compiled, or at least, it should be.
 		# Lets make sure that everything is ready!
@@ -72,14 +72,15 @@ class Validator:
 		simulator_dummy.listen(1)
 
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 "+name, 
-				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 		try:
 			client_s, client_addr = simulator_dummy.accept()
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stdout.read())
+			
 
 		agent.kill()
 		client_s.close()
@@ -92,9 +93,9 @@ class Validator:
 			nameRobot = robotParam[0].attributes['Name'].value
 
 			if nameRobot != name:
-				error(ValidatorMessage.ROBOTNAME)
+				error(ValidatorMessage.ROBOTNAME, agent.stdout.read())
 		except:
-			error(ValidatorMessage.REGISTER_MESSAGE)
+			error(ValidatorMessage.REGISTER_MESSAGE, agent.stdout.read())
 
 	def validatePosition(self, pos):
 		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -104,14 +105,14 @@ class Validator:
 		simulator_dummy.listen(1)
 
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 "+pos+" robot", 
-				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 		try:
 			client_s, client_addr = simulator_dummy.accept()
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stdout.read())
 
 		agent.kill()
 		client_s.close()
@@ -124,9 +125,9 @@ class Validator:
 			ID = robotParam[0].attributes['Id'].value
 
 			if ID != pos:
-				error(ValidatorMessage.POSITION)
+				error(ValidatorMessage.POSITION, agent.stdout.read())
 		except:
-			error(ValidatorMessage.REGISTER_MESSAGE)
+			error(ValidatorMessage.REGISTER_MESSAGE, agent.stdout.read())
 
 	def validateHost(self, hostVal):
 		hostSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -136,13 +137,13 @@ class Validator:
 		hostSocket.listen(1)
 
 		agent = subprocess.Popen("./execute.sh "+hostVal+" 1 robot",
-				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		try:
 			client_s, client_addr = hostSocket.accept()
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stdout.read())
 
 		agent.kill()
 		client_s.close()
@@ -168,13 +169,13 @@ class Validator:
 		simulator_dummy.listen(1)
 
 		agent = subprocess.Popen("./execute.sh 127.0.0.1 1 robot", 
-				shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		try:
 			client_s, client_addr = simulator_dummy.accept()
 			client_s.settimeout(1)
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.TIMEOUT)
+			error(ValidatorMessage.TIMEOUT, agent.stdout.read())
 		parameters = '<Reply Status="Ok">\
 			<Parameters SimTime="1800" CycleTime="50"\
 			CompassNoise="2" BeaconNoise="2" ObstacleNoise="0.1"\
@@ -212,13 +213,13 @@ class Validator:
 		try:
 	 		data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.ANSWER_ACTIONS)
+			error(ValidatorMessage.ANSWER_ACTIONS, agent.stdout.read())
 
 		try:
 			parametersActions = minidom.parseString(data.split("\x04")[0])
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
 		except:
-			error(ValidatorMessage.VALID_ACTIONS)
+			error(ValidatorMessage.VALID_ACTIONS, agent.stdout.read())
 
 		# More measures
 		readSensorsParamCollisionOn = '<Measures Time="1234">\
@@ -233,13 +234,13 @@ class Validator:
 		try:
 			data = client_s.recv(1024) # infos de quem envia
 		except socket.timeout:
-			error(ValidatorMessage.ANSWER_ACTIONS)	
+			error(ValidatorMessage.ANSWER_ACTIONS, agent.stdout.read())	
 
 		try:
 			parametersActions = minidom.parseString(data.split("\x04")[0])
 			MotorsParam = parametersActions.getElementsByTagName('Actions')
 		except:
-			error(ValidatorMessage.NOT_ACTIONS)
+			error(ValidatorMessage.NOT_ACTIONS, agent.stdout.read())
 
 		agent.kill()
 		client_s.close()
