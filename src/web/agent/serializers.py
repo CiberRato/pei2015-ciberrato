@@ -34,7 +34,7 @@ class AgentCodeValidationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Agent
-        fields = ('team_name', 'code_valid', 'validation_result',)
+        fields = ('team_name', 'code_valid', 'validation_result', 'validation_execution_log',)
         read_only_fields = ()
 
 

@@ -154,6 +154,7 @@ class Agent(models.Model):
 
     code_valid = models.BooleanField(default=False)
     validation_result = models.CharField(max_length=512)
+    validation_execution_log = models.TextField(default="")
 
     is_remote = models.BooleanField(default=False)
 

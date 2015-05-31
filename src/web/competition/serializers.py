@@ -374,6 +374,7 @@ class InputPrivateRoundSerializer(serializers.ModelSerializer):
 
 class ExecutionLogSerializer(serializers.ModelSerializer):
     trial_id = serializers.CharField(max_length=128, write_only=True)
+    execution_log = serializers.CharField(allow_blank=True)
 
     class Meta:
         model = Trial
