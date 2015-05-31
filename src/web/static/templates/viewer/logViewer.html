@@ -263,7 +263,7 @@
                             <a class="accordion-toggle" href="#executionlog" data-parent="#icons" data-toggle="collapse"><h2>Execution log</h2></a>
                         </div>
                         <div id="executionlog" class="accordion-body collapse" ng-if="execution_log.length!=0">
-                            {{execution_log}}
+                            <pre>{{execution_log}}</pre>
                         </div>
                         <div id="executionlog" class="accordion-body collapse" ng-if="execution_log.length==0">
                             Nothing to show.

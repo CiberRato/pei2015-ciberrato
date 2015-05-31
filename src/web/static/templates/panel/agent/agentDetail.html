@@ -20,7 +20,7 @@
                             <strong>Submitted for validation!</strong> Please wait for a while...
                         </div>
                         <div ng-if="vm.agent.code_valid == true" class="alert alert-success">
-                            <strong>Code valid!</strong> {{vm.agent.validation_result}}
+                            <strong>Code valid!</strong> <pre>{{vm.agent.validation_result}}</pre>
                         </div>
                         <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length == 0 && vm.files.length != 0" class="alert alert-inverse">
                             <strong>Please run a code validation!</strong>&nbsp;&nbsp;
