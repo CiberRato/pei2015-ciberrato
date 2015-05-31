@@ -425,15 +425,14 @@ class Starter:
 		        
                         print "[STARTER] Docker getting logs %s" % dock
 			proc = subprocess.Popen(["docker", "logs", dock], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			stdout, stderr = proc.wait()
+			stdout, stderr = proc.communicate()
 			
-                        log += "\n\n[AGENT]\n"
-			for line in stdout:
-   				log += "[OUT] %s\n" % line
+                        log += "\n\n[AGENT OUT]\n"
+   			log += stdout
+                        
+                        log += "\n\n[AGENT ERR]\n"
+   			log += stderr
 			
-                        for line in stderr:
-   				log += "[ERR] %s\n" % line
-
    			url = "/api/v1/trials/execution_log/"
                         data = {'trial_id': sim_id, 'execution_log': log}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + url, data=data)
