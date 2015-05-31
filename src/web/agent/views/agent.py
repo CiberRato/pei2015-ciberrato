@@ -340,8 +340,6 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
         :param code_valid: True or False
         :type  validation_result: str
         :param validation_result: The validation result
-        :type  validation_execution_log: str
-        :param validation_execution_log: The validation execution log result
         """
         serializer = self.serializer_class(data=request.data)
 
@@ -351,9 +349,6 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
             agent.code_valid = serializer.validated_data['code_valid']
             agent.validation_result = serializer.validated_data['validation_result']
-
-            if 'validation_execution_log' in serializer.validated_data:
-                agent.validation_execution_log = serializer.validated_data['validation_execution_log']
             agent.save()
 
             if agent.validation_result:

@@ -153,8 +153,7 @@ class Agent(models.Model):
     language = models.CharField(choices=settings.ALLOWED_UPLOAD_LANGUAGES+(('Unknown', 'Unknown'),), max_length=100, default="Python")
 
     code_valid = models.BooleanField(default=False)
-    validation_result = models.CharField(max_length=512)
-    validation_execution_log = models.TextField(default="")
+    validation_result = models.TextField(default="")
 
     is_remote = models.BooleanField(default=False)
 
