@@ -8,7 +8,15 @@ RUN apt-get update && apt-get install -y curl wget \
 RUN pip install pytest \
 				flufl.enum
 
-EXPOSE 6000-6200
+EXPOSE 6000
+EXPOSE 6001
+EXPOSE 6002
+EXPOSE 6003
+EXPOSE 6004
+EXPOSE 6005
+EXPOSE 6006
+EXPOSE 6007
+EXPOSE 6008
 EXPOSE 8000
 EXPOSE 80
 
