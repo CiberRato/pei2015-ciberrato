@@ -117,7 +117,7 @@
         }
 
         function launchTrial(roundName){
-            var tmp = document.getElementById('select');
+            var tmp = document.getElementById('select'+roundName);
             tmp = tmp.options[tmp.selectedIndex].value;
             console.log(tmp);
             var agent = tmp.substr(0,tmp.indexOf(','));

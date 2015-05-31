@@ -38,7 +38,7 @@
                                     </div>
                                 </td>
                                 <td style="width: 25%">
-                                    <select class="span2" ng-if="vm.show.length>0" id="select" name="option">
+                                    <select class="span2" ng-if="vm.show.length>0" id="select{{ value.name }}" name="option">
                                         <option ng-repeat="(key, value) in vm.show" value="{{value.agent_name}},{{value.team_name}}">{{value.agent_name}} ({{value.team_name}})</option>
                                     </select>
                                     <a ng-if="vm.agents.length == 0" href="/panel/createAgent">Create an Agent</a>
