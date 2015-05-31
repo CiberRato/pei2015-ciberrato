@@ -654,6 +654,14 @@ void cbSimulator::forcedStep() {
         emit curTimeChanged(curCycle);
 	}
 	step();
+
+	for (unsigned int i = 0; i < robots.size(); i++)
+	{
+		cbRobot *robot = robots[i];
+		if (robot == 0) continue;
+		robot->resetReceivedFlags();
+		robot->resetRequestedSensors();
+	}
 }
 void cbSimulator::stop()
 {
@@ -1460,8 +1468,6 @@ void cbSimulator::processRobotActions(const QString &id)
 	{
 		cbRobot *robot = robots[i];
 		if (robot == 0 || robot->Id() != robotid) continue;
-		robot->resetReceivedFlags();
-		robot->resetRequestedSensors();
 		if (robot->readAction(&action))
 		{
 			//cerr << "Robot action received l=" << action.leftMotor
@@ -1480,6 +1486,7 @@ void cbSimulator::processRobotActions(const QString &id)
 			if (syncmode && action.sync) {
 				robot->setWaitingForSync(true);
 
+				
 				bool stepSim = true;
 				for (unsigned int i = 0; i < robots.size(); i++)
 				{
@@ -1501,6 +1508,14 @@ void cbSimulator::processRobotActions(const QString &id)
 					}
 					timer.start(syncTimeout());
 					step();
+					
+					for (unsigned int i = 0; i < robots.size(); i++)
+					{
+						cbRobot *robot = robots[i];
+						if (robot == 0) continue;
+						robot->resetReceivedFlags();
+						robot->resetRequestedSensors();
+					}
 				}
 			}
 			action.sensorRequests.clear();
