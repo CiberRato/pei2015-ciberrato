@@ -134,8 +134,7 @@ class Starter:
 						"-sync",	str(SYNC_TIMEOUT), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
-						"-grid", 	tempFilesList["grid"].name], \
-						stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+						"-grid", 	tempFilesList["grid"].name])
 		else:
 			print "[STARTER] Creating process for simulator"
 			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
@@ -143,15 +142,17 @@ class Starter:
 						"-port",	str(simulator_port), \
 						"-param", 	tempFilesList["param_list"].name, \
 						"-lab", 	tempFilesList["lab"].name, \
-						"-grid", 	tempFilesList["grid"].name], \
-						stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+						"-grid", 	tempFilesList["grid"].name])
 
 		print "[STARTER] Successfully opened process with process id: ", simulator.pid
 		print "[STARTER] Waiting for simulator to start TCP connection"
-		while True:
-  			line = simulator.stderr.readline()
-  			if "Simulator is listening" in line:
-  				break
+		time.sleep(3)
+		#while True:
+  		#	line = simulator.stderr.readline()
+  		#	if "Simulator is listening" in line:
+  		#		break
+  		#simulator.stderr = subprocess.PIPE
+  		#simulator.stderr = None
   		print "[STARTER] Simulator is already listening"
 
 		print "[STARTER] Creating process for viewer"
