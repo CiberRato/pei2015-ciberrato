@@ -162,6 +162,8 @@ public:
     const char *curStateAsString();
 
 	void showAllAttributes();
+	void incrementFailedSyncs();
+	unsigned int getNumberFailedSyncs();
 
 signals:
 
@@ -248,6 +250,7 @@ protected:  // class data members
 	unsigned int collisionCount;	// number of collisions
 
 	unsigned int nSensorsRequested;
+	unsigned int failedSyncs;
 
 	cbActionHandler handler;
 	QByteArray old;

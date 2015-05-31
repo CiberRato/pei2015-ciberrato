@@ -116,7 +116,7 @@ cbRobot::cbRobot(cbClient *client, const double irSensorAngle[]) : cbEntity(clie
 	resetReceivedFlags();
 
 	vel=0.0;
-
+	failedSyncs = 0;
 }
 
 cbRobot::~cbRobot()
@@ -251,6 +251,14 @@ void cbRobot::requestSensor(QString sensorStrId)
         cerr << "Robot " << id << " requested unrecognized sensor (" << sensorStrId.toStdString() << ")\n";
 }
 
+void cbRobot::incrementFailedSyncs() 
+{
+	failedSyncs++;
+}
+unsigned int cbRobot::getNumberFailedSyncs() 
+{
+	return failedSyncs;
+}
 void cbRobot::changeActiveState()
 {
 	if (_state == RUNNING) _state = STOPPED;
