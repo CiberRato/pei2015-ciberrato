@@ -28,8 +28,11 @@
             $scope.grid = log.data.Grid;
             LogViewer.getExecutionLog($routeParams.identifier).then(getExecutionLogSuccess, getLogError);
         }
+
         function getExecutionLogSuccess(data){
+
             $scope.execution_log = data.data.execution_log;
+
             console.log($scope.execution_log);
             showViewer();
         }
