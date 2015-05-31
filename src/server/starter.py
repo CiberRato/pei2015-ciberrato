@@ -382,6 +382,7 @@ class Starter:
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + url, data=data)
 
 			if response.status_code != 201:
+				print response
 				raise Exception("[STARTER] ERROR: error posting docker logs to end point")
 
 			proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
