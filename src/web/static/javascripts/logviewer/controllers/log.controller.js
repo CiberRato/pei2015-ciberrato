@@ -26,10 +26,11 @@
             $scope.param = log.data.Parameters;
             $scope.map = log.data.Lab;
             $scope.grid = log.data.Grid;
-            LogViewer.getLog($routeParams.identifier).then(getExecutionLogSuccess, getLogError);
+            LogViewer.getExecutionLog($routeParams.identifier).then(getExecutionLogSuccess, getLogError);
         }
         function getExecutionLogSuccess(data){
             $scope.execution_log = data.data.execution_log;
+            console.log($scope.execution_log);
             showViewer();
         }
         function getLogError(){
