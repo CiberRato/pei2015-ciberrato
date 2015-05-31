@@ -238,6 +238,7 @@ protected: // data members
     
     bool allowRegistrations;
     bool showPositions;
+    unsigned int failedsyncs;
 
     vector<QSignalMapper*> robotMappers;
 

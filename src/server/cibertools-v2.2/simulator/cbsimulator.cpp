@@ -627,6 +627,7 @@ void cbSimulator::start()
 			timer.start(cycleTime());
 	   		QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(step()));
 		} else if (syncmode_timeout > 0) {
+			failedsyncs = 0;
 			timer.start(syncTimeout());
 			QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(forcedStep()));
 		}
@@ -634,8 +635,14 @@ void cbSimulator::start()
 }
 
 void cbSimulator::forcedStep() {
+	failedsyncs++;
 	cerr << "Onde or more robots didn't send syncronization message before the timeout. Cycle: "
 		 << curCycle << ", State: " << curState << ", NextState: " << nextState << "\n";
+
+	if (failedsyncs > 50) {
+        curCycle = simTime() - 1;
+        emit curTimeChanged(curCycle);
+	}
 	step();
 }
 void cbSimulator::stop()
