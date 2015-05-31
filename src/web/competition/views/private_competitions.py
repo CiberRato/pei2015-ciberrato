@@ -59,7 +59,7 @@ class PrivateCompetitionsRounds(mixins.RetrieveModelMixin, viewsets.GenericViewS
         # The competition must be one private competition
         # The team must be enrolled in the competition, if yes the team can be in the competition
         """
-        private_competition = Competition.objects.get(name=kwargs.get('pk'))
+        private_competition = get_object_or_404(Competition.objects.all(), name=kwargs.get('pk'))
 
         # this competition must be a private competition
         MustBePrivateCompetition(competition=private_competition)
@@ -161,7 +161,7 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         B{URL:} ../api/v1/competitions/private/round/<round_name>/
         """
         # the round must exist
-        r = Round.objects.get(name=kwargs.get('pk'))
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
         MustBePrivateCompetition(competition=r.parent_competition)
@@ -194,7 +194,7 @@ class PrivateCompetitionRound(mixins.CreateModelMixin, mixins.RetrieveModelMixin
         B{URL:} ../api/v1/competitions/private/round/<round_name>/
         """
         # the round must exist
-        r = Round.objects.get(name=kwargs.get('pk'))
+        r = get_object_or_404(Round.objects.all(), name=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
         MustBePrivateCompetition(competition=r.parent_competition)
@@ -246,8 +246,8 @@ class RunPrivateTrial(views.APIView):
         pos = 1
         for agent_grid in agents_grid:
             if agent_grid.agent.code_valid:
-                team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
-                                                       competition=trial.round.parent_competition)
+                team_enroll = get_object_or_404(TeamEnrolled.objects.all(), team=agent_grid.agent.team,
+                                                competition=trial.round.parent_competition)
                 if team_enroll.valid:
                     # competition agent
                     try:
@@ -301,7 +301,7 @@ class SoloTrial(mixins.DestroyModelMixin, viewsets.GenericViewSet):
         B{URL:} ../api/v1/competitions/private/trial/<trial_identifier>/
         """
         # the round must exist
-        trial = Trial.objects.get(identifier=kwargs.get('pk'))
+        trial = get_object_or_404(Trial.objects.all(), identifier=kwargs.get('pk'))
 
         # the parent competition of the round must be private competition
         MustBePrivateCompetition(competition=trial.round.parent_competition)

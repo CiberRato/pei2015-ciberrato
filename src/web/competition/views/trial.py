@@ -347,8 +347,8 @@ class PrepareTrial(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 # print agent_grid.position
 
                 if agent_grid.agent.code_valid:
-                    team_enroll = TeamEnrolled.objects.get(team=agent_grid.agent.team,
-                                                           competition=trial.round.parent_competition)
+                    team_enroll = get_object_or_404(TeamEnrolled.objects.all(), team=agent_grid.agent.team,
+                                                    competition=trial.round.parent_competition)
                     if team_enroll.valid:
                         # competition agent
                         try:

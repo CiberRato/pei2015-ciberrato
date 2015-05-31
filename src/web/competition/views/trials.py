@@ -39,7 +39,7 @@ class SaveLogs(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            trial = Trial.objects.get(identifier=serializer.validated_data['trial_identifier'])
+            trial = get_object_or_404(Trial.objects.all(), identifier=serializer.validated_data['trial_identifier'])
 
             if not trial_started(trial):
                 return Response({'status': 'Bad Request',
@@ -169,13 +169,18 @@ class SaveSimErrors(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
             if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME or \
                             trial.round.parent_competition.type_of_competition.name == settings.HALL_OF_FAME_START_STR + 'Single':
-                t = LogTrialAgent.objects.filter(trial=trial)
-                team = t.first()
-                team = team.competition_agent.agent.team
+                try:
+                    t = LogTrialAgent.objects.filter(trial=trial)
+                    team = t.first()
+                    team = team.competition_agent.agent.team
 
-                NotificationTeam.add(team=team, status="error",
-                                     message="The trial of " + trial.round.name + " has encountered an error!",
-                                     trigger="trial_error")
+                    NotificationTeam.add(team=team, status="error",
+                                         message="The trial of " + trial.round.name + " has encountered an error!",
+                                         trigger="trial_error")
+                except AttributeError:
+                    Response({'status': 'Bad Request',
+                              'message': 'There are no agents!'},
+                             status=status.HTTP_400_BAD_REQUEST)
             else:
                 NotificationBroadcast.add(channel="admin", status="error",
                                           message="The trial of " + trial.round.name + " has encountered an error!",
@@ -253,7 +258,7 @@ class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                     try:
                         team = trial.logtrialagent_set.first()
                         team = team.competition_agent.agent.team
-                    except AttributeError:
+                    except Exception:
                         return Response({'status': 'Bad request',
                                          'message': 'The trial must have one agent!'},
                                         status=status.HTTP_400_BAD_REQUEST)
