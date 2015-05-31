@@ -14,23 +14,23 @@ import re
 import zipfile
 import bz2
 import multiprocessing
-from threading import Thread
+from threading import Thread, Event
 from xml.dom import minidom
 from viewer import *
 from settingsChooser import Settings
 import select
 
 class ProcLogHandler(Thread):
-	def __init__(self, process, procname, store_messages = False):
+	def __init__(self, process, procname, store_messages = True):
 		Thread.__init__(self)
 		self.process = process
 		self.procname = procname
-		self.stdout = []
-		self.stderr = []
+		self.messages = []
 		self.store_messages = store_messages
+		self.stopped = Event()
+
 	def run(self):
-		self.running = True
-		while self.running:
+		while not self.stopped.isSet():
 			fds = [self.process.stdout.fileno(), self.process.stderr.fileno()]
 			ret = select.select(fds, [], [], 1)
 			for fd in ret[0]:
@@ -38,23 +38,23 @@ class ProcLogHandler(Thread):
 					read = self.process.stdout.readline()
 					sys.stdout.write('[%s][OUT]: %s' % (self.procname,read))
 					if self.store_messages:
-						self.stdout.append(read)
+						self.messages.append("[OUT] %s" % read)
 				if fd == self.process.stderr.fileno():
 					read = self.process.stderr.readline()
 					sys.stdout.write('[%s][ERR]: %s' % (self.procname,read))
 					if self.store_messages:
-						self.stderr.append(read)
+						self.messages.append("[ERR] %s" % read)
 			
 			if self.process.poll() != None:
 				break
+		print "[%s] Log Handler Closed" % self.procname
+
 	def stop(self):
-		self.running = False
+		print "[%s] Log Handler Closing" % self.procname
+		self.stopped.set()
 
-	def stdout(self):
-		return self.stdout
-
-	def stderr(self):
-		return self.stderr
+	def getMessages(self):
+		return self.messages
 
 class Starter:
 	def main(self,sim_id, simulator_port, running_ports, semaphore):
@@ -402,6 +402,7 @@ class Starter:
 
 
 		# Shuting down connections to viewer
+		print "[STARTER] Killing viewer"
 		viewer_c.close()
 
 		if allow_remote:
@@ -414,28 +415,42 @@ class Starter:
 		viewer_thread.join()
 
 		# Kill docker container
+		print "[STARTER] Killing container"
 		for dock in docker_containers:
+		        print "[STARTER] Simulator getting logs"
+                        
+                        log = "[SIMULATOR]\n"
+			for line in simulator_log_handler.getMessages():
+   				log += line+"\n"
+		        
+                        print "[STARTER] Docker getting logs %s" % dock
 			proc = subprocess.Popen(["docker", "logs", dock], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			proc.wait()
+			stdout, stderr = proc.wait()
 			
-			log = ''
-			for line in iter(proc.stdout.readline,''):
-   				log += line
+                        log += "\n\n[AGENT]\n"
+			for line in stdout:
+   				log += "[OUT] %s\n" % line
+			
+                        for line in stderr:
+   				log += "[ERR] %s\n" % line
 
    			url = "/api/v1/trials/execution_log/"
-			data = {'trial_id': sim_id, 'execution_log': log}
+                        data = {'trial_id': sim_id, 'execution_log': log}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + url, data=data)
 
 			if response.status_code != 201:
 				print response
 				raise Exception("[STARTER] ERROR: error posting docker logs to end point")
 
+		        print "[STARTER] Docker stop"
 			proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
 			proc.wait()
+		        print "[STARTER] Docker rm"
 			proc = subprocess.Popen(["docker", "rm", dock])
 			proc.wait()
 
 		# Kill simulator
+		print "[STARTER] Killing simulator"
 		simulator.terminate()
 		simulator.wait()
 		simulator_log_handler.stop()
