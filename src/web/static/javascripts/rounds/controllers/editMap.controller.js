@@ -10,9 +10,6 @@
     function EditMapController($scope, $routeParams, Round){
         var x2js = new X2JS();
 
-
-
-
         function labConvertXml2JSon() {
             hasMap = true;
 
@@ -51,37 +48,96 @@
                 vm.files = data.data;
 
                 console.log(vm.files);
-                $scope.aceOptions = {mode: 'xml', theme: 'monokai'};
-                Round.getFile(vm.roundName, vm.competitionName, "grid").then(getGridSuccessFn, getGridErrorFn);
+                if(vm.files.grid.file == ''){
+                    $scope.codeGrid = '';
 
-                function getGridSuccessFn(data){
-                    $scope.codeGrid = data.data;
-                    Round.getFile(vm.roundName, vm.competitionName, "lab").then(getLabSuccessFn, getLabErrorFn);
+                    var file = new Blob([$scope.codeGrid], {type: 'text/plain'});
+                    console.log(file);
 
-                    function getLabSuccessFn(data){
-                        $scope.codeLab = data.data;
-                        Round.getFile(vm.roundName, vm.competitionName, "param_list").then(getParamSuccessFn, getParamErrorFn);
+                    Round.uploadGrid(vm.roundName, file, vm.competitionName, 'grid.xml').then(successUploadGrid, errorUploadGrid);
 
-                        function getParamSuccessFn(data){
-                            $scope.codeParam = data.data;
-                            $scope.loader.loading=true;
-
-                        }
-
-                        function getParamErrorFn(data){
-                            console.error(data.data);
-                        }
-
-                    }
-
-                    function getLabErrorFn(data){
-                        console.error(data.data);
-                    }
+                }else{
+                    Round.getFile(vm.roundName, vm.competitionName, "grid").then(getGridSuccessFn, getGridErrorFn);
 
                 }
 
-                function getGridErrorFn(data){
+                function successUploadGrid(){
+                    Round.getFile(vm.roundName, vm.competitionName, "grid").then(getGridSuccessFn, getGridErrorFn);
+
+                }
+                function errorUploadGrid(data){
                     console.error(data.data);
+                }
+
+                function getGridSuccessFn(data) {
+                    $scope.codeGrid = data.data;
+                    console.log('ola');
+                    if(vm.files.lab.file == ''){
+                        $scope.codeLab = '';
+
+                        var file = new Blob([$scope.codeLab], {type: 'text/plain'});
+                        console.log(file);
+                        Round.uploadLab(vm.roundName, file, vm.competitionName, 'lab.xml').then(successUploadLab, errorUploadLab);
+
+                    }else{
+                        Round.getFile(vm.roundName, vm.competitionName, "lab").then(getLabSuccessFn, getLabErrorFn);
+
+                    }
+                }
+                function successUploadLab(){
+                    Round.getFile(vm.roundName, vm.competitionName, "lab").then(getLabSuccessFn, getLabErrorFn);
+
+                }
+                function errorUploadLab(data){
+                    console.error(data.data);
+                }
+
+                function getLabSuccessFn(data) {
+                    $scope.codeLab = data.data;
+                    console.log('ola');
+
+                    if(vm.files.param_list.file == ''){
+                        $scope.codeParam = '';
+
+                        var file = new Blob([$scope.codeParam], {type: 'text/plain'});
+                        console.log(file);
+
+                        Round.uploadParamList(vm.roundName, file, vm.competitionName, 'param_list.xml').then(successUploadParam, errorUploadParam);
+
+                    }else{
+                        Round.getFile(vm.roundName, vm.competitionName, "param_list").then(getParamSuccessFn, getParamErrorFn);
+
+                    }
+                }
+                function successUploadParam(){
+                    Round.getFile(vm.roundName, vm.competitionName, "param_list").then(getParamSuccessFn, getParamErrorFn);
+
+                }
+                function errorUploadParam(data){
+                    console.error(data.data);
+                }
+
+                function getParamSuccessFn(data){
+                    $scope.codeParam = data.data;
+                    $scope.gridLoaded();
+                    $scope.labLoaded();
+
+                    $scope.loader.loading=true;
+
+                }
+
+                function getParamErrorFn(){
+
+                }
+
+                function getLabErrorFn(){
+
+                }
+
+
+
+                function getGridErrorFn(){
+
                 }
 
 
@@ -94,34 +150,36 @@
         }
 
         function prepareParamters(){
+            if($scope.map !== null){
+                c3.width=$scope.zoom * $scope.map.Lab._Width;
+                c3.height=$scope.zoom * $scope.map.Lab._Height;
 
-            c3.width=$scope.zoom * $scope.map.Lab._Width;
-            c3.height=$scope.zoom * $scope.map.Lab._Height;
+                ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
+                ctx.scale(1, -1);
 
-            ctx.translate(0, $scope.zoom * $scope.map.Lab._Height);
-            ctx.scale(1, -1);
+                /* Beacons Object */
+                $scope.beacon = $scope.map.Lab.Beacon;
 
-            /* Beacons Object */
-            $scope.beacon = $scope.map.Lab.Beacon;
+                /* Number of Beacons */
+                try{
+                    $scope.nBeacon = $scope.map.Lab.Beacon.length;
+                    $scope.beacon_height =  $scope.map.Lab.Beacon[0]._Height;
+                }
+                catch(e){
+                    $scope.nBeacon = 1;
+                    $scope.beacon_height =  $scope.map.Lab.Beacon._Height;
+                }
 
-            /* Number of Beacons */
-            try{
-                $scope.nBeacon = $scope.map.Lab.Beacon.length;
-                $scope.beacon_height =  $scope.map.Lab.Beacon[0]._Height;
+
+                /* Set Maze Colors */
+                $scope.groundColor = 'black';
+                $scope.cheeseColor = 'static/img/svg/cheese.png';
+                $scope.circleBorder = '#00ffff';
+                $scope.greatWallColor = '#008000';
+                $scope.smallWallColor = '#0000ff';
+                $scope.gridColor = '#cfd4db';
             }
-            catch(e){
-                $scope.nBeacon = 1;
-                $scope.beacon_height =  $scope.map.Lab.Beacon._Height;
-            }
 
-
-            /* Set Maze Colors */
-            $scope.groundColor = 'black';
-            $scope.cheeseColor = 'static/img/svg/cheese.png';
-            $scope.circleBorder = '#00ffff';
-            $scope.greatWallColor = '#008000';
-            $scope.smallWallColor = '#0000ff';
-            $scope.gridColor = '#cfd4db';
         }
 
         function drawMap(){
@@ -136,88 +194,97 @@
 
         function drawGrid(){
             var i;
-            for(i=0;i<$scope.grid.Grid.Position.length;i++) {
-                ctx.beginPath();
-                ctx.arc($scope.grid.Grid.Position[i]._X*$scope.zoom, $scope.grid.Grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
-                ctx.fillStyle = $scope.gridColor;
-                ctx.fill();
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = $scope.circleBorder;
-                ctx.stroke();
-            }
-        }
-        function drawBeacon(){
-            var i;
-            var dx = [];
-            var dy =[];
-            var dWidth = [];
-            var dHeight = [];
-            if($scope.nBeacon == 1){
-                ctx.beginPath();
-                ctx.arc($scope.map.Lab.Beacon._X * $scope.zoom, $scope.map.Lab.Beacon._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
-                ctx.fillStyle = $scope.circleBorder;
-                ctx.fill();
-
-                dx[0] = ($scope.map.Lab.Beacon._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target._Radius);
-                dy[0] = ($scope.map.Lab.Beacon._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target._Radius);
-                dWidth[0] = $scope.zoom*$scope.map.Lab.Target._Radius*2;
-                dHeight[0] = $scope.zoom*$scope.map.Lab.Target._Radius*2;
-
-                ctx.fill();
-                ctx.stroke();
-            }
-            else{
-                for(i=0;i<$scope.map.Lab.Beacon.length;i++){
+            if($scope.grid !== null){
+                for(i=0;i<$scope.grid.Grid.Position.length;i++) {
                     ctx.beginPath();
-                    ctx.arc($scope.map.Lab.Beacon[i]._X * $scope.zoom, $scope.map.Lab.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
-                    ctx.fillStyle = $scope.circleBorder;
+                    ctx.arc($scope.grid.Grid.Position[i]._X*$scope.zoom, $scope.grid.Grid.Position[i]._Y*$scope.zoom, $scope.zoom/2, 0, 2 * Math.PI, false);
+                    ctx.fillStyle = $scope.gridColor;
                     ctx.fill();
-
-                    dx[0] = ($scope.map.Lab.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
-                    dy[0] = ($scope.map.Lab.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
-                    dWidth[0] = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
-                    dHeight[0] = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
-
-                    var imageObj = new Image();
-                    imageObj.onload = function() {
-                        ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
-                    };
-                    imageObj.src = $scope.cheeseColor;
-                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = $scope.circleBorder;
                     ctx.stroke();
                 }
             }
-            var imageObj = new Image();
-            imageObj.onload = function() {
-                for(i=0;i<$scope.nBeacon;i++){
-                    ctx.drawImage(imageObj, dx[i], dy[i], dWidth[i], dHeight[i]);
+
+        }
+        function drawBeacon(){
+            if($scope.map !== null){
+                var i;
+                var dx = [];
+                var dy =[];
+                var dWidth = [];
+                var dHeight = [];
+                if($scope.nBeacon == 1){
+                    ctx.beginPath();
+                    ctx.arc($scope.map.Lab.Beacon._X * $scope.zoom, $scope.map.Lab.Beacon._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                    ctx.fillStyle = $scope.circleBorder;
+                    ctx.fill();
+
+                    dx[0] = ($scope.map.Lab.Beacon._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target._Radius);
+                    dy[0] = ($scope.map.Lab.Beacon._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target._Radius);
+                    dWidth[0] = $scope.zoom*$scope.map.Lab.Target._Radius*2;
+                    dHeight[0] = $scope.zoom*$scope.map.Lab.Target._Radius*2;
+
+                    ctx.fill();
+                    ctx.stroke();
                 }
-            };
-            imageObj.src = $scope.cheeseColor;
-            ctx.fill();
-            ctx.stroke();
+                else{
+                    for(i=0;i<$scope.map.Lab.Beacon.length;i++){
+                        ctx.beginPath();
+                        ctx.arc($scope.map.Lab.Beacon[i]._X * $scope.zoom, $scope.map.Lab.Beacon[i]._Y * $scope.zoom, $scope.zoom * $scope.map.Lab.Target[i]._Radius + $scope.zoom/15, 0, 2*Math.PI);
+                        ctx.fillStyle = $scope.circleBorder;
+                        ctx.fill();
+
+                        dx[0] = ($scope.map.Lab.Beacon[i]._X * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
+                        dy[0] = ($scope.map.Lab.Beacon[i]._Y * $scope.zoom) - ($scope.zoom*$scope.map.Lab.Target[i]._Radius);
+                        dWidth[0] = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
+                        dHeight[0] = $scope.zoom*$scope.map.Lab.Target[i]._Radius*2;
+
+                        var imageObj = new Image();
+                        imageObj.onload = function() {
+                            ctx.drawImage(imageObj, dx, dy, dWidth, dHeight);
+                        };
+                        imageObj.src = $scope.cheeseColor;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+                var imageObj = new Image();
+                imageObj.onload = function() {
+                    for(i=0;i<$scope.nBeacon;i++){
+                        ctx.drawImage(imageObj, dx[i], dy[i], dWidth[i], dHeight[i]);
+                    }
+                };
+                imageObj.src = $scope.cheeseColor;
+                ctx.fill();
+                ctx.stroke();
+
+            }
 
 
         }
 
         function drawWalls(){
-            var i;
-            for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
+            if($scope.map !== null){
+                var i;
+                for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
 
-                if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
-                    ctx.fillStyle = $scope.smallWallColor;
+                    if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
+                        ctx.fillStyle = $scope.smallWallColor;
+                    }
+                    else{
+                        ctx.fillStyle = $scope.greatWallColor;
+                    }
+                    ctx.beginPath();
+                    var b = 0;
+                    for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
+                        ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
                 }
-                else{
-                    ctx.fillStyle = $scope.greatWallColor;
-                }
-                ctx.beginPath();
-                var b = 0;
-                for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
-                    ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
-                }
-                ctx.closePath();
-                ctx.fill();
             }
+
         }
 
 
@@ -290,7 +357,7 @@
                 console.error(data.data);
             }
         }
-        $scope.gridChanged = function(_editor){
+        $scope.gridChanged = function(){
             if(hasMap && hasGrid){
                 console.log('Grid changed');
                 $scope.grid = angular.fromJson(gridConvertXml2JSon());
@@ -302,21 +369,17 @@
 
         };
 
-        // Runs when editor loads
-        $scope.gridLoaded = function(_editor){
-            console.log('Ace editor loaded successfully');
-            var _session = _editor.getSession();
-            _session.setUndoManager(new ace.UndoManager());
+        $scope.gridLoaded = function(){
             $scope.grid = angular.fromJson(gridConvertXml2JSon());
-            if (hasMap){
+            if (hasMap || hasGrid){
                 prepareParamters();
                 drawMap();
                 drawGrid();
             }
         };
 
-        $scope.labChanged = function(_editor){
-            if(hasMap && hasGrid) {
+        $scope.labChanged = function(){
+            if(hasMap) {
                 console.log('lab changed');
                 $scope.map = angular.fromJson(labConvertXml2JSon());
                 console.log($scope.map);
@@ -327,12 +390,7 @@
 
         };
 
-        // Runs when editor loads
-        $scope.labLoaded = function(_editor){
-
-            console.log('Ace editor loaded successfully');
-            var _session = _editor.getSession();
-            _session.setUndoManager(new ace.UndoManager());
+        $scope.labLoaded = function(){
             $scope.map = angular.fromJson(labConvertXml2JSon());
             if (hasGrid){
                 prepareParamters();
