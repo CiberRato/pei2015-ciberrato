@@ -113,6 +113,7 @@
 
                     function getAgentSuccessFn(data) {
                         vm.agent = data.data;
+                        vm.agent.code_valid = false;
                     }
 
                     function getAgentErrorFn(data) {

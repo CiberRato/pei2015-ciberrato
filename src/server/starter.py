@@ -44,7 +44,7 @@ class ProcLogHandler(Thread):
 					sys.stdout.write('[%s][ERR]: %s' % (self.procname,read))
 					if self.store_messages:
 						self.messages.append("[ERR] %s" % read)
-			
+
 			if self.process.poll() != None:
 				break
 		print "[%s] Log Handler Closed" % self.procname
@@ -418,28 +418,27 @@ class Starter:
 		print "[STARTER] Killing container"
 		for dock in docker_containers:
 		        print "[STARTER] Simulator getting logs"
-                        
+
                         log = "[SIMULATOR]\n"
 			for line in simulator_log_handler.getMessages():
    				log += line+"\n"
-		        
+
                         print "[STARTER] Docker getting logs %s" % dock
 			proc = subprocess.Popen(["docker", "logs", dock], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			stdout, stderr = proc.communicate()
-			
+
                         log += "\n\n[AGENT OUT]\n"
    			log += stdout
-                        
+
                         log += "\n\n[AGENT ERR]\n"
    			log += stderr
-			
+
    			url = "/api/v1/trials/execution_log/"
                         data = {'trial_id': sim_id, 'execution_log': log}
 			response = requests.post("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + url, data=data)
 
 			if response.status_code != 201:
-				print response
-				raise Exception("[STARTER] ERROR: error posting docker logs to end point")
+				print "[STARTER] ERROR: error posting docker logs to end point, probably the Trial doesnt exists if is Hall Of Fame"
 
 		        print "[STARTER] Docker stop"
 			proc = subprocess.Popen(["docker", "stop", "-t", "0", dock])
