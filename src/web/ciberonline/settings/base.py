@@ -145,7 +145,7 @@ COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
 
 AUTH_USER_MODEL = 'authentication.Account'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*.aws.atnog.av.it.pt', '*.atnog.org', '*']
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
