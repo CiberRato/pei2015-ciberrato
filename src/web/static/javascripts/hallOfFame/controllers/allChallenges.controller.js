@@ -205,6 +205,7 @@
         }
 
         function getFiles(name){
+            console.log('aaqui');
             c3 = document.getElementById("layer3");
             ctx = c3.getContext("2d");
             Round.getFile(name, "Hall of fame - Single", 'grid').then(getGridSuccessFn, getGridErrorFn);
