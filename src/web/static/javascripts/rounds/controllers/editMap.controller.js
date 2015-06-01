@@ -371,7 +371,7 @@
 
         $scope.gridLoaded = function(){
             $scope.grid = angular.fromJson(gridConvertXml2JSon());
-            if (hasMap || hasGrid){
+            if (hasMap){
                 prepareParamters();
                 drawMap();
                 drawGrid();
@@ -379,7 +379,7 @@
         };
 
         $scope.labChanged = function(){
-            if(hasMap) {
+            if(hasMap && hasGrid) {
                 console.log('lab changed');
                 $scope.map = angular.fromJson(labConvertXml2JSon());
                 console.log($scope.map);
