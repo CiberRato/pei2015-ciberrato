@@ -165,20 +165,13 @@ class Viewer:
 			websocket_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 			websocket_udp.sendto(sim_id ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-			# websocket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			# websocket_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-			# websocket_tcp.connect((WEBSOCKET_HOST, WEBSOCKET_PORT))
-
-			# websocket_tcp.send(sim_id)
-			# # Wait 0.1 seconds to assure the sim_id msg goes on a unique packet
-			# time.sleep(0.1)
 
 		robotTime = 0
 		scoreTime = 0
 		number_of_agents_finished = 0
 		firstTime = True
-		log_file.write('"Log":[')
 		buffer_data = ''
+		log_data = []
 		while simTime != robotTime:
 			# Update Robot time
 			data = simulator_s.recv(16384)
@@ -187,7 +180,6 @@ class Viewer:
 			sr = data.split("\x04")
 			sr[0] = buffer_data + sr[0]
 			buffer_data = sr[-1]
-
 			for data in sr[:-1]:
 				robotXML = minidom.parseString(data)
 				itemlist = robotXML.getElementsByTagName('LogInfo')
@@ -206,34 +198,22 @@ class Viewer:
 				json_obj = xmltodict.parse(data, postprocessor=JsonListElements().postprocessorData)
 				json_data = json.dumps(json_obj)
 				json_data = json_data.replace("@", "_")
+				#print json_data
+				log_data.append(json_data)
 
-				if not firstTime:
-					if int(robotTime) != 0:
-						log_file.write(",")
-						log_file.write(json_data)
-						if not sync:
-							# Send data to the websockets
-							#websocket_tcp.send(json_data)
-							websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-				else:
-					firstTime = False
-					log_file.write(json_data)
-					if not sync:
-						# Send data to the websockets
-						#websocket_tcp.send(json_data)
-						websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-				# sleep to ensure msg go on separate packets
-				#time.sleep(0.05)
-
-		log_file.write("]}")
-
+				if not sync:
+					# Send data to the websockets
+					websocket_udp.sendto(json_data ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
 
 		if not sync:
-			# Wait 0.1 seconds to assure the END msg goes on a separate packet
-			#time.sleep(0.1)
-			# Send websocket msg telling it's over
 			websocket_udp.sendto("END" ,(WEBSOCKET_HOST, WEBSOCKET_PORT))
-			#websocket_tcp.send("END")
+
+		log_file.write('"Log":[')
+		log_file.write(log_data[0])
+		for i in range(1,len(log_data)):
+			log_file.write(",")
+			log_file.write(log_data[i])
+		log_file.write("]}")
 
 		starter_c.send('<EndedSimulation/>')
 
@@ -258,12 +238,8 @@ class Viewer:
 				starter_c.send("SCORE-SUCCESS")
 
 
-
-
-
 		# Close all connections
 		if not sync:
-			#websocket_tcp.close()
 			websocket_udp.close()
 
 		starter_c.close()
