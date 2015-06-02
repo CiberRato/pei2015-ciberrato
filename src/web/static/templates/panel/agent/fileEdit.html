@@ -19,9 +19,9 @@
                             <header style="padding-bottom: 0%">
                                 <div class="row">
                                     <div class="span8"><h1>{{vm.file}}</h1></div>
-                                    <div class="span1"><a class="btn btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
-                                    <div class="span1"><a class="btn btn-success" ng-click="vm.getCode()">Save</a></div>
-                                    <div class="span2"><a class="btn btn-success" ng-click="vm.getCode()" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Save And Exit</a></div>
+                                    <div class="span1"><a class="btn btn-flat btn-danger" href="/panel/{{vm.teamName}}/{{vm.agentName}}/agentDetail">Discard</a></div>
+                                    <div class="span1"><a class="btn btn-flat btn-success" ng-click="vm.getCode()">Save</a></div>
+                                    <div class="span2"><a class="btn btn-flat btn-success" ng-click="vm.getCodeExit()" href="#">Save And Exit</a></div>
                                 </div>
 
                             </header>
@@ -51,7 +51,7 @@
                         </div>
 
                         <div ng-if="vm.agent.code_valid == false && vm.agent.validation_result.length > 0" class="alert alert-error">
-                            <p>Code not valid!</p><br/> {{vm.agent.validation_result}}<br/><br/>
+                            <p>Code not valid!</p><br/> <pre>{{vm.agent.validation_result}}</pre>
                             <button class="btn btn-flat btn-warning" ng-click="vm.validateCode()">Validate Code!</button>
                         </div>
                         <!-- Second level tabs -->
@@ -67,7 +67,7 @@
     </div>
 </div>
 
-<script type="text/javascript" src="{% static 'js/bootstrap/bootstrap-tab.js' %}"></script>
+<script type="text/javascript" src="static/js/bootstrap/bootstrap-tab.js"></script>
 
 <script>
     $(document).ready(function(){

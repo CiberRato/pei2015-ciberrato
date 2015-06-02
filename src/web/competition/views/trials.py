@@ -12,7 +12,7 @@ from rest_framework import permissions
 from .simplex import TrialX
 from ..serializers import TrialXSerializer, LogTrial, ErrorTrial, TrialMessageSerializer
 from ..models import Trial, TeamEnrolled, PrivateCompetitionLog, LogTrialAgent
-from ..renderers import JSONRenderer
+from ..renderers import JSONRenderer, PlainTextRenderer
 
 from competition.shortcuts import *
 from notifications.models import NotificationBroadcast, NotificationTeam
@@ -231,6 +231,38 @@ class GetTrialLog(views.APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         return Response(json_text)
+
+
+class GetTrialExecutionLog(views.APIView):
+    renderer_classes = (PlainTextRenderer, )
+
+    def get_permissions(self):
+        return permissions.IsAuthenticated(),
+
+    @staticmethod
+    def get(request, trial_id):
+        """
+        B{Get} trial execution log
+        B{URL:} ../api/v1/trials/get_trial_execution_log/<trial_id>/
+
+        :type  trial_id: str
+        :param trial_id: The trial identifier
+        """
+        trial = get_object_or_404(Trial.objects.all(), identifier=trial_id)
+
+        # can not be private competition
+        if trial.round.parent_competition.type_of_competition.name == settings.PRIVATE_COMPETITIONS_NAME:
+            if trial.round.parent_competition.teamenrolled_set.first().team not in request.user.teams.all():
+                return Response({'status': 'Bad request',
+                                 'message': 'You can not see the rounds for this competition!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        if not trial_done(trial):
+            return Response({'status': 'Bad request',
+                             'message': 'The trial must have a log!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(trial.execution_log)
 
 
 class GetTrial(mixins.RetrieveModelMixin, viewsets.GenericViewSet):

@@ -10,6 +10,7 @@
     function EditFileController($scope, $routeParams, Agent, SoloTrials, $timeout, Notification, $location){
         var vm = this;
         vm.getCode = getCode;
+        vm.getCodeExit = getCodeExit;
         vm.validateCode = validateCode;
         vm.launchTrial = launchTrial;
         var subscribed = false;
@@ -113,6 +114,36 @@
 
                     function getAgentSuccessFn(data) {
                         vm.agent = data.data;
+                    }
+
+                    function getAgentErrorFn(data) {
+                        console.error(data.data);
+                    }
+                });
+            }
+            function error(data){
+                console.error(data.data);
+            }
+        }
+
+        function getCodeExit(){
+            var a = $scope.code;
+
+            var file = new Blob([a], {type: 'text/plain'});
+
+            Agent.upload(vm.agentName, file, vm.teamName, vm.file).then(success, error);
+
+            function success(){
+                $.jGrowl("File \'" + vm.file + "\' has been updated.", {
+                    life: 2500,
+                    theme: 'jGrowl-notification ui-state-highlight ui-corner-all success'
+                });
+                $timeout(function () {
+                    Agent.getAgent(vm.agentName, vm.teamName).then(getAgentSuccessFn, getAgentErrorFn);
+
+                    function getAgentSuccessFn(data) {
+                        vm.agent = data.data;
+                        $location.path('/panel/' + vm.teamName + '/' + vm.agentName + '/agentDetail')
                     }
 
                     function getAgentErrorFn(data) {

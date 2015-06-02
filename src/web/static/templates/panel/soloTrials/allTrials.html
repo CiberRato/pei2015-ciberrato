@@ -32,7 +32,8 @@
                                 <th>Date</th>
                                 <th>State</th>
                                 <th>Watch Trial</th>
-                                <th>Download</th>
+                                <th>Trial Log</th>
+                                <th>Execution Log</th>
                                 <th>Remove</th>
                             </tr>
                             </thead>
@@ -55,6 +56,10 @@
                                     <a href="/panel/{{value.identifier}}/watchTrial" ng-if="value.state == 'LOG'">Watch</a></td>
                                 <td>
                                     <a ng-if="value.state == 'LOG'" href="/api/v1/trials/get_trial_log/{{value.identifier}}/" target="_blank" download="{{value.identifier}}" class = "awe-download-alt"></a>
+                                    <a ng-if="value.state != 'LOG'" href="#" class = "awe-download-alt" disabled></a>
+                                </td>
+                                <td>
+                                    <a ng-if="value.state == 'LOG'" href="/api/v1/trials/get_trial_execution_log/{{value.identifier}}/" target="_blank" download="{{value.identifier}}" class = "awe-download-alt"></a>
                                     <a ng-if="value.state != 'LOG'" href="#" class = "awe-download-alt" disabled></a>
                                 </td>
                                 <td><a ng-click="vm.removeTrial(value.identifier)" class="btn btn-primary btn-flat">X</a>

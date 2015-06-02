@@ -12,9 +12,9 @@
                         <header>
                             <h2>{{vm.roundName}}</h2><a href="admin/{{vm.competitionName}}/{{vm.roundName}}/editMap"> (Edit Map <p class="fam-map-edit"></p>)</a>
                         </header>
-                        <p ng-if="vm.grid.size == '0B' && vm.lab.size == '0B' && vm.param_list.size == '0B'">This round doesn't have any files uploaded.</p>
+                        <p ng-if="vm.grid.file == '' && vm.lab.file == '' && vm.param_list.file == ''">This round doesn't have any files uploaded.</p>
 
-                        <table ng-if="vm.grid.size != '0B' || vm.lab.size != '0B' || vm.param_list.size != '0B'" class="table table-striped table-hover">
+                        <table ng-if="vm.grid.file != '' || vm.lab.file != '' || vm.param_list.file != ''" class="table table-striped table-hover">
                             <thead>
                             <tr>
                                 <th>File Name</th>
@@ -24,22 +24,22 @@
                             </thead>
                             <tbody>
                             <tr>
-                                <td ng-if="vm.grid.size != '0B'">{{vm.grid.file}}</td>
-                                <td ng-if="vm.grid.size != '0B'">{{vm.grid.size}}</td>
-                                <td ng-if="vm.grid.size != '0B'">Grid</td>
+                                <td ng-if="vm.grid.file != ''">{{vm.grid.file}}</td>
+                                <td ng-if="vm.grid.file != ''">{{vm.grid.size}}</td>
+                                <td ng-if="vm.grid.file != ''">Grid</td>
 
                             </tr>
                             <tr>
-                                <td ng-if="vm.lab.size != '0B'">{{vm.lab.file}}</td>
-                                <td ng-if="vm.lab.size != '0B'">{{vm.lab.size}}</td>
-                                <td ng-if="vm.lab.size != '0B'">Lab</td>
+                                <td ng-if="vm.lab.file != ''">{{vm.lab.file}}</td>
+                                <td ng-if="vm.lab.file != ''">{{vm.lab.size}}</td>
+                                <td ng-if="vm.lab.file != ''">Lab</td>
 
                             </tr>
 
                             <tr>
-                                <td ng-if="vm.param_list.size != '0B'">{{vm.param_list.file}}</td>
-                                <td ng-if="vm.param_list.size != '0B'">{{vm.param_list.size}}</td>
-                                <td ng-if="vm.param_list.size != '0B'">Param List</td>
+                                <td ng-if="vm.param_list.file != ''">{{vm.param_list.file}}</td>
+                                <td ng-if="vm.param_list.file != ''">{{vm.param_list.size}}</td>
+                                <td ng-if="vm.param_list.file != ''">Param List</td>
 
                             </tr>
 

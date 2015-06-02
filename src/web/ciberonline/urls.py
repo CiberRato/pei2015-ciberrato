@@ -24,7 +24,8 @@ from competition.views.grid_position import GridPositionsViewSet, AgentGridViewS
 from competition.views.teamscore import TeamScoreViewSet, RankingByTrial, RankingByRound, RankingByCompetition, \
     RankingByTeamInCompetition
 
-from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate
+from competition.views.trials import SaveLogs, GetTrial, GetTrialLog, SaveSimErrors, TrialMessageCreate, \
+    GetTrialExecutionLog
 from competition.views.hall_of_fame import RunHallOfFameTrial, AutomaticTeamScoreHallOfFame, HallOfFameScore
 from competition.views.private_competitions import PrivateCompetitionsUser, PrivateCompetitionsRounds, \
     PrivateCompetitionRound, RunPrivateTrial, SoloTrial
@@ -117,6 +118,7 @@ router_trials = routers.SimpleRouter()
 router_trials.register(r'trial_log', SaveLogs)
 router_trials.register(r'trial_error', SaveSimErrors)
 router_trials.register(r'get_trial', GetTrial)
+
 router_trials.register(r'prepare', PrepareTrial)
 router_trials.register(r'execution_log', ExecutionLog)
 
@@ -199,6 +201,10 @@ urlpatterns = patterns('',
                        url(r'^api/v1/trials/get_trial_log/(?P<trial_id>.+)/$',
                            GetTrialLog.as_view(),
                            name="Get trial log"),
+                       # get trial execution log
+                       url(r'^api/v1/trials/get_trial_execution_log/(?P<trial_id>.+)/$',
+                           GetTrialExecutionLog.as_view(),
+                           name="Get execution trial log"),
                        # get round file
                        url(r'^api/v1/competitions/round_file/(?P<competition_name>.+)/(?P<round_name>.+)/(?P<param>.+)/$',
                            GetRoundFile.as_view(),

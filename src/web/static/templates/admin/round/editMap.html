@@ -20,9 +20,9 @@
                                 <header style="padding-bottom: 0%">
                                     <div class="row">
                                         <div class="span5"><h1>{{vm.files.grid.file}}</h1></div>
-                                        <div class="span1"><a class="btn btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
-                                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCodeGrid()">Save</a></div>
-                                        <div class="span2"><a class="btn btn-success" ng-click="vm.getCodeGrid()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
+                                        <div class="span1"><a class="btn btn-flat btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
+                                        <div class="span1"><a class="btn btn-flat btn-success" ng-click="vm.getCodeGrid()">Save</a></div>
+                                        <div class="span2"><a class="btn btn-flat btn-success" ng-click="vm.getCodeGrid()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
                                     </div>
 
                                 </header>
@@ -30,7 +30,7 @@
                             </div>
 
                             <section class="tab-content">
-                                <div class="editor1" ui-ace="{onLoad:gridLoaded, onChange:gridChanged,mode: 'xml', theme: 'monokai'}" ng-model="codeGrid"></div>
+                                <div class="editor1" ui-ace="{onChange:gridChanged,mode: 'xml', theme: 'monokai'}" ng-model="codeGrid"></div>
                             </section>
 
                     </div>
@@ -39,9 +39,9 @@
                                 <header style="padding-bottom: 0%;">
                                     <div class="row">
                                         <div class="span5"><h1>{{vm.files.lab.file}}</h1></div>
-                                        <div class="span1"><a class="btn btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
-                                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCodeLab()">Save</a></div>
-                                        <div class="span2"><a class="btn btn-success" ng-click="vm.getCodeLab()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
+                                        <div class="span1"><a class="btn btn-flat btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
+                                        <div class="span1"><a class="btn btn-flat btn-success" ng-click="vm.getCodeLab()">Save</a></div>
+                                        <div class="span2"><a class="btn btn-flat btn-success" ng-click="vm.getCodeLab()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
                                     </div>
 
                                 </header>
@@ -49,7 +49,7 @@
                             </div>
 
                             <section class="tab-content">
-                                <div class="editor1" ui-ace="{onLoad:labLoaded, onChange:labChanged,mode: 'xml', theme: 'monokai'}" ng-model="codeLab"></div>
+                                <div class="editor1" ui-ace="{onChange:labChanged,mode: 'xml', theme: 'monokai'}" ng-model="codeLab"></div>
                             </section>
                     </div>
                     <div class="tab-pane" id="tab3">
@@ -57,9 +57,9 @@
                                 <header style="padding-bottom: 0%">
                                     <div class="row">
                                         <div class="span5"><h1>{{vm.files.param_list.file}}</h1></div>
-                                        <div class="span1"><a class="btn btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
-                                        <div class="span1"><a class="btn btn-success" ng-click="vm.getCodeParam()">Save</a></div>
-                                        <div class="span2"><a class="btn btn-success" ng-click="vm.getCodeParam()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
+                                        <div class="span1"><a class="btn btn-flat btn-danger" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Discard</a></div>
+                                        <div class="span1"><a class="btn btn-flat btn-success" ng-click="vm.getCodeParam()">Save</a></div>
+                                        <div class="span2"><a class="btn btn-flat btn-success" ng-click="vm.getCodeParam()" href="/admin/{{vm.competitionName}}/{{vm.roundName}}/roundDetail">Save And Exit</a></div>
                                     </div>
 
                                 </header>
@@ -67,7 +67,7 @@
 
 
                             <section class="tab-content">
-                                <div class="editor1" ui-ace="aceOptions" ng-model="codeParam"></div>
+                                <div class="editor1" ui-ace="{mode: 'xml', theme: 'monokai'}" ng-model="codeParam"></div>
                             </section>
                     </div>
 
