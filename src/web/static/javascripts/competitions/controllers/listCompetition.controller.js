@@ -6,9 +6,9 @@
         .module('ciberonline.competitions.controllers')
         .controller('ListCompetitionController', ListCompetitionController);
 
-    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round', '$scope', 'Team', 'Authentication', 'Grid', 'Agent'];
+    ListCompetitionController.$inject = ['$location', '$timeout', '$routeParams', 'Competition', 'Round', '$scope', 'Team', 'Authentication', 'Grid', 'Agent', 'Notification'];
 
-    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round, $scope, Team, Authentication, Grid, Agent){
+    function ListCompetitionController($location, $timeout, $routeParams, Competition, Round, $scope, Team, Authentication, Grid, Agent, Notification){
         var vm = this;
         vm.competitionName = $routeParams.name;
         vm.validateInscription = validateInscription;
@@ -29,6 +29,7 @@
         var authenticatedAccount = Authentication.getAuthenticatedAccount();
 
         vm.username = authenticatedAccount.username;
+        var subscribed = false;
 
         activate();
 
@@ -36,6 +37,26 @@
             $scope.loader = {
                 loading: false
             };
+
+            if(!subscribed){
+                subscribed = true;
+                var round_notification = Notification.events.subscribe('notificationbroadcast', 1, function(data){
+                    console.log(data);
+
+                    if (data.message.trigger == 'trial_prepare' || data.message.trigger == 'trial_error' || data.message.trigger == 'trial_log' || data.message.trigger == 'trial_start'){
+                        $timeout(function () {
+                            activate();
+                        });
+                    }
+
+                    console.log(data._type);
+                    console.log(data.message);
+                });
+                console.log(round_notification);
+                $scope.$on("$destroy", function(event){
+                    round_notification.remove();
+                });
+            }
 
             Competition.getCompetition(vm.competitionName).then(getCompetitionSuccessFn, getCompetitionErrorFn);
 
