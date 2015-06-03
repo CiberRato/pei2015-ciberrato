@@ -351,7 +351,7 @@ class AgentCodeValidation(mixins.UpdateModelMixin, viewsets.GenericViewSet):
             agent.validation_result = serializer.validated_data['validation_result']
             agent.save()
 
-            if agent.validation_result:
+            if serializer.validated_data['code_valid']:
                 NotificationTeam.add(team=team, status="ok", message=agent.validation_result, trigger="code_valid")
             else:
                 NotificationTeam.add(team=team, status="error", message=agent.validation_result, trigger="code_valid")
