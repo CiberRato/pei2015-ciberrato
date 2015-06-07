@@ -69,7 +69,8 @@ class Command(BaseCommand):
         self.manual['api/v1/resources_file/'] = 'api/v1/competitions/'
 
         self.__arrange_urls__(urlpatterns)
-        print self.to_json()
+        json_output = json.dumps(self.to_json())
+        return json_output
 
     def to_json(self):
         json_var = dict()

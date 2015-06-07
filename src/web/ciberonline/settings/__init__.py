@@ -2,9 +2,6 @@ servers = {
     'development': [
         ''
     ],
-    'testing': [
-        ''
-    ],
     'production': [
         'ciberrato'
     ]
