@@ -1,4 +1,4 @@
-from croblink import CRobotLink
+from crobotlink import CRobotLink
 import sys
 from math import *
 from socket import *
