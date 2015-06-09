@@ -5,6 +5,11 @@ from flufl.enum import Enum
 from xml.dom import minidom
 
 class ValidatorMessage(Enum):
+	"""
+	This class represents an enumerate.
+	Where the first element is the ID of the message and 
+	the second element is the message.
+	"""
 	EXEC_MISSING 		= (1, "execute.sh was not found. Use it, otherwise to indicate the proper way to run your files.")
 	FAILED_PREPARE 		= (2, "Failed to execute prepare.sh")
 	TIMEOUT 			= (3, "Simulator will not be able to receive answer, please check host parameter, agent port and execute.sh.")
@@ -19,10 +24,22 @@ class ValidatorMessage(Enum):
 	NOT_ACTIONS 		= (10, "Messages received after the Measures is not an Actions. Please check it.")
 
 	def __init__(self, code, message):
+		"""
+		Class constructor
+		Arguments:
+			code - the error code identifier.
+			message - the details about the error message.
+		"""
 		self._code = code
 		self._message = message
 
 def error(vmsg, stdout_err = None):
+	"""
+	This function shuts down the unit testing.
+	Arguments:
+		vmsg - Message that is going to be printed as an error.
+		stdout_err - Stdout/Stderr if available.
+	"""
 	if stdout_err == None:
 		sys.stderr.write(vmsg.value[1])
 	else:
@@ -30,10 +47,18 @@ def error(vmsg, stdout_err = None):
 	sys.exit(vmsg.value[0])
 
 class Validator:
+	"""
+	Class responsible for make the proper tests to the robot.
+	"""
 	def __init__(self):
 		pass
 
 	def validate(self):
+		"""
+		Main function that is responsible for calling and make minor 
+		verifications. It starts by checking if execute.sh and prepare.sh 
+		exist, after that it calls more specific functions.
+		"""
 		if not os.path.exists('execute.sh'):
 			error(ValidatorMessage.EXEC_MISSING)
 		else:
@@ -65,6 +90,11 @@ class Validator:
 		sys.exit(0)
 
 	def validateRobotName(self, name):
+		"""
+		This function creates a dummy server and waits for a robot message 
+		to register. It verifies if it is possible to change the robot name 
+		using the execute.sh
+		"""
 		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		simulator_dummy.bind(("127.0.0.1", 6000))
@@ -98,6 +128,11 @@ class Validator:
 			error(ValidatorMessage.REGISTER_MESSAGE, agent.stdout.read())
 
 	def validatePosition(self, pos):
+		"""
+		This function creates a dummy server and waits for a robot message 
+		to register. It verifies if it is possible to change the robot position
+		using the execute.sh
+		"""
 		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		simulator_dummy.bind(("127.0.0.1", 6000))
@@ -130,6 +165,11 @@ class Validator:
 			error(ValidatorMessage.REGISTER_MESSAGE, agent.stdout.read())
 
 	def validateHost(self, hostVal):
+		"""
+		This function creates a dummy server and waits for a robot message 
+		to register. It verifies if it is possible to change the host 
+		where the server is registered using the execute.sh
+		"""
 		hostSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		hostSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		hostSocket.bind((hostVal, 6000))
@@ -161,6 +201,11 @@ class Validator:
 			error(ValidatorMessage.REGISTER_MESSAGE)
 
 	def validateMessagesExchanged(self):
+		"""
+		This function creates a dummy server and waits for a robot message to 
+		register. It will validate every message exchange between the 
+		simulator and the robot, like Actions and Measures.
+		"""
 		simulator_dummy = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		simulator_dummy.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		simulator_dummy.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
