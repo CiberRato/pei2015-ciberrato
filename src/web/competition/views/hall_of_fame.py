@@ -186,7 +186,7 @@ class AutomaticTeamScoreHallOfFame(mixins.CreateModelMixin, viewsets.GenericView
     @staticmethod
     def new_is_higher_than_old_one(old, score, number_of_agents, time):
         assert isinstance(old, AgentScoreRound)
-        if score > old.score:
+        if score < old.score:
             return True
         if score == old.score:
             if number_of_agents > old.score:
