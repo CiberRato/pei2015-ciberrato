@@ -1,6 +1,11 @@
-<Lab Name="cen 2" Width="28.0" Height="14.0">
+<Lab Name="AcadVerao2015 - cen 3" Width="28.0" Height="14.0">
 	<Beacon X="26.0" Y="12" Height="2"/>
 	<Target X="26.0" Y="12" Radius="1"/>
 	<Beacon X="2.0" Y="2" Height="2"/>
 	<Target X="2.0" Y="2" Radius="1"/>
+	<Wall Height="1">
+		<Corner X="26" Y="0"/>
+		<Corner X="28" Y="0"/>
+		<Corner X="28" Y="2"/>
+	</Wall>
 </Lab>
