@@ -1,0 +1,12 @@
+<Lab Name="Dança 1" Width="28.0" Height="14.0">
+	<Beacon X="26.0" Y="12" Height="2"/>
+	<Target X="26.0" Y="12" Radius="1"/>
+	<Wall Height="1">
+		<Corner X="16" Y="7"/>
+		<Corner X="15" Y="5.3"/>
+		<Corner X="13" Y="5.3"/>
+		<Corner X="12" Y="7"/>
+		<Corner X="13" Y="8.7"/>
+		<Corner X="15" Y="8.7"/>
+	</Wall>
+</Lab>

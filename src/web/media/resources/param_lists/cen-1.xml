@@ -1,0 +1,7 @@
+<Parameters SimTime="1000" CycleTime="50"
+		CompassNoise="0" BeaconNoise="2" ObstacleNoise="0.02"
+		MotorsNoise="2" RunningTimeout="1000"
+		GPS="On" ShowActions="False" NBeacons="0" 
+		Lab="../labs/cen-1-lab.xml"
+		Grid="../labs/cen-1-grd.xml"
+/>
