@@ -1,0 +1,11 @@
+(cd robsample; python robsample_python.py -pos 1 -robname SAMPLE_1)&
+(cd robsample; python robsample_python.py -pos 2 -robname SAMPLE_2)&
+(cd robsample; python robsample_python.py -pos 3 -robname SAMPLE_3)&
+(cd robsample; python robsample_python.py -pos 4 -robname SAMPLE_4)&
+(cd robsample; python robsample_python.py -pos 5 -robname SAMPLE_5)&
+(cd robsample; python robsample_python.py -pos 6 -robname SAMPLE_6)&
+(cd robsample; python robsample_python.py -pos 7 -robname SAMPLE_7)&
+(cd robsample; python robsample_python.py -pos 8 -robname SAMPLE_8)&
+(cd robsample; python robsample_python.py -pos 9 -robname SAMPLE_9)&
+(cd robsample; python robsample_python.py -pos 10 -robname SAMPLE_10)&
+

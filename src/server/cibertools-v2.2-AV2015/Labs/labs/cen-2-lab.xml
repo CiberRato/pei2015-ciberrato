@@ -1,0 +1,4 @@
+<Lab Name="Dança 1" Width="28.0" Height="14.0">
+	<Beacon X="26.0" Y="12" Height="2"/>
+	<Target X="26.0" Y="12" Radius="1"/>
+</Lab>

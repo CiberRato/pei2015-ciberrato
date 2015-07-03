@@ -1,0 +1,16 @@
+<Parameters SimTime="1000" CycleTime="50"
+		CompassNoise="0" BeaconNoise="2" ObstacleNoise="0.02"
+		MotorsNoise="3" RunningTimeout="1000"
+		GPS="On" GPSLinNoise="0.0" GPSDirNoise="0"
+                ShowActions="False" NBeacons="0" 
+                NRequestsPerCycle="4" 
+		ObstacleRequestable="Off" BeaconRequestable="Off" 
+		GroundRequestable="Off" CompassRequestable="Off"
+		CollisionRequestable="Off"
+		ObstacleLatency="0" BeaconLatency="0" 
+		GroundLatency="0" CompassLatency="0"
+		CollisionLatency="0"
+
+		Lab="../Labs/labs/cen-2-lab.xml"
+		Grid="../Labs/labs/cen-2-grd.xml"
+/>

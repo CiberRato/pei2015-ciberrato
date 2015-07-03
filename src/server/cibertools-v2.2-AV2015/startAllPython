@@ -1,0 +1,16 @@
+#/bin/bash
+(cd simulator; ./simulator -sync)&
+
+sleep 1
+
+(cd ../compile_execute/python/; ./execute.sh localhost 1 SAMPLE_1) &
+(cd ../compile_execute/python/; ./execute.sh localhost 2 SAMPLE_2) &
+(cd ../compile_execute/python/; ./execute.sh localhost 3 SAMPLE_3) &
+#(cd ../compile_execute/python/; ./execute.sh localhost 4 SAMPLE_4) &
+#(cd ../compile_execute/python/; ./execute.sh localhost 5 SAMPLE_5) &
+sleep 1
+
+#(cd Viewer; ./Viewer -autoconnect -autostart)
+
+#killall simulator GUISample
+

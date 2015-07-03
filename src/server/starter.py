@@ -165,7 +165,8 @@ class Starter:
 		# Run simulator for LINUX
 		if sync:
 			print "[STARTER] Creating process for simulator in sync mode on port " + str(simulator_port)
-			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+			#simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+			simulator = subprocess.Popen(["./cibertools-v2.2-AV2015/simulator/simulator", \
 						"-nogui", \
 						"-port",	str(simulator_port), \
 						"-sync",	str(SYNC_TIMEOUT), \
@@ -175,7 +176,8 @@ class Starter:
 						stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		else:
 			print "[STARTER] Creating process for simulator"
-			simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+			#simulator = subprocess.Popen(["./cibertools-v2.2/simulator/simulator", \
+			simulator = subprocess.Popen(["./cibertools-v2.2-AV2015/simulator/simulator", \
 						"-nogui", \
 						"-port",	str(simulator_port), \
 						"-param", 	tempFilesList["param_list"].name, \
