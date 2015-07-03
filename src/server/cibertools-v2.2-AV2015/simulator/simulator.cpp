@@ -362,6 +362,9 @@ int main(int argc, char *argv[])
 #else
 	srand(_getpid());
 #endif
+    /* THIS WAS A SPECIAL CHANGE FOR ACADEMIA VERAO */
+    simulator.setCollisions(false);
+
     /* start simulator timer */
 	simulator.startTimer();
 
