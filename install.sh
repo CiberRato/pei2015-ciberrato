@@ -42,7 +42,7 @@ fi)
 sudo -u $user mkdir tmp;)
 
 echo "	>> Compiling cibertools"
-(cd src/server/cibertools-v2.2/;
+(cd src/server/cibertools-v2.2-AV2015/;
 make;)
 echo "	>> Creating docker image based on Dockerfile"
 groupadd docker

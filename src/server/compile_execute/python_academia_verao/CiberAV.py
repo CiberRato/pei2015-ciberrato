@@ -38,6 +38,7 @@ def apply(time):
     while(time>0):
         rob.readSensors()
         time = time - 1
+        rob.syncRobot()
 
 def motors(left,right):
     global rob,leftP,rightP
