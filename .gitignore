@@ -112,3 +112,6 @@ src/server/tmp/
 src/server/compile_execute/cpp/sample_code/libRobSock/Makefile
 src/server/compile_execute/cpp/sample_code/libRobSock/moc_croblink.cpp
 src/server/compile_execute/cpp/sample_code/robsample
+
+#ignore
+src/server/cibertools-v2.2-AV2015/*

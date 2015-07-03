@@ -28,7 +28,8 @@ RUN mkdir -p /ciber/user_sourcecode
 #RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
 
 # Adding croblink and CrobAv for Academia de Verao
-ADD ./libraries/python_academia_verao/ /ciber/
+ADD ./libraries/python_academia_verao/croblink.py /ciber/croblink.py
+ADD ./libraries/python_academia_verao/CiberAV.py /ciber/CiberAV.py
 RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
 RUN mv /ciber/CiberAV.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
 

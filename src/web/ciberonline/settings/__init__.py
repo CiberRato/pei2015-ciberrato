@@ -3,7 +3,7 @@ servers = {
         ''
     ],
     'production': [
-        'ciberrato'
+        'ciber'
     ]
 }
 

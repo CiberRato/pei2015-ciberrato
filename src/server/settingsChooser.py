@@ -4,7 +4,7 @@ from socket import gethostname
 
 class Settings():
 	def __init__(self):
-		self.serverNames = ["ciberrato"]
+		self.serverNames = ["ciber"]
 
 	def getSettings(self):
 		server_name = gethostname()

@@ -123,7 +123,8 @@ class Starter:
 		tempFilesList = {}
 		n_agents = 0
 		for key in simJson:
-			#Handle agents and simulation id
+			print key
+                        #Handle agents and simulation id
 			if key == "agents":
 				n_agents = len(simJson[key])
 				agents = simJson[key]
@@ -154,8 +155,10 @@ class Starter:
 			r = requests.get("http://" + DJANGO_HOST + ':' + str(DJANGO_PORT) + simJson[key])
 			if r.status_code != 200:
 				raise Exception("[STARTER] ERROR: Error getting " + key + " file from end-point")
-			fp.write(r.text)
+                        print "wtf:" +r.text
+                        fp.write(r.text)
 			fp.seek(0)
+                        print "ola"
 			tempFilesList[key] = fp
 
 
