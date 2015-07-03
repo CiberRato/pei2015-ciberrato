@@ -1,0 +1,35 @@
+<Lab Name="Dança 1" Width="28.0" Height="14.0">
+	<Beacon X="26.0" Y="2" Height="2"/>
+	<Target X="26.0" Y="2" Radius="1"/>
+	<Beacon X="7.0" Y="7" Height="2"/>
+	<Target X="7.0" Y="7" Radius="1"/>
+	<Beacon X="26.0" Y="12" Height="2"/>
+	<Target X="26.0" Y="12" Radius="1"/>
+	<Wall Height="1">
+		<Corner X="16" Y="7"/>
+		<Corner X="15" Y="5.3"/>
+		<Corner X="13" Y="5.3"/>
+		<Corner X="12" Y="7"/>
+		<Corner X="13" Y="8.7"/>
+		<Corner X="15" Y="8.7"/>
+	</Wall>
+	<Wall Height="1">
+		<Corner X="16" Y="14"/>
+		<Corner X="15" Y="12.3"/>
+		<Corner X="13" Y="12.3"/>
+		<Corner X="12" Y="14"/>
+	</Wall>
+	<Wall Height="1">
+		<Corner X="16" Y="0"/>
+		<Corner X="15" Y="1.7"/>
+		<Corner X="13" Y="1.7"/>
+		<Corner X="12" Y="0"/>
+	</Wall>
+	<Wall Height="1">
+		<Corner X="28" Y="5.3"/>
+		<Corner X="27" Y="5.3"/>
+		<Corner X="26" Y="7"/>
+		<Corner X="27" Y="8.7"/>
+		<Corner X="28" Y="8.7"/>
+	</Wall>
+</Lab>

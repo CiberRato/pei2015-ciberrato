@@ -1,0 +1,4 @@
+<Lab Name="Lab 1" Width="28.0" Height="14.0">
+	<Beacon X="26.0" Y="7" Height="2"/>
+	<Target X="26.0" Y="7" Radius="1"/>
+</Lab>

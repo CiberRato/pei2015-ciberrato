@@ -1,0 +1,6 @@
+<Lab Name="cen 2" Width="28.0" Height="14.0">
+	<Beacon X="26.0" Y="12" Height="2"/>
+	<Target X="26.0" Y="12" Radius="1"/>
+	<Beacon X="2.0" Y="2" Height="2"/>
+	<Target X="2.0" Y="2" Radius="1"/>
+</Lab>
