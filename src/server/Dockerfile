@@ -23,8 +23,15 @@ EXPOSE 80
 RUN mkdir -p /ciber/user_sourcecode
 
 # Adding python module to communicate with simulator
-ADD ./libraries/python/ /ciber/
+# Can't have 2 croblinks as default library
+#ADD ./libraries/python/ /ciber/
+#RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
+
+# Adding croblink and CrobAv for Academia de Verao
+ADD ./libraries/python_academia_verao/ /ciber/
 RUN mv /ciber/croblink.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
+RUN mv /ciber/CiberAV.py $(python -c "from distutils.sysconfig import *; print(get_python_lib())")
+
 
 # Adding c++ python libraries
 ADD ./libraries/cpp /lib/
