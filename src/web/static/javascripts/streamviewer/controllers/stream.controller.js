@@ -78,7 +78,7 @@
         }
 
         function PrepareParameters(){
-            
+
             c3.width=$scope.zoom * $scope.map.Lab._Width;
             c3.height=$scope.zoom * $scope.map.Lab._Height;
 
@@ -90,7 +90,7 @@
 
             /* Number of Beacons */
           	$scope.nBeacon = $scope.map.Lab.Beacon.length;
-           
+
 
             /* Find beacon height */
             $scope.beacon_height = $scope.map.Lab.Beacon[0]._Height;
@@ -206,21 +206,23 @@
 
         function drawWalls(){
             var i;
-            for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
+            if($scope.map.Lab.hasOwnProperty('Wall')){
+              for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
 
-                if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
-                    ctx.fillStyle = $scope.smallWallColor;
-                }
-                else{
-                    ctx.fillStyle = $scope.greatWallColor;
-                }
-                ctx.beginPath();
-                var b = 0;
-                for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
-                    ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
-                }
-                ctx.closePath();
-                ctx.fill();
+                  if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
+                      ctx.fillStyle = $scope.smallWallColor;
+                  }
+                  else{
+                      ctx.fillStyle = $scope.greatWallColor;
+                  }
+                  ctx.beginPath();
+                  var b = 0;
+                  for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
+                      ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                  }
+                  ctx.closePath();
+                  ctx.fill();
+              }
             }
         }
 
@@ -278,9 +280,9 @@
             ctx2.translate(0, $scope.zoom * $scope.map.Lab._Height);
             ctx2.scale(1, -1);
 
-            
+
             $scope.numRobots = $scope.logBuff_obj[0].LogInfo.Robot.length;
-            
+
 
             $scope.finalResults = [];
 
@@ -389,7 +391,7 @@
                     if ($scope.param.Parameters._SimTime == $scope.logBuff_obj[$scope.idx].LogInfo._Time) {
                         $scope.playvar = -1;
                         console.log('parou tudo');
-                        
+
                         $scope.finalResults = $scope.logBuff_obj[$scope.idx].LogInfo.Robot
                         var swapped;
                         do {
@@ -408,8 +410,8 @@
                                 }
                             }
                         } while (swapped);
-                        
-                        
+
+
 
                     }
                 }catch(TypeError){
@@ -451,11 +453,11 @@
                 $scope.time = $scope.logBuff_obj[$scope.idx].LogInfo._Time;
 
                 /* Update directions of every robot */
-                
+
                 for(i=0; i<$scope.numRobots; i++){
                     $scope.dir[i] = parseInt($scope.logBuff_obj[$scope.idx].LogInfo.Robot[i].Pos._Dir) + 90;
                 }
-                
+
                 $scope.drawRobots();
 
             };

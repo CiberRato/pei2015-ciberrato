@@ -145,21 +145,23 @@
 
         function drawWalls(){
             var i;
-            for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
+            if($scope.map.Lab.hasOwnProperty('Wall')){
+              for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
 
-                if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
-                    ctx.fillStyle = $scope.smallWallColor;
-                }
-                else{
-                    ctx.fillStyle = $scope.greatWallColor;
-                }
-                ctx.beginPath();
-                var b = 0;
-                for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
-                    ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
-                }
-                ctx.closePath();
-                ctx.fill();
+                  if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
+                      ctx.fillStyle = $scope.smallWallColor;
+                  }
+                  else{
+                      ctx.fillStyle = $scope.greatWallColor;
+                  }
+                  ctx.beginPath();
+                  var b = 0;
+                  for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
+                      ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                  }
+                  ctx.closePath();
+                  ctx.fill();
+              }
             }
         }
 

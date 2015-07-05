@@ -110,22 +110,23 @@
         function drawWalls(){
             var i;
             console.log("drawWalls");
+            if($scope.map.Lab.hasOwnProperty('Wall')){
+              for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
 
-            for (i = 0; i < $scope.map.Lab.Wall.length; i++) {
-
-                if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
-                    $scope.ctx.fillStyle = $scope.smallWallColor;
-                }
-                else{
-                    $scope.ctx.fillStyle = $scope.greatWallColor;
-                }
-                $scope.ctx.beginPath();
-                var b = 0;
-                for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
-                    $scope.ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
-                }
-                $scope.ctx.closePath();
-                $scope.ctx.fill();
+                  if($scope.map.Lab.Wall[i]._Height < $scope.beacon_height){
+                      $scope.ctx.fillStyle = $scope.smallWallColor;
+                  }
+                  else{
+                      $scope.ctx.fillStyle = $scope.greatWallColor;
+                  }
+                  $scope.ctx.beginPath();
+                  var b = 0;
+                  for(; b < $scope.map.Lab.Wall[i].Corner.length; b++){
+                      $scope.ctx.lineTo($scope.map.Lab.Wall[i].Corner[b]._X * $scope.zoom ,$scope.map.Lab.Wall[i].Corner[b]._Y * $scope.zoom);
+                  }
+                  $scope.ctx.closePath();
+                  $scope.ctx.fill();
+              }
             }
             drawBeacon();
 
